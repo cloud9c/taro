@@ -70,7 +70,7 @@ function create() {
 
 	//floor
 	geo = new THREE.PlaneBufferGeometry( 180, 180 );
-	mat = new THREE.MeshPhongMaterial( {color: 0xE19B4E});
+	mat = new THREE.MeshPhongMaterial( {color: 0x718E3E});
 	mesh = new THREE.Mesh( geo, mat);
 	mesh.position.y = 0;
 	mesh.rotation.x = - Math.PI / 2;
