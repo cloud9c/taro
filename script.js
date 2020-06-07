@@ -1,9 +1,72 @@
 import * as THREE from 'https://threejs.org/build/three.module.js';
 import { OrbitControls } from 'https://threejs.org/examples/jsm/controls/OrbitControls.js';
 
-let scene, renderer, camera, controls;
+let scene, renderer, camera, controls, clock, dt;
+
+let player;
+
+const friction = 0.05,
+	  walkingSpeed = 0.1;
 
 const keyEnum = {};
+
+class Object {
+	constructor() {
+		this.xVel = 0;
+		this.yVel = 0;
+		this.zVel = 0;
+	}
+}
+
+class Player extends Object {
+	constructor(controls) {
+		super();
+		this.controls = controls;
+
+		const geo = new THREE.BoxGeometry( 5, 5, 5 );
+		var mat = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
+		var mesh = new THREE.Mesh( geo, mat );
+		scene.add( mesh );
+		this.mesh = mesh;
+		// w s a d jump sprint
+	}
+
+	move() {
+		const pos = this.mesh.position;
+		const controls = this.controls;
+		let xVel = this.xVel;
+		let yVel = this.yVel;
+		let zVel = this.zVel;
+
+		if (Math.abs(xVel) < 0.1) {
+			xVel = 0;
+		}
+		else if (xVel > 0)
+			xVel -= friction;
+		else if (xVel < 0)
+			xVel += friction;
+
+		if (keyEnum[controls[0]]) {
+			xVel += walkingSpeed;
+		}
+
+		console.log(xVel)
+
+		pos.x += xVel;
+		camera.position.x += xVel;
+		camera.position.y += yVel;
+		camera.position.z += zVel
+		this.mesh.position.set(pos.x, pos.y, pos.z);
+
+		this.xVel = xVel;
+		this.yVel = yVel;
+		this.zVel = zVel;
+	}
+
+	update() {
+		this.move();
+	}
+}
 
 function onWindowResize() {
    camera.aspect = window.innerWidth / window.innerHeight;
@@ -20,10 +83,12 @@ function init() {
 
 	// camera
 	camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 1000 );
-	camera.position.set( 10, 10, 10 );
+	camera.position.set( 15, 15, 15 );
 
 	controls = new OrbitControls( camera, document.getElementById("c") );
-	controls.update();
+
+	// clock
+	clock = new THREE.Clock();
 
 	// lighting
 	const hemiLight = new THREE.HemisphereLight( 0xffffff, 0xffffff, 0.6 );
@@ -69,17 +134,25 @@ function create() {
 	let geo, mat, mesh;
 
 	//floor
-	geo = new THREE.PlaneBufferGeometry( 180, 180 );
+	geo = new THREE.PlaneBufferGeometry( 2000, 2000 );
 	mat = new THREE.MeshPhongMaterial( {color: 0x718E3E});
 	mesh = new THREE.Mesh( geo, mat);
 	mesh.position.y = 0;
 	mesh.rotation.x = - Math.PI / 2;
 	mesh.receiveShadow = true;
 	scene.add( mesh );
+
+	//player
+	player = new Player(["w", "s", "a", "d", " "]);
 }
 
 function animate () {
 	requestAnimationFrame( animate );
+
+	dt = clock.getDelta();
+	controls.update();
+
+	player.update()
 
 	renderer.render( scene, camera );
 };
