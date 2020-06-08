@@ -1,12 +1,12 @@
 import * as THREE from 'https://threejs.org/build/three.module.js';
-import { OrbitControls } from 'https://threejs.org/examples/jsm/controls/OrbitControls.js';
 
-let scene, renderer, camera, controls, clock, dt;
+let scene, renderer, camera, clock, dt;
 
 let player;
 
-const friction = 0.05,
-	  walkingSpeed = 0.1;
+const friction = 0.075,
+	  walkingSpeed = 0.1,
+	  maxVel = 2;
 
 const keyEnum = {};
 
@@ -29,7 +29,16 @@ class Player extends Object {
 		mesh.position.y = 5;
 		mesh.receiveShadow = true;
 		mesh.castShadow = true;
-		mesh.add(camera);
+
+		// camera setting
+		mesh.add( camera );
+		camera.position.set( 0, 45, 90);
+		camera.rotation.set(-20 * Math.PI/180, -0 * Math.PI/180, 0 * Math.PI/180);
+		// camera.lookAt(mesh.position)
+
+		var gridHelper = new THREE.GridHelper( 1000, 1000 );
+		scene.add( gridHelper );
+
 		scene.add( mesh );
 		this.mesh = mesh;
 		// w s a d jump sprint
@@ -42,25 +51,6 @@ class Player extends Object {
 		let yVel = this.yVel;
 		let zVel = this.zVel;
 
-		if (Math.abs(xVel) < 0.1) {
-			xVel = 0;
-		}
-		else if (xVel > 0)
-			xVel -= friction;
-		else if (xVel < 0)
-			xVel += friction;
-
-		if (Math.abs(xVel) < 2)	{
-			if (keyEnum[controls[0]]) {
-				xVel += walkingSpeed;
-			}
-
-			if (keyEnum[controls[1]]) {
-				xVel -= walkingSpeed;
-			}
-		}
-
-
 		if (Math.abs(zVel) < 0.1) {
 			zVel = 0;
 		}
@@ -69,13 +59,32 @@ class Player extends Object {
 		else if (zVel < 0)
 			zVel += friction;
 
-		if (Math.abs(zVel) < 2)	{
-			if (keyEnum[controls[2]]) {
+		if (Math.abs(zVel) < maxVel)	{
+			if (keyEnum[controls[0]]) {
 				zVel -= walkingSpeed;
 			}
 
-			if (keyEnum[controls[3]]) {
+			if (keyEnum[controls[1]]) {
 				zVel += walkingSpeed;
+			}
+		}
+
+
+		if (Math.abs(xVel) < 0.1) {
+			xVel = 0;
+		}
+		else if (xVel > 0)
+			xVel -= friction;
+		else if (xVel < 0)
+			xVel += friction;
+
+		if (Math.abs(xVel) < maxVel)	{
+			if (keyEnum[controls[2]]) {
+				xVel -= walkingSpeed;
+			}
+
+			if (keyEnum[controls[3]]) {
+				xVel += walkingSpeed;
 			}
 		}
 
@@ -93,7 +102,6 @@ class Player extends Object {
 	}
 
 	update() {
-		controls.target = this.mesh.position;
 		this.move();
 	}
 }
@@ -113,9 +121,6 @@ function init() {
 
 	// camera
 	camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 1000 );
-	camera.position.set( 30, 30, 30 );
-
-	controls = new OrbitControls( camera, document.getElementById("c") );
 
 	// clock
 	clock = new THREE.Clock();
@@ -180,7 +185,6 @@ function animate () {
 	requestAnimationFrame( animate );
 
 	dt = clock.getDelta();
-	controls.update();
 
 	player.update()
 
