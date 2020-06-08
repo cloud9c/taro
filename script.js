@@ -23,9 +23,13 @@ class Player extends Object {
 		super();
 		this.controls = controls;
 
-		const geo = new THREE.BoxGeometry( 5, 5, 5 );
-		var mat = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
+		const geo = new THREE.BoxGeometry( 10, 10, 10 );
+		var mat = new THREE.MeshPhongMaterial( {color: 0x00ff00} );
 		var mesh = new THREE.Mesh( geo, mat );
+		mesh.position.y = 5;
+		mesh.receiveShadow = true;
+		mesh.castShadow = true;
+		mesh.add(camera);
 		scene.add( mesh );
 		this.mesh = mesh;
 		// w s a d jump sprint
@@ -46,16 +50,41 @@ class Player extends Object {
 		else if (xVel < 0)
 			xVel += friction;
 
-		if (keyEnum[controls[0]]) {
-			xVel += walkingSpeed;
+		if (Math.abs(xVel) < 2)	{
+			if (keyEnum[controls[0]]) {
+				xVel += walkingSpeed;
+			}
+
+			if (keyEnum[controls[1]]) {
+				xVel -= walkingSpeed;
+			}
 		}
 
-		console.log(xVel)
+
+		if (Math.abs(zVel) < 0.1) {
+			zVel = 0;
+		}
+		else if (zVel > 0)
+			zVel -= friction;
+		else if (zVel < 0)
+			zVel += friction;
+
+		if (Math.abs(zVel) < 2)	{
+			if (keyEnum[controls[2]]) {
+				zVel -= walkingSpeed;
+			}
+
+			if (keyEnum[controls[3]]) {
+				zVel += walkingSpeed;
+			}
+		}
 
 		pos.x += xVel;
-		camera.position.x += xVel;
-		camera.position.y += yVel;
-		camera.position.z += zVel
+		pos.y += yVel;
+		pos.z += zVel;
+		// camera.position.x = pos.x;
+		// camera.position.y = pos.y;
+		// camera.position.z = pos.z;
 		this.mesh.position.set(pos.x, pos.y, pos.z);
 
 		this.xVel = xVel;
@@ -64,6 +93,7 @@ class Player extends Object {
 	}
 
 	update() {
+		controls.target = this.mesh.position;
 		this.move();
 	}
 }
@@ -83,7 +113,7 @@ function init() {
 
 	// camera
 	camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 1000 );
-	camera.position.set( 15, 15, 15 );
+	camera.position.set( 30, 30, 30 );
 
 	controls = new OrbitControls( camera, document.getElementById("c") );
 
@@ -94,7 +124,7 @@ function init() {
 	const hemiLight = new THREE.HemisphereLight( 0xffffff, 0xffffff, 0.6 );
 	hemiLight.color.setHSL( 0.6, 1, 0.6 );
 	hemiLight.groundColor.setHSL( 0.095, 1, 0.75 );
-	hemiLight.position.set( 0, 50, 0 );
+	hemiLight.position.set( 0, 100, 0 );
 	scene.add( hemiLight );
 
 	const hemiLightHelper = new THREE.HemisphereLightHelper( hemiLight, 10 );
@@ -103,7 +133,7 @@ function init() {
 	const dirLight = new THREE.DirectionalLight( 0xffffff, 1 );
 	dirLight.color.setHSL( 0.1, 1, 0.95 );
 	dirLight.position.set( - 1, 1.75, 1 );
-	dirLight.position.multiplyScalar( 30 );
+	dirLight.position.multiplyScalar( 100 );
 	scene.add( dirLight );
 
 	dirLight.castShadow = true;
