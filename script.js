@@ -1,12 +1,11 @@
 import * as THREE from 'https://threejs.org/build/three.module.js';
+import { GLTFLoader } from 'https://threejs.org/examples/jsm/loaders/GLTFLoader.js';
 
-let scene, renderer, camera, clock, dt;
+let scene, renderer, camera, loader;
+
+let lastTimestamp = 0, dt;
 
 let player;
-
-const friction = 0.075,
-	  walkingSpeed = 0.1,
-	  maxVel = 2;
 
 const keyEnum = {};
 
@@ -17,31 +16,41 @@ class Object {
 		this.zVel = 0;
 	}
 }
+function loadTexture(url) {
+	return new Promise(resolve => {
+		loader.load(url, resolve)
+	})
+}
 
 class Player extends Object {
 	constructor(controls) {
 		super();
 		this.controls = controls;
 
-		const geo = new THREE.BoxGeometry( 10, 10, 10 );
-		var mat = new THREE.MeshPhongMaterial( {color: 0x00ff00} );
-		var mesh = new THREE.Mesh( geo, mat );
-		mesh.position.y = 5;
-		mesh.receiveShadow = true;
-		mesh.castShadow = true;
-
-		// camera setting
-		mesh.add( camera );
-		camera.position.set( 0, 45, 90);
-		camera.rotation.set(-20 * Math.PI/180, -0 * Math.PI/180, 0 * Math.PI/180);
-		// camera.lookAt(mesh.position)
-
-		var gridHelper = new THREE.GridHelper( 1000, 1000 );
-		scene.add( gridHelper );
-
-		scene.add( mesh );
-		this.mesh = mesh;
+		this.friction = 0.5,
+		this.walkingSpeed = 0.75;
+		this.maxWalkingSpeed = 0.5;
+		this.sprintingSpeed = 1.5;
+		this.maxSprintingSpeed = 1;
 		// w s a d jump sprint
+
+		loadTexture('assets/models/player.glb').then( gltf => {
+			const mesh = gltf.scene.children[0];
+
+			// camera setting
+			camera.position.set( 0, 45, 90);
+			camera.rotation.set(-20 * Math.PI/180, -0 * Math.PI/180, 0 * Math.PI/180);
+			mesh.add( camera );
+
+			var gridHelper = new THREE.GridHelper( 1000, 1000 );
+			scene.add( gridHelper );
+
+			scene.add(gltf.scene);
+
+			this.mesh = mesh;
+
+			requestAnimationFrame(animate);
+		});
 	}
 
 	move() {
@@ -51,7 +60,17 @@ class Player extends Object {
 		let yVel = this.yVel;
 		let zVel = this.zVel;
 
-		if (Math.abs(zVel) < 0.1) {
+		const friction = this.friction * dt;
+		let speed = this.walkingSpeed * dt;
+		let maxSpeed = this.maxWalkingSpeed;
+
+		if (keyEnum[controls[5]]) {
+			speed = this.sprintingSpeed * dt;
+			maxSpeed = this.maxSprintingSpeed;
+		}
+		console.log(xVel)
+
+		if (Math.abs(zVel) < 0.01) {
 			zVel = 0;
 		}
 		else if (zVel > 0)
@@ -59,18 +78,18 @@ class Player extends Object {
 		else if (zVel < 0)
 			zVel += friction;
 
-		if (Math.abs(zVel) < maxVel)	{
+		if (Math.abs(zVel) < maxSpeed) {
 			if (keyEnum[controls[0]]) {
-				zVel -= walkingSpeed;
+				zVel -= speed;
 			}
 
 			if (keyEnum[controls[1]]) {
-				zVel += walkingSpeed;
+				zVel += speed;
 			}
 		}
 
 
-		if (Math.abs(xVel) < 0.1) {
+		if (Math.abs(xVel) < 0.01) {
 			xVel = 0;
 		}
 		else if (xVel > 0)
@@ -78,14 +97,20 @@ class Player extends Object {
 		else if (xVel < 0)
 			xVel += friction;
 
-		if (Math.abs(xVel) < maxVel)	{
+		if (Math.abs(xVel) < maxSpeed) {
 			if (keyEnum[controls[2]]) {
-				xVel -= walkingSpeed;
+				xVel -= speed;
 			}
 
 			if (keyEnum[controls[3]]) {
-				xVel += walkingSpeed;
+				xVel += speed;
 			}
+		}
+
+		const magnitude = Math.sqrt(xVel*xVel + zVel*zVel);
+		if (magnitude > maxSpeed) {
+			xVel = xVel / magnitude * 0.5;
+			zVel = zVel / magnitude * 0.5;
 		}
 
 		pos.x += xVel;
@@ -119,11 +144,20 @@ function init() {
 	scene = new THREE.Scene();
 	scene.background = new THREE.Color( 0x0080ff );
 
+	// loader
+	loader = new GLTFLoader();
+
 	// camera
 	camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 1000 );
 
-	// clock
-	clock = new THREE.Clock();
+	// renderer
+	renderer = new THREE.WebGLRenderer({ canvas: document.getElementById("c") });
+	renderer.setSize( window.innerWidth, window.innerHeight );
+	renderer.shadowMap.enabled = true;
+}
+
+function create() {
+	let geo, mat, mesh;
 
 	// lighting
 	const hemiLight = new THREE.HemisphereLight( 0xffffff, 0xffffff, 0.6 );
@@ -159,15 +193,6 @@ function init() {
 	const dirLightHeper = new THREE.DirectionalLightHelper( dirLight, 10 );
 	scene.add( dirLightHeper );
 
-	// renderer
-	renderer = new THREE.WebGLRenderer({ canvas: document.getElementById("c") });
-	renderer.setSize( window.innerWidth, window.innerHeight );
-	renderer.shadowMap.enabled = true;
-}
-
-function create() {
-	let geo, mat, mesh;
-
 	//floor
 	geo = new THREE.PlaneBufferGeometry( 2000, 2000 );
 	mat = new THREE.MeshPhongMaterial( {color: 0x718E3E});
@@ -178,23 +203,25 @@ function create() {
 	scene.add( mesh );
 
 	//player
-	player = new Player(["w", "s", "a", "d", " "]);
+	player = new Player(["w", "s", "a", "d", " ", "shift"]);
 }
 
-function animate () {
-	requestAnimationFrame( animate );
+function animate (timestamp) {
+	timestamp /= 1000;
+	dt = timestamp - lastTimestamp;
+	lastTimestamp = timestamp;
 
-	dt = clock.getDelta();
+	player.update();
 
-	player.update()
+	renderer.render(scene, camera);
 
-	renderer.render( scene, camera );
+	requestAnimationFrame(animate);
 };
 
 function main() {
 	init();
 	create();
-	animate();
+	// requestAnimationFrame(animate);
 }
 
 main();
