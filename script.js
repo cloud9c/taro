@@ -27,18 +27,27 @@ class Player extends Object {
 		super();
 		this.controls = controls;
 
-		this.friction = 0.5,
-		this.walkingSpeed = 0.75;
-		this.maxWalkingSpeed = 0.5;
-		this.sprintingSpeed = 1.5;
-		this.maxSprintingSpeed = 1;
+		this.friction = 0.5;
+		this.speed = 1;
+		this.maxWalkingSpeed = 0.1;
+		this.maxSprintingSpeed = 0.2;
 		// w s a d jump sprint
 
 		loadTexture('assets/models/player.glb').then( gltf => {
-			const mesh = gltf.scene.children[0];
+			const mesh = gltf.scene;
+			// mesh.scale.set(0.1, 0.1, 0.1);
+
+			gltf.scene.traverse( node => {
+				if (node.isMesh) {
+					node.castShadow = true;
+					node.receiveShadow = true;
+				}
+			} );
+
+			// gltf.scene.rotation.x = 90 * Math.PI/180;
 
 			// camera setting
-			camera.position.set( 0, 45, 90);
+			camera.position.set( 2, 10, 15);
 			camera.rotation.set(-20 * Math.PI/180, -0 * Math.PI/180, 0 * Math.PI/180);
 			mesh.add( camera );
 
@@ -61,14 +70,12 @@ class Player extends Object {
 		let zVel = this.zVel;
 
 		const friction = this.friction * dt;
-		let speed = this.walkingSpeed * dt;
+		const speed = this.speed * dt;
 		let maxSpeed = this.maxWalkingSpeed;
 
 		if (keyEnum[controls[5]]) {
-			speed = this.sprintingSpeed * dt;
 			maxSpeed = this.maxSprintingSpeed;
 		}
-		console.log(xVel)
 
 		if (Math.abs(zVel) < 0.01) {
 			zVel = 0;
@@ -78,16 +85,15 @@ class Player extends Object {
 		else if (zVel < 0)
 			zVel += friction;
 
-		if (Math.abs(zVel) < maxSpeed) {
-			if (keyEnum[controls[0]]) {
-				zVel -= speed;
-			}
-
-			if (keyEnum[controls[1]]) {
-				zVel += speed;
-			}
+		if (zVel - speed > -maxSpeed && keyEnum[controls[0]]) {
+			zVel -= speed;
 		}
 
+		console.log(zVel)
+
+		if (zVel + speed < maxSpeed  && keyEnum[controls[1]]) {
+			zVel += speed;
+		}
 
 		if (Math.abs(xVel) < 0.01) {
 			xVel = 0;
@@ -97,21 +103,22 @@ class Player extends Object {
 		else if (xVel < 0)
 			xVel += friction;
 
-		if (Math.abs(xVel) < maxSpeed) {
-			if (keyEnum[controls[2]]) {
-				xVel -= speed;
-			}
+		if (xVel - speed > -maxSpeed && keyEnum[controls[2]]) {
+			xVel -= speed;
+		}
 
-			if (keyEnum[controls[3]]) {
-				xVel += speed;
-			}
+		if (xVel + speed < maxSpeed  && keyEnum[controls[3]]) {
+			xVel += speed;
 		}
 
 		const magnitude = Math.sqrt(xVel*xVel + zVel*zVel);
 		if (magnitude > maxSpeed) {
-			xVel = xVel / magnitude * 0.5;
-			zVel = zVel / magnitude * 0.5;
+			console.log(magnitude)
+			xVel = xVel / magnitude * maxSpeed;
+			zVel = zVel / magnitude * maxSpeed;
 		}
+
+		console.log(xVel)
 
 		pos.x += xVel;
 		pos.y += yVel;
