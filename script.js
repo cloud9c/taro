@@ -3,6 +3,8 @@ import { GLTFLoader } from 'https://threejs.org/examples/jsm/loaders/GLTFLoader.
 
 let scene, renderer, camera, loader;
 
+let cameraRadius, cameraAngle;
+
 let lastTimestamp = 0, dt;
 
 let player;
@@ -22,42 +24,103 @@ function loadTexture(url) {
 	})
 }
 
+function fadeToAction( actions, activeAction, name, duration ) {
+	const previousAction = activeAction;
+	activeAction = actions[ name ];
+
+	if ( previousAction !== activeAction ) {
+
+		previousAction.fadeOut( duration );
+
+	}
+
+	activeAction
+		.reset()
+		.setEffectiveTimeScale( 1 )
+		.setEffectiveWeight( 1 )
+		.fadeIn( duration )
+		.play();
+}
+
 class Player extends Object {
 	constructor(controls) {
 		super();
 		this.controls = controls;
 
-		this.friction = 0.5;
-		this.speed = 1;
-		this.maxWalkingSpeed = 0.1;
-		this.maxSprintingSpeed = 0.2;
+		this.speed = 10;
+		this.sprintSpeed = 20;
+		this.sensitivity = 0.01;
 		// w s a d jump sprint
 
 		loadTexture('assets/models/player.glb').then( gltf => {
 			const mesh = gltf.scene;
-			// mesh.scale.set(0.1, 0.1, 0.1);
+			const animations = gltf.animations;
+			let actions = [], activeAction;
 
-			gltf.scene.traverse( node => {
+			mesh.traverse( node => {
 				if (node.isMesh) {
 					node.castShadow = true;
 					node.receiveShadow = true;
 				}
 			} );
 
+			mesh.rotation.y = 180 * Math.PI/180
+
 			// gltf.scene.rotation.x = 90 * Math.PI/180;
 
 			// camera setting
-			camera.position.set( 2, 10, 15);
-			camera.rotation.set(-20 * Math.PI/180, -0 * Math.PI/180, 0 * Math.PI/180);
+			camera.position.set( -2, 10, -15);
+			camera.rotation.set(-160 * Math.PI/180, 0, 180 * Math.PI/180);
+			cameraRadius = Math.sqrt(camera.position.z*camera.position.z + camera.position.y*camera.position.y);
+			cameraAngle = Math.acos(-camera.position.z/cameraRadius);
 			mesh.add( camera );
 
-			var gridHelper = new THREE.GridHelper( 1000, 1000 );
+			const gridHelper = new THREE.GridHelper( 1000, 1000, 0x0000ff, 0x808080  );
 			scene.add( gridHelper );
 
-			scene.add(gltf.scene);
+			// Animation
+			const mixer = new THREE.AnimationMixer( mesh );
 
+			for (let i = 0; i < animations.length; i ++) {
+				const clip = animations[i];
+				const action = mixer.clipAction( clip );
+				actions[ clip.name ] = action;
+			}
+
+			activeAction = actions[ 'Idle' ];
+			activeAction.play();
+
+			scene.add(mesh);
+
+			// set to this
+			this.mixer = mixer;
+			this.actions = actions;
+			this.activeAction = activeAction;
 			this.mesh = mesh;
 
+			// takeover
+			document.addEventListener("mousemove", event => {
+				const dx = event.movementX;
+				const dy = event.movementY;
+				if (dx != 0) {
+					player.mesh.rotation.y -= dx * player.sensitivity;
+				}
+				if (dy != 0) {
+					cameraAngle += dy * player.sensitivity;
+					camera.position.z = -Math.cos(cameraAngle) * cameraRadius;
+					camera.position.y = Math.sin(cameraAngle) * cameraRadius;
+					camera.rotation.x += dy * player.sensitivity;
+				}
+			});
+
+			document.addEventListener('keydown', event => {
+				const key = event.key.toLowerCase();
+				keyEnum[key] = true;
+			});
+
+			document.addEventListener('keyup', event => {
+				keyEnum[event.key.toLowerCase()] = false;
+			});
 			requestAnimationFrame(animate);
 		});
 	}
@@ -65,76 +128,46 @@ class Player extends Object {
 	move() {
 		const pos = this.mesh.position;
 		const controls = this.controls;
-		let xVel = this.xVel;
-		let yVel = this.yVel;
-		let zVel = this.zVel;
+		let xVel = 0;
+		let yVel = 0;
+		let zVel = 0;
 
-		const friction = this.friction * dt;
-		const speed = this.speed * dt;
-		let maxSpeed = this.maxWalkingSpeed;
+		let speed = this.speed * dt;
 
 		if (keyEnum[controls[5]]) {
-			maxSpeed = this.maxSprintingSpeed;
+			speed = this.sprintSpeed * dt;
 		}
 
-		if (Math.abs(zVel) < 0.01) {
-			zVel = 0;
-		}
-		else if (zVel > 0)
-			zVel -= friction;
-		else if (zVel < 0)
-			zVel += friction;
-
-		if (zVel - speed > -maxSpeed && keyEnum[controls[0]]) {
+		if (keyEnum[controls[0]]) {
 			zVel -= speed;
 		}
 
-		console.log(zVel)
-
-		if (zVel + speed < maxSpeed  && keyEnum[controls[1]]) {
+		if (keyEnum[controls[1]]) {
 			zVel += speed;
 		}
 
-		if (Math.abs(xVel) < 0.01) {
-			xVel = 0;
-		}
-		else if (xVel > 0)
-			xVel -= friction;
-		else if (xVel < 0)
-			xVel += friction;
-
-		if (xVel - speed > -maxSpeed && keyEnum[controls[2]]) {
+		if (keyEnum[controls[2]]) {
 			xVel -= speed;
 		}
 
-		if (xVel + speed < maxSpeed  && keyEnum[controls[3]]) {
+		if (keyEnum[controls[3]]) {
 			xVel += speed;
 		}
 
 		const magnitude = Math.sqrt(xVel*xVel + zVel*zVel);
-		if (magnitude > maxSpeed) {
-			console.log(magnitude)
-			xVel = xVel / magnitude * maxSpeed;
-			zVel = zVel / magnitude * maxSpeed;
+		if (magnitude > speed) {
+			xVel = xVel / magnitude * speed;
+			zVel = zVel / magnitude * speed;
 		}
 
-		console.log(xVel)
-
-		pos.x += xVel;
-		pos.y += yVel;
-		pos.z += zVel;
-		// camera.position.x = pos.x;
-		// camera.position.y = pos.y;
-		// camera.position.z = pos.z;
+		pos.x += Math.sin(player.mesh.rotation.y + Math.PI) * zVel - Math.cos(player.mesh.rotation.y) * xVel;
+		pos.z += Math.cos(player.mesh.rotation.y + Math.PI) * zVel + Math.sin(player.mesh.rotation.y) * xVel;
 		this.mesh.position.set(pos.x, pos.y, pos.z);
-
-		this.xVel = xVel;
-		this.yVel = yVel;
-		this.zVel = zVel;
 	}
 
 	update() {
 		this.move();
+		this.mixer.update(dt);
 	}
 }
 
@@ -150,6 +183,8 @@ function init() {
 	//scene
 	scene = new THREE.Scene();
 	scene.background = new THREE.Color( 0x0080ff );
+	scene.fog = new THREE.Fog(new THREE.Color( 0x0080ff ), 150, 200);
+
 
 	// loader
 	loader = new GLTFLoader();
@@ -222,6 +257,7 @@ function animate (timestamp) {
 
 	renderer.render(scene, camera);
 
+	console.log(1/dt)
 	requestAnimationFrame(animate);
 };
 
@@ -233,19 +269,15 @@ function main() {
 
 main();
 
-document.addEventListener('keydown', function (event) {
-	keyEnum[event.key.toLowerCase()] = true;
-	// event.preventDefault();
-});
-
-document.addEventListener('keyup', function (event) {
-	keyEnum[event.key.toLowerCase()] = false;
-});
-
-window.onblur = function (event) {
+window.onblur = event => {
 	for (var prop in keyEnum) {
 	    if (Object.prototype.hasOwnProperty.call(keyEnum, prop)) {
 	    	keyEnum[prop] = false
 	    }
 	}
 };
+
+document.body.onclick = function() {
+	document.body.requestPointerLock();
+	document.body.requestFullscreen();
+}
