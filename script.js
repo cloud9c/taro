@@ -115,11 +115,82 @@ class Player extends Object {
 
 			document.addEventListener('keydown', event => {
 				const key = event.key.toLowerCase();
-				keyEnum[key] = true;
+				const controls = this.controls;
+				let speed = this.speed;
+
+				let xVel = this.xVel;
+				let yVel = this.yVel;
+				let zVel = this.zVel;
+
+				if (key === controls[5]) {
+					speed = this.sprintSpeed;
+				}
+
+				if (key === controls[0]) {
+					zVel -= speed;
+				}
+
+				if (key === controls[1]) {
+					zVel += speed;
+				}
+
+				if (key === controls[2]) {
+					xVel -= speed;
+				}
+
+				if (key === controls[3]) {
+					xVel += speed;
+				}
+
+				const magnitude = Math.sqrt(xVel*xVel + zVel*zVel);
+				if (magnitude > speed) {
+					xVel = xVel / magnitude * speed;
+					zVel = zVel / magnitude * speed;
+				}
+
+				this.xVel = xVel;
+				this.yVel = yVel;
+				this.zVel = zVel;
 			});
 
 			document.addEventListener('keyup', event => {
-				keyEnum[event.key.toLowerCase()] = false;
+				const key = event.key.toLowerCase();
+				const controls = this.controls;
+				let speed = this.speed;
+
+				let xVel = this.xVel;
+				let yVel = this.yVel;
+				let zVel = this.zVel;
+
+				if (key === controls[5]) {
+					speed = this.sprintSpeed;
+				}
+
+				if (key === controls[0]) {
+					zVel += speed;
+				}
+
+				if (key === controls[1]) {
+					zVel -= speed;
+				}
+
+				if (key === controls[2]) {
+					xVel += speed;
+				}
+
+				if (key === controls[3]) {
+					xVel -= speed;
+				}
+
+				const magnitude = Math.sqrt(xVel*xVel + zVel*zVel);
+				if (magnitude > speed) {
+					xVel = xVel / magnitude * speed;
+					zVel = zVel / magnitude * speed;
+				}
+
+				this.xVel = xVel;
+				this.yVel = yVel;
+				this.zVel = zVel;
 			});
 			requestAnimationFrame(animate);
 		});
@@ -128,37 +199,10 @@ class Player extends Object {
 	move() {
 		const pos = this.mesh.position;
 		const controls = this.controls;
-		let xVel = 0;
-		let yVel = 0;
-		let zVel = 0;
 
-		let speed = this.speed * dt;
-
-		if (keyEnum[controls[5]]) {
-			speed = this.sprintSpeed * dt;
-		}
-
-		if (keyEnum[controls[0]]) {
-			zVel -= speed;
-		}
-
-		if (keyEnum[controls[1]]) {
-			zVel += speed;
-		}
-
-		if (keyEnum[controls[2]]) {
-			xVel -= speed;
-		}
-
-		if (keyEnum[controls[3]]) {
-			xVel += speed;
-		}
-
-		const magnitude = Math.sqrt(xVel*xVel + zVel*zVel);
-		if (magnitude > speed) {
-			xVel = xVel / magnitude * speed;
-			zVel = zVel / magnitude * speed;
-		}
+		const xVel = this.xVel * dt;
+		const yVel = this.yVel * dt;
+		const zVel = this.zVel * dt;
 
 		pos.x += Math.sin(player.mesh.rotation.y + Math.PI) * zVel - Math.cos(player.mesh.rotation.y) * xVel;
 		pos.z += Math.cos(player.mesh.rotation.y + Math.PI) * zVel + Math.sin(player.mesh.rotation.y) * xVel;
@@ -184,7 +228,6 @@ function init() {
 	scene = new THREE.Scene();
 	scene.background = new THREE.Color( 0x0080ff );
 	scene.fog = new THREE.Fog(new THREE.Color( 0x0080ff ), 150, 200);
-
 
 	// loader
 	loader = new GLTFLoader();
