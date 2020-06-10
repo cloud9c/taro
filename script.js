@@ -25,14 +25,14 @@ function loadTexture(url) {
 }
 
 function fadeToAction(name, duration ) {
+	if (this.actions[ name ] === this.activeAction) {
+		return
+	}
+
 	const previousAction = this.activeAction;
 	this.activeAction = this.actions[ name ];
 
-	console.log(previousAction["_clip"]["name"], this.activeAction["_clip"]["name"])
-
-	if ( previousAction !== this.activeAction ) {
-		previousAction.fadeOut( duration );
-	}
+	previousAction.fadeOut( duration );
 
 	this.activeAction
 		.reset()
@@ -48,12 +48,15 @@ class Player extends Object {
 		this.controls = controls;
 
 		this.speed = 10;
-		this.sprintFactor = 2;
+		this.walkingSpeed = 10;
+		this.sprintingSpeed = 20;
+		this.sprinting = false;
+
 		this.sensitivity = 0.003;
 
 		this.onGround = true;
-		this.gravity = 3;
-		this.jumpVel = 2;
+		this.jumpVel = 8;
+		this.gravity = this.jumpVel * 2;
 		// w s a d jump sprint
 
 		loadTexture('assets/models/player.glb').then( gltf => {
@@ -88,6 +91,9 @@ class Player extends Object {
 			for (let i = 0; i < animations.length; i ++) {
 				const clip = animations[i];
 				const action = mixer.clipAction( clip );
+				if (clip.name === "Jump") {
+					action.setLoop( THREE.LoopOnce )
+				}
 				actions[ clip.name ] = action;
 			}
 
@@ -124,7 +130,9 @@ class Player extends Object {
 				if (event.repeat) { return }
 				const key = event.key.toLowerCase();
 				const controls = this.controls;
-				const sprintFactor = this.sprintFactor;
+				const sprintingSpeed = this.sprintingSpeed;
+				const walkingSpeed = this.walkingSpeed;
+				const onGround = this.onGround;
 				let speed = this.speed;
 
 				let xVel = this.xVel;
@@ -133,30 +141,40 @@ class Player extends Object {
 
 				switch(key) {
 					case controls[5]:
-						speed *= sprintFactor;
+						speed = sprintingSpeed;
 						if (Math.abs(xVel) > 0 || Math.abs(zVel) > 0) {
-							xVel *= sprintFactor;
-							yVel *= sprintFactor;
-							zVel *= sprintFactor;
-							fadeToAction.call(this, "Running", 0.2);
+							this.sprinting = true;
+							speed = sprintingSpeed;
 						}
 						break;
 					case controls[0]:
-						fadeToAction.call(this, "Walking", 0.2);
-						zVel -= speed;
+						if (onGround) {
+							zVel -= speed;
+						}
 						break;
 					case controls[1]:
-						zVel += speed;
+						if (onGround) {
+							zVel += speed;
+						}
 						break;
 					case controls[2]:
-						xVel -= speed;
+						if (onGround) {
+							xVel -= speed;
+						}
 						break;
 					case controls[3]:
-						xVel += speed;
+						if (onGround) {
+							xVel += speed;
+						}
 						break;
 					case controls[4]:
-						if (this.onGround)
+						if (onGround) {
+							if (this.sprinting) {
+								speed = walkingSpeed;
+							}
 							yVel += this.jumpVel;
+							fadeToAction.call(this, "Jump", 0.2);
+						}
 						break;
 				}
 
@@ -175,7 +193,7 @@ class Player extends Object {
 			document.addEventListener('keyup', event => {
 				const key = event.key.toLowerCase();
 				const controls = this.controls;
-				const sprintFactor = this.sprintFactor;
+				const walkingSpeed = this.walkingSpeed;
 				let speed = this.speed;
 
 				let xVel = this.xVel;
@@ -184,16 +202,14 @@ class Player extends Object {
 
 				switch(key) {
 					case controls[5]:
-						speed /= sprintFactor;
+						speed = walkingSpeed;
 						if (Math.abs(xVel) > 0 || Math.abs(zVel) > 0) {
-							xVel /= sprintFactor;
-							zVel /= sprintFactor;
-							fadeToAction.call(this, "Walking", 0.2);
+							this.sprinting = false;
+							speed = walkingSpeed;
 						}
 						break;
 					case controls[0]:
 					case controls[1]:
-						fadeToAction.call(this, "Idle", 0.2);
 						zVel = Math.max(0, zVel - speed);
 						break;
 					case controls[2]:
@@ -220,23 +236,38 @@ class Player extends Object {
 	move() {
 		const pos = this.mesh.position;
 		const controls = this.controls;
+		const newYVel = (this.yVel - this.gravity * dt) * dt;
 
-		if (pos.y + this.yVel * dt > 0) {
+		if (pos.y + newYVel > 0) {
 			this.yVel -= this.gravity * dt;
 			if (this.onGround)
 				this.onGround = false;
 		} else {
+			this.onGround = true;
 			this.yVel = 0;
-			console.log(pos.y)
+			pos.y = 0;
+			if (this.sprinting) {
+				this.speed = this.sprintingSpeed;
+				fadeToAction.call(this, "Running", 0.2);
+			}
 		}
 
-		const xVel = this.xVel * dt;
-		const yVel = this.yVel * dt;
-		const zVel = this.zVel * dt;
+		const xVel = this.xVel;
+		const yVel = this.yVel;
+		const zVel = this.zVel;
 
-		pos.x += Math.sin(player.mesh.rotation.y + Math.PI) * zVel - Math.cos(player.mesh.rotation.y) * xVel;
-		pos.z += Math.cos(player.mesh.rotation.y + Math.PI) * zVel + Math.sin(player.mesh.rotation.y) * xVel;
-		pos.y += yVel;
+		console.log(Math.abs(zVel), this.speed)
+
+		if (this.speed === 20 || Math.abs(zVel) > this.speed)
+			fadeToAction.call(this, "Running", 0.2);
+		else if (Math.abs(xVel) > 0 || Math.abs(zVel) > 0)
+			fadeToAction.call(this, "Walking", 0.2);
+		else
+			fadeToAction.call(this, "Idle", 0.2);
+
+		pos.x += (Math.sin(player.mesh.rotation.y + Math.PI) * zVel - Math.cos(player.mesh.rotation.y) * xVel) * dt;
+		pos.z += (Math.cos(player.mesh.rotation.y + Math.PI) * zVel + Math.sin(player.mesh.rotation.y) * xVel) * dt;
+		pos.y += yVel * dt;
 		this.mesh.position.set(pos.x, pos.y, pos.z);
 	}
 
