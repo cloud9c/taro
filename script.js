@@ -47,9 +47,9 @@ class Player extends Object {
 		super();
 		this.controls = controls;
 
-		this.speed = 10;
-		this.walkingSpeed = 10;
-		this.sprintingSpeed = 20;
+		this.walkingSpeed = 3;
+		this.sprintingSpeed = this.walkingSpeed * 2;
+		this.speed = this.walkingSpeed;
 		this.sprinting = false;
 
 		this.sensitivity = 0.003;
@@ -237,6 +237,7 @@ class Player extends Object {
 		const pos = this.mesh.position;
 		const controls = this.controls;
 		const newYVel = (this.yVel - this.gravity * dt) * dt;
+		const speed = this.speed;
 
 		if (pos.y + newYVel > 0) {
 			this.yVel -= this.gravity * dt;
@@ -252,18 +253,20 @@ class Player extends Object {
 			}
 		}
 
-		const xVel = this.xVel;
-		const yVel = this.yVel;
-		const zVel = this.zVel;
+		const xVel = this.xVel * speed;
+		const yVel = this.yVel * speed;
+		const zVel = this.zVel * speed;
 
-		console.log(Math.abs(zVel), this.speed)
+		console.log(speed, this.walkingSpeed)
 
-		if (this.speed === 20 || Math.abs(zVel) > this.speed)
-			fadeToAction.call(this, "Running", 0.2);
-		else if (Math.abs(xVel) > 0 || Math.abs(zVel) > 0)
-			fadeToAction.call(this, "Walking", 0.2);
-		else
-			fadeToAction.call(this, "Idle", 0.2);
+		if (this.onGround) {
+			if (speed > this.walkingSpeed || speed > this.walkingSpeed)
+				fadeToAction.call(this, "Running", 0.2);
+			else if (Math.abs(xVel) > 0 || Math.abs(zVel) > 0)
+				fadeToAction.call(this, "Walking", 0.2);
+			else
+				fadeToAction.call(this, "Idle", 0.2);
+		}
 
 		pos.x += (Math.sin(player.mesh.rotation.y + Math.PI) * zVel - Math.cos(player.mesh.rotation.y) * xVel) * dt;
 		pos.z += (Math.cos(player.mesh.rotation.y + Math.PI) * zVel + Math.sin(player.mesh.rotation.y) * xVel) * dt;
