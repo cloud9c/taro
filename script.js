@@ -49,7 +49,7 @@ class Player extends Object {
 
 		this.speed = 10;
 		this.sprintSpeed = 20;
-		this.sensitivity = 0.01;
+		this.sensitivity = 0.003;
 		// w s a d jump sprint
 
 		loadTexture('assets/models/player.glb').then( gltf => {
@@ -100,20 +100,22 @@ class Player extends Object {
 
 			// takeover
 			document.addEventListener("mousemove", event => {
-				const dx = event.movementX;
-				const dy = event.movementY;
+				const dx = event.movementX * player.sensitivity;
+				const dy = event.movementY * player.sensitivity;
+				const newCameraAngle = cameraAngle + dy;
 				if (dx != 0) {
-					player.mesh.rotation.y -= dx * player.sensitivity;
+					player.mesh.rotation.y -= dx;
 				}
-				if (dy != 0) {
-					cameraAngle += dy * player.sensitivity;
+				if (dy != 0 && newCameraAngle < 1.1 && newCameraAngle > 0.1) {
+					cameraAngle = newCameraAngle;
 					camera.position.z = -Math.cos(cameraAngle) * cameraRadius;
 					camera.position.y = Math.sin(cameraAngle) * cameraRadius;
-					camera.rotation.x += dy * player.sensitivity;
+					camera.rotation.x += dy;
 				}
 			});
 
 			document.addEventListener('keydown', event => {
+				if (event.repeat) { return }
 				const key = event.key.toLowerCase();
 				const controls = this.controls;
 				let speed = this.speed;
@@ -122,24 +124,22 @@ class Player extends Object {
 				let yVel = this.yVel;
 				let zVel = this.zVel;
 
-				if (key === controls[5]) {
-					speed = this.sprintSpeed;
-				}
-
-				if (key === controls[0]) {
-					zVel -= speed;
-				}
-
-				if (key === controls[1]) {
-					zVel += speed;
-				}
-
-				if (key === controls[2]) {
-					xVel -= speed;
-				}
-
-				if (key === controls[3]) {
-					xVel += speed;
+				switch(key) {
+					case controls[5]:
+						speed = this.sprintSpeed;
+						break;
+					case controls[0]:
+						zVel -= speed;
+						break;
+					case controls[1]:
+						zVel += speed;
+						break;
+					case controls[2]:
+						xVel -= speed;
+						break;
+					case controls[3]:
+						xVel += speed;
+						break;
 				}
 
 				const magnitude = Math.sqrt(xVel*xVel + zVel*zVel);
@@ -162,24 +162,21 @@ class Player extends Object {
 				let yVel = this.yVel;
 				let zVel = this.zVel;
 
-				if (key === controls[5]) {
-					speed = this.sprintSpeed;
-				}
-
-				if (key === controls[0]) {
-					zVel += speed;
-				}
-
-				if (key === controls[1]) {
-					zVel -= speed;
-				}
-
-				if (key === controls[2]) {
-					xVel += speed;
-				}
-
-				if (key === controls[3]) {
-					xVel -= speed;
+				switch(key) {
+					case controls[5]:
+						speed = this.sprintSpeed;
+						break;
+					case controls[0]:
+						zVel = Math.max(0, zVel - speed);
+						break;
+					case controls[1]:
+						zVel = Math.max(0, zVel - speed);
+						break;
+					case controls[2]:
+						xVel = Math.max(0, xVel - speed);
+						break;
+					case controls[3]:
+						xVel = Math.max(0, xVel - speed);
 				}
 
 				const magnitude = Math.sqrt(xVel*xVel + zVel*zVel);
@@ -300,7 +297,7 @@ function animate (timestamp) {
 
 	renderer.render(scene, camera);
 
-	console.log(1/dt)
+	// console.log(1/dt)
 	requestAnimationFrame(animate);
 };
 
