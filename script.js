@@ -19,9 +19,9 @@ class Object {
 	}
 }
 function loadTexture(url) {
-	return new Promise(resolve => {
-		loader.load(url, resolve)
-	})
+	return new Promise((resolve, reject) => {
+		loader.load(url, data=> resolve(data), null, reject);
+	});
 }
 
 function fadeToAction(name, duration ) {
@@ -50,6 +50,10 @@ class Player extends Object {
 		this.speed = 10;
 		this.sprintFactor = 2;
 		this.sensitivity = 0.003;
+
+		this.onGround = true;
+		this.gravity = 3;
+		this.jumpVel = 2;
 		// w s a d jump sprint
 
 		loadTexture('assets/models/player.glb').then( gltf => {
@@ -150,6 +154,10 @@ class Player extends Object {
 					case controls[3]:
 						xVel += speed;
 						break;
+					case controls[4]:
+						if (this.onGround)
+							yVel += this.jumpVel;
+						break;
 				}
 
 				const magnitude = Math.sqrt(xVel*xVel + zVel*zVel);
@@ -213,12 +221,22 @@ class Player extends Object {
 		const pos = this.mesh.position;
 		const controls = this.controls;
 
+		if (pos.y + this.yVel * dt > 0) {
+			this.yVel -= this.gravity * dt;
+			if (this.onGround)
+				this.onGround = false;
+		} else {
+			this.yVel = 0;
+			console.log(pos.y)
+		}
+
 		const xVel = this.xVel * dt;
 		const yVel = this.yVel * dt;
 		const zVel = this.zVel * dt;
 
 		pos.x += Math.sin(player.mesh.rotation.y + Math.PI) * zVel - Math.cos(player.mesh.rotation.y) * xVel;
 		pos.z += Math.cos(player.mesh.rotation.y + Math.PI) * zVel + Math.sin(player.mesh.rotation.y) * xVel;
+		pos.y += yVel;
 		this.mesh.position.set(pos.x, pos.y, pos.z);
 	}
 
