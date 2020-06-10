@@ -24,17 +24,17 @@ function loadTexture(url) {
 	})
 }
 
-function fadeToAction( actions, activeAction, name, duration ) {
-	const previousAction = activeAction;
-	activeAction = actions[ name ];
+function fadeToAction(name, duration ) {
+	const previousAction = this.activeAction;
+	this.activeAction = this.actions[ name ];
 
-	if ( previousAction !== activeAction ) {
+	console.log(previousAction["_clip"]["name"], this.activeAction["_clip"]["name"])
 
+	if ( previousAction !== this.activeAction ) {
 		previousAction.fadeOut( duration );
-
 	}
 
-	activeAction
+	this.activeAction
 		.reset()
 		.setEffectiveTimeScale( 1 )
 		.setEffectiveWeight( 1 )
@@ -48,7 +48,7 @@ class Player extends Object {
 		this.controls = controls;
 
 		this.speed = 10;
-		this.sprintSpeed = 20;
+		this.sprintFactor = 2;
 		this.sensitivity = 0.003;
 		// w s a d jump sprint
 
@@ -118,6 +118,7 @@ class Player extends Object {
 				if (event.repeat) { return }
 				const key = event.key.toLowerCase();
 				const controls = this.controls;
+				const sprintFactor = this.sprintFactor;
 				let speed = this.speed;
 
 				let xVel = this.xVel;
@@ -126,9 +127,14 @@ class Player extends Object {
 
 				switch(key) {
 					case controls[5]:
-						speed = this.sprintSpeed;
+						speed *= sprintFactor;
+						xVel *= sprintFactor;
+						yVel *= sprintFactor;
+						zVel *= sprintFactor;
+						fadeToAction.call(this, "Running", 0.2);
 						break;
 					case controls[0]:
+						fadeToAction.call(this, "Walking", 0.2);
 						zVel -= speed;
 						break;
 					case controls[1]:
@@ -151,11 +157,13 @@ class Player extends Object {
 				this.xVel = xVel;
 				this.yVel = yVel;
 				this.zVel = zVel;
+				this.speed = speed;
 			});
 
 			document.addEventListener('keyup', event => {
 				const key = event.key.toLowerCase();
 				const controls = this.controls;
+				const sprintFactor = this.sprintFactor;
 				let speed = this.speed;
 
 				let xVel = this.xVel;
@@ -164,19 +172,22 @@ class Player extends Object {
 
 				switch(key) {
 					case controls[5]:
-						speed = this.sprintSpeed;
+						speed /= sprintFactor;
+						if (Math.abs(xVel) > 0 || Math.abs(zVel) > 0) {
+							xVel /= sprintFactor;
+							zVel /= sprintFactor;
+							fadeToAction.call(this, "Walking", 0.2);
+						}
 						break;
 					case controls[0]:
-						zVel = Math.max(0, zVel - speed);
-						break;
 					case controls[1]:
+						fadeToAction.call(this, "Idle", 0.2);
 						zVel = Math.max(0, zVel - speed);
 						break;
 					case controls[2]:
-						xVel = Math.max(0, xVel - speed);
-						break;
 					case controls[3]:
 						xVel = Math.max(0, xVel - speed);
+						break;
 				}
 
 				const magnitude = Math.sqrt(xVel*xVel + zVel*zVel);
@@ -188,6 +199,7 @@ class Player extends Object {
 				this.xVel = xVel;
 				this.yVel = yVel;
 				this.zVel = zVel;
+				this.speed = speed;
 			});
 			requestAnimationFrame(animate);
 		});
