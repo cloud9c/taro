@@ -100,10 +100,12 @@ class Player extends Object {
 
 			// takeover
 			document.addEventListener("mousemove", event => {
-				const dx = event.movementX * player.sensitivity;
+				let dx = event.movementX * player.sensitivity;
 				const dy = event.movementY * player.sensitivity;
 				const newCameraAngle = cameraAngle + dy;
 				if (dx != 0) {
+					if (dx > 0.1)
+						dx = 0.1;
 					player.mesh.rotation.y -= dx;
 				}
 				if (dy != 0 && newCameraAngle < 1.1 && newCameraAngle > 0.1) {
@@ -128,10 +130,12 @@ class Player extends Object {
 				switch(key) {
 					case controls[5]:
 						speed *= sprintFactor;
-						xVel *= sprintFactor;
-						yVel *= sprintFactor;
-						zVel *= sprintFactor;
-						fadeToAction.call(this, "Running", 0.2);
+						if (Math.abs(xVel) > 0 || Math.abs(zVel) > 0) {
+							xVel *= sprintFactor;
+							yVel *= sprintFactor;
+							zVel *= sprintFactor;
+							fadeToAction.call(this, "Running", 0.2);
+						}
 						break;
 					case controls[0]:
 						fadeToAction.call(this, "Walking", 0.2);
