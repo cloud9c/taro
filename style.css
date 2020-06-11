@@ -1,17 +1,32 @@
 html, body {
-  margin: 0;
+	margin: 0;
+	background: #ADD8E6;
+}
+
+#game {
+	display: none;
 }
 
 #c {
   width: 100%;
   height: 100%;
-  display: none;
+  display: block;
 }
 
-#modal {
-	position: absolute;
-	background: white;
+#launcher {
+	display: flex;
+	flex-direction: column;
+	margin:auto;
+}
+
+#title {
+	margin: auto;
+}
+
+.card {
 	padding: 16px;
+	background: white;
+	margin: auto;
 }
 
 #crosshair {

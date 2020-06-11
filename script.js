@@ -317,7 +317,7 @@ class OtherPlayer {
 
 function init() {
 	//canvas
-	document.getElementById("c").style.display = "block";
+	document.getElementById("game").style.display = "block";
 
 	//scene
 	scene = new THREE.Scene();
@@ -431,7 +431,7 @@ function serverConnect() {
 		}
 	});
 
-	document.getElementById("modal").remove();
+	document.getElementById("launcher").remove();
 	main();
 }
 
