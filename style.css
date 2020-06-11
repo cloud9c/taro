@@ -8,12 +8,18 @@ html, body {
   display: block;
 }
 
+#modal {
+	position: absolute;
+	background: white;
+	padding: 16px;
+}
+
 #crosshair {
+	width: 24px;
+	height: 24px;
 	margin: auto;
 	position: absolute;
 	top: 0; left: 0; bottom: 0; right: 0;
-	width: 24px;
-	height: 24px;
 }
 
 #crosshair:after {

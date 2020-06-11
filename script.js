@@ -11,13 +11,6 @@ let player;
 
 const keyEnum = {};
 
-class Object {
-	constructor() {
-		this.xVel = 0;
-		this.yVel = 0;
-		this.zVel = 0;
-	}
-}
 function loadTexture(url) {
 	return new Promise((resolve, reject) => {
 		loader.load(url, data=> resolve(data), null, reject);
@@ -42,13 +35,16 @@ function fadeToAction(name, duration ) {
 		.play();
 }
 
-class Player extends Object {
+class Player {
 	constructor(controls) {
-		super();
+		this.xVel = 0;
+		this.yVel = 0;
+		this.zVel = 0;
+
 		this.controls = controls;
 
-		this.walkingSpeed = 3;
-		this.sprintingSpeed = this.walkingSpeed * 2;
+		this.walkingSpeed = 10;
+		this.sprintFactor = 2;
 		this.speed = this.walkingSpeed;
 		this.sprinting = false;
 
@@ -56,7 +52,7 @@ class Player extends Object {
 
 		this.onGround = true;
 		this.jumpVel = 8;
-		this.gravity = this.jumpVel * 2;
+		this.gravity = this.jumpVel * 2.5;
 		// w s a d jump sprint
 
 		loadTexture('assets/models/player.glb').then( gltf => {
@@ -109,6 +105,16 @@ class Player extends Object {
 			this.mesh = mesh;
 
 			// takeover
+			document.body.onclick = function() {
+				document.body.requestPointerLock();
+				document.body.requestFullscreen();
+			}
+
+			window.onblur = event => {
+				player.xVel = 0;
+				player.zVel = 0;
+			};
+
 			document.addEventListener("mousemove", event => {
 				let dx = event.movementX * player.sensitivity;
 				const dy = event.movementY * player.sensitivity;
@@ -130,7 +136,7 @@ class Player extends Object {
 				if (event.repeat) { return }
 				const key = event.key.toLowerCase();
 				const controls = this.controls;
-				const sprintingSpeed = this.sprintingSpeed;
+				const sprintFactor = this.sprintFactor;
 				const walkingSpeed = this.walkingSpeed;
 				const onGround = this.onGround;
 				let speed = this.speed;
@@ -141,31 +147,19 @@ class Player extends Object {
 
 				switch(key) {
 					case controls[5]:
-						speed = sprintingSpeed;
-						if (Math.abs(xVel) > 0 || Math.abs(zVel) > 0) {
-							this.sprinting = true;
-							speed = sprintingSpeed;
-						}
+						this.sprinting = true;
 						break;
 					case controls[0]:
-						if (onGround) {
-							zVel -= speed;
-						}
+						zVel -= 1;
 						break;
 					case controls[1]:
-						if (onGround) {
-							zVel += speed;
-						}
+						zVel += 1;
 						break;
 					case controls[2]:
-						if (onGround) {
-							xVel -= speed;
-						}
+						xVel -= 1;
 						break;
 					case controls[3]:
-						if (onGround) {
-							xVel += speed;
-						}
+						xVel += 1;
 						break;
 					case controls[4]:
 						if (onGround) {
@@ -176,12 +170,6 @@ class Player extends Object {
 							fadeToAction.call(this, "Jump", 0.2);
 						}
 						break;
-				}
-
-				const magnitude = Math.sqrt(xVel*xVel + zVel*zVel);
-				if (magnitude > speed) {
-					xVel = xVel / magnitude * speed;
-					zVel = zVel / magnitude * speed;
 				}
 
 				this.xVel = xVel;
@@ -205,23 +193,16 @@ class Player extends Object {
 						speed = walkingSpeed;
 						if (Math.abs(xVel) > 0 || Math.abs(zVel) > 0) {
 							this.sprinting = false;
-							speed = walkingSpeed;
 						}
 						break;
 					case controls[0]:
 					case controls[1]:
-						zVel = Math.max(0, zVel - speed);
+						zVel = Math.max(0, zVel - 1);
 						break;
 					case controls[2]:
 					case controls[3]:
-						xVel = Math.max(0, xVel - speed);
+						xVel = Math.max(0, xVel - 1);
 						break;
-				}
-
-				const magnitude = Math.sqrt(xVel*xVel + zVel*zVel);
-				if (magnitude > speed) {
-					xVel = xVel / magnitude * speed;
-					zVel = zVel / magnitude * speed;
 				}
 
 				this.xVel = xVel;
@@ -229,6 +210,7 @@ class Player extends Object {
 				this.zVel = zVel;
 				this.speed = speed;
 			});
+
 			requestAnimationFrame(animate);
 		});
 	}
@@ -237,27 +219,32 @@ class Player extends Object {
 		const pos = this.mesh.position;
 		const controls = this.controls;
 		const newYVel = (this.yVel - this.gravity * dt) * dt;
-		const speed = this.speed;
+		let speed = this.speed;
 
 		if (pos.y + newYVel > 0) {
 			this.yVel -= this.gravity * dt;
 			if (this.onGround)
 				this.onGround = false;
-		} else {
+		} else if (this.yVel < 0) {
 			this.onGround = true;
 			this.yVel = 0;
 			pos.y = 0;
 			if (this.sprinting) {
-				this.speed = this.sprintingSpeed;
 				fadeToAction.call(this, "Running", 0.2);
 			}
+		} else if (this.sprinting) {
+			speed *= this.sprintFactor;
 		}
 
-		const xVel = this.xVel * speed;
-		const yVel = this.yVel * speed;
-		const zVel = this.zVel * speed;
+		let xVel = this.xVel;
+		let yVel = this.yVel;
+		let zVel = this.zVel;
 
-		console.log(speed, this.walkingSpeed)
+		const magnitude = Math.sqrt(xVel*xVel + zVel*zVel);
+		if (magnitude > 1) {
+			xVel = xVel / magnitude;
+			zVel = zVel / magnitude;
+		}
 
 		if (this.onGround) {
 			if (speed > this.walkingSpeed || speed > this.walkingSpeed)
@@ -268,8 +255,10 @@ class Player extends Object {
 				fadeToAction.call(this, "Idle", 0.2);
 		}
 
-		pos.x += (Math.sin(player.mesh.rotation.y + Math.PI) * zVel - Math.cos(player.mesh.rotation.y) * xVel) * dt;
-		pos.z += (Math.cos(player.mesh.rotation.y + Math.PI) * zVel + Math.sin(player.mesh.rotation.y) * xVel) * dt;
+		if (this.onGround) {
+			pos.x += (Math.sin(player.mesh.rotation.y + Math.PI) * zVel - Math.cos(player.mesh.rotation.y) * xVel) * dt * speed;
+			pos.z += (Math.cos(player.mesh.rotation.y + Math.PI) * zVel + Math.sin(player.mesh.rotation.y) * xVel) * dt * speed;
+		}
 		pos.y += yVel * dt;
 		this.mesh.position.set(pos.x, pos.y, pos.z);
 	}
@@ -278,6 +267,10 @@ class Player extends Object {
 		this.move();
 		this.mixer.update(dt);
 	}
+}
+
+class OtherPlayers {
+
 }
 
 function onWindowResize() {
@@ -372,20 +365,22 @@ function animate (timestamp) {
 function main() {
 	init();
 	create();
-	// requestAnimationFrame(animate);
 }
 
-main();
+document.getElementById("joinSubmit").addEventListener("click", () => {
+	var b = new Bugout();
 
-window.onblur = event => {
-	for (var prop in keyEnum) {
-	    if (Object.prototype.hasOwnProperty.call(keyEnum, prop)) {
-	    	keyEnum[prop] = false
-	    }
-	}
-};
+	localStorage["bugout-server-seed"] = b.seed;
 
-document.body.onclick = function() {
-	document.body.requestPointerLock();
-	document.body.requestFullscreen();
-}
+	document.getElementById("modal").remove();
+	main();
+});
+
+document.getElementById("hostSubmit").addEventListener("click", () => {
+	var b = new Bugout();
+
+	b = new Bugout({seed: localStorage["bugout-server-seed"]})
+
+	document.getElementById("modal").remove();
+	main();
+});
