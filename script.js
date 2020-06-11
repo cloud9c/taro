@@ -7,9 +7,11 @@ let cameraRadius, cameraAngle;
 
 let lastTimestamp = 0, dt;
 
-let player;
-
 const keyEnum = {};
+
+let objects = {};
+
+let b;
 
 function loadTexture(url) {
 	return new Promise((resolve, reject) => {
@@ -105,24 +107,31 @@ class Player {
 			this.mesh = mesh;
 
 			// takeover
-			document.body.onclick = function() {
+			document.body.onclick = () => {
 				document.body.requestPointerLock();
 				document.body.requestFullscreen();
 			}
 
 			window.onblur = event => {
-				player.xVel = 0;
-				player.zVel = 0;
+				for (const property in keyEnum) {
+					keyEnum[property] = false;
+				}
 			};
 
+			window.addEventListener( 'resize', () => {
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+				renderer.setSize( window.innerWidth, window.innerHeight );
+			});
+
 			document.addEventListener("mousemove", event => {
-				let dx = event.movementX * player.sensitivity;
-				const dy = event.movementY * player.sensitivity;
+				let dx = event.movementX * this.sensitivity;
+				const dy = event.movementY * this.sensitivity;
 				const newCameraAngle = cameraAngle + dy;
 				if (dx != 0) {
 					if (dx > 0.1)
 						dx = 0.1;
-					player.mesh.rotation.y -= dx;
+					this.mesh.rotation.y -= dx;
 				}
 				if (dy != 0 && newCameraAngle < 1.1 && newCameraAngle > 0.1) {
 					cameraAngle = newCameraAngle;
@@ -133,82 +142,11 @@ class Player {
 			});
 
 			document.addEventListener('keydown', event => {
-				if (event.repeat) { return }
-				const key = event.key.toLowerCase();
-				const controls = this.controls;
-				const sprintFactor = this.sprintFactor;
-				const walkingSpeed = this.walkingSpeed;
-				const onGround = this.onGround;
-				let speed = this.speed;
-
-				let xVel = this.xVel;
-				let yVel = this.yVel;
-				let zVel = this.zVel;
-
-				switch(key) {
-					case controls[5]:
-						this.sprinting = true;
-						break;
-					case controls[0]:
-						zVel -= 1;
-						break;
-					case controls[1]:
-						zVel += 1;
-						break;
-					case controls[2]:
-						xVel -= 1;
-						break;
-					case controls[3]:
-						xVel += 1;
-						break;
-					case controls[4]:
-						if (onGround) {
-							if (this.sprinting) {
-								speed = walkingSpeed;
-							}
-							yVel += this.jumpVel;
-							fadeToAction.call(this, "Jump", 0.2);
-						}
-						break;
-				}
-
-				this.xVel = xVel;
-				this.yVel = yVel;
-				this.zVel = zVel;
-				this.speed = speed;
+				keyEnum[event.key.toLowerCase()] = true;
 			});
 
 			document.addEventListener('keyup', event => {
-				const key = event.key.toLowerCase();
-				const controls = this.controls;
-				const walkingSpeed = this.walkingSpeed;
-				let speed = this.speed;
-
-				let xVel = this.xVel;
-				let yVel = this.yVel;
-				let zVel = this.zVel;
-
-				switch(key) {
-					case controls[5]:
-						speed = walkingSpeed;
-						if (Math.abs(xVel) > 0 || Math.abs(zVel) > 0) {
-							this.sprinting = false;
-						}
-						break;
-					case controls[0]:
-					case controls[1]:
-						zVel = Math.max(0, zVel - 1);
-						break;
-					case controls[2]:
-					case controls[3]:
-						xVel = Math.max(0, xVel - 1);
-						break;
-				}
-
-				this.xVel = xVel;
-				this.yVel = yVel;
-				this.zVel = zVel;
-				this.speed = speed;
+				keyEnum[event.key.toLowerCase()] = false;
 			});
 
 			requestAnimationFrame(animate);
@@ -221,24 +159,38 @@ class Player {
 		const newYVel = (this.yVel - this.gravity * dt) * dt;
 		let speed = this.speed;
 
+		let xVel = 0;
+		let yVel = this.yVel;
+		let zVel = 0;
+
 		if (pos.y + newYVel > 0) {
-			this.yVel -= this.gravity * dt;
-			if (this.onGround)
-				this.onGround = false;
-		} else if (this.yVel < 0) {
-			this.onGround = true;
-			this.yVel = 0;
+			yVel -= this.gravity * dt;
+		} else if (yVel < 0) {
+			yVel = 0;
 			pos.y = 0;
-			if (this.sprinting) {
-				fadeToAction.call(this, "Running", 0.2);
-			}
-		} else if (this.sprinting) {
-			speed *= this.sprintFactor;
 		}
 
-		let xVel = this.xVel;
-		let yVel = this.yVel;
-		let zVel = this.zVel;
+		if (keyEnum[controls[0]]) {
+			zVel -= 1;
+		}
+		if (keyEnum[controls[1]]) {
+			zVel += 1;
+		}
+		if (keyEnum[controls[2]]) {
+			xVel -= 1;
+		}
+		if (keyEnum[controls[3]]) {
+			xVel += 1;
+		}
+		if (pos.y === 0) {
+			if (keyEnum[controls[4]]) {
+				yVel += this.jumpVel;
+				fadeToAction.call(this, "Jump", 0.2);
+			}
+			if (keyEnum[controls[5]]) {
+				speed *= this.sprintFactor;
+			}
+		}
 
 		const magnitude = Math.sqrt(xVel*xVel + zVel*zVel);
 		if (magnitude > 1) {
@@ -246,7 +198,7 @@ class Player {
 			zVel = zVel / magnitude;
 		}
 
-		if (this.onGround) {
+		if (pos.y === 0) { // maybe too spammy? TODO
 			if (speed > this.walkingSpeed || speed > this.walkingSpeed)
 				fadeToAction.call(this, "Running", 0.2);
 			else if (Math.abs(xVel) > 0 || Math.abs(zVel) > 0)
@@ -255,31 +207,84 @@ class Player {
 				fadeToAction.call(this, "Idle", 0.2);
 		}
 
-		if (this.onGround) {
-			pos.x += (Math.sin(player.mesh.rotation.y + Math.PI) * zVel - Math.cos(player.mesh.rotation.y) * xVel) * dt * speed;
-			pos.z += (Math.cos(player.mesh.rotation.y + Math.PI) * zVel + Math.sin(player.mesh.rotation.y) * xVel) * dt * speed;
-		}
+		pos.x += (Math.sin(this.mesh.rotation.y + Math.PI) * zVel - Math.cos(this.mesh.rotation.y) * xVel) * dt * speed;
+		pos.z += (Math.cos(this.mesh.rotation.y + Math.PI) * zVel + Math.sin(this.mesh.rotation.y) * xVel) * dt * speed;
 		pos.y += yVel * dt;
+
+		this.yVel = yVel;
+
 		this.mesh.position.set(pos.x, pos.y, pos.z);
+	}
+
+	sendPacket() {
+		const pos = this.mesh.position;
+		b.send(JSON.stringify({
+			pos: {
+				x: pos.x,
+				y: pos.y,
+				z: pos.z
+			}
+		}));
 	}
 
 	update() {
 		this.move();
 		this.mixer.update(dt);
+		this.sendPacket();
 	}
 }
 
-class OtherPlayers {
+class OtherPlayer {
+	constructor(address) {
+		this.pos = {
+			x: 0,
+			y: 0,
+			z: 0
+		}
+		loadTexture('assets/models/player.glb').then( gltf => {
+			const mesh = gltf.scene;
+			const animations = gltf.animations;
+			let actions = [], activeAction;
 
+			mesh.traverse( node => {
+				if (node.isMesh) {
+					node.castShadow = true;
+					node.receiveShadow = true;
+				}
+			} );
+
+			// Animation
+			const mixer = new THREE.AnimationMixer( mesh );
+
+			for (let i = 0; i < animations.length; i ++) {
+				const clip = animations[i];
+				const action = mixer.clipAction( clip );
+				if (clip.name === "Jump") {
+					action.setLoop( THREE.LoopOnce )
+				}
+				actions[ clip.name ] = action;
+			}
+
+			activeAction = actions[ 'Idle' ];
+			activeAction.play();
+
+			scene.add(mesh);
+
+			// set to this
+			this.mixer = mixer;
+			this.actions = actions;
+			this.activeAction = activeAction;
+			this.mesh = mesh;
+
+			objects[address] = this;
+		});		
+	}
+
+	update() {
+		const pos = this.pos;
+		this.mesh.position.set(pos.x, pos.y, pos.z)
+	}
 }
-
-function onWindowResize() {
-   camera.aspect = window.innerWidth / window.innerHeight;
-   camera.updateProjectionMatrix();
-   renderer.setSize( window.innerWidth, window.innerHeight );
-}
-
-window.addEventListener( 'resize', onWindowResize, false );
 
 function init() {
 	//scene
@@ -346,7 +351,7 @@ function create() {
 	scene.add( mesh );
 
 	//player
-	player = new Player(["w", "s", "a", "d", " ", "shift"]);
+	objects["player"] = new Player(["w", "s", "a", "d", " ", "shift"]);
 }
 
 function animate (timestamp) {
@@ -354,7 +359,9 @@ function animate (timestamp) {
 	dt = timestamp - lastTimestamp;
 	lastTimestamp = timestamp;
 
-	player.update();
+	for (const property in objects) {
+		objects[property].update();
+	}
 
 	renderer.render(scene, camera);
 
@@ -367,20 +374,33 @@ function main() {
 	create();
 }
 
-document.getElementById("joinSubmit").addEventListener("click", () => {
-	var b = new Bugout();
+function serverConnect() {
+	if (event.toElement.id === "joinSubmit") {
+		b = new Bugout(document.getElementById("join").value);
+	}
+	else {
+		b = new Bugout();
+		console.log(b.address())
+	}
 
-	localStorage["bugout-server-seed"] = b.seed;
+	b.heartbeat(1);
+
+	b.on("seen", (address) => {
+		console.log(address)
+		new OtherPlayer(address);
+	});
+
+	b.on("message", (address, message) => {
+		message = JSON.parse(message);
+
+		if (objects.hasOwnProperty(address))
+			objects[address].pos = message.pos;
+	});
 
 	document.getElementById("modal").remove();
 	main();
-});
+}
 
-document.getElementById("hostSubmit").addEventListener("click", () => {
-	var b = new Bugout();
+document.getElementById("joinSubmit").addEventListener("click", serverConnect);
 
-	b = new Bugout({seed: localStorage["bugout-server-seed"]})
-
-	document.getElementById("modal").remove();
-	main();
-});
+document.getElementById("hostSubmit").addEventListener("click", serverConnect);
