@@ -409,12 +409,11 @@ function main() {
 }
 
 function serverConnect() {
-	const value = document.getElementById("join").value.toLowerCase();
 	if (event.toElement.id === "joinSubmit") {
-		b = new Bugout(value);
+		b = new Bugout(document.getElementById("join").value.toLowerCase());
 	}
 	else {
-		b = new Bugout(value);
+		b = new Bugout(document.getElementById("host").value.toLowerCase());
 	}
 
 	b.on("seen", (address) => {
