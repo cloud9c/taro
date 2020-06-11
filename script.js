@@ -19,7 +19,7 @@ function loadTexture(url) {
 	});
 }
 
-function fadeToAction(name, duration ) {
+function fadeToAction(name, duration) {
 	if (this.actions[ name ] === this.activeAction) {
 		return
 	}
@@ -223,7 +223,9 @@ class Player {
 				x: pos.x,
 				y: pos.y,
 				z: pos.z
-			}
+			},
+			rotationY: this.mesh.rotation.y,
+			animationName: this.activeAction["_clip"]["name"]
 		}));
 	}
 
@@ -241,6 +243,9 @@ class OtherPlayer {
 			y: 0,
 			z: 0
 		}
+
+		this.rotationY = 0;
+
 		loadTexture('assets/models/player.glb').then( gltf => {
 			const mesh = gltf.scene;
 			const animations = gltf.animations;
@@ -282,7 +287,10 @@ class OtherPlayer {
 
 	update() {
 		const pos = this.pos;
-		this.mesh.position.set(pos.x, pos.y, pos.z)
+		this.mesh.position.set(pos.x, pos.y, pos.z);
+		this.mesh.rotation.y = this.rotationY;
+		this.mixer.update(dt);
+		fadeToAction.call(this, this.activeAction["_clip"]["name"], 0.2);
 	}
 }
 
@@ -376,11 +384,10 @@ function main() {
 
 function serverConnect() {
 	if (event.toElement.id === "joinSubmit") {
-		b = new Bugout(document.getElementById("join").value);
+		b = new Bugout(document.getElementById("join").value.toLowerCase());
 	}
 	else {
-		b = new Bugout();
-		console.log(b.address())
+		b = new Bugout("erikjchouiscool");
 	}
 
 	b.heartbeat(1);
@@ -393,8 +400,10 @@ function serverConnect() {
 	b.on("message", (address, message) => {
 		message = JSON.parse(message);
 
-		if (objects.hasOwnProperty(address))
+		if (objects.hasOwnProperty(address)) {
 			objects[address].pos = message.pos;
+			objects[address].rotationY = message.rotationY;
+		}
 	});
 
 	document.getElementById("modal").remove();
