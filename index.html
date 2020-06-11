@@ -9,17 +9,21 @@
    </head>
    <body>
       <div id="launcher">
-         <h1 id="title">No WWBenders Allowed</h1>
+         <h1 id="title">Game</h1>
          <div class="card">
+            <form>
             <h2 class="label">JOIN SERVER</h2>
-            <input type="text" id="join" placeholder="Enter server code">
-            <button class="launcher-button" type="submit" id="joinSubmit">Continue</button>
+               <input type="text" class="text-input" id="join" placeholder="Enter server code" required>
+               <input type="submit" class="launcher-button" id="joinSubmit" value="Continue"></input>
+            </form>
 
             <h2 class="or"><span>OR</span></h2>
 
-            <h2 class="label">JOIN SERVER</h2>
-            <input type="text" id="host" placeholder="Create server code">
-            <button class="launcher-button" type="submit" id="hostSubmit">Continue</button>
+            <form>
+               <h2 class="label">HOST SERVER</h2>
+               <input type="text" class="text-input" id="host" placeholder="Create server code" required>
+               <input type="submit" class="launcher-button" id="hostSubmit" value="Continue"></input>
+            </form>
          </div>
       </div>
       <div id="game">

@@ -13,6 +13,10 @@ let objects = {};
 
 let b;
 
+const blacklist = ["WWBender", "Byderman", "BigNik", "Maurice", "Tomiboy"]
+
+document.getElementById("title").textContent = "Game (No " + blacklist[Math.floor(Math.random() * blacklist.length)] + " allowed)";
+
 function loadTexture(url) {
 	return new Promise((resolve, reject) => {
 		loader.load(url, data=> resolve(data), null, reject);
@@ -405,11 +409,12 @@ function main() {
 }
 
 function serverConnect() {
+	const value = document.getElementById("join").value.toLowerCase();
 	if (event.toElement.id === "joinSubmit") {
-		b = new Bugout(document.getElementById("join").value.toLowerCase());
+		b = new Bugout(value);
 	}
 	else {
-		b = new Bugout("erikjchouiscool");
+		b = new Bugout(value);
 	}
 
 	b.on("seen", (address) => {
@@ -435,6 +440,6 @@ function serverConnect() {
 	main();
 }
 
-document.getElementById("joinSubmit").addEventListener("click", serverConnect);
+document.getElementById("joinSubmit").addEventListener("submit", serverConnect);
 
-document.getElementById("hostSubmit").addEventListener("click", serverConnect);
+document.getElementById("hostSubmit").addEventListener("submit", serverConnect);

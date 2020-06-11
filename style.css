@@ -32,19 +32,17 @@ html, body {
 	border: 1px solid #C8C8C8;
 }
 
-.card > * {
-	margin-bottom: 8px;
-}
-
-.card > input {
+.text-input {
 	border: 1px solid #C8C8C8;
 	background: #F5F5F5;
 	border-radius: 4px;
 	padding: 8px;
+	margin-bottom: 8px;
 }
 
 .label {
 	font-size: 14px;
+	margin-top: 0;
 	color: #666;
 }
 
