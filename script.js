@@ -19,8 +19,8 @@ function loadTexture(url) {
 	});
 }
 
-function fadeToAction(name, duration) {
-	if (this.actions[ name ] === this.activeAction) {
+function fadeToAction(name, duration, timeScale = 1) {
+	if (this.actions[ name ] === this.activeAction && this.activeAction.timeScale === timeScale) {
 		return
 	}
 
@@ -31,7 +31,7 @@ function fadeToAction(name, duration) {
 
 	this.activeAction
 		.reset()
-		.setEffectiveTimeScale( 1 )
+		.setEffectiveTimeScale( timeScale )
 		.setEffectiveWeight( 1 )
 		.fadeIn( duration )
 		.play();
@@ -118,6 +118,12 @@ class Player {
 				}
 			};
 
+			window.onbeforeunload = () => {
+				b.send(JSON.stringify({
+					type: "leave"
+				}));
+			}
+
 			window.addEventListener( 'resize', () => {
 				camera.aspect = window.innerWidth / window.innerHeight;
 				camera.updateProjectionMatrix();
@@ -198,13 +204,21 @@ class Player {
 			zVel = zVel / magnitude;
 		}
 
+		let dir = 1
+		if (xVel > 0 || zVel > 0) {
+			dir = -1;
+		}
+
 		if (pos.y === 0) { // maybe too spammy? TODO
-			if (speed > this.walkingSpeed || speed > this.walkingSpeed)
-				fadeToAction.call(this, "Running", 0.2);
-			else if (Math.abs(xVel) > 0 || Math.abs(zVel) > 0)
-				fadeToAction.call(this, "Walking", 0.2);
-			else
+			if (speed > this.walkingSpeed || speed > this.walkingSpeed) {
+				fadeToAction.call(this, "Running", 0.2, dir);
+			}
+			else if (Math.abs(xVel) > 0 || Math.abs(zVel) > 0) {
+				fadeToAction.call(this, "Walking", 0.2, dir);
+			}
+			else {
 				fadeToAction.call(this, "Idle", 0.2);
+			}
 		}
 
 		pos.x += (Math.sin(this.mesh.rotation.y + Math.PI) * zVel - Math.cos(this.mesh.rotation.y) * xVel) * dt * speed;
@@ -219,6 +233,7 @@ class Player {
 	sendPacket() {
 		const pos = this.mesh.position;
 		b.send(JSON.stringify({
+			type: "update",
 			pos: {
 				x: pos.x,
 				y: pos.y,
@@ -232,7 +247,8 @@ class Player {
 	update() {
 		this.move();
 		this.mixer.update(dt);
-		this.sendPacket();
+		if (dt > 0.05)
+			this.sendPacket();
 	}
 }
 
@@ -245,6 +261,7 @@ class OtherPlayer {
 		}
 
 		this.rotationY = 0;
+		this.address = address;
 
 		loadTexture('assets/models/player.glb').then( gltf => {
 			const mesh = gltf.scene;
@@ -285,6 +302,10 @@ class OtherPlayer {
 		});		
 	}
 
+	delete() {
+		scene.remove(this.mesh);
+	}
+
 	update() {
 		const pos = this.pos;
 		this.mesh.position.set(pos.x, pos.y, pos.z);
@@ -295,6 +316,9 @@ class OtherPlayer {
 }
 
 function init() {
+	//canvas
+	document.getElementById("c").style.display = "block";
+
 	//scene
 	scene = new THREE.Scene();
 	scene.background = new THREE.Color( 0x0080ff );
@@ -372,8 +396,6 @@ function animate (timestamp) {
 	}
 
 	renderer.render(scene, camera);
-
-	// console.log(1/dt)
 	requestAnimationFrame(animate);
 };
 
@@ -390,19 +412,22 @@ function serverConnect() {
 		b = new Bugout("erikjchouiscool");
 	}
 
-	b.heartbeat(1);
-
 	b.on("seen", (address) => {
-		console.log(address)
 		new OtherPlayer(address);
 	});
 
 	b.on("message", (address, message) => {
 		message = JSON.parse(message);
-
 		if (objects.hasOwnProperty(address)) {
-			objects[address].pos = message.pos;
-			objects[address].rotationY = message.rotationY;
+			switch (message.type) {
+				case "update":
+					objects[address].pos = message.pos;
+					objects[address].rotationY = message.rotationY;
+					break;
+				case "leave":
+					objects[address].delete();
+					delete objects[address];		
+			}
 		}
 	});
 
