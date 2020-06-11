@@ -1,6 +1,7 @@
 html, body {
 	margin: 0;
 	background: #ADD8E6;
+	font-family: sans-serif;
 }
 
 #game {
@@ -20,13 +21,57 @@ html, body {
 }
 
 #title {
-	margin: auto;
+	margin: 32px auto;
 }
 
 .card {
-	padding: 16px;
+	padding: 24px 48px;
+	border-radius: 4px;
 	background: white;
-	margin: auto;
+	margin: auto auto 32px;
+	border: 1px solid #C8C8C8;
+}
+
+.card > * {
+	margin-bottom: 8px;
+}
+
+.card > input {
+	border: 1px solid #C8C8C8;
+	background: #F5F5F5;
+	border-radius: 4px;
+	padding: 8px;
+}
+
+.label {
+	font-size: 14px;
+	color: #666;
+}
+
+.or {
+   width: 100%; 
+   text-align: center; 
+   border-bottom: 1px solid gray; 
+   line-height: 0.1em;
+   margin: 24px 0 ; 
+}
+
+.or span {
+	font-size: 16px;
+	background: #fff;
+	color: gray;
+	padding: 0 16px; 
+}
+
+.launcher-button {
+	border-radius: 4px;
+	border-style: none;
+	background: #1BA8F1;
+	color: white;
+	font-size: 16px;
+	padding: 6px;
+	display: block;
+	width: 100%;
 }
 
 #crosshair {
