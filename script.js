@@ -11,7 +11,7 @@ const keyEnum = {};
 
 let objects = {};
 
-let b;
+let peer, conn, id;
 
 const blacklist = ["WWBender", "Byderman", "BigNik", "Maurice", "Tomiboy"]
 
@@ -123,9 +123,10 @@ class Player {
 			};
 
 			window.onbeforeunload = () => {
-				b.send(JSON.stringify({
+				conn.send({
+					id: id,
 					type: "leave"
-				}));
+				});
 			}
 
 			window.addEventListener( 'resize', () => {
@@ -236,7 +237,8 @@ class Player {
 
 	sendPacket() {
 		const pos = this.mesh.position;
-		b.send(JSON.stringify({
+		conn.send({
+			id: id,
 			type: "update",
 			pos: {
 				x: pos.x,
@@ -245,7 +247,7 @@ class Player {
 			},
 			rotationY: this.mesh.rotation.y,
 			animationName: this.activeAction["_clip"]["name"]
-		}));
+		});
 	}
 
 	update() {
@@ -411,32 +413,32 @@ function main() {
 function serverConnect(event) {
 	event.preventDefault();
 
+	id = document.getElementById("join").value;
+	peer = new Peer();
+
 	if (event.target.id === "joinSubmit") {
-		b = new Bugout(document.getElementById("join").value);
-		console.log(b.seed)
-	}
-	else {
-		b = new Bugout();
+		conn = peer.connect(id);
+	} else {
+		id = peer.id();
 	}
 
-	document.getElementById("log").textContent = "Server Code: " + b.address();
-
-	b.on("seen", (address) => {
-		new OtherPlayer(address);
-	});
-
-	b.on("message", (address, message) => {
-		message = JSON.parse(message);
-		if (objects.hasOwnProperty(address)) {
-			switch (message.type) {
+	document.getElementById("log").textContent = "Server Code: " + id;
+	
+	conn.on("data", (data) => {
+		data = JSON.parse(data);
+		const id = data.id;
+		if (objects.hasOwnProperty(id)) {
+			switch (data.type) {
 				case "update":
-					objects[address].pos = message.pos;
-					objects[address].rotationY = message.rotationY;
+					objects[id].pos = data.pos;
+					objects[id].rotationY = data.rotationY;
 					break;
 				case "leave":
-					objects[address].delete();
-					delete objects[address];		
+					objects[id].delete();
+					delete objects[id];	
 			}
+		} else {
+			new OtherPlayer(id);
 		}
 	});
 
