@@ -9,9 +9,15 @@ html, body {
 }
 
 #c {
-  width: 100%;
-  height: 100%;
-  display: block;
+	width: 100%;
+	height: 100%;
+	display: block;
+}
+
+#log {
+	position: fixed;
+	background: rgba(0, 0, 0, 0.1);
+	padding: 8px 16px;
 }
 
 #launcher {
@@ -76,7 +82,7 @@ html, body {
 	width: 24px;
 	height: 24px;
 	margin: auto;
-	position: absolute;
+	position: fixed;
 	top: 0; left: 0; bottom: 0; right: 0;
 }
 

@@ -111,7 +111,7 @@ class Player {
 			this.mesh = mesh;
 
 			// takeover
-			document.body.onclick = () => {
+			document.getElementById("c").onclick = () => {
 				document.body.requestPointerLock();
 				document.body.requestFullscreen();
 			}
@@ -408,13 +408,18 @@ function main() {
 	create();
 }
 
-function serverConnect() {
-	if (event.toElement.id === "joinSubmit") {
-		b = new Bugout(document.getElementById("join").value.toLowerCase());
+function serverConnect(event) {
+	event.preventDefault();
+
+	if (event.target.id === "joinSubmit") {
+		b = new Bugout(document.getElementById("join").value);
+		console.log(b.seed)
 	}
 	else {
-		b = new Bugout(document.getElementById("host").value.toLowerCase());
+		b = new Bugout();
 	}
+
+	document.getElementById("log").textContent = "Server Code: " + b.address();
 
 	b.on("seen", (address) => {
 		new OtherPlayer(address);

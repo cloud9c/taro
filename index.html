@@ -11,23 +11,23 @@
       <div id="launcher">
          <h1 id="title">Game</h1>
          <div class="card">
-            <form>
+            <form id="joinSubmit">
             <h2 class="label">JOIN SERVER</h2>
-               <input type="text" class="text-input" id="join" placeholder="Enter server code" required>
-               <input type="submit" class="launcher-button" id="joinSubmit" value="Continue"></input>
+               <input type="text" class="text-input" id="join" placeholder="Enter server code" autocomplete="off" required>
+               <input type="submit" class="launcher-button" value="Continue"></input>
             </form>
 
             <h2 class="or"><span>OR</span></h2>
 
-            <form>
+            <form id="hostSubmit" >
                <h2 class="label">HOST SERVER</h2>
-               <input type="text" class="text-input" id="host" placeholder="Create server code" required>
-               <input type="submit" class="launcher-button" id="hostSubmit" value="Continue"></input>
+               <input type="submit" class="launcher-button" value="Continue"></input>
             </form>
          </div>
       </div>
       <div id="game">
          <div id="crosshair"></div>
+         <div id="log"></div>
          <canvas id="c"></canvas>
       </div>
       <script src="https://chr15m.github.io/bugout/bugout.min.js"></script>
