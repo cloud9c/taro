@@ -11,7 +11,7 @@ const keyEnum = {};
 
 let objects = {};
 
-let peer, conn, id;
+let peer, connections = [], id;
 
 const blacklist = ["WWBender", "Byderman", "BigNik", "Maurice", "Tomiboy"]
 
@@ -113,7 +113,15 @@ class Player {
 			// takeover
 			document.getElementById("c").onclick = () => {
 				document.body.requestPointerLock();
-				document.body.requestFullscreen();
+				if (document.body.requestFullscreen) {
+					document.body.requestFullscreen();
+				} else if (document.body.mozRequestFullScreen) {
+					document.body.mozRequestFullScreen();
+				} else if (document.body.webkitRequestFullscreen) {
+					document.body.webkitRequestFullscreen();
+				} else if (document.body.msRequestFullscreen) {
+					document.body.msRequestFullscreen();
+				}
 			}
 
 			window.onblur = event => {
@@ -121,13 +129,6 @@ class Player {
 					keyEnum[property] = false;
 				}
 			};
-
-			window.onbeforeunload = () => {
-				conn.send({
-					id: id,
-					type: "leave"
-				});
-			}
 
 			window.addEventListener( 'resize', () => {
 				camera.aspect = window.innerWidth / window.innerHeight;
@@ -237,7 +238,7 @@ class Player {
 
 	sendPacket() {
 		const pos = this.mesh.position;
-		conn.send({
+		send({
 			id: id,
 			type: "update",
 			pos: {
@@ -323,6 +324,8 @@ class OtherPlayer {
 
 function init() {
 	//canvas
+	document.getElementById("log").textContent = "Server Code: " + id;
+	document.getElementById("launcher").remove();
 	document.getElementById("game").style.display = "block";
 
 	//scene
@@ -410,40 +413,62 @@ function main() {
 	create();
 }
 
+function send(data) {
+	for (const conn in connections) {
+		console.log(connections)
+		conn.send(data);
+	}
+}
+
+function addNewConnection(conn) {
+	let id = conn.peer;
+
+	console.log(conn.on)
+
+	conn.on("open", () => {
+		new OtherPlayer(id);
+		conn.on("data", (data) => {
+			data = JSON.parse(data);
+			if (objects.hasOwnProperty(id)) {
+				switch (data.type) {
+					case "update":
+						objects[id].pos = data.pos;
+						objects[id].rotationY = data.rotationY;
+						break;
+				}
+			}
+		});
+
+		conn.on("close", () => {
+			const id = conn.peer;
+			objects[id].delete();
+			delete objects[id];
+		})
+		connections[id] = conn;
+	});
+}
+
 function serverConnect(event) {
 	event.preventDefault();
+	document.getElementById("joinSubmit").removeEventListener("submit", serverConnect);
+	document.getElementById("hostSubmit").removeEventListener("submit", serverConnect);
 
 	id = document.getElementById("join").value;
 	peer = new Peer();
 
-	if (event.target.id === "joinSubmit") {
-		conn = peer.connect(id);
-	} else {
-		id = peer.id();
-	}
-
-	document.getElementById("log").textContent = "Server Code: " + id;
-	
-	conn.on("data", (data) => {
-		data = JSON.parse(data);
-		const id = data.id;
-		if (objects.hasOwnProperty(id)) {
-			switch (data.type) {
-				case "update":
-					objects[id].pos = data.pos;
-					objects[id].rotationY = data.rotationY;
-					break;
-				case "leave":
-					objects[id].delete();
-					delete objects[id];	
-			}
+	peer.on('open', () => {
+		if (event.target.id === "joinSubmit") {
+			addNewConnection(peer.connect(id));
 		} else {
-			new OtherPlayer(id);
+			id = peer.id;
 		}
-	});
 
-	document.getElementById("launcher").remove();
-	main();
+		peer.on('connection', (conn) => {
+			addNewConnection(conn);
+		});
+
+		main();
+	});
 }
 
 document.getElementById("joinSubmit").addEventListener("submit", serverConnect);

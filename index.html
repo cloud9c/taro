@@ -11,17 +11,17 @@
       <div id="launcher">
          <h1 id="title">Game</h1>
          <div class="card">
-            <form id="joinSubmit">
+            <form id="joinSubmit" onsubmit="return false">
             <h2 class="label">JOIN SERVER</h2>
                <input type="text" class="text-input" id="join" placeholder="Enter server code" autocomplete="off" required>
-               <input type="submit" class="launcher-button" value="Continue"></input>
+               <input type="submit" class="launcher-button" value="Continue">
             </form>
 
             <h2 class="or"><span>OR</span></h2>
 
-            <form id="hostSubmit" >
+            <form id="hostSubmit" onsubmit="return false">
                <h2 class="label">HOST SERVER</h2>
-               <input type="submit" class="launcher-button" value="Continue"></input>
+               <input type="submit" class="launcher-button" value="Continue">
             </form>
          </div>
       </div>
