@@ -11,7 +11,7 @@ const keyEnum = {};
 
 let objects = {};
 
-let peer, connections = [], id;
+let peer, connections = [], serverID, peerID;
 
 const blacklist = ["WWBender", "Byderman", "BigNik", "Maurice", "Tomiboy"]
 
@@ -239,7 +239,7 @@ class Player {
 	sendPacket() {
 		const pos = this.mesh.position;
 		send({
-			id: id,
+			id: peerID,
 			type: "update",
 			pos: {
 				x: pos.x,
@@ -324,7 +324,7 @@ class OtherPlayer {
 
 function init() {
 	//canvas
-	document.getElementById("log").textContent = "Server Code: " + id;
+	document.getElementById("log").textContent = "Server Code: " + serverID;
 	document.getElementById("launcher").remove();
 	document.getElementById("game").style.display = "block";
 
@@ -413,39 +413,39 @@ function main() {
 	create();
 }
 
-function send(data) {
-	for (const conn in connections) {
-		console.log(connections)
-		conn.send(data);
+function send(data) { // TODO
+	console.log("here")
+	for (const c in connections) {
+		connections[c].send(JSON.stringify(data));
 	}
 }
 
 function addNewConnection(conn) {
 	let id = conn.peer;
 
-	console.log(conn.on)
-
 	conn.on("open", () => {
 		new OtherPlayer(id);
-		conn.on("data", (data) => {
-			data = JSON.parse(data);
-			if (objects.hasOwnProperty(id)) {
-				switch (data.type) {
-					case "update":
-						objects[id].pos = data.pos;
-						objects[id].rotationY = data.rotationY;
-						break;
-				}
-			}
-		});
-
-		conn.on("close", () => {
-			const id = conn.peer;
-			objects[id].delete();
-			delete objects[id];
-		})
 		connections[id] = conn;
 	});
+
+	conn.on("data", (data) => {
+		console.log(data)
+		data = JSON.parse(data);
+		if (objects.hasOwnProperty(id)) {
+			switch (data.type) {
+				case "update":
+					objects[id].pos = data.pos;
+					objects[id].rotationY = data.rotationY;
+					break;
+			}
+		}
+	});
+
+	conn.on("close", () => {
+		const id = conn.peer;
+		objects[id].delete();
+		delete objects[id];
+	})
 }
 
 function serverConnect(event) {
@@ -453,22 +453,22 @@ function serverConnect(event) {
 	document.getElementById("joinSubmit").removeEventListener("submit", serverConnect);
 	document.getElementById("hostSubmit").removeEventListener("submit", serverConnect);
 
-	id = document.getElementById("join").value;
 	peer = new Peer();
 
-	peer.on('open', () => {
-		if (event.target.id === "joinSubmit") {
-			addNewConnection(peer.connect(id));
-		} else {
-			id = peer.id;
-		}
+	serverID = document.getElementById("join").value;
 
-		peer.on('connection', (conn) => {
-			addNewConnection(conn);
-		});
+	peer.on('open', (id) => {
+		peerID = id;
+		if (event.target.id === "joinSubmit") {
+			addNewConnection(peer.connect(serverID));
+		} else {
+			serverID = id;
+		}
 
 		main();
 	});
+
+	peer.on('connection', addNewConnection);
 }
 
 document.getElementById("joinSubmit").addEventListener("submit", serverConnect);
