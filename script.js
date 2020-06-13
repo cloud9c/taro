@@ -11,7 +11,7 @@ const keyEnum = {};
 
 let objects = {};
 
-let peer, connections = [], serverID, peerID;
+let peer, connections = [], serverID, peerID, hosting;
 
 const blacklist = ["WWBender", "Byderman", "BigNik", "Maurice", "Tomiboy"]
 
@@ -236,15 +236,9 @@ class Player {
 		this.mesh.position.set(pos.x, pos.y, pos.z);
 	}
 
-	send(data) { // TODO
-		for (const c of Object.values(connections)) {
-			c.send(JSON.stringify(data));
-		}
-	}
-
 	sendPacket() {
 		const pos = this.mesh.position;
-		this.send({
+		const data = {
 			id: peerID,
 			type: "update",
 			pos: {
@@ -254,7 +248,11 @@ class Player {
 			},
 			rotationY: this.mesh.rotation.y,
 			animationName: this.activeAction["_clip"]["name"]
-		});
+		}
+
+		for (const c of Object.values(connections)) {
+			c.send(JSON.stringify(data));
+		}
 	}
 
 	update() {
@@ -313,6 +311,10 @@ class OtherPlayer {
 			this.mesh = mesh;
 
 			objects[id] = this;
+
+			if (hosting) {
+				connections[id].send(JSON.stringify({type: "playerList", playerList: Object.keys(connections)}));
+			}
 		});		
 	}
 
@@ -430,13 +432,18 @@ function addNewConnection(conn) {
 
 	conn.on("data", (data) => {
 		data = JSON.parse(data);
-		if (objects.hasOwnProperty(id)) {
+		if (objects.hasOwnProperty(data.id)) {
 			switch (data.type) {
 				case "update":
 					objects[id].pos = data.pos;
 					objects[id].rotationY = data.rotationY;
 					objects[id].animationName = data.animationName;
 					break;
+			}
+		} else if (data.type === "playerList") {
+			const playerList = data.playerList;
+			for (let i = 0; i < playerList.length; i++) {
+				addNewConnection(peer.connect(playerList[i]));
 			}
 		}
 	});
@@ -454,15 +461,16 @@ function serverConnect(event) {
 	document.getElementById("hostSubmit").removeEventListener("submit", serverConnect);
 
 	peer = new Peer({pingInterval: 50});
+	hosting = event.target.id === "hostSubmit";
 
 	serverID = document.getElementById("join").value;
 
 	peer.on('open', (id) => {
 		peerID = id;
-		if (event.target.id === "joinSubmit") {
-			addNewConnection(peer.connect(serverID));
-		} else {
+		if (hosting) {
 			serverID = id;
+		} else {
+			addNewConnection(peer.connect(serverID));
 		}
 
 		main();
