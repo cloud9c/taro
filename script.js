@@ -236,9 +236,15 @@ class Player {
 		this.mesh.position.set(pos.x, pos.y, pos.z);
 	}
 
+	send(data) { // TODO
+		for (const c of Object.values(connections)) {
+			c.send(JSON.stringify(data));
+		}
+	}
+
 	sendPacket() {
 		const pos = this.mesh.position;
-		send({
+		this.send({
 			id: peerID,
 			type: "update",
 			pos: {
@@ -254,8 +260,7 @@ class Player {
 	update() {
 		this.move();
 		this.mixer.update(dt);
-		if (dt > 0.05)
-			this.sendPacket();
+		this.sendPacket();
 	}
 }
 
@@ -411,13 +416,6 @@ function animate (timestamp) {
 function main() {
 	init();
 	create();
-}
-
-function send(data) { // TODO
-	console.log("here")
-	for (const c in connections) {
-		connections[c].send(JSON.stringify(data));
-	}
 }
 
 function addNewConnection(conn) {
