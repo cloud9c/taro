@@ -265,7 +265,7 @@ class Player {
 }
 
 class OtherPlayer {
-	constructor(address) {
+	constructor(id) {
 		this.pos = {
 			x: 0,
 			y: 0,
@@ -273,12 +273,13 @@ class OtherPlayer {
 		}
 
 		this.rotationY = 0;
-		this.address = address;
+		this.id = id;
 
 		loadTexture('assets/models/player.glb').then( gltf => {
 			const mesh = gltf.scene;
 			const animations = gltf.animations;
 			let actions = [], activeAction;
+			const animationName = "Idle";
 
 			mesh.traverse( node => {
 				if (node.isMesh) {
@@ -299,7 +300,7 @@ class OtherPlayer {
 				actions[ clip.name ] = action;
 			}
 
-			activeAction = actions[ 'Idle' ];
+			activeAction = actions[ animationName ];
 			activeAction.play();
 
 			scene.add(mesh);
@@ -308,9 +309,10 @@ class OtherPlayer {
 			this.mixer = mixer;
 			this.actions = actions;
 			this.activeAction = activeAction;
+			this.animationName = animationName;
 			this.mesh = mesh;
 
-			objects[address] = this;
+			objects[id] = this;
 		});		
 	}
 
@@ -427,7 +429,6 @@ function addNewConnection(conn) {
 	});
 
 	conn.on("data", (data) => {
-		console.log(data)
 		data = JSON.parse(data);
 		if (objects.hasOwnProperty(id)) {
 			switch (data.type) {
@@ -452,7 +453,7 @@ function serverConnect(event) {
 	document.getElementById("joinSubmit").removeEventListener("submit", serverConnect);
 	document.getElementById("hostSubmit").removeEventListener("submit", serverConnect);
 
-	peer = new Peer();
+	peer = new Peer({pingInterval: 50});
 
 	serverID = document.getElementById("join").value;
 
