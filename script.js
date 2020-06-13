@@ -323,7 +323,7 @@ class OtherPlayer {
 		this.mesh.position.set(pos.x, pos.y, pos.z);
 		this.mesh.rotation.y = this.rotationY;
 		this.mixer.update(dt);
-		fadeToAction.call(this, this.activeAction["_clip"]["name"], 0.2);
+		fadeToAction.call(this, this.animationName, 0.2);
 	}
 }
 
@@ -400,7 +400,7 @@ function create() {
 	objects["player"] = new Player(["w", "s", "a", "d", " ", "shift"]);
 }
 
-function animate (timestamp) {
+function animate(timestamp) {
 	timestamp /= 1000;
 	dt = timestamp - lastTimestamp;
 	lastTimestamp = timestamp;
@@ -434,6 +434,7 @@ function addNewConnection(conn) {
 				case "update":
 					objects[id].pos = data.pos;
 					objects[id].rotationY = data.rotationY;
+					objects[id].animationName = data.animationName;
 					break;
 			}
 		}
