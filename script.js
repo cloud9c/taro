@@ -1,7 +1,7 @@
-import * as THREE from 'https://threejs.org/build/three.module.js';
-import { GLTFLoader } from 'https://threejs.org/examples/jsm/loaders/GLTFLoader.js';
+import * as THREE from '/build/three.module.js';
+import { GLTFLoader } from '/build/GLTFLoader.js';
 
-let scene, renderer, camera, loader;
+let scene, renderer, camera;
 
 let cameraRadius, cameraAngle;
 
@@ -11,35 +11,11 @@ const keyEnum = {};
 
 let objects = {};
 
+let assets = {};
+
 let peer, connections = [], serverID, peerID, hosting;
 
-const blacklist = ["WWBender", "Byderman", "BigNik", "Maurice", "Tomiboy"]
-
 let nickname = "Player 1"
-
-function loadTexture(url) {
-	return new Promise((resolve, reject) => {
-		loader.load(url, data=> resolve(data), null, reject);
-	});
-}
-
-function fadeToAction(name, duration, timeScale = 1) {
-	if (this.actions[ name ] === this.activeAction && this.activeAction.timeScale === timeScale) {
-		return
-	}
-
-	const previousAction = this.activeAction;
-	this.activeAction = this.actions[ name ];
-
-	previousAction.fadeOut( duration );
-
-	this.activeAction
-		.reset()
-		.setEffectiveTimeScale( timeScale )
-		.setEffectiveWeight( 1 )
-		.fadeIn( duration )
-		.play();
-}
 
 class Player {
 	constructor(controls) {
@@ -61,108 +37,107 @@ class Player {
 		this.gravity = this.jumpVel * 2.5;
 		// w s a d jump sprint
 
-		loadTexture('assets/models/player.glb').then( gltf => {
-			const mesh = gltf.scene;
-			const animations = gltf.animations;
-			let actions = [], activeAction;
+		const gltf = {...assets["player.glb"]};
+		const mesh = gltf.scene;
+		const animations = gltf.animations;
+		let actions = [], activeAction;
 
-			mesh.traverse( node => {
-				if (node.isMesh) {
-					node.castShadow = true;
-					node.receiveShadow = true;
-				}
-			} );
-
-			mesh.rotation.y = 180 * Math.PI/180
-
-			// gltf.scene.rotation.x = 90 * Math.PI/180;
-
-			// camera setting
-			camera.position.set( -2, 10, -15);
-			camera.rotation.set(-160 * Math.PI/180, 0, 180 * Math.PI/180);
-			cameraRadius = Math.sqrt(camera.position.z*camera.position.z + camera.position.y*camera.position.y);
-			cameraAngle = Math.acos(-camera.position.z/cameraRadius);
-			mesh.add( camera );
-
-			const gridHelper = new THREE.GridHelper( 1000, 1000, 0x0000ff, 0x808080  );
-			scene.add( gridHelper );
-
-			// Animation
-			const mixer = new THREE.AnimationMixer( mesh );
-
-			for (let i = 0; i < animations.length; i ++) {
-				const clip = animations[i];
-				const action = mixer.clipAction( clip );
-				if (clip.name === "Jump") {
-					action.setLoop( THREE.LoopOnce )
-				}
-				actions[ clip.name ] = action;
+		mesh.traverse( node => {
+			if (node.isMesh) {
+				node.castShadow = true;
+				node.receiveShadow = true;
 			}
+		} );
 
-			activeAction = actions[ 'Idle' ];
-			activeAction.play();
+		mesh.rotation.y = 180 * Math.PI/180
 
-			scene.add(mesh);
+		// gltf.scene.rotation.x = 90 * Math.PI/180;
 
-			// set to this
-			this.mixer = mixer;
-			this.actions = actions;
-			this.activeAction = activeAction;
-			this.mesh = mesh;
+		// camera setting
+		camera.position.set( -2, 10, -15);
+		camera.rotation.set(-160 * Math.PI/180, 0, 180 * Math.PI/180);
+		cameraRadius = Math.sqrt(camera.position.z*camera.position.z + camera.position.y*camera.position.y);
+		cameraAngle = Math.acos(-camera.position.z/cameraRadius);
+		mesh.add( camera );
 
-			// takeover
-			document.getElementById("c").onclick = () => {
-				document.body.requestPointerLock();
-				if (document.body.requestFullscreen) {
-					document.body.requestFullscreen();
-				} else if (document.body.mozRequestFullScreen) {
-					document.body.mozRequestFullScreen();
-				} else if (document.body.webkitRequestFullscreen) {
-					document.body.webkitRequestFullscreen();
-				} else if (document.body.msRequestFullscreen) {
-					document.body.msRequestFullscreen();
-				}
+		const gridHelper = new THREE.GridHelper( 1000, 1000, 0x0000ff, 0x808080  );
+		scene.add( gridHelper );
+
+		// Animation
+		const mixer = new THREE.AnimationMixer( mesh );
+
+		for (let i = 0; i < animations.length; i ++) {
+			const clip = animations[i];
+			const action = mixer.clipAction( clip );
+			if (clip.name === "Jump") {
+				action.setLoop( THREE.LoopOnce )
 			}
+			actions[ clip.name ] = action;
+		}
 
-			window.onblur = event => {
-				for (const property in keyEnum) {
-					keyEnum[property] = false;
-				}
-			};
+		activeAction = actions[ 'Idle' ];
+		activeAction.play();
 
-			window.addEventListener( 'resize', () => {
-				camera.aspect = window.innerWidth / window.innerHeight;
-				camera.updateProjectionMatrix();
-				renderer.setSize( window.innerWidth, window.innerHeight );
-			});
+		scene.add(mesh);
 
-			document.addEventListener("mousemove", event => {
-				let dx = event.movementX * this.sensitivity;
-				const dy = event.movementY * this.sensitivity;
-				const newCameraAngle = cameraAngle + dy;
-				if (dx != 0) {
-					if (dx > 0.1)
-						dx = 0.1;
-					this.mesh.rotation.y -= dx;
-				}
-				if (dy != 0 && newCameraAngle < 1.1 && newCameraAngle > 0.1) {
-					cameraAngle = newCameraAngle;
-					camera.position.z = -Math.cos(cameraAngle) * cameraRadius;
-					camera.position.y = Math.sin(cameraAngle) * cameraRadius;
-					camera.rotation.x += dy;
-				}
-			});
+		// set to this
+		this.mixer = mixer;
+		this.actions = actions;
+		this.activeAction = activeAction;
+		this.mesh = mesh;
 
-			document.addEventListener('keydown', event => {
-				keyEnum[event.key.toLowerCase()] = true;
-			});
+		// event listeners
+		document.getElementById("c").onclick = () => {
+			document.body.requestPointerLock();
+			if (document.body.requestFullscreen) {
+				document.body.requestFullscreen();
+			} else if (document.body.mozRequestFullScreen) {
+				document.body.mozRequestFullScreen();
+			} else if (document.body.webkitRequestFullscreen) {
+				document.body.webkitRequestFullscreen();
+			} else if (document.body.msRequestFullscreen) {
+				document.body.msRequestFullscreen();
+			}
+		}
 
-			document.addEventListener('keyup', event => {
-				keyEnum[event.key.toLowerCase()] = false;
-			});
+		window.onblur = event => {
+			for (const property in keyEnum) {
+				keyEnum[property] = false;
+			}
+		};
 
-			requestAnimationFrame(animate);
+		window.addEventListener( 'resize', () => {
+			camera.aspect = window.innerWidth / window.innerHeight;
+			camera.updateProjectionMatrix();
+			renderer.setSize( window.innerWidth, window.innerHeight );
 		});
+
+		document.addEventListener("mousemove", event => {
+			let dx = event.movementX * this.sensitivity;
+			const dy = event.movementY * this.sensitivity;
+			const newCameraAngle = cameraAngle + dy;
+			if (dx != 0) {
+				if (dx > 0.1)
+					dx = 0.1;
+				this.mesh.rotation.y -= dx;
+			}
+			if (dy != 0 && newCameraAngle < 1.1 && newCameraAngle > 0.1) {
+				cameraAngle = newCameraAngle;
+				camera.position.z = -Math.cos(cameraAngle) * cameraRadius;
+				camera.position.y = Math.sin(cameraAngle) * cameraRadius;
+				camera.rotation.x += dy;
+			}
+		});
+
+		document.addEventListener('keydown', event => {
+			keyEnum[event.key.toLowerCase()] = true;
+		});
+
+		document.addEventListener('keyup', event => {
+			keyEnum[event.key.toLowerCase()] = false;
+		});
+
+		requestAnimationFrame(animate);
 	}
 
 	move() {
@@ -263,7 +238,7 @@ class Player {
 }
 
 class OtherPlayer {
-	constructor(id) {
+	constructor(id, metadata) {
 		this.pos = {
 			x: 0,
 			y: 0,
@@ -272,50 +247,62 @@ class OtherPlayer {
 
 		this.rotationY = 0;
 		this.id = id;
+		this.data = metadata;
 
-		loadTexture('assets/models/player.glb').then( gltf => {
-			const mesh = gltf.scene;
-			const animations = gltf.animations;
-			let actions = [], activeAction;
-			const animationName = "Idle";
+		if (hosting) {
+			connections[id][0].send(JSON.stringify({type: "playerList", playerList: Object.keys(connections)}));
+		}
 
-			mesh.traverse( node => {
-				if (node.isMesh) {
-					node.castShadow = true;
-					node.receiveShadow = true;
-				}
-			} );
+		// Add player's name
+		console.log(assets, assets["helvetiker.json"])
+		let textGeometry = new THREE.TextGeometry(this.data["nickname"], {
+			font: assets["helvetiker.json"],
+			size: 0.4,
+			height: 0.1
+		});
+		nickname = new THREE.Mesh( textGeometry, new THREE.MeshBasicMaterial( { color: 0x000000 } ));
+		nickname.position.y = 5;
+		this.nickname = nickname;
 
-			// Animation
-			const mixer = new THREE.AnimationMixer( mesh );
+		// gltf models
+		const gltf = {...assets["player.glb"]};
+		const mesh = gltf.scene;
+		const animations = gltf.animations;
+		let actions = [], activeAction;
+		const animationName = "Idle";
 
-			for (let i = 0; i < animations.length; i ++) {
-				const clip = animations[i];
-				const action = mixer.clipAction( clip );
-				if (clip.name === "Jump") {
-					action.setLoop( THREE.LoopOnce )
-				}
-				actions[ clip.name ] = action;
+		mesh.traverse( node => {
+			if (node.isMesh) {
+				node.castShadow = true;
+				node.receiveShadow = true;
 			}
+		} );
 
-			activeAction = actions[ animationName ];
-			activeAction.play();
+		// Animation
+		const mixer = new THREE.AnimationMixer( mesh );
 
-			scene.add(mesh);
-
-			// set to this
-			this.mixer = mixer;
-			this.actions = actions;
-			this.activeAction = activeAction;
-			this.animationName = animationName;
-			this.mesh = mesh;
-
-			objects[id] = this;
-
-			if (hosting) {
-				connections[id][0].send(JSON.stringify({type: "playerList", playerList: Object.keys(connections)}));
+		for (let i = 0; i < animations.length; i ++) {
+			const clip = animations[i];
+			const action = mixer.clipAction( clip );
+			if (clip.name === "Jump") {
+				action.setLoop( THREE.LoopOnce )
 			}
-		});		
+			actions[ clip.name ] = action;
+		}
+
+		activeAction = actions[ animationName ];
+		activeAction.play();
+
+		scene.add(mesh);
+
+		// set to this
+		this.mixer = mixer;
+		this.actions = actions;
+		this.activeAction = activeAction;
+		this.animationName = animationName;
+		this.mesh = mesh;
+		this.mesh.add( this.nickname );
+		objects[id] = this;
 	}
 
 	delete() {
@@ -327,11 +314,14 @@ class OtherPlayer {
 		this.mesh.position.set(pos.x, pos.y, pos.z);
 		this.mesh.rotation.y = this.rotationY;
 		this.mixer.update(dt);
+		this.nickname.lookAt( camera.position );
 		fadeToAction.call(this, this.animationName, 0.2);
 	}
 }
 
 function init() {
+	let geo, mat, mesh;
+
 	//canvas
 	document.getElementById("log").textContent = "Server Code: " + serverID;
 	document.getElementById("launcher").remove();
@@ -342,9 +332,6 @@ function init() {
 	scene.background = new THREE.Color( 0x0080ff );
 	scene.fog = new THREE.Fog(new THREE.Color( 0x0080ff ), 150, 200);
 
-	// loader
-	loader = new GLTFLoader();
-
 	// camera
 	camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 1000 );
 
@@ -352,10 +339,6 @@ function init() {
 	renderer = new THREE.WebGLRenderer({ canvas: document.getElementById("c") });
 	renderer.setSize( window.innerWidth, window.innerHeight );
 	renderer.shadowMap.enabled = true;
-}
-
-function create() {
-	let geo, mat, mesh;
 
 	// lighting
 	const hemiLight = new THREE.HemisphereLight( 0xffffff, 0xffffff, 0.6 );
@@ -404,6 +387,50 @@ function create() {
 	objects["player"] = new Player(["w", "s", "a", "d", " ", "shift"]);
 }
 
+function loadAssets() {
+	const manager = new THREE.LoadingManager();
+	const modelLoader = new GLTFLoader(manager);
+	const textLoader = new THREE.FontLoader(manager);
+	const models = ["player.glb"];
+
+	for (let i = 0; i < models.length; i++) {
+		modelLoader.load("assets/models/" + models[i], gltf => {
+			assets[models[i]] = gltf;
+		});
+	}
+
+	textLoader.load("assets/fonts/helvetiker.json", font => {
+		assets["helvetiker.json"] = font;
+		console.log(assets["helvetiker.json"])
+	});
+
+	manager.onProgress = (url, itemsLoaded, itemsTotal) => {
+		console.log(url, itemsLoaded, itemsTotal)
+	}
+
+	manager.onLoad = () => {
+		init();
+	}
+}
+
+function fadeToAction(name, duration, timeScale = 1) {
+	if (this.actions[ name ] === this.activeAction && this.activeAction.timeScale === timeScale) {
+		return
+	}
+
+	const previousAction = this.activeAction;
+	this.activeAction = this.actions[ name ];
+
+	previousAction.fadeOut( duration );
+
+	this.activeAction
+		.reset()
+		.setEffectiveTimeScale( timeScale )
+		.setEffectiveWeight( 1 )
+		.fadeIn( duration )
+		.play();
+}
+
 function animate(timestamp) {
 	timestamp /= 1000;
 	dt = timestamp - lastTimestamp;
@@ -417,22 +444,20 @@ function animate(timestamp) {
 	requestAnimationFrame(animate);
 };
 
-function main() {
-	init();
-	create();
-}
-
 function addNewConnection(conn) {
 	const id = conn.peer;
 
-	if (objects.prototype.hasOwnProperty(id))
+	console.log(conn.peer)
+
+	if (id === peerID)
 		return;
 
-	console.log(conn.metadata)
+	console.log(conn.peer)
 
 	conn.on("open", () => {
-		new OtherPlayer(id);
+		console.log("here")
 		connections[id] = [conn];
+		new OtherPlayer(id, conn.metadata);
 	});
 
 	conn.on("data", (data) => {
@@ -465,28 +490,28 @@ function serverConnect(event) {
 	document.getElementById("joinSubmit").removeEventListener("submit", serverConnect);
 	document.getElementById("hostSubmit").removeEventListener("submit", serverConnect);
 
-	console.log("here")
-
 	peer = new Peer({pingInterval: 50});
 	hosting = event.target.id === "hostSubmit";
 
 	serverID = document.getElementById("join").value;
-	// nickname = document.getElementById("nickname").value;
+	nickname = document.getElementById("nickname").value;
 
 	peer.on('open', (id) => {
 		peerID = id;
 		if (hosting) {
 			serverID = id;
 		} else {
-			addNewConnection(peer.connect(serverID, {metadata: "hello"}));
+			addNewConnection(peer.connect(serverID, {metadata: {nickname: nickname}}));
 		}
-
-		main();
+		loadAssets();
 	});
 
 	peer.on('connection', addNewConnection);
 }
 
 document.getElementById("joinSubmit").addEventListener("submit", serverConnect);
-
 document.getElementById("hostSubmit").addEventListener("submit", serverConnect);
+document.getElementById("nextButton").addEventListener("click", () => {
+	document.getElementById("splashPage").style.display = "none";
+	document.getElementById("hostSubmit").style.display = "block";
+})

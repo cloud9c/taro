@@ -11,18 +11,24 @@
       <div id="launcher">
          <h1 id="title">Erik's Cool Awesome Very-Good Game</h1>
          <div class="card">
-            <form id="joinSubmit" onsubmit="return false">
-               <h2 class="label">JOIN SERVER</h2>
-               <input type="text" class="text-input" placeholder="Player name" autocomplete="off" required>
-               <input type="text" class="text-input" id="join" placeholder="Server code" autocomplete="off" required>
-               <input type="submit" class="launcher-button" value="Join">
-            </form>
+            <div id="splashPage">
+               <form id="joinSubmit" onsubmit="return false">
+                  <h2 class="label">JOIN SERVER</h2>
+                  <input type="text" class="text-input" id="nickname" placeholder="Player name" autocomplete="off" required>
+                  <input type="text" class="text-input" id="join" placeholder="Server code" autocomplete="off" required>
+                  <input type="submit" class="launcher-button" value="Join">
+               </form>
 
-            <hr>
+               <hr>
 
-            <form id="hostSubmit" onsubmit="return false">
                <h2 class="label">HOST SERVER</h2>
-               <input type="submit" class="launcher-button" value="Host">
+               <button type="submit" id="nextButton" class="launcher-button">Host</button>
+            </div>
+
+            <form id="hostSubmit" onsubmit="return false" style="display: none">
+               <h2 class="label">HOST SETTINGS</h2>
+               <input type="text" class="text-input" id="nickname" placeholder="Player name" autocomplete="off" required>
+               <input type="submit" class="launcher-button" value="Start Game!">               
             </form>
          </div>
       </div>
