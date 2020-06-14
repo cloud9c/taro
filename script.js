@@ -7,15 +7,59 @@ let cameraRadius, cameraAngle;
 
 let lastTimestamp = 0, dt;
 
-const keyEnum = {};
+const keyEnum = {}, objects = {};
 
-let objects = {};
+const assets = {
+	copy(asset) {
+		const gltf = this[asset]
+		const clone = {
+			animations: gltf.animations,
+			scene: gltf.scene.clone()
+		};
 
-let assets = {};
+		const skinnedMeshes = {};
+
+		gltf.scene.traverse(node => {
+			if (node.isSkinnedMesh) {
+				skinnedMeshes[node.name] = node;
+			}
+		});
+
+		const cloneBones = {};
+		const cloneSkinnedMeshes = {};
+
+		clone.scene.traverse(node => {
+			if (node.isBone) {
+				cloneBones[node.name] = node;
+			}
+
+			if (node.isSkinnedMesh) {
+				cloneSkinnedMeshes[node.name] = node;
+			}
+		});
+
+		for (let name in skinnedMeshes) {
+			const skinnedMesh = skinnedMeshes[name];
+			const skeleton = skinnedMesh.skeleton;
+			const cloneSkinnedMesh = cloneSkinnedMeshes[name];
+
+			const orderedCloneBones = [];
+
+			for (let i = 0; i < skeleton.bones.length; ++i) {
+				const cloneBone = cloneBones[skeleton.bones[i].name];
+				orderedCloneBones.push(cloneBone);
+			}
+
+			cloneSkinnedMesh.bind(
+				new THREE.Skeleton(orderedCloneBones, skeleton.boneInverses),
+				cloneSkinnedMesh.matrixWorld);
+		}
+
+		return clone;
+	}
+};
 
 let peer, connections = [], serverID, peerID, hosting;
-
-let nickname = "Player 1"
 
 class Player {
 	constructor(controls) {
@@ -37,7 +81,7 @@ class Player {
 		this.gravity = this.jumpVel * 2.5;
 		// w s a d jump sprint
 
-		const gltf = {...assets["player.glb"]};
+		const gltf = assets.copy("player.glb");
 		const mesh = gltf.scene;
 		const animations = gltf.animations;
 		let actions = [], activeAction;
@@ -50,8 +94,6 @@ class Player {
 		} );
 
 		mesh.rotation.y = 180 * Math.PI/180
-
-		// gltf.scene.rotation.x = 90 * Math.PI/180;
 
 		// camera setting
 		camera.position.set( -2, 10, -15);
@@ -247,25 +289,13 @@ class OtherPlayer {
 
 		this.rotationY = 0;
 		this.id = id;
-		this.data = metadata;
 
 		if (hosting) {
 			connections[id][0].send(JSON.stringify({type: "playerList", playerList: Object.keys(connections)}));
 		}
 
-		// Add player's name
-		console.log(assets, assets["helvetiker.json"])
-		let textGeometry = new THREE.TextGeometry(this.data["nickname"], {
-			font: assets["helvetiker.json"],
-			size: 0.4,
-			height: 0.1
-		});
-		nickname = new THREE.Mesh( textGeometry, new THREE.MeshBasicMaterial( { color: 0x000000 } ));
-		nickname.position.y = 5;
-		this.nickname = nickname;
-
 		// gltf models
-		const gltf = {...assets["player.glb"]};
+		const gltf = assets.copy("player.glb");
 		const mesh = gltf.scene;
 		const animations = gltf.animations;
 		let actions = [], activeAction;
@@ -293,6 +323,27 @@ class OtherPlayer {
 		activeAction = actions[ animationName ];
 		activeAction.play();
 
+		// overhead
+		const nickname = metadata["nickname"];
+		const bitmap = document.createElement('canvas');
+		const g = bitmap.getContext('2d');
+		bitmap.width = 256;
+		bitmap.height = 256;
+		g.font = '20px Arial';
+		g.fillStyle = '#fff';
+		g.textAlign = "center";
+		g.fillText(nickname, 128, 128);
+
+		const texture = new THREE.CanvasTexture(bitmap);
+		texture.anisotropy = renderer.getMaxAnisotropy();
+
+		const mat = new THREE.MeshBasicMaterial({map: texture});
+		// mat.transparent = true;
+		const geo = new THREE.PlaneBufferGeometry(4, 1);
+		const overhead = new THREE.Mesh(geo, mat);
+		overhead.position.y = 5;
+		mesh.add(overhead);
+
 		scene.add(mesh);
 
 		// set to this
@@ -301,7 +352,7 @@ class OtherPlayer {
 		this.activeAction = activeAction;
 		this.animationName = animationName;
 		this.mesh = mesh;
-		this.mesh.add( this.nickname );
+		this.overhead = overhead;
 		objects[id] = this;
 	}
 
@@ -314,7 +365,7 @@ class OtherPlayer {
 		this.mesh.position.set(pos.x, pos.y, pos.z);
 		this.mesh.rotation.y = this.rotationY;
 		this.mixer.update(dt);
-		this.nickname.lookAt( camera.position );
+		// this.overhead.lookAt( camera.position );
 		fadeToAction.call(this, this.animationName, 0.2);
 	}
 }
@@ -390,7 +441,6 @@ function init() {
 function loadAssets() {
 	const manager = new THREE.LoadingManager();
 	const modelLoader = new GLTFLoader(manager);
-	const textLoader = new THREE.FontLoader(manager);
 	const models = ["player.glb"];
 
 	for (let i = 0; i < models.length; i++) {
@@ -398,11 +448,6 @@ function loadAssets() {
 			assets[models[i]] = gltf;
 		});
 	}
-
-	textLoader.load("assets/fonts/helvetiker.json", font => {
-		assets["helvetiker.json"] = font;
-		console.log(assets["helvetiker.json"])
-	});
 
 	manager.onProgress = (url, itemsLoaded, itemsTotal) => {
 		console.log(url, itemsLoaded, itemsTotal)
@@ -447,16 +492,12 @@ function animate(timestamp) {
 function addNewConnection(conn) {
 	const id = conn.peer;
 
-	console.log(conn.peer)
-
 	if (id === peerID)
 		return;
 
-	console.log(conn.peer)
-
 	conn.on("open", () => {
-		console.log("here")
 		connections[id] = [conn];
+		console.log(conn, conn.metadata)
 		new OtherPlayer(id, conn.metadata);
 	});
 
@@ -494,14 +535,13 @@ function serverConnect(event) {
 	hosting = event.target.id === "hostSubmit";
 
 	serverID = document.getElementById("join").value;
-	nickname = document.getElementById("nickname").value;
 
 	peer.on('open', (id) => {
 		peerID = id;
 		if (hosting) {
 			serverID = id;
 		} else {
-			addNewConnection(peer.connect(serverID, {metadata: {nickname: nickname}}));
+			addNewConnection(peer.connect(serverID, {metadata: {nickname: document.getElementById("nickname").value}}));
 		}
 		loadAssets();
 	});
