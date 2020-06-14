@@ -15,7 +15,7 @@ let peer, connections = [], serverID, peerID, hosting;
 
 const blacklist = ["WWBender", "Byderman", "BigNik", "Maurice", "Tomiboy"]
 
-document.getElementById("title").textContent = "Game (No " + blacklist[Math.floor(Math.random() * blacklist.length)] + " allowed)";
+let nickname = "Player 1"
 
 function loadTexture(url) {
 	return new Promise((resolve, reject) => {
@@ -251,7 +251,7 @@ class Player {
 		}
 
 		for (const c of Object.values(connections)) {
-			c.send(JSON.stringify(data));
+			c[0].send(JSON.stringify(data));
 		}
 	}
 
@@ -313,7 +313,7 @@ class OtherPlayer {
 			objects[id] = this;
 
 			if (hosting) {
-				connections[id].send(JSON.stringify({type: "playerList", playerList: Object.keys(connections)}));
+				connections[id][0].send(JSON.stringify({type: "playerList", playerList: Object.keys(connections)}));
 			}
 		});		
 	}
@@ -423,11 +423,16 @@ function main() {
 }
 
 function addNewConnection(conn) {
-	let id = conn.peer;
+	const id = conn.peer;
+
+	if (objects.prototype.hasOwnProperty(id))
+		return;
+
+	console.log(conn.metadata)
 
 	conn.on("open", () => {
 		new OtherPlayer(id);
-		connections[id] = conn;
+		connections[id] = [conn];
 	});
 
 	conn.on("data", (data) => {
@@ -460,17 +465,20 @@ function serverConnect(event) {
 	document.getElementById("joinSubmit").removeEventListener("submit", serverConnect);
 	document.getElementById("hostSubmit").removeEventListener("submit", serverConnect);
 
+	console.log("here")
+
 	peer = new Peer({pingInterval: 50});
 	hosting = event.target.id === "hostSubmit";
 
 	serverID = document.getElementById("join").value;
+	// nickname = document.getElementById("nickname").value;
 
 	peer.on('open', (id) => {
 		peerID = id;
 		if (hosting) {
 			serverID = id;
 		} else {
-			addNewConnection(peer.connect(serverID));
+			addNewConnection(peer.connect(serverID, {metadata: "hello"}));
 		}
 
 		main();
