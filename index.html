@@ -14,7 +14,7 @@
             <div id="splashPage">
                <form id="joinSubmit" onsubmit="return false">
                   <h2 class="label">JOIN SERVER</h2>
-                  <input type="text" class="text-input" id="nickname" placeholder="Player name" autocomplete="off" required>
+                  <input type="text" class="text-input nickname" placeholder="Player name" autocomplete="off" required>
                   <input type="text" class="text-input" id="join" placeholder="Server code" autocomplete="off" required>
                   <input type="submit" class="launcher-button" value="Join">
                </form>
@@ -27,9 +27,15 @@
 
             <form id="hostSubmit" onsubmit="return false" style="display: none">
                <h2 class="label">HOST SETTINGS</h2>
-               <input type="text" class="text-input" id="nickname" placeholder="Player name" autocomplete="off" required>
+               <input type="text" class="text-input nickname" placeholder="Player name" autocomplete="off" required>
                <input type="submit" class="launcher-button" value="Start Game!">               
             </form>
+         </div>
+      </div>
+      <div id="loading" style="display: none">
+         <div id="loadingInfo">Loading: Player.glb</div>
+         <div id="progressBar">
+            <div id="barPercentage"></div>
          </div>
       </div>
       <div id="game">

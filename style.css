@@ -20,10 +20,33 @@ html, body {
 	padding: 8px 16px;
 }
 
-#launcher {
+#launcher, #loading {
 	display: flex;
 	flex-direction: column;
-	margin:auto;
+}
+
+#loading {
+	height: 100vh;
+}
+
+#loadingInfo {
+	margin: auto auto 0;
+	font-size: 40px;
+}
+
+#progressBar {
+	width: 60%;
+	height: 20px;
+	border: 2px solid #000;
+	border-radius: 4px;
+	margin: 40px auto auto;
+	display: flex;
+}
+
+#barPercentage {
+	width: 0%;
+	background: red;
+	height: 100%;
 }
 
 #title {

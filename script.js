@@ -12,6 +12,7 @@ const keyEnum = {}, objects = {};
 const assets = {
 	copy(asset) {
 		const gltf = this[asset]
+		console.log(gltf)
 		const clone = {
 			animations: gltf.animations,
 			scene: gltf.scene.clone()
@@ -81,7 +82,7 @@ class Player {
 		this.gravity = this.jumpVel * 2.5;
 		// w s a d jump sprint
 
-		const gltf = assets.copy("player.glb");
+		const gltf = assets.copy('player.glb');
 		const mesh = gltf.scene;
 		const animations = gltf.animations;
 		let actions = [], activeAction;
@@ -111,7 +112,7 @@ class Player {
 		for (let i = 0; i < animations.length; i ++) {
 			const clip = animations[i];
 			const action = mixer.clipAction( clip );
-			if (clip.name === "Jump") {
+			if (clip.name === 'Jump') {
 				action.setLoop( THREE.LoopOnce )
 			}
 			actions[ clip.name ] = action;
@@ -129,7 +130,7 @@ class Player {
 		this.mesh = mesh;
 
 		// event listeners
-		document.getElementById("c").onclick = () => {
+		document.getElementById('c').onclick = () => {
 			document.body.requestPointerLock();
 			if (document.body.requestFullscreen) {
 				document.body.requestFullscreen();
@@ -154,7 +155,7 @@ class Player {
 			renderer.setSize( window.innerWidth, window.innerHeight );
 		});
 
-		document.addEventListener("mousemove", event => {
+		document.addEventListener('mousemove', event => {
 			let dx = event.movementX * this.sensitivity;
 			const dy = event.movementY * this.sensitivity;
 			const newCameraAngle = cameraAngle + dy;
@@ -214,7 +215,7 @@ class Player {
 		if (pos.y === 0) {
 			if (keyEnum[controls[4]]) {
 				yVel += this.jumpVel;
-				fadeToAction.call(this, "Jump", 0.2);
+				fadeToAction.call(this, 'Jump', 0.2);
 			}
 			if (keyEnum[controls[5]]) {
 				speed *= this.sprintFactor;
@@ -234,13 +235,13 @@ class Player {
 
 		if (pos.y === 0) { // maybe too spammy? TODO
 			if (speed > this.walkingSpeed || speed > this.walkingSpeed) {
-				fadeToAction.call(this, "Running", 0.2, dir);
+				fadeToAction.call(this, 'Running', 0.2, dir);
 			}
 			else if (Math.abs(xVel) > 0 || Math.abs(zVel) > 0) {
-				fadeToAction.call(this, "Walking", 0.2, dir);
+				fadeToAction.call(this, 'Walking', 0.2, dir);
 			}
 			else {
-				fadeToAction.call(this, "Idle", 0.2);
+				fadeToAction.call(this, 'Idle', 0.2);
 			}
 		}
 
@@ -257,14 +258,14 @@ class Player {
 		const pos = this.mesh.position;
 		const data = {
 			id: peerID,
-			type: "update",
+			type: 'update',
 			pos: {
 				x: pos.x,
 				y: pos.y,
 				z: pos.z
 			},
 			rotationY: this.mesh.rotation.y,
-			animationName: this.activeAction["_clip"]["name"]
+			animationName: this.activeAction['_clip']['name']
 		}
 
 		for (const c of Object.values(connections)) {
@@ -291,15 +292,15 @@ class OtherPlayer {
 		this.id = id;
 
 		if (hosting) {
-			connections[id][0].send(JSON.stringify({type: "playerList", playerList: Object.keys(connections)}));
+			connections[id][0].send(JSON.stringify({type: 'playerList', playerList: Object.keys(connections)}));
 		}
 
 		// gltf models
-		const gltf = assets.copy("player.glb");
+		const gltf = assets.copy('player.glb');
 		const mesh = gltf.scene;
 		const animations = gltf.animations;
 		let actions = [], activeAction;
-		const animationName = "Idle";
+		const animationName = 'Idle';
 
 		mesh.traverse( node => {
 			if (node.isMesh) {
@@ -314,7 +315,7 @@ class OtherPlayer {
 		for (let i = 0; i < animations.length; i ++) {
 			const clip = animations[i];
 			const action = mixer.clipAction( clip );
-			if (clip.name === "Jump") {
+			if (clip.name === 'Jump') {
 				action.setLoop( THREE.LoopOnce )
 			}
 			actions[ clip.name ] = action;
@@ -324,23 +325,23 @@ class OtherPlayer {
 		activeAction.play();
 
 		// overhead
-		const nickname = metadata["nickname"];
-		const bitmap = document.createElement('canvas');
-		const g = bitmap.getContext('2d');
-		bitmap.width = 256;
-		bitmap.height = 256;
-		g.font = '20px Arial';
-		g.fillStyle = '#fff';
-		g.textAlign = "center";
-		g.fillText(nickname, 128, 128);
+		const nickname = metadata['nickname'];
+		const canvas = document.createElement('canvas');
+		const ctx = canvas.getContext('2d');
 
-		const texture = new THREE.CanvasTexture(bitmap);
-		texture.anisotropy = renderer.getMaxAnisotropy();
+		ctx.font = 'Bold 120px Arial';
+		canvas.width = nearestPowerOf2(ctx.measureText(nickname).width);
+		canvas.height = 128;
+		console.log(canvas.width, canvas.height)
+		ctx.fillStyle = '#fff';
+		ctx.fillText(nickname, 0, 120);
 
-		const mat = new THREE.MeshBasicMaterial({map: texture});
-		// mat.transparent = true;
-		const geo = new THREE.PlaneBufferGeometry(4, 1);
-		const overhead = new THREE.Mesh(geo, mat);
+		const texture = new THREE.CanvasTexture(canvas);
+		texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+		texture.needsUpdate = true;
+
+		var mat = new THREE.SpriteMaterial({ map: texture} );
+		const overhead = new THREE.Sprite(mat);
 		overhead.position.y = 5;
 		mesh.add(overhead);
 
@@ -374,9 +375,10 @@ function init() {
 	let geo, mat, mesh;
 
 	//canvas
-	document.getElementById("log").textContent = "Server Code: " + serverID;
-	document.getElementById("launcher").remove();
-	document.getElementById("game").style.display = "block";
+	document.getElementById('log').textContent = 'Server Code: ' + serverID;
+	document.getElementById('launcher').remove();
+	document.getElementById('loading').remove();
+	document.getElementById('game').style.display = 'block';
 
 	//scene
 	scene = new THREE.Scene();
@@ -387,7 +389,7 @@ function init() {
 	camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 1000 );
 
 	// renderer
-	renderer = new THREE.WebGLRenderer({ canvas: document.getElementById("c") });
+	renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('c') });
 	renderer.setSize( window.innerWidth, window.innerHeight );
 	renderer.shadowMap.enabled = true;
 
@@ -435,27 +437,11 @@ function init() {
 	scene.add( mesh );
 
 	//player
-	objects["player"] = new Player(["w", "s", "a", "d", " ", "shift"]);
+	objects['player'] = new Player(['w', 's', 'a', 'd', ' ', 'shift']);
 }
 
-function loadAssets() {
-	const manager = new THREE.LoadingManager();
-	const modelLoader = new GLTFLoader(manager);
-	const models = ["player.glb"];
-
-	for (let i = 0; i < models.length; i++) {
-		modelLoader.load("assets/models/" + models[i], gltf => {
-			assets[models[i]] = gltf;
-		});
-	}
-
-	manager.onProgress = (url, itemsLoaded, itemsTotal) => {
-		console.log(url, itemsLoaded, itemsTotal)
-	}
-
-	manager.onLoad = () => {
-		init();
-	}
+function nearestPowerOf2(n) {
+	return Math.pow(2, Math.ceil(Math.log(n)/Math.log(2)));
 }
 
 function fadeToAction(name, duration, timeScale = 1) {
@@ -495,23 +481,26 @@ function addNewConnection(conn) {
 	if (id === peerID)
 		return;
 
-	conn.on("open", () => {
+	conn.on('open', () => {
+		if (id === serverID) {
+			init();
+		}
 		connections[id] = [conn];
 		console.log(conn, conn.metadata)
 		new OtherPlayer(id, conn.metadata);
 	});
 
-	conn.on("data", (data) => {
+	conn.on('data', (data) => {
 		data = JSON.parse(data);
 		if (objects.hasOwnProperty(data.id)) {
 			switch (data.type) {
-				case "update":
+				case 'update':
 					objects[id].pos = data.pos;
 					objects[id].rotationY = data.rotationY;
 					objects[id].animationName = data.animationName;
 					break;
 			}
-		} else if (data.type === "playerList") {
+		} else if (data.type === 'playerList') {
 			const playerList = data.playerList;
 			for (let i = 0; i < playerList.length; i++) {
 				addNewConnection(peer.connect(playerList[i]));
@@ -519,39 +508,77 @@ function addNewConnection(conn) {
 		}
 	});
 
-	conn.on("close", () => {
+	conn.on('close', () => {
 		const id = conn.peer;
 		objects[id].delete();
 		delete objects[id];
 	})
 }
 
-function serverConnect(event) {
+function loadGame(event) {
 	event.preventDefault();
-	document.getElementById("joinSubmit").removeEventListener("submit", serverConnect);
-	document.getElementById("hostSubmit").removeEventListener("submit", serverConnect);
+	document.getElementById('joinSubmit').removeEventListener('submit', loadGame);
+	document.getElementById('hostSubmit').removeEventListener('submit', loadGame);
+	document.getElementById('launcher').style.display = 'none';
+	document.getElementById('loading').style.display = 'flex';
 
-	peer = new Peer({pingInterval: 50});
-	hosting = event.target.id === "hostSubmit";
+	const manager = new THREE.LoadingManager();
+	const modelLoader = new GLTFLoader(manager);
+	const models = ['player.glb'];
 
-	serverID = document.getElementById("join").value;
+	for (let i = 0; i < models.length; i++) {
+		modelLoader.load('assets/models/' + models[i], gltf => {
+			assets[models[i]] = gltf;
+		});
+	}
 
-	peer.on('open', (id) => {
-		peerID = id;
+	manager.onProgress = (url, itemsLoaded, itemsTotal) => {
+		document.getElementById("loadingInfo").textContent = "Loading: " + url;
+		document.getElementById('barPercentage').style.width = itemsLoaded / itemsTotal * 100 + "%";
+		console.log(url, itemsLoaded, itemsTotal)
+	}
+
+	manager.onLoad = () => {
+		peer = new Peer({pingInterval: 50});
+		hosting = event.target.id === 'hostSubmit';
+
+		let nickname;
+
 		if (hosting) {
-			serverID = id;
+			nickname = document.getElementsByClassName('nickname')[1].value;
 		} else {
-			addNewConnection(peer.connect(serverID, {metadata: {nickname: document.getElementById("nickname").value}}));
+			nickname = document.getElementsByClassName('nickname')[0].value;
 		}
-		loadAssets();
-	});
+		localStorage.setItem('nickname', nickname);
 
-	peer.on('connection', addNewConnection);
+		serverID = document.getElementById('join').value;
+
+		peer.on('open', (id) => {
+			peerID = id;
+			if (hosting) {
+				serverID = id;
+				init();
+			} else {
+				const conn = peer.connect(serverID, {metadata: {nickname: nickname}});
+				addNewConnection(conn);
+			}
+		});
+
+		peer.on('connection', addNewConnection);
+	}
 }
 
-document.getElementById("joinSubmit").addEventListener("submit", serverConnect);
-document.getElementById("hostSubmit").addEventListener("submit", serverConnect);
-document.getElementById("nextButton").addEventListener("click", () => {
-	document.getElementById("splashPage").style.display = "none";
-	document.getElementById("hostSubmit").style.display = "block";
+document.getElementById('joinSubmit').addEventListener('submit', loadGame);
+document.getElementById('hostSubmit').addEventListener('submit', loadGame);
+document.getElementById('nextButton').addEventListener('click', () => {
+	document.getElementById('splashPage').style.display = 'none';
+	document.getElementById('hostSubmit').style.display = 'block';
 })
+
+window.onload = () => {
+	const nickname = localStorage.getItem('nickname');
+	if (nickname !== null) {
+		document.getElementsByClassName('nickname')[0].value = nickname;
+		document.getElementsByClassName('nickname')[1].value = nickname;
+	}
+}
