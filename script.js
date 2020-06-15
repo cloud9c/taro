@@ -536,7 +536,7 @@ function loadGame(event) {
 	}
 
 	manager.onLoad = () => {
-		peer = new Peer({pingInterval: 50});
+		peer = new Peer();
 		hosting = event.target.id === 'hostSubmit';
 		let nickname;
 
