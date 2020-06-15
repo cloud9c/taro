@@ -12,7 +12,6 @@ const keyEnum = {}, objects = {};
 const assets = {
 	copy(asset) {
 		const gltf = this[asset]
-		console.log(gltf)
 		const clone = {
 			animations: gltf.animations,
 			scene: gltf.scene.clone()
@@ -332,7 +331,6 @@ class OtherPlayer {
 		ctx.font = 'Bold 120px Arial';
 		canvas.width = nearestPowerOf2(ctx.measureText(nickname).width);
 		canvas.height = 128;
-		console.log(canvas.width, canvas.height)
 		ctx.fillStyle = '#fff';
 		ctx.fillText(nickname, 0, 120);
 
@@ -366,7 +364,6 @@ class OtherPlayer {
 		this.mesh.position.set(pos.x, pos.y, pos.z);
 		this.mesh.rotation.y = this.rotationY;
 		this.mixer.update(dt);
-		// this.overhead.lookAt( camera.position );
 		fadeToAction.call(this, this.animationName, 0.2);
 	}
 }
@@ -533,16 +530,17 @@ function loadGame(event) {
 	}
 
 	manager.onProgress = (url, itemsLoaded, itemsTotal) => {
-		document.getElementById("loadingInfo").textContent = "Loading: " + url;
-		document.getElementById('barPercentage').style.width = itemsLoaded / itemsTotal * 100 + "%";
+		document.getElementById('loadingInfo').textContent = 'Loading: ' + url;
+		document.getElementById('barPercentage').style.width = itemsLoaded / itemsTotal * 100 + '%';
 		console.log(url, itemsLoaded, itemsTotal)
 	}
 
 	manager.onLoad = () => {
 		peer = new Peer({pingInterval: 50});
 		hosting = event.target.id === 'hostSubmit';
-
 		let nickname;
+
+		document.getElementById('loadingInfo').textContent = 'Connecting to server...';
 
 		if (hosting) {
 			nickname = document.getElementsByClassName('nickname')[1].value;
@@ -554,6 +552,7 @@ function loadGame(event) {
 		serverID = document.getElementById('join').value;
 
 		peer.on('open', (id) => {
+			document.getElementById('loadingInfo').textContent = 'Connected!';
 			peerID = id;
 			if (hosting) {
 				serverID = id;
@@ -565,6 +564,10 @@ function loadGame(event) {
 		});
 
 		peer.on('connection', addNewConnection);
+
+		peer.on('error', (err) => {
+			console.log(err, err.type);
+		})
 	}
 }
 
