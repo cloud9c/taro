@@ -59,7 +59,7 @@ const assets = {
 	}
 };
 
-let peer, connections = [], serverID, peerID, hosting;
+let peer, nickname, connections = [], serverID, peerID, hosting;
 
 class Player {
 	constructor(controls) {
@@ -268,7 +268,7 @@ class Player {
 		}
 
 		for (const c of Object.values(connections)) {
-			c[0].send(JSON.stringify(data));
+			c[0].send(data);
 		}
 	}
 
@@ -291,7 +291,7 @@ class OtherPlayer {
 		this.id = id;
 
 		if (hosting) {
-			connections[id][0].send(JSON.stringify({type: 'playerList', playerList: Object.keys(connections)}));
+			connections[id][0].send({type: 'playerList', playerList: Object.keys(connections)});
 		}
 
 		// gltf models
@@ -324,34 +324,16 @@ class OtherPlayer {
 		activeAction.play();
 
 		// overhead
-		const nickname = metadata['nickname'];
-		const canvas = document.createElement('canvas');
-		const ctx = canvas.getContext('2d');
-
-		ctx.font = 'Bold 120px Arial';
-		canvas.width = nearestPowerOf2(ctx.measureText(nickname).width);
-		canvas.height = 128;
-		ctx.fillStyle = '#fff';
-		ctx.fillText(nickname, 0, 120);
-
-		const texture = new THREE.CanvasTexture(canvas);
-		texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
-		texture.needsUpdate = true;
-
-		var mat = new THREE.SpriteMaterial({ map: texture} );
-		const overhead = new THREE.Sprite(mat);
-		overhead.position.y = 5;
-		mesh.add(overhead);
-
+		// const nickname = metadata['nickname'];
 		scene.add(mesh);
 
 		// set to this
+		// this.overhead = overhead;
 		this.mixer = mixer;
 		this.actions = actions;
 		this.activeAction = activeAction;
 		this.animationName = animationName;
 		this.mesh = mesh;
-		this.overhead = overhead;
 		objects[id] = this;
 	}
 
@@ -479,16 +461,16 @@ function addNewConnection(conn) {
 		return;
 
 	conn.on('open', () => {
+		console.log(conn)
 		if (id === serverID) {
 			init();
 		}
 		connections[id] = [conn];
-		console.log(conn, conn.metadata)
 		new OtherPlayer(id, conn.metadata);
+		conn.send('HELLOOOOOOOOOOOOO');
 	});
 
 	conn.on('data', (data) => {
-		data = JSON.parse(data);
 		if (objects.hasOwnProperty(data.id)) {
 			switch (data.type) {
 				case 'update':
@@ -500,7 +482,7 @@ function addNewConnection(conn) {
 		} else if (data.type === 'playerList') {
 			const playerList = data.playerList;
 			for (let i = 0; i < playerList.length; i++) {
-				addNewConnection(peer.connect(playerList[i]));
+				addNewConnection(peer.connect(playerList[i], {metadata: {nickname: nickname}}));
 			}
 		}
 	});
@@ -532,13 +514,15 @@ function loadGame(event) {
 	manager.onProgress = (url, itemsLoaded, itemsTotal) => {
 		document.getElementById('loadingInfo').textContent = 'Loading: ' + url;
 		document.getElementById('barPercentage').style.width = itemsLoaded / itemsTotal * 100 + '%';
-		console.log(url, itemsLoaded, itemsTotal)
 	}
 
 	manager.onLoad = () => {
-		peer = new Peer();
+		peer = new Peer({
+			secure: true, 
+			host: 'peerjs-cloud9c.herokuapp.com', 
+		});
 		hosting = event.target.id === 'hostSubmit';
-		let nickname;
+		nickname;
 
 		document.getElementById('loadingInfo').textContent = 'Connecting to server...';
 
@@ -568,6 +552,16 @@ function loadGame(event) {
 		peer.on('error', (err) => {
 			console.log(err, err.type);
 		})
+
+		// window.addEventListener('beforeunload' )
+		// peer.destroy();
+		window.onbeforeunload = () => {
+			return "Do you really want to close?";
+		};
+
+		window.onunload = () => {
+			peer.destroy();
+		}
 	}
 }
 
