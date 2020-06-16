@@ -129,7 +129,7 @@ class Player {
 		this.mesh = mesh;
 
 		// event listeners
-		document.getElementById('c').onclick = () => {
+		document.getElementById('c').addEventListener('click', () => {
 			document.body.requestPointerLock();
 			if (document.body.requestFullscreen) {
 				document.body.requestFullscreen();
@@ -140,13 +140,13 @@ class Player {
 			} else if (document.body.msRequestFullscreen) {
 				document.body.msRequestFullscreen();
 			}
-		}
+		});
 
-		window.onblur = event => {
+		window.addEventListener('blur', event => {
 			for (const property in keyEnum) {
 				keyEnum[property] = false;
 			}
-		};
+		});
 
 		window.addEventListener( 'resize', () => {
 			camera.aspect = window.innerWidth / window.innerHeight;
@@ -555,13 +555,15 @@ function loadGame(event) {
 
 		// window.addEventListener('beforeunload' )
 		// peer.destroy();
-		window.onbeforeunload = () => {
-			return "Do you really want to close?";
-		};
 
-		window.onunload = () => {
+		window.addEventListener('beforeunload', (event) => {
+			event.preventDefault();
+			event.returnValue = '';
+		});
+
+		window.addEventListener('unload', () => {
 			peer.destroy();
-		}
+		})
 	}
 }
 
@@ -572,10 +574,10 @@ document.getElementById('nextButton').addEventListener('click', () => {
 	document.getElementById('hostSubmit').style.display = 'block';
 })
 
-window.onload = () => {
+window.addEventListener('load', () => {
 	const nickname = localStorage.getItem('nickname');
 	if (nickname !== null) {
 		document.getElementsByClassName('nickname')[0].value = nickname;
 		document.getElementsByClassName('nickname')[1].value = nickname;
 	}
-}
+});
