@@ -1,5 +1,5 @@
-import * as THREE from './build/three.module.js';
-import { GLTFLoader } from './build/GLTFLoader.js';
+import * as THREE from '/threejs-game/build/three.module.js';
+import { GLTFLoader } from '/threejs-game/build/GLTFLoader.js';
 
 let scene, renderer, camera;
 
