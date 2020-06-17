@@ -1,7 +1,7 @@
 import * as THREE from 'https://threejs.org/build/three.module.js';
 import {GLTFLoader} from 'https://threejs.org/examples/jsm/loaders/GLTFLoader.js';
 
-let scene, renderer, camera;
+let scene, renderer, camera, canvas;
 
 let cameraRadius, cameraAngle;
 
@@ -9,57 +9,7 @@ let lastTimestamp = 0, dt;
 
 const keyEnum = {}, objects = {};
 
-const assets = {
-	copy(asset) {
-		const gltf = this[asset]
-		const clone = {
-			animations: gltf.animations,
-			scene: gltf.scene.clone()
-		};
-
-		const skinnedMeshes = {};
-
-		gltf.scene.traverse(node => {
-			if (node.isSkinnedMesh) {
-				skinnedMeshes[node.name] = node;
-			}
-		});
-
-		const cloneBones = {};
-		const cloneSkinnedMeshes = {};
-
-		clone.scene.traverse(node => {
-			if (node.isBone) {
-				cloneBones[node.name] = node;
-			}
-
-			if (node.isSkinnedMesh) {
-				cloneSkinnedMeshes[node.name] = node;
-			}
-		});
-
-		for (let name in skinnedMeshes) {
-			const skinnedMesh = skinnedMeshes[name];
-			const skeleton = skinnedMesh.skeleton;
-			const cloneSkinnedMesh = cloneSkinnedMeshes[name];
-
-			const orderedCloneBones = [];
-
-			for (let i = 0; i < skeleton.bones.length; ++i) {
-				const cloneBone = cloneBones[skeleton.bones[i].name];
-				orderedCloneBones.push(cloneBone);
-			}
-
-			cloneSkinnedMesh.bind(
-				new THREE.Skeleton(orderedCloneBones, skeleton.boneInverses),
-				cloneSkinnedMesh.matrixWorld);
-		}
-
-		return clone;
-	}
-};
-
-let peer, nickname, connections = [], serverID, peerID, hosting;
+let peer, connections = [], serverID, peerID, hosting, nickname;
 
 class Player {
 	constructor(controls) {
@@ -129,7 +79,7 @@ class Player {
 		this.mesh = mesh;
 
 		// event listeners
-		document.getElementById('c').addEventListener('click', () => {
+		canvas.addEventListener('click', () => {
 			document.body.requestPointerLock();
 			if (document.body.requestFullscreen) {
 				document.body.requestFullscreen();
@@ -177,6 +127,24 @@ class Player {
 
 		document.addEventListener('keyup', event => {
 			keyEnum[event.key.toLowerCase()] = false;
+		});
+
+		document.addEventListener("wheel", event => {
+			if (event.wheelDeltaY < 0) {
+				const newZoom = camera.zoom - 0.05;
+				if (newZoom > 0.65)
+					camera.zoom = newZoom;
+				else
+					camera.zoom = 0.65;
+			}
+			else {
+				const newZoom = camera.zoom + 0.05;
+				if (newZoom < 1.65)
+					camera.zoom = newZoom;
+				else
+					camera.zoom = 1.65;
+			}
+			camera.updateProjectionMatrix();
 		});
 
 		requestAnimationFrame(animate);
@@ -281,12 +249,7 @@ class Player {
 
 class OtherPlayer {
 	constructor(id, metadata) {
-		this.pos = {
-			x: 0,
-			y: 0,
-			z: 0
-		}
-
+		this.pos = new THREE.Vector3(0, 0, 0);
 		this.rotationY = 0;
 		this.id = id;
 
@@ -324,17 +287,21 @@ class OtherPlayer {
 		activeAction.play();
 
 		// overhead
-		// const nickname = metadata['nickname'];
-		scene.add(mesh);
+		let overhead = makeTextSprite(metadata['nickname'], { fontsize: 24, borderColor: {r:255, g:0, b:0, a:1.0}, backgroundColor: {r:255, g:100, b:100, a:0.8} } );
+		overhead.position.setY(5);
+		mesh.add( overhead );
 
 		// set to this
-		// this.overhead = overhead;
+		this.overhead = overhead;
 		this.mixer = mixer;
 		this.actions = actions;
 		this.activeAction = activeAction;
 		this.animationName = animationName;
 		this.mesh = mesh;
+
 		objects[id] = this;
+
+		scene.add(mesh);
 	}
 
 	delete() {
@@ -347,13 +314,115 @@ class OtherPlayer {
 		this.mesh.rotation.y = this.rotationY;
 		this.mixer.update(dt);
 		fadeToAction.call(this, this.animationName, 0.2);
+
+		const vector = pos.setY(pos.y + 5).project(camera);
 	}
+}
+
+const assets = {
+	copy(asset) {
+		const gltf = this[asset]
+		const clone = {
+			animations: gltf.animations,
+			scene: gltf.scene.clone()
+		};
+
+		const skinnedMeshes = {};
+
+		gltf.scene.traverse(node => {
+			if (node.isSkinnedMesh) {
+				skinnedMeshes[node.name] = node;
+			}
+		});
+
+		const cloneBones = {};
+		const cloneSkinnedMeshes = {};
+
+		clone.scene.traverse(node => {
+			if (node.isBone) {
+				cloneBones[node.name] = node;
+			}
+
+			if (node.isSkinnedMesh) {
+				cloneSkinnedMeshes[node.name] = node;
+			}
+		});
+
+		for (let name in skinnedMeshes) {
+			const skinnedMesh = skinnedMeshes[name];
+			const skeleton = skinnedMesh.skeleton;
+			const cloneSkinnedMesh = cloneSkinnedMeshes[name];
+
+			const orderedCloneBones = [];
+
+			for (let i = 0; i < skeleton.bones.length; ++i) {
+				const cloneBone = cloneBones[skeleton.bones[i].name];
+				orderedCloneBones.push(cloneBone);
+			}
+
+			cloneSkinnedMesh.bind(
+				new THREE.Skeleton(orderedCloneBones, skeleton.boneInverses),
+				cloneSkinnedMesh.matrixWorld);
+		}
+
+		return clone;
+	}
+};
+
+function makeTextSprite( message, parameters ) {
+	if ( parameters === undefined ) parameters = {};
+	var fontface = parameters.hasOwnProperty('fontface') ? parameters['fontface'] : 'Arial';
+	var fontsize = parameters.hasOwnProperty('fontsize') ? parameters['fontsize'] : 18;
+	var borderThickness = parameters.hasOwnProperty('borderThickness') ? parameters['borderThickness'] : 4;
+	var borderColor = parameters.hasOwnProperty('borderColor') ?parameters['borderColor'] : { r:0, g:0, b:0, a:1.0 };
+	var backgroundColor = parameters.hasOwnProperty('backgroundColor') ?parameters['backgroundColor'] : { r:255, g:255, b:255, a:1.0 };
+	var textColor = parameters.hasOwnProperty('textColor') ?parameters['textColor'] : { r:0, g:0, b:0, a:1.0 };
+
+	var canvas = document.createElement('canvas');
+	var context = canvas.getContext('2d');
+	context.font = 'Bold ' + fontsize + 'px ' + fontface;
+	var metrics = context.measureText( message );
+	var textWidth = metrics.width;
+
+	context.fillStyle   = 'rgba(' + backgroundColor.r + ',' + backgroundColor.g + ',' + backgroundColor.b + ',' + backgroundColor.a + ')';
+	context.strokeStyle = 'rgba(' + borderColor.r + ',' + borderColor.g + ',' + borderColor.b + ',' + borderColor.a + ')';
+
+	context.lineWidth = borderThickness;
+	roundRect(context, borderThickness/2, borderThickness/2, (textWidth + borderThickness) * 1.1, fontsize * 1.4 + borderThickness, 8);
+
+	context.fillStyle = 'rgba('+textColor.r+', '+textColor.g+', '+textColor.b+', 1.0)';
+	context.fillText( message, borderThickness, fontsize + borderThickness);
+
+	var texture = new THREE.Texture(canvas) 
+	texture.needsUpdate = true;
+
+	var spriteMaterial = new THREE.SpriteMaterial( { map: texture } );
+	var sprite = new THREE.Sprite( spriteMaterial );
+	sprite.scale.set(0.5 * fontsize, 0.25 * fontsize, 0.75 * fontsize);
+	return sprite;  
+}
+
+function roundRect(ctx, x, y, w, h, r) {
+	ctx.beginPath();
+	ctx.moveTo(x + r, y);
+	ctx.lineTo(x + w - r, y);
+	ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+	ctx.lineTo(x + w, y + h - r);
+	ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+	ctx.lineTo(x + r, y + h);
+	ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+	ctx.lineTo(x, y + r);
+	ctx.quadraticCurveTo(x, y, x + r, y);
+	ctx.closePath();
+	ctx.fill();
+	ctx.stroke();
 }
 
 function init() {
 	let geo, mat, mesh;
 
 	//canvas
+	canvas = document.getElementById('c');
 	document.getElementById('log').textContent = 'Server Code: ' + serverID;
 	document.getElementById('launcher').remove();
 	document.getElementById('loading').remove();
@@ -368,7 +437,7 @@ function init() {
 	camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 1000 );
 
 	// renderer
-	renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('c') });
+	renderer = new THREE.WebGLRenderer({ canvas: canvas });
 	renderer.setSize( window.innerWidth, window.innerHeight );
 	renderer.shadowMap.enabled = true;
 
@@ -419,10 +488,6 @@ function init() {
 	objects['player'] = new Player(['w', 's', 'a', 'd', ' ', 'shift']);
 }
 
-function nearestPowerOf2(n) {
-	return Math.pow(2, Math.ceil(Math.log(n)/Math.log(2)));
-}
-
 function fadeToAction(name, duration, timeScale = 1) {
 	if (this.actions[ name ] === this.activeAction && this.activeAction.timeScale === timeScale) {
 		return
@@ -461,20 +526,19 @@ function addNewConnection(conn) {
 		return;
 
 	conn.on('open', () => {
-		console.log(conn)
 		if (id === serverID) {
 			init();
 		}
 		connections[id] = [conn];
 		new OtherPlayer(id, conn.metadata);
-		conn.send('HELLOOOOOOOOOOOOO');
 	});
 
 	conn.on('data', (data) => {
 		if (objects.hasOwnProperty(data.id)) {
 			switch (data.type) {
 				case 'update':
-					objects[id].pos = data.pos;
+					const pos = data.pos;
+					objects[id].pos.set(pos.x, pos.y, pos.z);
 					objects[id].rotationY = data.rotationY;
 					objects[id].animationName = data.animationName;
 					break;
@@ -482,7 +546,7 @@ function addNewConnection(conn) {
 		} else if (data.type === 'playerList') {
 			const playerList = data.playerList;
 			for (let i = 0; i < playerList.length; i++) {
-				addNewConnection(peer.connect(playerList[i], {metadata: {nickname: nickname}}));
+				addNewConnection(peer.connect(playerList[i], {metadata: nickname}));
 			}
 		}
 	});
@@ -522,18 +586,13 @@ function loadGame(event) {
 			host: 'peerjs-cloud9c.herokuapp.com', 
 		});
 		hosting = event.target.id === 'hostSubmit';
-		nickname;
 
 		document.getElementById('loadingInfo').textContent = 'Connecting to server...';
 
-		if (hosting) {
-			nickname = document.getElementsByClassName('nickname')[1].value;
-		} else {
-			nickname = document.getElementsByClassName('nickname')[0].value;
-		}
+		nickname = document.getElementsByClassName('nickname')[+hosting].value;
 		localStorage.setItem('nickname', nickname);
 
-		serverID = document.getElementById('join').value;
+		serverID = document.getElementById('join').value.trim();
 
 		peer.on('open', (id) => {
 			document.getElementById('loadingInfo').textContent = 'Connected!';
@@ -552,9 +611,6 @@ function loadGame(event) {
 		peer.on('error', (err) => {
 			console.log(err, err.type);
 		})
-
-		// window.addEventListener('beforeunload' )
-		// peer.destroy();
 
 		window.addEventListener('beforeunload', (event) => {
 			event.preventDefault();
@@ -575,9 +631,9 @@ document.getElementById('nextButton').addEventListener('click', () => {
 })
 
 window.addEventListener('load', () => {
-	const nickname = localStorage.getItem('nickname');
-	if (nickname !== null) {
-		document.getElementsByClassName('nickname')[0].value = nickname;
-		document.getElementsByClassName('nickname')[1].value = nickname;
+	const oldNickname = localStorage.getItem('nickname');
+	if (oldNickname !== null) {
+		document.getElementsByClassName('nickname')[0].value = oldNickname;
+		document.getElementsByClassName('nickname')[1].value = oldNickname;
 	}
 });
