@@ -182,7 +182,7 @@ class Player {
 		if (pos.y === 0) {
 			if (keyEnum[controls[4]]) {
 				yVel += this.jumpVel;
-				fadeToAction.call(this, 'Jump', 0.2);
+				fadeToAction.call(this, 'Jump', 0.2, 0.);
 			}
 			if (keyEnum[controls[5]]) {
 				speed *= this.sprintFactor;
@@ -232,7 +232,8 @@ class Player {
 				z: pos.z
 			},
 			rotationY: this.mesh.rotation.y,
-			animationName: this.activeAction['_clip']['name']
+			animationName: this.activeAction['_clip']['name'],
+			animationDir: this.activeAction.timeScale
 		}
 
 		for (const c of Object.values(connections)) {
@@ -297,6 +298,7 @@ class OtherPlayer {
 		this.actions = actions;
 		this.activeAction = activeAction;
 		this.animationName = animationName;
+		this.animationDir = 1;
 		this.mesh = mesh;
 
 		objects[id] = this;
@@ -313,9 +315,7 @@ class OtherPlayer {
 		this.mesh.position.set(pos.x, pos.y, pos.z);
 		this.mesh.rotation.y = this.rotationY;
 		this.mixer.update(dt);
-		fadeToAction.call(this, this.animationName, 0.2);
-
-		const vector = pos.setY(pos.y + 5).project(camera);
+		fadeToAction.call(this, this.animationName, 0.2, this.animationDir);
 	}
 }
 
@@ -378,8 +378,8 @@ function makeTextSprite( message, parameters ) {
 	var backgroundColor = parameters.hasOwnProperty('backgroundColor') ?parameters['backgroundColor'] : { r:255, g:255, b:255, a:1.0 };
 	var textColor = parameters.hasOwnProperty('textColor') ?parameters['textColor'] : { r:0, g:0, b:0, a:1.0 };
 
-	var canvas = document.createElement('canvas');
-	var context = canvas.getContext('2d');
+	var tempCanvas = document.createElement('canvas');
+	var context = tempCanvas.getContext('2d');
 	context.font = 'Bold ' + fontsize + 'px ' + fontface;
 	var metrics = context.measureText( message );
 	var textWidth = metrics.width;
@@ -387,16 +387,25 @@ function makeTextSprite( message, parameters ) {
 	context.fillStyle   = 'rgba(' + backgroundColor.r + ',' + backgroundColor.g + ',' + backgroundColor.b + ',' + backgroundColor.a + ')';
 	context.strokeStyle = 'rgba(' + borderColor.r + ',' + borderColor.g + ',' + borderColor.b + ',' + borderColor.a + ')';
 
+	var x = borderThickness/2 + (textWidth + borderThickness) * 1.1 - 8;
+	var y = borderThickness/2 + fontsize * 1.4 + borderThickness - 8;
+	// context.translate((tempCanvas.width - x)/2, (tempCanvas.height - y)/2);
+
 	context.lineWidth = borderThickness;
 	roundRect(context, borderThickness/2, borderThickness/2, (textWidth + borderThickness) * 1.1, fontsize * 1.4 + borderThickness, 8);
 
 	context.fillStyle = 'rgba('+textColor.r+', '+textColor.g+', '+textColor.b+', 1.0)';
 	context.fillText( message, borderThickness, fontsize + borderThickness);
 
-	var texture = new THREE.Texture(canvas) 
+	var texture = new THREE.Texture(tempCanvas) 
 	texture.needsUpdate = true;
 
-	var spriteMaterial = new THREE.SpriteMaterial( { map: texture } );
+	console.log(texture)
+
+	canvas.width = x;
+	canvas.height = y;
+
+	var spriteMaterial = new THREE.SpriteMaterial( { map: texture, transparent: false} );
 	var sprite = new THREE.Sprite( spriteMaterial );
 	sprite.scale.set(0.5 * fontsize, 0.25 * fontsize, 0.75 * fontsize);
 	return sprite;  
@@ -541,6 +550,7 @@ function addNewConnection(conn) {
 					objects[id].pos.set(pos.x, pos.y, pos.z);
 					objects[id].rotationY = data.rotationY;
 					objects[id].animationName = data.animationName;
+					objects[id].animationDir = data.animationDir;
 					break;
 			}
 		} else if (data.type === 'playerList') {
