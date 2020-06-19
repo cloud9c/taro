@@ -289,7 +289,7 @@ class OtherPlayer {
 
 		// overhead
 		let overhead = makeTextSprite(metadata['nickname'], { fontsize: 24, borderColor: {r:255, g:0, b:0, a:1.0}, backgroundColor: {r:255, g:100, b:100, a:0.8} } );
-		overhead.position.setY(5);
+		overhead.position.setY(5.5);
 		mesh.add( overhead );
 
 		// set to this
@@ -387,9 +387,9 @@ function makeTextSprite( message, parameters ) {
 	context.fillStyle   = 'rgba(' + backgroundColor.r + ',' + backgroundColor.g + ',' + backgroundColor.b + ',' + backgroundColor.a + ')';
 	context.strokeStyle = 'rgba(' + borderColor.r + ',' + borderColor.g + ',' + borderColor.b + ',' + borderColor.a + ')';
 
-	var x = borderThickness/2 + (textWidth + borderThickness) * 1.1 - 8;
-	var y = borderThickness/2 + fontsize * 1.4 + borderThickness - 8;
-	// context.translate((tempCanvas.width - x)/2, (tempCanvas.height - y)/2);
+	var x = borderThickness/2 + (textWidth + borderThickness) * 1.1;
+	var y = borderThickness/2 + fontsize * 1.4 + borderThickness;
+	context.translate((tempCanvas.width - x)/2, (tempCanvas.height - y)/2);
 
 	context.lineWidth = borderThickness;
 	roundRect(context, borderThickness/2, borderThickness/2, (textWidth + borderThickness) * 1.1, fontsize * 1.4 + borderThickness, 8);
@@ -400,12 +400,7 @@ function makeTextSprite( message, parameters ) {
 	var texture = new THREE.Texture(tempCanvas) 
 	texture.needsUpdate = true;
 
-	console.log(texture)
-
-	canvas.width = x;
-	canvas.height = y;
-
-	var spriteMaterial = new THREE.SpriteMaterial( { map: texture, transparent: false} );
+	var spriteMaterial = new THREE.SpriteMaterial( { map: texture, transparent: true} );
 	var sprite = new THREE.Sprite( spriteMaterial );
 	sprite.scale.set(0.5 * fontsize, 0.25 * fontsize, 0.75 * fontsize);
 	return sprite;  
