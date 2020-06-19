@@ -129,7 +129,7 @@ class Player {
 			keyEnum[event.key.toLowerCase()] = false;
 		});
 
-		document.addEventListener("wheel", event => {
+		document.addEventListener('wheel', event => {
 			if (event.wheelDeltaY < 0) {
 				const newZoom = camera.zoom - 0.05;
 				if (newZoom > 0.65)
@@ -249,10 +249,12 @@ class Player {
 }
 
 class OtherPlayer {
-	constructor(id, metadata) {
+	constructor(id) {
 		this.pos = new THREE.Vector3(0, 0, 0);
 		this.rotationY = 0;
 		this.id = id;
+
+		console.log(id)
 
 		if (hosting) {
 			connections[id][0].send({type: 'playerList', playerList: Object.keys(connections)});
@@ -287,13 +289,7 @@ class OtherPlayer {
 		activeAction = actions[ animationName ];
 		activeAction.play();
 
-		// overhead
-		let overhead = makeTextSprite(metadata['nickname'], { fontsize: 24, borderColor: {r:255, g:0, b:0, a:1.0}, backgroundColor: {r:255, g:100, b:100, a:0.8} } );
-		overhead.position.setY(5.5);
-		mesh.add( overhead );
-
 		// set to this
-		this.overhead = overhead;
 		this.mixer = mixer;
 		this.actions = actions;
 		this.activeAction = activeAction;
@@ -302,7 +298,6 @@ class OtherPlayer {
 		this.mesh = mesh;
 
 		objects[id] = this;
-
 		scene.add(mesh);
 	}
 
@@ -316,6 +311,29 @@ class OtherPlayer {
 		this.mesh.rotation.y = this.rotationY;
 		this.mixer.update(dt);
 		fadeToAction.call(this, this.animationName, 0.2, this.animationDir);
+	}
+
+	addOverhead(message) {
+		console.log('added overhead')
+		const fontsize = 24;
+		const tempCanvas = document.createElement('canvas');
+		tempCanvas.width = 512;
+		tempCanvas.height = 256;
+		const context = tempCanvas.getContext('2d');
+		context.font = 'Bold ' + fontsize + 'px sans-serif';
+		context.fillStyle   = 'rgba(255, 255, 255, 0.5)';
+		context.strokeStyle = 'rgba(0, 0, 0, 0.5)';
+		context.fillStyle = '#000';
+		context.fillText( message, (tempCanvas.width)/2 - context.measureText(message).width/2, fontsize);
+
+		const texture = new THREE.Texture(tempCanvas)
+		texture.needsUpdate = true;
+		const sprite = new THREE.Sprite( new THREE.SpriteMaterial( { map: texture} ) );
+		sprite.scale.set(0.5 * fontsize, 0.25 * fontsize, 0.75 * fontsize);
+
+		const overhead = sprite;
+		overhead.position.setY(2.8);
+		this.mesh.add(overhead);
 	}
 }
 
@@ -369,61 +387,11 @@ const assets = {
 	}
 };
 
-function makeTextSprite( message, parameters ) {
-	if ( parameters === undefined ) parameters = {};
-	var fontface = parameters.hasOwnProperty('fontface') ? parameters['fontface'] : 'Arial';
-	var fontsize = parameters.hasOwnProperty('fontsize') ? parameters['fontsize'] : 18;
-	var borderThickness = parameters.hasOwnProperty('borderThickness') ? parameters['borderThickness'] : 4;
-	var borderColor = parameters.hasOwnProperty('borderColor') ?parameters['borderColor'] : { r:0, g:0, b:0, a:1.0 };
-	var backgroundColor = parameters.hasOwnProperty('backgroundColor') ?parameters['backgroundColor'] : { r:255, g:255, b:255, a:1.0 };
-	var textColor = parameters.hasOwnProperty('textColor') ?parameters['textColor'] : { r:0, g:0, b:0, a:1.0 };
-
-	var tempCanvas = document.createElement('canvas');
-	var context = tempCanvas.getContext('2d');
-	context.font = 'Bold ' + fontsize + 'px ' + fontface;
-	var metrics = context.measureText( message );
-	var textWidth = metrics.width;
-
-	context.fillStyle   = 'rgba(' + backgroundColor.r + ',' + backgroundColor.g + ',' + backgroundColor.b + ',' + backgroundColor.a + ')';
-	context.strokeStyle = 'rgba(' + borderColor.r + ',' + borderColor.g + ',' + borderColor.b + ',' + borderColor.a + ')';
-
-	var x = borderThickness/2 + (textWidth + borderThickness) * 1.1;
-	var y = borderThickness/2 + fontsize * 1.4 + borderThickness;
-	context.translate((tempCanvas.width - x)/2, (tempCanvas.height - y)/2);
-
-	context.lineWidth = borderThickness;
-	roundRect(context, borderThickness/2, borderThickness/2, (textWidth + borderThickness) * 1.1, fontsize * 1.4 + borderThickness, 8);
-
-	context.fillStyle = 'rgba('+textColor.r+', '+textColor.g+', '+textColor.b+', 1.0)';
-	context.fillText( message, borderThickness, fontsize + borderThickness);
-
-	var texture = new THREE.Texture(tempCanvas) 
-	texture.needsUpdate = true;
-
-	var spriteMaterial = new THREE.SpriteMaterial( { map: texture, transparent: true} );
-	var sprite = new THREE.Sprite( spriteMaterial );
-	sprite.scale.set(0.5 * fontsize, 0.25 * fontsize, 0.75 * fontsize);
-	return sprite;  
-}
-
-function roundRect(ctx, x, y, w, h, r) {
-	ctx.beginPath();
-	ctx.moveTo(x + r, y);
-	ctx.lineTo(x + w - r, y);
-	ctx.quadraticCurveTo(x + w, y, x + w, y + r);
-	ctx.lineTo(x + w, y + h - r);
-	ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
-	ctx.lineTo(x + r, y + h);
-	ctx.quadraticCurveTo(x, y + h, x, y + h - r);
-	ctx.lineTo(x, y + r);
-	ctx.quadraticCurveTo(x, y, x + r, y);
-	ctx.closePath();
-	ctx.fill();
-	ctx.stroke();
-}
-
 function init() {
 	let geo, mat, mesh;
+
+	if (canvas !== undefined)
+		return
 
 	//canvas
 	canvas = document.getElementById('c');
@@ -526,40 +494,62 @@ function animate(timestamp) {
 function addNewConnection(conn) {
 	const id = conn.peer;
 
-	if (id === peerID)
+	if (id === peerID || connections.hasOwnProperty(id))
 		return;
 
 	conn.on('open', () => {
+		if (connections.hasOwnProperty(id))
+			return;
 		if (id === serverID) {
 			init();
 		}
 		connections[id] = [conn];
-		new OtherPlayer(id, conn.metadata);
+		new OtherPlayer(id);
+		conn.send({
+			type: 'overhead',
+			id: peerID,
+			nickname: nickname
+		})
 	});
 
 	conn.on('data', (data) => {
 		if (objects.hasOwnProperty(data.id)) {
+			const object = objects[id];
 			switch (data.type) {
 				case 'update':
 					const pos = data.pos;
-					objects[id].pos.set(pos.x, pos.y, pos.z);
-					objects[id].rotationY = data.rotationY;
-					objects[id].animationName = data.animationName;
-					objects[id].animationDir = data.animationDir;
+					object.pos.set(pos.x, pos.y, pos.z);
+					object.rotationY = data.rotationY;
+					object.animationName = data.animationName;
+					object.animationDir = data.animationDir;
+					break;
+				case 'overhead':
+					object.addOverhead(data.nickname);
 					break;
 			}
-		} else if (data.type === 'playerList') {
-			const playerList = data.playerList;
-			for (let i = 0; i < playerList.length; i++) {
-				addNewConnection(peer.connect(playerList[i], {metadata: nickname}));
+		} else {
+			switch (data.type) {
+				case 'playerList':
+					const playerList = data.playerList;
+					for (let i = 0; i < playerList.length; i++)
+						addNewConnection(peer.connect(playerList[i]));
+					break;
 			}
 		}
 	});
 
+	conn.on('error', (err) => {
+		const conn = peer.connect(id);
+		addNewConnection(conn);
+	})
+
 	conn.on('close', () => {
 		const id = conn.peer;
-		objects[id].delete();
-		delete objects[id];
+		if (objects[id]) {
+			objects[id].delete();
+			delete objects[id];
+		}
+		delete connections[id];
 	})
 }
 
@@ -600,13 +590,12 @@ function loadGame(event) {
 		serverID = document.getElementById('join').value.trim();
 
 		peer.on('open', (id) => {
-			document.getElementById('loadingInfo').textContent = 'Connected!';
 			peerID = id;
 			if (hosting) {
 				serverID = id;
 				init();
 			} else {
-				const conn = peer.connect(serverID, {metadata: {nickname: nickname}});
+				const conn = peer.connect(serverID);
 				addNewConnection(conn);
 			}
 		});
@@ -615,7 +604,12 @@ function loadGame(event) {
 
 		peer.on('error', (err) => {
 			console.log(err, err.type);
-		})
+		});
+
+		peer.on('disconnected', () => {
+			console.log("reconnecting")
+			peer.reconnect();
+		});
 
 		window.addEventListener('beforeunload', (event) => {
 			event.preventDefault();
