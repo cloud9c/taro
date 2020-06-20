@@ -1,49 +1,49 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang='en'>
    <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width,initial-scale=1">
+      <meta charset='UTF-8'>
+      <meta name='viewport' content='width=device-width,initial-scale=1'>
       <title>Three.js game</title>
-      <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
-      <link rel="stylesheet" href="style.css" type="text/css">
+      <link rel='shortcut icon' href='favicon.ico' type='image/x-icon'>
+      <link rel='stylesheet' href='style.css' type='text/css'>
    </head>
    <body>
-      <div id="launcher">
-         <h1 id="title">Erik's Cool Awesome Very-Good Game</h1>
-         <div class="card">
-            <div id="splashPage">
-               <form id="joinSubmit" onsubmit="return false">
-                  <h2 class="label">JOIN SERVER</h2>
-                  <input type="text" class="text-input nickname" placeholder="Player name" autocomplete="off" required>
-                  <input type="text" class="text-input" id="join" placeholder="Server code" autocomplete="off" required>
-                  <input type="submit" class="launcher-button" value="Join">
+      <div id='launcher'>
+         <h1 id='title'>Erik's Cool Awesome Very-Good Game</h1>
+         <div class='card'>
+            <div id='splashPage'>
+               <form id='joinSubmit' onsubmit='return false'>
+                  <h2 class='label'>JOIN SERVER</h2>
+                  <input type='text' class='text-input nickname' placeholder='Player name' autocomplete='off' required>
+                  <input type='text' class='text-input' id='join' placeholder='Server code' autocomplete='off' required>
+                  <input type='submit' class='launcher-button' value='Join'>
                </form>
 
                <hr>
 
-               <h2 class="label">HOST SERVER</h2>
-               <button type="submit" id="nextButton" class="launcher-button">Host</button>
+               <h2 class='label'>HOST SERVER</h2>
+               <button type='submit' id='nextButton' class='launcher-button'>Host</button>
             </div>
 
-            <form id="hostSubmit" onsubmit="return false" style="display: none">
-               <h2 class="label">HOST SETTINGS</h2>
-               <input type="text" class="text-input nickname" placeholder="Player name" autocomplete="off" required>
-               <input type="submit" class="launcher-button" value="Start Game!">               
+            <form id='hostSubmit' onsubmit='return false' style='display: none'>
+               <h2 class='label'>HOST SETTINGS</h2>
+               <input type='text' class='text-input nickname' placeholder='Player name' autocomplete='off' required>
+               <input type='submit' class='launcher-button' value='Start Game!'>               
             </form>
          </div>
       </div>
-      <div id="loading" style="display: none">
-         <div id="loadingInfo">Loading: Player.glb</div>
-         <div id="progressBar">
-            <div id="barPercentage"></div>
+      <div id='loading' style='display: none'>
+         <div id='loadingInfo'>Loading: Player.glb</div>
+         <div id='progressBar'>
+            <div id='barPercentage'></div>
          </div>
       </div>
-      <div id="game">
-         <div id="crosshair"></div>
-         <div id="log"></div>
-         <canvas id="c"></canvas>
+      <div id='game'>
+         <div id='crosshair'></div>
+         <div id='log'></div>
+         <canvas id='c'></canvas>
       </div>
-      <script src="https://unpkg.com/peerjs@1.2.0/dist/peerjs.min.js"></script>
-      <script type="module" src="js/main.js"></script>
+      <script src='https://unpkg.com/peerjs@1.2.0/dist/peerjs.min.js'></script>
+      <script type='module' src='js/main.js'></script>
    </body>
 </html>
