@@ -278,8 +278,7 @@ class Player {
 		this.gravity = this.jumpVel * 2.5;
 		// w s a d jump sprint
 
-			}
-		} );
+		const mesh = setGltf.call(this, 'player.glb');
 
 		mesh.rotation.y = 180 * Math.PI/180
 
@@ -293,7 +292,6 @@ class Player {
 		const gridHelper = new THREE.GridHelper( 1000, 1000, 0x0000ff, 0x808080  );
 		scene.add( gridHelper );
 
-		// Animation
 		scene.add(mesh);
 
 		// event listeners
