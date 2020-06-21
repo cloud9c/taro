@@ -278,15 +278,6 @@ class Player {
 		this.gravity = this.jumpVel * 2.5;
 		// w s a d jump sprint
 
-		const gltf = assets.copy('player.glb');
-		const mesh = gltf.scene;
-		const animations = gltf.animations;
-		let actions = [], activeAction;
-
-		mesh.traverse( node => {
-			if (node.isMesh) {
-				node.castShadow = true;
-				node.receiveShadow = true;
 			}
 		} );
 
@@ -303,27 +294,7 @@ class Player {
 		scene.add( gridHelper );
 
 		// Animation
-		const mixer = new THREE.AnimationMixer( mesh );
-
-		for (let i = 0; i < animations.length; i ++) {
-			const clip = animations[i];
-			const action = mixer.clipAction( clip );
-			if (clip.name === 'Jump') {
-				action.setLoop( THREE.LoopOnce )
-			}
-			actions[ clip.name ] = action;
-		}
-
-		activeAction = actions[ 'Idle' ];
-		activeAction.play();
-
 		scene.add(mesh);
-
-		// set to this
-		this.mixer = mixer;
-		this.actions = actions;
-		this.activeAction = activeAction;
-		this.mesh = mesh;
 
 		// event listeners
 		canvas.addEventListener('click', () => {
@@ -429,7 +400,10 @@ class Player {
 		if (pos.y === 0) {
 			if (keyEnum[controls[4]]) {
 				yVel += this.jumpVel;
-				fadeToAction.call(this, 'Jump', 0.2, 0.);
+				let jump = 'WalkJump'
+				if (xVel === 0 && zVel === 0)
+					jump = 'Jump'
+				fadeToAction.call(this, jump, 0.4);
 			}
 			if (keyEnum[controls[5]]) {
 				speed *= this.sprintFactor;
@@ -447,7 +421,7 @@ class Player {
 			dir = -1;
 		}
 
-		if (pos.y === 0) { // maybe too spammy? TODO
+		if (yVel === 0) { // maybe too spammy? TODO
 			if (speed > this.walkingSpeed || speed > this.walkingSpeed) {
 				fadeToAction.call(this, 'Running', 0.2, dir);
 			}
@@ -501,49 +475,13 @@ class OtherPlayer {
 		this.rotationY = 0;
 		this.id = id;
 
-		console.log(id)
-
-		if (hosting) {
+		if (hosting)
 			connections[id][0].send({type: 'playerList', playerList: Object.keys(connections)});
-		}
 
-		// gltf models
-		const gltf = assets.copy('player.glb');
-		const mesh = gltf.scene;
-		const animations = gltf.animations;
-		let actions = [], activeAction;
-		const animationName = 'Idle';
+		const mesh = setGltf.call(this, 'player.glb');
 
-		mesh.traverse( node => {
-			if (node.isMesh) {
-				node.castShadow = true;
-				node.receiveShadow = true;
-			}
-		} );
-
-		// Animation
-		const mixer = new THREE.AnimationMixer( mesh );
-
-		for (let i = 0; i < animations.length; i ++) {
-			const clip = animations[i];
-			const action = mixer.clipAction( clip );
-			if (clip.name === 'Jump') {
-				action.setLoop( THREE.LoopOnce )
-			}
-			actions[ clip.name ] = action;
-		}
-
-		activeAction = actions[ animationName ];
-		activeAction.play();
-
-		// set to this
-		this.mixer = mixer;
-		this.actions = actions;
-		this.activeAction = activeAction;
-		this.animationName = animationName;
+		this.animationName = 'Idle';
 		this.animationDir = 1;
-		this.mesh = mesh;
-
 		objects[id] = this;
 		scene.add(mesh);
 	}
@@ -561,7 +499,6 @@ class OtherPlayer {
 	}
 
 	addOverhead(message) {
-		console.log('added overhead')
 		const fontsize = 24;
 		const tempCanvas = document.createElement('canvas');
 		tempCanvas.width = 512;
@@ -633,6 +570,41 @@ const assets = {
 		return clone;
 	}
 };
+
+function setGltf(assetName) {
+	const gltf = assets.copy(assetName);
+	const mesh = gltf.scene;
+	const animations = gltf.animations;
+	let actions = [];
+
+	mesh.traverse( node => {
+		if (node.isMesh) {
+			node.castShadow = true;
+			node.receiveShadow = true;
+		}
+	} );
+
+	// Animation
+	const mixer = new THREE.AnimationMixer( mesh );
+
+	for (let i = 0; i < animations.length; i ++) {
+		const clip = animations[i];
+		const action = mixer.clipAction( clip );
+		if (clip.name === 'Jump' && clip.name === 'WalkJump') {
+			action.setLoop( THREE.LoopOnce );
+		}
+		actions[ clip.name ] = action;
+	}
+
+	let activeAction = actions['Idle'];
+	activeAction.play();
+	this.mixer = mixer;
+	this.actions = actions;
+	this.activeAction = activeAction;
+	this.mesh = mesh;
+
+	return mesh
+}
 
 function init() {
 	let geo, mat, mesh;
@@ -832,11 +804,9 @@ function newPeer() {
 	peer.on('error', (err) => { //TODO, add all errors
 		if (err.type === 'unavailable-id')
 			newPeer();
-		console.log(err, err.type);
 	});
 
 	peer.on('disconnected', () => {
-		console.log("reconnecting")
 		peer.reconnect();
 	});
 }
