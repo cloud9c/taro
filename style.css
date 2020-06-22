@@ -4,10 +4,6 @@ html, body {
 	font-family: sans-serif;
 }
 
-#game {
-	display: none;
-}
-
 #c {
 	width: 100%;
 	height: 100%;
@@ -121,9 +117,39 @@ hr {
 
 #menu {
 	position: fixed;
+	display: flex;
+	flex-direction: column;
 	width: 100vw;
 	height: 100vh;
 	z-index: 1;
 	background: rgba(0, 0, 0, 0.3);
 	backdrop-filter: blur(24px);
+}
+
+#menu-sidebar {
+	font-size: 24px;
+	color: white;
+	margin: 16px auto 0;
+	text-align: center;
+	cursor: default;
+}
+
+#menu-sidebar div {
+	display: inline-block;
+	cursor: pointer;
+	padding: 8px;
+	margin: 0 8px;
+	border-radius: 4px
+}
+
+#menu-sidebar div:hover {
+	background: rgba(0, 0, 0, 0.2);
+}
+
+#menu-sidebar div[data-selected] {
+	border-bottom: 2px solid white;
+}
+
+#menu-content {
+	flex: 1 0 0;
 }

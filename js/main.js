@@ -242,21 +242,25 @@ function mousemove() {
 function keydown() {
 	if (event.repeat)
 		return;
+	event.preventDefault();
 	const key = event.key.toLowerCase();
 	keyEnum[key] = true;
 	switch (key) {
 		case 'tab':
 			menu = true;
-			document.getElementById('menu').style.display = 'block';
+			document.getElementById('menu').style.display = '';
 			document.removeEventListener('mousemove', mousemove);
 			document.removeEventListener('keydown', keydown);
 			document.addEventListener('keydown', menuKeydown);
 			document.exitPointerLock();
+			for (const property in keyEnum)
+				keyEnum[property] = false;
 			break;
 	}
 }
 
 function menuKeydown() {
+	event.preventDefault();
 	if (event.key.toLowerCase() === 'tab') {
 		menu = false;
 		document.addEventListener('mousemove', mousemove);
@@ -418,7 +422,7 @@ function init() {
 	document.getElementById('log').textContent = 'Server Code: ' + serverID;
 	document.getElementById('launcher').remove();
 	document.getElementById('loading').remove();
-	document.getElementById('game').style.display = 'block';
+	document.getElementById('game').style.display = '';
 
 	//scene
 	scene = new THREE.Scene();
