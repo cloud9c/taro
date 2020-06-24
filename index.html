@@ -5,6 +5,7 @@
       <meta name='viewport' content='width=device-width,initial-scale=1'>
       <title>Three.js game</title>
       <link rel='shortcut icon' href='favicon.ico' type='image/x-icon'>
+      <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400&display=swap" rel="stylesheet">
       <link rel='stylesheet' href='style.css' type='text/css'>
    </head>
    <body>
@@ -18,9 +19,7 @@
                   <input type='text' class='text-input' id='join' placeholder='Server code' autocomplete='off' required>
                   <input type='submit' class='launcher-button' value='Join'>
                </form>
-
                <hr>
-
                <h2 class='label'>HOST SERVER</h2>
                <button type='submit' id='nextButton' class='launcher-button'>Host</button>
             </div>
@@ -41,12 +40,61 @@
       <div id='game' style='display: none'>
          <div id='menu' style='display: none'>
             <div id='menu-sidebar'>
-               <!-- <div>Gameplay</div> -->
-               <div data-selected>Controls</div>
-               <div>Video</div>
-               <div>Audio</div>
+               <!-- <button>Gameplay</button> -->
+               <button class='setting-label' data-setting='controls' data-selected>Controls</button>
+               <button class='setting-label' data-setting='video'>Video</button>
+               <button class='setting-label' data-setting='audio'>Audio</button>
             </div>
-            <div id='menu-content'></div>
+            <div id='menu-content'>
+               <form class='setting' data-setting='controls' data-selected>
+                  <div>
+                     <label for="displayMode">Display Mode</label>
+                     <select name="displayMode">
+                        <option value="windowed">Windowed</option>
+                        <option value="fullscreen">Fullscreen</option>
+                     </select>
+                  </div>
+                  <hr>
+                  <div>
+                     <label for="aspectRatio">Aspect Ratio</label>
+                     <select name="aspectRatio">
+                        <option value="4-3">4:3</option>
+                        <option value="16-9">16:9</option>
+                        <option value="16-10">16:10</option>
+                     </select>
+                  </div>
+                  <hr>
+                  <div>
+                     <label for="brightness">Brightness</label>
+                     <input name='brightness' type='range' min="0" value="80" max="100" step="1">
+                     <input type="number" name="tentacles" min="0" max="100" value="42">
+                  </div>
+                  <hr>
+                  <div>
+                     <label for="fov">Field of View</label>
+                     <input name='fov' type='range' min="0" value="80" max="100" step="1">
+                     <input type="number" name="tentacles" min="0" max="100" value="42">
+                  </div>
+               </form>
+               <form class='setting' data-setting='video'>
+                  <label for="cars">Choose a car</label>
+                  <select name="cars">
+                     <option value="volvo">Volvo</option>
+                     <option value="saab">Saab</option>
+                     <option value="opel">Opel</option>
+                     <option value="audi">Audi</option>
+                  </select>
+               </form>
+               <form class='setting' data-setting='audio'>
+                  <label for="cars">Choose a car</label>
+                  <select name="cars">
+                     <option value="volvo">Volvo</option>
+                     <option value="saab">Saab</option>
+                     <option value="opel">Opel</option>
+                     <option value="audi">Audi</option>
+                  </select>
+               </form>
+            </div>
          </div>
          <div id='crosshair'></div>
          <div id='log'></div>
