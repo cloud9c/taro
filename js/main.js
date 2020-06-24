@@ -675,14 +675,12 @@ window.addEventListener('load', () => {
 		})
 	}
 
-	for (const element of document.querySelectorAll('.setting input')) {
-		if (element.type === 'range') {
-			element.style.background = 'linear-gradient(to right, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.8) ' + 100 * element.value / element.getAttribute('max') + '%, rgba(255,255,255,0.4) ' + 100 * element.value / element.getAttribute('max') + '%, rgba(255,255,255,0.4) 100%)';
-			element.oninput = function() {
-				this.style.background = 'linear-gradient(to right, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.8) ' + 100 * this.value / this.getAttribute('max') + '%, rgba(255,255,255,0.4) ' + 100 * this.value / this.getAttribute('max') + '%, rgba(255,255,255,0.4) 100%)'
-			};
-		} else {
-			
-		}
+	for (const element of document.querySelectorAll('.setting input[type=range]')) {
+		element.style.background = 'linear-gradient(to right, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.8) ' + 100 * element.value / element.getAttribute('max') + '%, rgba(255,255,255,0.4) ' + 100 * element.value / element.getAttribute('max') + '%, rgba(255,255,255,0.4) 100%)';
+		element.nextElementSibling.value = element.value;
+		element.oninput = function() {
+			this.style.background = 'linear-gradient(to right, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.8) ' + 100 * this.value / this.getAttribute('max') + '%, rgba(255,255,255,0.4) ' + 100 * this.value / this.getAttribute('max') + '%, rgba(255,255,255,0.4) 100%)'
+			this.nextElementSibling.value = this.value;
+		};
 	}
 });
