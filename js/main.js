@@ -52,6 +52,7 @@ class Player {
 		// event listeners
 		canvas.addEventListener('click', () => {
 			document.body.requestPointerLock();
+			console.log('here')
 		});
 
 		window.addEventListener('blur', event => {
@@ -92,13 +93,12 @@ class Player {
 		});
 
 		document.addEventListener('keydown', event => {
-			event.preventDefault();
 			if (event.repeat)
 				return;
 
-			const key = event.key.toLowerCase();
+			const key = event.code;
 
-			if (key === 'tab') {
+			if (key === 'Tab') {
 				if (paused) {
 					paused = false;
 					document.getElementById('menu').style.display = 'none';
@@ -156,7 +156,7 @@ class Player {
 		});
 
 		document.addEventListener('keyup', event => {
-			const key = event.key.toLowerCase();
+			const key = event.code;
 			keyEnum[key] = false;
 		});
 
@@ -479,7 +479,7 @@ function init() {
 	scene.add( mesh );
 
 	//player
-	objects['player'] = new Player(['w', 's', 'a', 'd', ' ', 'shift']);
+	objects['player'] = new Player(['KeyW', 'KeyS', 'KeyA', 'KeyD', 'Space', 'ShiftLeft']);
 }
 
 function fadeToAction(name, duration, timeScale = 1) {
