@@ -5,7 +5,7 @@ let scene, renderer, camera, canvas;
 let cameraRadius, cameraAngle;
 let lastTimestamp = 0, dt;
 const keyEnum = {}, objects = {};
-
+let assets;
 let peer, connections = [], serverID, peerID, hosting, nickname;
 let paused = false;
 
@@ -70,8 +70,11 @@ class Player {
 			if (paused)
 				return;
 			const sensitivity = objects['player'].sensitivity;
-			let dx = event.movementX * sensitivity;
-			let dy = event.movementY * sensitivity;
+			const max = sensitivity * 14;
+
+			const dx = Math.min(Math.max(event.movementX * sensitivity, -max), max);
+			const dy = Math.min(Math.max(event.movementY * sensitivity, -max), max);
+
 			objects['player'].mesh.rotation.y -= dx;
 			if (dy != 0) {
 				const newCameraAngle = cameraAngle + dy;
@@ -313,7 +316,7 @@ class OtherPlayer {
 	}
 }
 
-const assets = {
+class Asset {
 	copy(asset) {
 		const gltf = this[asset]
 		const clone = {
@@ -402,9 +405,6 @@ function setGltf(assetName) {
 
 function init() {
 	let geo, mat, mesh;
-
-	if (canvas !== undefined)
-		return
 
 	//html stuff
 	canvas = document.getElementById('c');
@@ -624,6 +624,7 @@ function loadGame(event) {
 	const manager = new THREE.LoadingManager();
 	const modelLoader = new GLTFLoader(manager);
 	const models = ['player.glb'];
+	assets = new Asset()
 
 	for (const model of models) {
 		modelLoader.load('assets/models/' + model, gltf => {
