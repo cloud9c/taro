@@ -12,8 +12,8 @@
       <div id='launcher'>
          <h1 id='title'>Erik's Cool Awesome Very-Good Game</h1>
          <div class='card'>
-            <div id='splashPage'>
-               <form id='joinSubmit' onsubmit='return false'>
+            <div id='splash-page'>
+               <form id='join-submit' onsubmit='return false'>
                   <h2 class='label'>JOIN SERVER</h2>
                   <input type='text' class='text-input nickname' placeholder='Player name' autocomplete='off' required>
                   <input type='text' class='text-input' id='join' placeholder='Server code' autocomplete='off' required>
@@ -21,10 +21,10 @@
                </form>
                <hr>
                <h2 class='label'>HOST SERVER</h2>
-               <button type='submit' id='nextButton' class='launcher-button'>Host</button>
+               <button type='submit' id='next-button' class='launcher-button'>Host</button>
             </div>
 
-            <form id='hostSubmit' onsubmit='return false' style='display: none'>
+            <form id='host-submit' onsubmit='return false' style='display: none'>
                <h2 class='label'>HOST SETTINGS</h2>
                <input type='text' class='text-input nickname' placeholder='Player name' autocomplete='off' required>
                <input type='submit' class='launcher-button' value='Start Game!'>               
@@ -32,9 +32,9 @@
          </div>
       </div>
       <div id='loading' style='display: none'>
-         <div id='loadingInfo'>Loading: Player.glb</div>
-         <div id='progressBar'>
-            <div id='barPercentage'></div>
+         <div id='loading-info'>Loading: Player.glb</div>
+         <div id='progress-bar'>
+            <div id='bar-percentage'></div>
          </div>
       </div>
       <div id='game' style='display: none'>
@@ -66,14 +66,81 @@
                   <hr>
                   <div>
                      <label for='brightness'>Brightness</label>
-                     <input name='brightness' type='range' min='0' value='80' max='100' step='1'>
+                     <input name='brightness' type='range' min='0' value='50' max='100' step='1'>
                      <input name='brightness' type='number' min='0' max='100'>
                   </div>
                   <hr>
                   <div>
                      <label for='fov'>Field of View</label>
-                     <input name='fov' type='range' min='0' value='80' max='100' step='1'>
-                     <input name='fov' type='number' min='0' max='100'>
+                     <input name='fov' type='range' min='40' value='50' max='60' step='1'>
+                     <input name='fov' type='number' min='40' max='60'>
+                  </div>
+                  <hr>
+                  <div>
+                     <label for='powerPreference'>Power Preference</label>
+                     <select name='powerPreference'>
+                        <option value='default'>Default</option>
+                        <option value='low-power'>Low Power</option>
+                        <option value='high-performance'>High Performance</option>
+                     </select>
+                  </div>
+                  <h1>Advanced</h1>
+                  <div>
+                     <label for='antiAliasing'>Anti-aliasing</label>
+                     <select name='antiAliasing'>
+                        <option value='disabled'>Disabled</option>
+                        <option value='enabled'>Enabled</option>
+                     </select>
+                  </div>
+                  <hr>
+                  <div>
+                     <label for='textureFiltering'>Texture Filtering</label>
+                     <select name='textureFiltering'>
+                        <option value='1'>1x</option>
+                        <option value='2'>2x</option>
+                        <option value='4'>4x</option>
+                        <option value='8'>8x</option>
+                        <option value='16'>16x</option>
+                        <option value='32'>32x</option>
+                     </select>
+                  </div>
+                  <hr>
+                  <div>
+                     <label for='shadowPrecision'>Shadow Precision</label>
+                     <select name='shadowPrecision'>
+                        <option value='lowp'>Low</option>
+                        <option value='mediump'>Medium</option>
+                        <option value='highp'>High</option>
+                     </select>
+                  </div>
+                  <hr>
+                  <div>
+                     <label for='shadowMap'>Shadow Map</label>
+                     <select name='shadowMap'>
+                        <option value='BasicShadowMap'>Basic Shadow</option>
+                        <option value='PCFShadowMap'>PCF Shadow</option>
+                        <option value='PCFSoftShadowMap'>PCF Soft Shadow</option>
+                        <option value='VSMShadowMap'>VSM Shadow</option>
+                     </select>
+                  </div>
+                  <hr>
+                  <div>
+                     <label for='physicallyCorrectLights'>Realistic Lighting</label>
+                     <select name='physicallyCorrectLights'>
+                        <option value='Disabled'>Disabled</option>
+                        <option value='Enabled'>Enabled</option>
+                     </select>
+                  </div>
+                  <hr>
+                  <div>
+                     <label for='toneMap'>Tone Map</label>
+                     <select name='toneMap'>
+                        <option value='NoToneMapping'>Disabled</option>
+                        <option value='LinearToneMapping'>Linear Tone</option>
+                        <option value='ReinhardToneMapping'>Reinhard Tone</option>
+                        <option value='CineonToneMapping'>Cineon Tone</option>
+                        <option value='ACESFilmicToneMapping'>ACES Filmic Tone</option>
+                     </select>
                   </div>
                </form>
                <form class='setting' data-setting='video'>

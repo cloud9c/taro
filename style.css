@@ -25,12 +25,12 @@ html, body {
 	height: 100vh;
 }
 
-#loadingInfo {
+#loading-info {
 	margin: auto auto 0;
 	font-size: 40px;
 }
 
-#progressBar {
+#progress-bar {
 	width: 60%;
 	height: 20px;
 	border: 2px solid #000;
@@ -39,7 +39,7 @@ html, body {
 	display: flex;
 }
 
-#barPercentage {
+#bar-percentage {
 	width: 0%;
 	background: red;
 	height: 100%;
@@ -98,7 +98,7 @@ html, body {
 	width: 100%;
 }
 
-#splashPage > hr {
+#splash-page > hr {
 	margin: 32px 0;
 	border: 1px solid #C8C8C8;
 }
@@ -132,6 +132,7 @@ html, body {
 	border-bottom: 1px solid rgba(255, 255, 255, 0.4);
 	width: 100%;
 	background: rgba(0, 0, 0, 0.2);
+	cursor: default;
 }
 
 .setting-label {
@@ -162,6 +163,7 @@ html, body {
 	flex: 1 0 0;
 	color: white;
 	background: rgba(0, 0, 0, 0.3);
+	overflow-y: auto;
 }
 
 .setting {
@@ -192,14 +194,17 @@ html, body {
 	border: none;
 	outline: none;
 	margin: auto 0 auto auto;
+	cursor: pointer;
+	text-align-last: right;
 }
 
-.setting select > option {
+.setting option {
 	background: lightgray;
 	color: black;
+	/*direction: rtl;*/
 }
 
-.setting > hr {
+.setting hr {
 	margin: 12px 0;
 	border: none;
 	border-bottom: 1px solid rgba(255, 255, 255, 0.4);
@@ -245,4 +250,9 @@ html, body {
 .setting input[type=number]::-webkit-inner-spin-button {
 	-webkit-appearance: none;
 	margin: 0;
+}
+
+.setting h1 {
+	margin: 64px 0 32px;
+	font-size: 20px;
 }
