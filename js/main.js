@@ -1,8 +1,6 @@
 import * as THREE from 'https://threejs.org/build/three.module.js';
 import {GLTFLoader} from 'https://threejs.org/examples/jsm/loaders/GLTFLoader.js';
 
-'use strict';
-
 let scene, renderer, camera, canvas;
 let cameraRadius, cameraAngle;
 let lastTimestamp = 0, dt;
