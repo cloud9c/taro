@@ -24,7 +24,7 @@ class Player {
 		this.speed = this.walkingSpeed;
 		this.sprinting = false;
 
-		this.sensitivity = 0.003;
+		this.sensitivity = 5 / 1400;
 
 		this.onGround = true;
 		this.jumpVel = 8;
@@ -51,8 +51,8 @@ class Player {
 
 		// event listeners
 		canvas.addEventListener('click', () => {
+			document.body.requestFullscreen();
 			document.body.requestPointerLock();
-			console.log('here')
 		});
 
 		window.addEventListener('blur', event => {
@@ -97,8 +97,10 @@ class Player {
 				return;
 
 			const key = event.code;
+			keyEnum[key] = true;
 
 			if (key === 'Tab') {
+				event.preventDefault();
 				if (paused) {
 					paused = false;
 					document.getElementById('menu').style.display = 'none';
@@ -110,9 +112,8 @@ class Player {
 					for (const property in keyEnum)
 						keyEnum[property] = false;
 				}
-			} else if (!paused) {
-				keyEnum[key] = true;
 			}
+			console.log(key)
 		});
 
 		document.addEventListener('wheel', event => {
@@ -180,28 +181,30 @@ class Player {
 			pos.y = 0;
 		}
 
-		if (keyEnum[controls[0]]) {
-			zVel -= 1;
-		}
-		if (keyEnum[controls[1]]) {
-			zVel += 1;
-		}
-		if (keyEnum[controls[2]]) {
-			xVel -= 1;
-		}
-		if (keyEnum[controls[3]]) {
-			xVel += 1;
-		}
-		if (pos.y === 0) {
-			if (keyEnum[controls[4]]) {
-				yVel += this.jumpVel;
-				let jump = 'WalkJump'
-				if (xVel === 0 && zVel === 0)
-					jump = 'Jump'
-				fadeToAction.call(this, jump, 0.4);
+		if (!paused) {
+			if (keyEnum[controls[0]]) {
+				zVel -= 1;
 			}
-			if (keyEnum[controls[5]]) {
-				speed *= this.sprintFactor;
+			if (keyEnum[controls[1]]) {
+				zVel += 1;
+			}
+			if (keyEnum[controls[2]]) {
+				xVel -= 1;
+			}
+			if (keyEnum[controls[3]]) {
+				xVel += 1;
+			}
+			if (pos.y === 0) {
+				if (keyEnum[controls[4]]) {
+					yVel += this.jumpVel;
+					let jump = 'WalkJump'
+					if (xVel === 0 && zVel === 0)
+						jump = 'Jump'
+					fadeToAction.call(this, jump, 0.4);
+				}
+				if (keyEnum[controls[5]]) {
+					speed *= this.sprintFactor;
+				}
 			}
 		}
 
@@ -405,6 +408,9 @@ function setGltf(assetName) {
 
 function init() {
 	let geo, mat, mesh;
+
+	if (canvas)
+		return;
 
 	//html stuff
 	canvas = document.getElementById('c');
@@ -615,7 +621,6 @@ function newPeer() {
 }
 
 function loadGame(event) {
-	event.preventDefault();
 	document.getElementById('join-submit').removeEventListener('submit', loadGame);
 	document.getElementById('host-submit').removeEventListener('submit', loadGame);
 	document.getElementById('launcher').style.display = 'none';
