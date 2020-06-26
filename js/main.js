@@ -438,7 +438,13 @@ function init() {
 	scene.fog = new THREE.Fog(new THREE.Color(0x0080ff), +config['renderDistance'] - 4, +config['renderDistance']);
 
 	//camera
-	camera = new THREE.PerspectiveCamera(+config['fov'], window.innerWidth / window.innerHeight, 1, +config['renderDistance']);
+	let aspectRatio = window.innerWidth / window.innerHeight;
+	if (config['aspectRatio'] != 'native') {
+		const configRatio = config['aspectRatio'].split(":");
+		aspectRatio = configRatio[0]/configRatio[1];
+	}
+
+	camera = new THREE.PerspectiveCamera(+config['fov'], aspectRatio, 1, +config['renderDistance']);
 
 	//renderer
 	renderer = new THREE.WebGLRenderer({

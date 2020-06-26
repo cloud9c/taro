@@ -66,6 +66,11 @@
 						<div>
 							<label for='moveForward'>Move Forward</label>
 							<input type='text' name='moveForward' value='KeyW' data-default='KeyW' readonly>
+							<button type='button'>
+								<svg height='24' viewBox='0 0 24 24' width='24'>
+									<path d='M0 0h24v24H0z' fill='none'/><path fill='#fff'd='M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z'/>
+								</svg>
+							</button>
 						</div>
 						<hr>
 						<div>
@@ -103,6 +108,23 @@
 						</div>
 						<hr>
 						<div>
+							<label for='resolution'>Resolution</label>
+							<input name='resolution' type='range' min='0.1' value='1' max='2' step='0.1' data-default='1'>
+							<input name='resolution' type='number' min='0.1' value='1' max='2' data-default='1'>
+						</div>
+						<hr>
+						<div>
+							<label for='aspectRatio'>Aspect Ratio</label>
+							<select name='aspectRatio' data-default='native'>
+								<option value='native'>Native</option>
+								<option value='4:3'>4:3</option>
+								<option value='5:4'>5:4</option>
+								<option value='16:9'>16:9</option>
+								<option value='16:10'>16:9</option>
+							</select>
+						</div>
+						<hr>
+						<div>
 							<label for='brightness'>Brightness</label>
 							<input name='brightness' type='range' min='0' value='50' max='100' step='1' data-default='50'>
 							<input name='brightness' type='number' min='0' value='50' max='100' data-default='50'>
@@ -118,21 +140,6 @@
 							<label for='powerPreference'>Power Preference</label>
 							<select name='powerPreference' data-default='default'>
 								<option value='default'>Default</option>
-								<option value='low-power'>Low Power</option>
-								<option value='high-performance'>High Performance</option>
-							</select>
-						</div>
-						<hr>
-						<div>
-							<label for='resolution'>Resolution</label>
-							<input name='resolution' type='range' min='0.1' value='1' max='2' step='0.1' data-default='1'>
-							<input name='resolution' type='number' min='0.1' value='1' max='2' data-default='1'>
-						</div>
-						<hr>
-						<div>
-							<label for='aspectRatio'>Aspect Ratio</label>
-							<select name='aspectRatio' data-default='native'>
-								<option value='native'>Native</option>
 								<option value='low-power'>Low Power</option>
 								<option value='high-performance'>High Performance</option>
 							</select>
@@ -222,11 +229,9 @@
 							<input name='musicVolume' type='number' min='0' max='100' step='1' data-default='100'>
 						</div>
 					</form>
-					<div class='setting-bottom'>
-						<div class='setting-buttons'>
-							<button id='setting-back'>Back</button>
-							<button id='restore-defaults'>Restore Defaults</button>
-						</div>
+					<div class='setting-buttons'>
+						<button id='setting-back'>Back</button>
+						<button id='restore-defaults'>Restore Defaults</button>
 					</div>
 				</div>
 			</div>
