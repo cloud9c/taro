@@ -20,7 +20,7 @@ class Player {
 		this.yVel = 0;
 		this.zVel = 0;
 
-		const configControls = ['moveForward', 'moveBackward', 'strafeLeft', 'strafeRight', 'space', 'sprint'];
+		const configControls = ['moveForward', 'moveBackward', 'strafeLeft', 'strafeRight', 'jump', 'sprint'];
 		this.controls = [];
 		for (const control of configControls)
 			this.controls.push(config[control]);
@@ -79,10 +79,9 @@ class Player {
 				return;
 			const sensitivityX = objects['player'].sensitivityX;
 			const sensitivityY = objects['player'].sensitivityY;
-			const max = sensitivityX * 14;
 
-			const dx = Math.min(Math.max(event.movementX * sensitivityX, -max), max);
-			const dy = Math.min(Math.max(event.movementY * sensitivityY, -max), max);
+			const dx = event.movementX * sensitivityX
+			const dy = event.movementY * sensitivityY
 
 			objects['player'].mesh.rotation.y -= dx;
 			if (dy != 0) {
@@ -112,6 +111,8 @@ class Player {
 				if (paused) {
 					paused = false;
 					document.getElementById('menu').style.display = 'none';
+					if (config['displayMode'] === 'fullscreen')
+						document.body.requestFullscreen();
 					document.body.requestPointerLock();
 				} else {
 					paused = true;
@@ -121,7 +122,6 @@ class Player {
 						keyEnum[property] = false;
 				}
 			}
-			console.log(key)
 		});
 
 		document.addEventListener('wheel', event => {
@@ -424,6 +424,9 @@ function init() {
 
 	//html stuff
 	canvas = document.getElementById('c');
+
+	canvas.style.filter = 'brightness(' + (+config['brightness'] + 50)/100 + ')'
+
 	document.getElementById('log').textContent = 'Server Code: ' + serverID;
 	document.getElementById('launcher').remove();
 	document.getElementById('loading').remove();
@@ -432,17 +435,26 @@ function init() {
 	//scene
 	scene = new THREE.Scene();
 	scene.background = new THREE.Color(0x0080ff);
-	scene.fog = new THREE.Fog(new THREE.Color(0x0080ff), 150, 200);
+	scene.fog = new THREE.Fog(new THREE.Color(0x0080ff), +config['renderDistance'] - 4, +config['renderDistance']);
 
 	//camera
-	camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 1000);
+	camera = new THREE.PerspectiveCamera(+config['fov'], window.innerWidth / window.innerHeight, 1, +config['renderDistance']);
 
 	//renderer
 	renderer = new THREE.WebGLRenderer({
-		canvas: canvas
+		canvas: canvas,
+		precision: config['shadowPrecision'],
+		antialias: config['antiAliasing'] === 'true',
+		powerPreference: config['powerPreference'],
+
 	});
 	renderer.setSize(window.innerWidth, window.innerHeight);
 	renderer.shadowMap.enabled = true;
+	renderer.shadowMap.type = THREE[config['shadowMap']];
+	renderer.physicallyCorrectLights = config['physicallyCorrectLights'] === 'true';
+	renderer.toneMapping = THREE[config['toneMap']]
+
+	renderer.setPixelRatio(+config['resolution']);
 
 	const maxFiltering = renderer.capabilities.getMaxAnisotropy();
 	const filterLevels = document.querySelector('select[name=textureFiltering]').children;
@@ -635,6 +647,9 @@ function newPeer() {
 }
 
 function loadGame(event) {
+	if (!event.path[1].reportValidity())
+		return;
+
 	document.getElementById('join-button').removeEventListener('click', loadGame);
 	document.getElementById('host-button').removeEventListener('click', loadGame);
 	document.getElementById('launcher').style.display = 'none';
@@ -661,7 +676,6 @@ function loadGame(event) {
 	}
 
 	manager.onLoad = () => {
-		console.log(event)
 		hosting = event.target.id === 'host-button';
 		document.getElementById('loading-info').textContent = 'Connecting to server...';
 		localStorage.setItem('nickname', document.getElementsByClassName('nickname')[+hosting].value);
@@ -712,8 +726,9 @@ window.addEventListener('load', () => {
 	}
 
 	for (const element of document.querySelectorAll('.setting input:not([type=number]), .setting select')) {
-		if (oldConfig === null) {
-			config[element.name] = element.value;
+		if (oldConfig === null || oldConfig.hasOwnProperty(element.name)) {
+			element.value = element.getAttribute('data-default');
+			config[element.name] = element.getAttribute('data-default');
 		} else {
 			element.value = config[element.name];
 		}
@@ -727,7 +742,6 @@ window.addEventListener('load', () => {
 				this.style.background = 'linear-gradient(to right, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.8) ' + percent + '%, rgba(255,255,255,0.4) ' + percent + '%, rgba(255,255,255,0.4) 100%)'
 				this.nextElementSibling.value = this.value;
 				config[this.name] = this.value;
-				console.log(config)
 			};
 		} else {
 			element.oninput = function() {
@@ -754,6 +768,8 @@ window.addEventListener('load', () => {
 	document.getElementById('setting-back').addEventListener('click', () => {
 		paused = false;
 		document.getElementById('menu').style.display = 'none';
+		if (config['displayMode'] === 'fullscreen')
+			document.body.requestFullscreen();
 		document.body.requestPointerLock();
 	})
 });
