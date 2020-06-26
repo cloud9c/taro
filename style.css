@@ -261,7 +261,7 @@ body {
 	-webkit-appearance: none;
 	margin: 0;
 }
-
+	
 .setting h1 {
 	margin: 64px 0 32px;
 	font-size: 20px;
@@ -269,7 +269,8 @@ body {
 
 .setting h2 {
 	margin: 0;
-	font-size: 20px;
+	font-size: 16px;
+	font-weight: 300;
 }
 
 .setting input[type=text] {
