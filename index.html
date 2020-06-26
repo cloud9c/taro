@@ -1,209 +1,217 @@
 <!DOCTYPE html>
 <html lang='en'>
-   <head>
-      <meta charset='UTF-8'>
-      <meta name='viewport' content='width=device-width,initial-scale=1'>
-      <title>Three.js game</title>
-      <link rel='shortcut icon' href='favicon.ico' type='image/x-icon'>
-      <link href='https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400&display=swap' rel='stylesheet'>
-      <link rel='stylesheet' href='style.css' type='text/css'>
-   </head>
-   <body>
-      <div id='launcher'>
-         <h1 id='title'>Erik's Cool Awesome Very-Good Game</h1>
-         <div class='card'>
-            <div id='splash-page'>
-               <form id='join-submit' onsubmit='return false'>
-                  <h2 class='label'>JOIN SERVER</h2>
-                  <input type='text' class='text-input nickname' placeholder='Player name' autocomplete='off' required>
-                  <input type='text' class='text-input' id='join' placeholder='Server code' autocomplete='off' required>
-                  <input type='submit' class='launcher-button' value='Join'>
-               </form>
-               <hr>
-               <h2 class='label'>HOST SERVER</h2>
-               <button type='submit' id='next-button' class='launcher-button'>Host</button>
-            </div>
-
-            <form id='host-submit' onsubmit='return false' style='display: none'>
-               <h2 class='label'>HOST SETTINGS</h2>
-               <input type='text' class='text-input nickname' placeholder='Player name' autocomplete='off' required>
-               <input type='submit' class='launcher-button' value='Start Game!'>               
-            </form>
-         </div>
-      </div>
-      <div id='loading' style='display: none'>
-         <div id='loading-info'>Loading: Player.glb</div>
-         <div id='progress-bar'>
-            <div id='bar-percentage'></div>
-         </div>
-      </div>
-      <div id='game' style='display: none'>
-         <div id='menu' style='display: none'>
-            <div id='menu-sidebar'>
-               <!-- <button>Gameplay</button> -->
-               <button class='setting-label' data-setting='controls' data-selected>Controls</button>
-               <button class='setting-label' data-setting='video'>Video</button>
-               <button class='setting-label' data-setting='audio'>Audio</button>
-            </div>
-            <div id='menu-content'>
-               <form class='setting' data-setting='controls' data-selected>
-                  <div>
-                     <label for='mouseSensitivity'>Mouse Sensitivity</label>
-                     <input name='mouseSensitivity' type='range' min='0' value='5' max='20' step='0.01'>
-                     <input name='mouseSensitivity' type='number' min='0' value='5' max='20' step='0.01'>
-                  </div>
-                  <hr>
-                  <div>
-                     <label for='mouseInvert'>Mouse Invert</label>
-                     <select name='mouseInvert'>
-                        <option value='Disabled'>Disabled</option>
-                        <option value='Enabled'>Enabled</option>
-                     </select>
-                  </div>
-                  <h1>Movement</h1>
-                  <div>
-                     <label for='moveForward'>Move Forward</label>
-                     <input type='text' name='moveForward' value='W'>
-                  </div>
-                  <hr>
-                  <div>
-                     <label for='moveBackward'>Move Backward</label>
-                     <input type='text' name='moveBackward' value='S'>
-                  </div>
-                  <hr>
-                  <div>
-                     <label for='strafeLeft'>Strafe Left</label>
-                     <input type='text' name='strafeLeft' value='A'>
-                  </div>
-                  <hr>
-                  <div>
-                     <label for='strafeRight'>Strafe Right</label>
-                     <input type='text' name='strafeRight' value='D'>
-                  </div>
-                  <hr>
-                  <div>
-                     <label for='sprint'>Sprint</label>
-                     <input type='text' name='sprint' value='ShiftLeft'>
-                  </div>
-                  <hr>
-                  <div>
-                     <label for='jump'>Jump</label>
-                     <input type='text' name='jump' value='Space'>
-                  </div>
-               </form>
-               <form class='setting' data-setting='video'>
-                  <div>
-                     <label for='displayMode'>Display Mode</label>
-                     <select name='displayMode'>
-                        <option value='windowed'>Windowed</option>
-                        <option value='fullscreen'>Fullscreen</option>
-                     </select>
-                  </div>
-                  <hr>
-                  <div>
-                     <label for='aspectRatio'>Aspect Ratio</label>
-                     <select name='aspectRatio'>
-                        <option value='4-3'>4:3</option>
-                        <option value='16-9'>16:9</option>
-                        <option value='16-10'>16:10</option>
-                     </select>
-                  </div>
-                  <hr>
-                  <div>
-                     <label for='brightness'>Brightness</label>
-                     <input name='brightness' type='range' min='0' value='50' max='100' step='1'>
-                     <input name='brightness' type='number' min='0' max='100'>
-                  </div>
-                  <hr>
-                  <div>
-                     <label for='fov'>Field of View</label>
-                     <input name='fov' type='range' min='40' value='50' max='60' step='1'>
-                     <input name='fov' type='number' min='40' max='60'>
-                  </div>
-                  <hr>
-                  <div>
-                     <label for='powerPreference'>Power Preference</label>
-                     <select name='powerPreference'>
-                        <option value='default'>Default</option>
-                        <option value='low-power'>Low Power</option>
-                        <option value='high-performance'>High Performance</option>
-                     </select>
-                  </div>
-                  <h1>Advanced</h1>
-                  <div>
-                     <label for='antiAliasing'>Anti-aliasing</label>
-                     <select name='antiAliasing'>
-                        <option value='disabled'>Disabled</option>
-                        <option value='enabled'>Enabled</option>
-                     </select>
-                  </div>
-                  <hr>
-                  <div>
-                     <label for='textureFiltering'>Texture Filtering</label>
-                     <select name='textureFiltering'>
-                        <option value='1'>1x</option>
-                        <option value='2'>2x</option>
-                        <option value='4'>4x</option>
-                        <option value='8'>8x</option>
-                        <option value='16'>16x</option>
-                        <option value='32'>32x</option>
-                     </select>
-                  </div>
-                  <hr>
-                  <div>
-                     <label for='shadowPrecision'>Shadow Precision</label>
-                     <select name='shadowPrecision'>
-                        <option value='lowp'>Low</option>
-                        <option value='mediump'>Medium</option>
-                        <option value='highp'>High</option>
-                     </select>
-                  </div>
-                  <hr>
-                  <div>
-                     <label for='shadowMap'>Shadow Map</label>
-                     <select name='shadowMap'>
-                        <option value='BasicShadowMap'>Basic Shadow</option>
-                        <option value='PCFShadowMap'>PCF Shadow</option>
-                        <option value='PCFSoftShadowMap'>PCF Soft Shadow</option>
-                        <option value='VSMShadowMap'>VSM Shadow</option>
-                     </select>
-                  </div>
-                  <hr>
-                  <div>
-                     <label for='physicallyCorrectLights'>Realistic Lighting</label>
-                     <select name='physicallyCorrectLights'>
-                        <option value='Disabled'>Disabled</option>
-                        <option value='Enabled'>Enabled</option>
-                     </select>
-                  </div>
-                  <hr>
-                  <div>
-                     <label for='toneMap'>Tone Map</label>
-                     <select name='toneMap'>
-                        <option value='NoToneMapping'>Disabled</option>
-                        <option value='LinearToneMapping'>Linear Tone</option>
-                        <option value='ReinhardToneMapping'>Reinhard Tone</option>
-                        <option value='CineonToneMapping'>Cineon Tone</option>
-                        <option value='ACESFilmicToneMapping'>ACES Filmic Tone</option>
-                     </select>
-                  </div>
-               </form>
-               <form class='setting' data-setting='audio'>
-                  <label for='cars'>Choose a car</label>
-                  <select name='cars'>
-                     <option value='volvo'>Volvo</option>
-                     <option value='saab'>Saab</option>
-                     <option value='opel'>Opel</option>
-                     <option value='audi'>Audi</option>
-                  </select>
-               </form>
-            </div>
-         </div>
-         <div id='crosshair'></div>
-         <div id='log'></div>
-         <canvas id='c'></canvas>
-      </div>
-      <script src='https://unpkg.com/peerjs@1.2.0/dist/peerjs.min.js'></script>
-      <script type='module' src='js/main.js'></script>
-   </body>
+	<head>
+		<meta charset='UTF-8'>
+		<meta name='viewport' content='width=device-width,initial-scale=1'>
+		<title>Three.js game</title>
+		<link rel='shortcut icon' href='favicon.ico' type='image/x-icon'>
+		<link href='https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400&display=swap' rel='stylesheet'>
+		<link rel='stylesheet' href='style.css' type='text/css'>
+	</head>
+	<body>
+		<div id='launcher'>
+			<h1 id='title'>Erik's Cool Awesome Very-Good Game</h1>
+			<div class='card'>
+				<div id='splash-page'>
+					<form id='join-submit' onsubmit='return false'>
+						<h2 class='label'>JOIN SERVER</h2>
+						<input type='text' class='text-input nickname' placeholder='Player name' autocomplete='off' required>
+						<input type='text' class='text-input' id='join' placeholder='Server code' autocomplete='off' required>
+						<input id='join-button' type='submit' class='launcher-button' value='Join'>
+					</form>
+					<hr>
+					<h2 class='label'>HOST SERVER</h2>
+					<button id='next-button' class='launcher-button'>Host</button>
+				</div>
+				<form id='host-submit' onsubmit='return false' style='display: none'>
+					<h2 class='label'>HOST SETTINGS</h2>
+					<input type='text' class='text-input nickname' placeholder='Player name' autocomplete='off' required>
+					<input id='host-button' type='submit' class='launcher-button' value='Start Game!'>               
+				</form>
+			</div>
+		</div>
+		<div id='loading' style='display: none'>
+			<div id='loading-info'>Loading: Player.glb</div>
+			<div id='progress-bar'>
+				<div id='bar-percentage'></div>
+			</div>
+		</div>
+		<div id='game' style='display: none'>
+			<div id='menu' style='display: none'>
+				<div id='menu-sidebar'>
+					<button class='setting-label' data-setting='gameplay' data-selected>Gameplay</button>
+					<button class='setting-label' data-setting='controls'>Controls</button>
+					<button class='setting-label' data-setting='video'>Video</button>
+					<button class='setting-label' data-setting='audio'>Audio</button>
+				</div>
+				<div id='menu-content'>
+					<form class='setting' data-setting='gameplay' data-selected>
+					</form>
+					<form class='setting' data-setting='controls'>
+						<div>
+							<label for='mouseSensitivity'>Mouse Sensitivity</label>
+							<input name='mouseSensitivity' type='range' min='0' value='5' max='20' step='0.01' data-default='5'>
+							<input name='mouseSensitivity' type='number' min='0' value='5' max='20' step='0.01' data-default='5'>
+						</div>
+						<hr>
+						<div>
+							<label for='mouseInvert'>Mouse Invert</label>
+							<select name='mouseInvert' data-default='false'>
+								<option value='false'>Disabled</option>
+								<option value='true'>Enabled</option>
+							</select>
+						</div>
+						<h1>Movement</h1>
+						<div>
+							<label for='moveForward'>Move Forward</label>
+							<input type='text' name='moveForward' value='KeyW' data-default='KeyW' readonly>
+						</div>
+						<hr>
+						<div>
+							<label for='moveBackward'>Move Backward</label>
+							<input type='text' name='moveBackward' value='KeyS' data-default='KeyS' readonly>
+						</div>
+						<hr>
+						<div>
+							<label for='strafeLeft'>Strafe Left</label>
+							<input type='text' name='strafeLeft' value='KeyA' data-default='KeyA' readonly>
+						</div>
+						<hr>
+						<div>
+							<label for='strafeRight'>Strafe Right</label>
+							<input type='text' name='strafeRight' value='KeyD' data-default='KeyD' readonly>
+						</div>
+						<hr>
+						<div>
+							<label for='sprint'>Sprint</label>
+							<input type='text' name='sprint' value='ShiftLeft' data-default='ShiftLeft' readonly>
+						</div>
+						<hr>
+						<div>
+							<label for='jump'>Jump</label>
+							<input type='text' name='jump' value='Space' data-default='Space' readonly>
+						</div>
+					</form>
+					<form class='setting' data-setting='video'>
+						<div>
+							<label for='displayMode'>Display Mode</label>
+							<select name='displayMode' data-default='windowed'>
+								<option value='windowed'>Windowed</option>
+								<option value='fullscreen'>Fullscreen</option>
+							</select>
+						</div>
+						<hr>
+						<div>
+							<label for='brightness'>Brightness</label>
+							<input name='brightness' type='range' min='0' value='50' max='100' step='1' data-default='50'>
+							<input name='brightness' type='number' min='0' value='50' max='100' data-default='50'>
+						</div>
+						<hr>
+						<div>
+							<label for='fov'>Field of View</label>
+							<input name='fov' type='range' min='40' value='50' max='60' step='1' data-default='50'>
+							<input name='fov' type='number' min='40' value='50' max='60' data-default='50'>
+						</div>
+						<hr>
+						<div>
+							<label for='powerPreference'>Power Preference</label>
+							<select name='powerPreference' data-default='default'>
+								<option value='default'>Default</option>
+								<option value='low-power'>Low Power</option>
+								<option value='high-performance'>High Performance</option>
+							</select>
+						</div>
+						<h1>Advanced</h1>
+						<div>
+							<label for='antiAliasing'>Anti-aliasing</label>
+							<select name='antiAliasing' data-default='false'>
+								<option value='false'>Disabled</option>
+								<option value='true'>Enabled</option>
+							</select>
+						</div>
+						<hr>
+						<div>
+							<label for='textureFiltering'>Texture Filtering</label>
+							<select name='textureFiltering' data-default='1'>
+								<option value='1'>1x</option>
+								<option value='2'>2x</option>
+								<option value='4'>4x</option>
+								<option value='8'>8x</option>
+								<option value='16'>16x</option>
+								<option value='32'>32x</option>
+							</select>
+						</div>
+						<hr>
+						<div>
+							<label for='shadowPrecision'>Shadow Precision</label>
+							<select name='shadowPrecision' data-default='lowp'>
+								<option value='lowp'>Low</option>
+								<option value='mediump'>Medium</option>
+								<option value='highp'>High</option>
+							</select>
+						</div>
+						<hr>
+						<div>
+							<label for='shadowMap'>Shadow Map</label>
+							<select name='shadowMap' data-default='BasicShadowMap'>
+								<option value='BasicShadowMap'>Basic Shadow</option>
+								<option value='PCFShadowMap'>PCF Shadow</option>
+								<option value='PCFSoftShadowMap'>PCF Soft Shadow</option>
+								<option value='VSMShadowMap'>VSM Shadow</option>
+							</select>
+						</div>
+						<hr>
+						<div>
+							<label for='physicallyCorrectLights'>Realistic Lighting</label>
+							<select name='physicallyCorrectLights' data-default='false'>
+								<option value='false'>Disabled</option>
+								<option value='true'>Enabled</option>
+							</select>
+						</div>
+						<hr>
+						<div>
+							<label for='toneMap'>Tone Map</label>
+							<select name='toneMap' data-default='NoToneMapping'>
+								<option value='NoToneMapping'>Disabled</option>
+								<option value='LinearToneMapping'>Linear Tone</option>
+								<option value='ReinhardToneMapping'>Reinhard Tone</option>
+								<option value='CineonToneMapping'>Cineon Tone</option>
+								<option value='ACESFilmicToneMapping'>ACES Filmic Tone</option>
+							</select>
+						</div>
+					</form>
+					<form class='setting' data-setting='audio'>
+						<div>
+							<label for='masterVolume'>Master Volume</label>
+							<input name='masterVolume' type='range' min='0' value='100' max='100' step='1' data-default='100'>
+							<input name='masterVolume' type='number' min='0' max='100' step='1' data-default='100'>
+						</div>
+						<hr>
+						<div>
+							<label for='soundEffectsVolume'>Sound Effects Volume</label>
+							<input name='soundEffectsVolume' type='range' min='0' value='100' max='100' step='1' data-default='100'>
+							<input name='soundEffectsVolume' type='number' min='0' max='100' step='1' data-default='100'>
+						</div>
+						<hr>
+						<div>
+							<label for='musicVolume'>Music Volume</label>
+							<input name='musicVolume' type='range' min='0' value='100' max='100' step='1' data-default='100'>
+							<input name='musicVolume' type='number' min='0' max='100' step='1' data-default='100'>
+						</div>
+					</form>
+					<div class='setting-bottom'>
+						<div class='setting-buttons'>
+							<button id='setting-back'>Back</button>
+							<button id='restore-defaults'>Restore Defaults</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div id='crosshair'></div>
+			<div id='log'></div>
+			<canvas id='c'></canvas>
+		</div>
+		<script src='https://unpkg.com/peerjs@1.2.0/dist/peerjs.min.js'></script>
+		<script type='module' src='js/main.js'></script>
+	</body>
 </html>

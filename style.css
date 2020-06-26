@@ -1,4 +1,5 @@
-html, body {
+html,
+body {
 	margin: 0;
 	background: #ADD8E6;
 	font-family: 'Open Sans', sans-serif;
@@ -16,7 +17,8 @@ html, body {
 	padding: 8px 16px;
 }
 
-#launcher, #loading {
+#launcher,
+#loading {
 	display: flex;
 	flex-direction: column;
 }
@@ -73,18 +75,18 @@ html, body {
 }
 
 .or {
-   width: 100%; 
-   text-align: center; 
-   border-bottom: 1px solid gray; 
-   line-height: 0.1em;
-   margin: 24px 0 ; 
+	width: 100%;
+	text-align: center;
+	border-bottom: 1px solid gray;
+	line-height: 0.1em;
+	margin: 24px 0;
 }
 
 .or span {
 	font-size: 16px;
 	background: #fff;
 	color: gray;
-	padding: 0 16px; 
+	padding: 0 16px;
 }
 
 .launcher-button {
@@ -98,7 +100,7 @@ html, body {
 	width: 100%;
 }
 
-#splash-page > hr {
+#splash-page>hr {
 	margin: 32px 0;
 	border: 1px solid #C8C8C8;
 }
@@ -108,7 +110,10 @@ html, body {
 	height: 24px;
 	margin: auto;
 	position: fixed;
-	top: 0; left: 0; bottom: 0; right: 0;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
 }
 
 #crosshair:after {
@@ -164,6 +169,7 @@ html, body {
 	color: white;
 	background: rgba(0, 0, 0, 0.3);
 	overflow-y: auto;
+	flex-direction: column;
 }
 
 .setting {
@@ -178,7 +184,7 @@ html, body {
 	display: block;
 }
 
-.setting > div {
+.setting>div {
 	display: flex;
 }
 
@@ -261,7 +267,7 @@ html, body {
 
 .setting input[type=text] {
 	border: none;
-	background: rgba(0, 0, 0, 0.2);
+	background: rgba(0, 0, 0, 0.1);
 	border-radius: 4px;
 	color: #fff;
 	outline: none;
@@ -271,4 +277,40 @@ html, body {
 	text-align: center;
 	line-height: 32px;
 	font-size: 16px;
+	transition: 0.2s;
+	cursor: pointer;
+}
+
+.setting input[type=text]:focus {
+	background: rgba(0, 0, 0, 0.3);
+}
+
+.setting-bottom {
+	width: 100%;
+	margin: 0 auto;
+	position: fixed;
+	bottom: 64px;
+}
+
+.setting-buttons {
+	width: 600px;
+	margin: 0 auto;
+}
+
+.setting-buttons > button {
+	background: none;
+	border: none;
+	font-size: 20px;
+	color: white;
+	padding: 8px;
+	margin-right: 16px;
+	cursor: pointer;
+	transition: 0.2s;
+	border-radius: 4px;
+	border: 1px solid rgba(255, 255, 255, 0.4);
+	outline: none;
+}
+
+.setting-buttons > button:hover {
+	background: rgba(0, 0, 0, 0.2);
 }
