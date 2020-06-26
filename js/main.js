@@ -21,9 +21,9 @@ class Player {
 		this.zVel = 0;
 
 		const configControls = ['moveForward', 'moveBackward', 'strafeLeft', 'strafeRight', 'jump', 'sprint'];
-		this.controls = [];
+		this.controls = {};
 		for (const control of configControls)
-			this.controls.push(config[control]);
+			this.controls[control] = config[control];
 
 		this.walkingSpeed = 10;
 		this.sprintFactor = 2;
@@ -189,27 +189,27 @@ class Player {
 		}
 
 		if (!paused) {
-			if (keyEnum[controls[0]]) {
+			if (keyEnum[controls['moveForward']]) {
 				zVel -= 1;
 			}
-			if (keyEnum[controls[1]]) {
+			if (keyEnum[controls['moveBackward']]) {
 				zVel += 1;
 			}
-			if (keyEnum[controls[2]]) {
+			if (keyEnum[controls['strafeLeft']]) {
 				xVel -= 1;
 			}
-			if (keyEnum[controls[3]]) {
+			if (keyEnum[controls['strafeRight']]) {
 				xVel += 1;
 			}
 			if (pos.y === 0) {
-				if (keyEnum[controls[4]]) {
+				if (keyEnum[controls['jump']]) {
 					yVel += this.jumpVel;
 					let jump = 'WalkJump'
 					if (xVel === 0 && zVel === 0)
 						jump = 'Jump'
 					fadeToAction.call(this, jump, 0.4);
 				}
-				if (keyEnum[controls[5]]) {
+				if (keyEnum[controls['sprint']]) {
 					speed *= this.sprintFactor;
 				}
 			}
@@ -548,7 +548,7 @@ function animate(timestamp) {
 	}
 
 	renderer.render(scene, camera);
-	requestAnimationFrame(animate);
+	renderer.setAnimationLoop(animate);
 };
 
 function addNewConnection(conn) {
@@ -701,6 +701,43 @@ function loadGame(event) {
 	}
 }
 
+function applyChanges(name) {
+	const player = objects['player'];
+	console.log(name, config[name]);
+	switch(name) {
+		case 'mouseSensitivity':
+			player.sensitivityX = config['mouseSensitivity'] / 1400;
+			player.sensitivityY = config['mouseSensitivity'] / 1400;
+			break;
+		case 'mouseInvert':
+			if (config['mouseInvert'] === 'true')
+				player.sensitivityY *= -1;
+			break;
+		case 'resolution':
+			renderer.setPixelRatio(+config['resolution']);
+			break;
+		case 'brightness':
+			canvas.style.filter = 'brightness(' + (+config['brightness'] + 50)/100 + ')';
+			break;
+		case 'fov':
+			console.log(+config['fov']);
+			camera.fov = +config['fov'];
+			break;
+		case 'aspectRatio':
+			let aspectRatio = window.innerWidth / window.innerHeight;
+			if (config['aspectRatio'] != 'native') {
+				const configRatio = config['aspectRatio'].split(":");
+				aspectRatio = configRatio[0]/configRatio[1];
+			}
+			camera.aspect = aspectRatio;
+			break;
+		case 'renderDistance':
+			camera.far = +config['renderDistance'];
+			break;
+	}
+	camera.updateProjectionMatrix();
+}
+
 window.addEventListener('load', () => {
 	const oldNickname = localStorage.getItem('nickname');
 	if (oldNickname !== null) {
@@ -739,20 +776,52 @@ window.addEventListener('load', () => {
 			element.value = config[element.name];
 		}
 
-		if (element.type === 'range') {
-			const percent = 100 * (element.value - element.getAttribute('min')) / (element.getAttribute('max') - element.getAttribute('min'));
-			element.style.background = 'linear-gradient(to right, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.8) ' + percent + '%, rgba(255,255,255,0.4) ' + percent + '%, rgba(255,255,255,0.4) 100%)';
-			element.nextElementSibling.value = element.value;
-			element.oninput = function() {
-				const percent = 100 * (this.value - this.getAttribute('min')) / (this.getAttribute('max') - this.getAttribute('min'));
-				this.style.background = 'linear-gradient(to right, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.8) ' + percent + '%, rgba(255,255,255,0.4) ' + percent + '%, rgba(255,255,255,0.4) 100%)'
-				this.nextElementSibling.value = this.value;
-				config[this.name] = this.value;
-			};
-		} else {
-			element.oninput = function() {
-				config[this.name] = this.value;
-			}
+		switch (element.type) {
+			case 'range':	
+				const percent = 100 * (element.value - element.getAttribute('min')) / (element.getAttribute('max') - element.getAttribute('min'));
+				element.style.background = 'linear-gradient(to right, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.8) ' + percent + '%, rgba(255,255,255,0.4) ' + percent + '%, rgba(255,255,255,0.4) 100%)';
+				element.nextElementSibling.value = element.value;
+				element.addEventListener('input', function() {
+					const percent = 100 * (this.value - this.getAttribute('min')) / (this.getAttribute('max') - this.getAttribute('min'));
+					this.style.background = 'linear-gradient(to right, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.8) ' + percent + '%, rgba(255,255,255,0.4) ' + percent + '%, rgba(255,255,255,0.4) 100%)'
+					this.nextElementSibling.value = this.value;
+					config[this.name] = this.value;
+
+					const player = objects['player'];
+					applyChanges(this.name);
+				});
+				break;
+			case 'text':
+				element.addEventListener('keydown', function(event) {
+					const key = event.code;
+
+					if (key === 'Tab')
+						return;
+
+					const controls = document.querySelectorAll('input[type=text]');
+					for (const control of controls) {
+						if (control.value === key) {
+							control.value = '';
+							config[control.name] = '';
+						}
+					}
+					this.value = key;
+					config[this.name] = key;
+					this.blur();
+					objects['player'].controls[this.name] = key;
+					applyChanges(this.name);
+				});
+				element.nextElementSibling.addEventListener('click', () => {
+					element.value = '';
+					config[element.name] = '';
+					applyChanges(element.name);
+				});
+				break;
+			default:
+				element.addEventListener('input', function() {
+					config[this.name] = this.value;
+					applyChanges(this.name);
+				});	
 		}
 	}
 
@@ -768,6 +837,7 @@ window.addEventListener('load', () => {
 
 			element.value = dataDefault
 			config[element.name] = dataDefault;
+			applyChanges(element.name);
 		}
 	});
 

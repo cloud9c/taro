@@ -267,6 +267,11 @@ body {
 	font-size: 20px;
 }
 
+.setting h2 {
+	margin: 0;
+	font-size: 20px;
+}
+
 .setting input[type=text] {
 	border: 1px solid rgba(255, 255, 255, 0.4);
 	background: none;
@@ -283,13 +288,9 @@ body {
 	cursor: pointer;
 }
 
-@keyframes blink { 
-	50% { border-color: #fff; } 
-}
-
 .setting input[type=text]:focus {
 	background: rgba(0, 0, 0, 0.2);
-	animation: blink 1s infinite;
+	border-color: #fff;
 }
 
 .setting button {
@@ -316,6 +317,24 @@ body {
 }
 
 .setting-buttons > button {
+    background: none;
+    border: none;
+    font-size: 20px;
+    color: white;
+    padding: 8px;
+    margin-right: 16px;
+    cursor: pointer;
+    transition: 0.2s;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    outline: none;
+}
+
+.setting-buttons > button:hover {
+	background: rgba(0, 0, 0, 0.2);
+}
+
+.clear-key {
 	background: none;
 	border: none;
 	font-size: 20px;
@@ -329,6 +348,6 @@ body {
 	outline: none;
 }
 
-.setting-buttons > button:hover {
+.clear-key:hover {
 	background: rgba(0, 0, 0, 0.2);
 }
