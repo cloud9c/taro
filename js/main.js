@@ -38,10 +38,13 @@ class Player {
 		this.onGround = true;
 		this.jumpVel = 8;
 		this.gravity = this.jumpVel * 2.5;
-		this.firstPerson = false;
+		this.firstPerson = true;
 
 		const mesh = setGltf.call(this, 'player.glb', true);
-		mesh.rotation.y = 180 * Math.PI / 180
+		mesh.geometry.computeBoundingBox();
+
+		this.box = new THREE.Box3();
+		box.copy(mesh.geometry.boundingBox).applyMatrix4(mesh.matrixWorld);
 
 		// camera setting
 		camera.position.set(0, 3.8, 0);
@@ -85,10 +88,59 @@ class Player {
 
 			objects['player'].mesh.rotation.y -= dx;
 			if (dy != 0) {
+				const newCameraAngle = cameraAngle + dy;
 				const newX = camera.rotation.x + dy;
-				if (newX < 1.5 && newX > -1.5)
+				if (objects['player'].firstPerson) {
+					if (newX < 1.5 && newX > -1.5)
+						camera.rotation.x = newX;
+				} else if (newCameraAngle < 1.1 && newCameraAngle > 0.1) {
+					cameraAngle = newCameraAngle;
+					camera.position.z = -Math.cos(cameraAngle) * cameraRadius;
+					camera.position.y = Math.sin(cameraAngle) * cameraRadius;
 					camera.rotation.x = newX;
+				}	
 			}
+		});
+
+		document.addEventListener('wheel', event => {	
+			if (paused)	
+				return;	
+			if (event.wheelDeltaY < 0) {	
+				camera.zoom = Math.max(camera.zoom - 0.05, 1);	
+				if (objects['player'].firstPerson) {	
+					objects['player'].mesh.traverse(node => {	
+						if (node.material) {	
+							node.material.colorWrite = true;
+							node.material.depthWrite = true;
+						}	
+					});
+					objects['player'].firstPerson = false;	
+					camera.position.set(-2, 10, -15);	
+					camera.rotation.set(-160 * Math.PI / 180, 0, Math.PI);	
+					cameraRadius = Math.sqrt(camera.position.z * camera.position.z + camera.position.y * camera.position.y);	
+					cameraAngle = Math.acos(-camera.position.z / cameraRadius);	
+					camera.zoom = 1.65;	
+				}	
+			} else {	
+				const newZoom = camera.zoom + 0.05;	
+				if (!objects['player'].firstPerson) {	
+					if (camera.zoom >= 1.65) {	
+						objects['player'].mesh.traverse(node => {	
+							if (node.material) {	
+								node.material.colorWrite = false;
+								node.material.depthWrite = false;
+							}	
+						});	
+						objects['player'].firstPerson = true;	
+						camera.position.set(0, 4, 0);	
+						camera.rotation.set(0, Math.PI, 0);	
+						camera.zoom = 1;	
+					} else {	
+						camera.zoom = Math.min(newZoom, 1.65);	
+					}	
+				}	
+			}	
+			camera.updateProjectionMatrix();	
 		});
 
 		document.addEventListener('keydown', event => {
@@ -496,7 +548,6 @@ function animate(timestamp) {
 	timestamp /= 1000;
 	dt = timestamp - lastTimestamp;
 	lastTimestamp = timestamp;
-	console.log(1/dt)
 
 	for (const property in objects) {
 		objects[property].update();
@@ -658,7 +709,6 @@ function loadGame(event) {
 
 function applyChanges(name) {
 	const player = objects['player'];
-	console.log(name, config[name]);
 	switch(name) {
 		case 'mouseSensitivity':
 			player.sensitivityX = config['mouseSensitivity'] / 1400;
@@ -675,7 +725,6 @@ function applyChanges(name) {
 			canvas.style.filter = 'brightness(' + (+config['brightness'] + 50)/100 + ')';
 			break;
 		case 'fov':
-			console.log(+config['fov']);
 			camera.fov = +config['fov'];
 			break;
 		case 'aspectRatio':
