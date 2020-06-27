@@ -296,8 +296,8 @@ class Asset {
 
 		gltf.scene.traverse(node => {
 			if (transparent && node.material) {
-				node.material.transparent = true;
-				node.material.opacity = 0;
+				node.material.colorWrite = false;
+				node.material.depthWrite = false;
 				node.material = node.material.clone();
 			}
 			if (node.isSkinnedMesh) {
@@ -460,7 +460,7 @@ function init() {
 	scene.add(dirLightHeper);
 
 	//floor
-	geo = new THREE.PlaneBufferGeometry(2000, 2000);
+	geo = new THREE.PlaneBufferGeometry(200, 200);
 	mat = new THREE.MeshPhongMaterial({
 		color: 0x718E3E
 	});
@@ -496,6 +496,7 @@ function animate(timestamp) {
 	timestamp /= 1000;
 	dt = timestamp - lastTimestamp;
 	lastTimestamp = timestamp;
+	console.log(1/dt)
 
 	for (const property in objects) {
 		objects[property].update();
