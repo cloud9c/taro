@@ -1,8 +1,6 @@
 import * as THREE from 'https://threejs.org/build/three.module.js';
 import {scene, renderer, camera, lastTimestamp, dt, config, assets, peerID, connections} from './main.js';
-import Entity from './Entity.js'
-import Component from './Component.js'
-import System from './System.js'
+import {Entity, Component, System} from './ECS.js'
 
 let paused = false;
 const keyEnum = {}
