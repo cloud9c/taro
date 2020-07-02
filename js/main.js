@@ -14,9 +14,6 @@ const wordList = ['ability', 'able', 'aboard', 'about', 'above', 'accept', 'acci
 function init() {
 	let geo, mat, mesh;
 
-	if (scene)
-		return;
-
 	//html stuff
 	const canvas = document.getElementById('c');
 
@@ -116,21 +113,58 @@ function init() {
 
 	//player
 	gameObjects['player'] = new GAMEOBJECT.Player();
-	renderer.setAnimationLoop(animate);
+	renderer.setAnimationLoop(gameLoop);
 }
 
-function animate(timestamp) {
-	timestamp /= 1000;
-	dt = timestamp - lastTimestamp;
-	lastTimestamp = timestamp;
+function loadGame(event) {
+	if (!event.path[1].reportValidity())
+		return;
 
-	for (const property in gameObjects) {
-		gameObjects[property].update();
+	document.getElementById('join-button').removeEventListener('click', loadGame);
+	document.getElementById('host-button').removeEventListener('click', loadGame);
+	document.getElementById('launcher').style.display = 'none';
+	document.getElementById('loading').style.display = 'flex';
+
+	hosting = event.target.id === 'host-button';
+	nickname = document.getElementsByClassName('nickname')[+hosting].value;
+	localStorage.setItem('nickname', nickname);
+	serverID = document.getElementById('join').value.replace(/\s/g, '');
+
+	const manager = new THREE.LoadingManager();
+	const modelLoader = new GLTFLoader(manager);
+	const models = ['player.glb'];
+
+	if (config['displayMode'] === 'fullscreen') {
+		document.body.requestFullscreen();
 	}
 
-	renderer.render(scene, camera);
-	renderer.setAnimationLoop(animate);
-};
+	for (const model of models) {
+		modelLoader.load('assets/models/' + model, gltf => {
+			assets[model] = gltf;
+		});
+	}
+
+	manager.onProgress = (url, itemsLoaded, itemsTotal) => {
+		document.getElementById('loading-info').textContent = 'Loading: ' + url;
+		document.getElementById('bar-percentage').style.width = itemsLoaded / itemsTotal * 100 + '%';
+	}
+
+	manager.onLoad = () => {
+		document.getElementById('loading-info').textContent = 'Connecting to server...';
+
+		newPeer();
+
+		window.addEventListener('beforeunload', (event) => {
+			event.preventDefault();
+			localStorage.setItem('config', JSON.stringify(config));
+			event.returnValue = '';
+		});
+
+		window.addEventListener('unload', () => {
+			peer.destroy();
+		})
+	}
+}
 
 function addNewConnection(conn) {
 	const id = conn.peer;
@@ -233,55 +267,18 @@ function newPeer() {
 	});
 }
 
-function loadGame(event) {
-	if (!event.path[1].reportValidity())
-		return;
+function gameLoop(timestamp) {
+	timestamp /= 1000;
+	dt = timestamp - lastTimestamp;
+	lastTimestamp = timestamp;
 
-	document.getElementById('join-button').removeEventListener('click', loadGame);
-	document.getElementById('host-button').removeEventListener('click', loadGame);
-	document.getElementById('launcher').style.display = 'none';
-	document.getElementById('loading').style.display = 'flex';
-
-	hosting = event.target.id === 'host-button';
-	nickname = document.getElementsByClassName('nickname')[+hosting].value;
-	localStorage.setItem('nickname', nickname);
-	serverID = document.getElementById('join').value.replace(/\s/g, '');
-
-	const manager = new THREE.LoadingManager();
-	const modelLoader = new GLTFLoader(manager);
-	const models = ['player.glb'];
-
-	if (config['displayMode'] === 'fullscreen') {
-		document.body.requestFullscreen();
+	for (const property in gameObjects) {
+		gameObjects[property].update();
 	}
 
-	for (const model of models) {
-		modelLoader.load('assets/models/' + model, gltf => {
-			assets[model] = gltf;
-		});
-	}
-
-	manager.onProgress = (url, itemsLoaded, itemsTotal) => {
-		document.getElementById('loading-info').textContent = 'Loading: ' + url;
-		document.getElementById('bar-percentage').style.width = itemsLoaded / itemsTotal * 100 + '%';
-	}
-
-	manager.onLoad = () => {
-		document.getElementById('loading-info').textContent = 'Connecting to server...';
-
-		newPeer();
-
-		window.addEventListener('beforeunload', (event) => {
-			event.preventDefault();
-			localStorage.setItem('config', JSON.stringify(config));
-			event.returnValue = '';
-		});
-
-		window.addEventListener('unload', () => {
-			peer.destroy();
-		})
-	}
-}
+	renderer.render(scene, camera);
+	renderer.setAnimationLoop(gameLoop);
+};
 
 function applyChanges(name) {
 	const player = gameObjects['player'];
