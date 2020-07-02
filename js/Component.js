@@ -1,4 +1,4 @@
-export class Component {
+export default class Component {
     constructor() {}
 
     Health(value) {

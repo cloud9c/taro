@@ -1,5 +1,5 @@
-export class Entity {
-    constructor {
+export default class Entity {
+    constructor() {
         entities.push(this);
         this.components = {};
     }
