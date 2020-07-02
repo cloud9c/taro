@@ -1,7 +1,7 @@
 export default class Component {
     constructor() {}
 
-    Health(value) {
+    health(value) {
         value = value || 20;
         this.value = value;
 
