@@ -1,44 +1,58 @@
 class Entity {
     constructor() {
-        this.components = {};
+        this.components = new Object();
         this.id = null;
-        const entities = Entity.entities;
 
-        for (let i = 0, len = entities.length; i < len; i++) {
-            if (entities[i] === null) {
-                entities[i] = this.components;
+        for (let i = 0, len = Entity.entities.length; i < len; i++) {
+            if (Entity.entities[i] === null) {
+                Entity.entities[i] = this.components;
                 this.id = i;
                 break;
             }
         }
         if (this.id === null)
-            this.id = entities.push(this.components) - 1;
+            this.id = Entity.entities.push(this.components) - 1;
     }
 
-    addComponent(name, data) { // 'transform', {'position': [0, 0, 0], 'rotation': [0, 0, 0], 'scale': [1, 1, 1]}
-        this.components[name] = Component[name](this.id, data);
-        return this.components[name];
+    static entities = new Array();
+
+    addComponent(type, data) { // EX: 'Transform', {'position': [0, 0, 0], 'rotation': [0, 0, 0], 'scale': [1, 1, 1]}
+        Component[type](this.id, type, data);
+        this.components[type] = Component.components[type][this.id];
+        return this.components[type];
     }
 
-    removeComponent(name) {
-        delete Component.components[name][this.id];
-        delete this.components[name];
+    removeComponent(type) {
+        delete Component.components[type][this.id];
+        delete this.components[type];
     }
 }
-
-Entity.entities = [];
 
 class Component {
-    static transform(id, data) {
-        this.components.transform[id] = data;
-        return this.components.transform[id];
+    constructor() {
+        const componentTypes = Object.getOwnPropertyNames(Component).filter((e) => !['length', 'constructor', 'prototype', 'name', 'components', 'setObjectComponent', 'setBooleanComponent'].includes(e));
+        for (let i = 0, len = componentTypes.length; i < len; i++) {
+            Component.components[componentTypes[i]] = new Object();
+        }
     }
-}
+ 
+    static setObjectComponent(id, type, data) {
+        this.components[type][id] = data;
+    }
 
-componentTypes = Object.getOwnPropertyNames(Component).filter((e) => !['length', 'constructor', 'prototype', 'name'].includes(e));
-Component.components = {};
-for (let i = 0, len = componentTypes.length; i < len; i++) {
-    Component.components[componentTypes[i]] = {};
+    static setBooleanComponent(id, type) {
+        this.components[type].push(id)
+    }
+
+    static components = new Object();
+
+    static Transform = this.setObjectComponent;
+    static RigidBody = this.setObjectComponent;
+    static Object3D = (id, type, data) => {
+        scene.add(data)
+        this.setObjectComponent(id, type, data);
+    };
+    static collider = this.setBooleanComponent;
 }
 
 class System {
@@ -47,4 +61,8 @@ class System {
     }
 }
 
-export {Entity, Components, System};
+new Component();
+const x = new Entity();
+x.addComponent('Transform', {'position': [0, 0, 0], 'rotation': [0, 0, 0], 'scale': [1, 1, 1]});
+
+export {Entity, Component, System};
