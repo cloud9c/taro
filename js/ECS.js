@@ -1,20 +1,12 @@
 class Entity {
     constructor() {
         this.components = new Object();
-        this.id = null;
+        this.id = (+new Date()).toString(16) + (Math.random() * 100000000 | 0).toString(16);
 
-        for (let i = 0, len = Entity.entities.length; i < len; i++) {
-            if (Entity.entities[i] === null) {
-                Entity.entities[i] = this.components;
-                this.id = i;
-                break;
-            }
-        }
-        if (this.id === null)
-            this.id = Entity.entities.push(this.components) - 1;
+        Entity.entities[this.id] = this.components;
     }
 
-    static entities = new Array();
+    static entities = new Object();
 
     addComponent(type, data=null) { // EX: 'Transform', {'position': [0, 0, 0], 'rotation': [0, 0, 0], 'scale': [1, 1, 1]}
         Component[type](this.id, type, data);
@@ -28,46 +20,54 @@ class Entity {
     }
 }
 
-class Component {
-    constructor() {
-        const componentTypes = Object.getOwnPropertyNames(Component).filter((e) => !['length', 'constructor', 'prototype', 'name', 'components', 'setDataComponent', 'setBooleanComponent'].includes(e));
+function setDataComponent(id, type, data) {
+    Component.components[type][id] = data;
+}
+
+function setSceneComponent(id, type, data) {
+    setDataComponent(id, type, data);
+    scene.add(data);
+}
+
+function setBooleanComponent(id, type) {
+    Component.components[type].push(id)
+}
+
+const Component = {
+    init: () => {
+        const components = Component.components;
+        const componentTypes = Object.keys(Component);
+        componentTypes.splice(componentTypes.indexOf('components'), 1);
+
         for (let i = 0, len = componentTypes.length; i < len; i++) {
-            Component.components[componentTypes[i]] = new Object();
+            if (Component[componentTypes[i]].name === 'setBooleanComponent') {
+                components[componentTypes[i]] = new Array();
+            } else {
+                components[componentTypes[i]] = new Object();
+            }
         }
-    }
- 
-    static setDataComponent(id, type, data) {
-        this.components[type][id] = data;
-    }
+    },
 
-    static setSceneComponent(id, type, data) {
-        this.setDataComponent(id, type, data);
-        scene.add(data);
-    }
+    components: new Object(),
 
-    static setBooleanComponent(id, type) {
-        this.components[type].push(id)
-    }
-
-    static components = new Object();
-
-    static AABB = this.setSceneComponent;
-    static Camera = this.setSceneComponent;
-    static Collider = this.setBooleanComponent;
-    static Interactable = this.setDataComponent;
-    static Object3D = this.setSceneComponent;
-    static PlayerControlled = this.setDataComponent;
-    static RigidBody = this.setDataComponent;
-    static Transform = this.setDataComponent;
+    AABB: setSceneComponent,
+    Animate: setDataComponent,
+    Camera: setSceneComponent,
+    Collider: setBooleanComponent,
+    Interactable: setDataComponent,
+    Object3D: setSceneComponent,
+    PlayerControlled: setDataComponent,
+    RigidBody: setDataComponent,
+    Transform: setDataComponent
 }
 
-class System {
-    static movement() {
+const System = {
+    movement: () => {
 
     }
 }
 
-new Component();
+Component.init();
 const x = new Entity();
 x.addComponent('Transform', {'position': [0, 0, 0], 'rotation': [0, 0, 0], 'scale': [1, 1, 1]});
 x.addComponent('AABB', {'position': [0, 0, 0], 'rotation': [0, 0, 0], 'scale': [1, 1, 1]});
