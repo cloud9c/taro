@@ -16,7 +16,7 @@ class Entity {
 
     static entities = new Array();
 
-    addComponent(type, data) { // EX: 'Transform', {'position': [0, 0, 0], 'rotation': [0, 0, 0], 'scale': [1, 1, 1]}
+    addComponent(type, data=null) { // EX: 'Transform', {'position': [0, 0, 0], 'rotation': [0, 0, 0], 'scale': [1, 1, 1]}
         Component[type](this.id, type, data);
         this.components[type] = Component.components[type][this.id];
         return this.components[type];
@@ -30,14 +30,19 @@ class Entity {
 
 class Component {
     constructor() {
-        const componentTypes = Object.getOwnPropertyNames(Component).filter((e) => !['length', 'constructor', 'prototype', 'name', 'components', 'setObjectComponent', 'setBooleanComponent'].includes(e));
+        const componentTypes = Object.getOwnPropertyNames(Component).filter((e) => !['length', 'constructor', 'prototype', 'name', 'components', 'setDataComponent', 'setBooleanComponent'].includes(e));
         for (let i = 0, len = componentTypes.length; i < len; i++) {
             Component.components[componentTypes[i]] = new Object();
         }
     }
  
-    static setObjectComponent(id, type, data) {
+    static setDataComponent(id, type, data) {
         this.components[type][id] = data;
+    }
+
+    static setSceneComponent(id, type, data) {
+        this.setDataComponent(id, type, data);
+        scene.add(data);
     }
 
     static setBooleanComponent(id, type) {
@@ -46,13 +51,14 @@ class Component {
 
     static components = new Object();
 
-    static Transform = this.setObjectComponent;
-    static RigidBody = this.setObjectComponent;
-    static Object3D = (id, type, data) => {
-        scene.add(data)
-        this.setObjectComponent(id, type, data);
-    };
-    static collider = this.setBooleanComponent;
+    static AABB = this.setSceneComponent;
+    static Camera = this.setSceneComponent;
+    static Collider = this.setBooleanComponent;
+    static Interactable = this.setDataComponent;
+    static Object3D = this.setSceneComponent;
+    static PlayerControlled = this.setDataComponent;
+    static RigidBody = this.setDataComponent;
+    static Transform = this.setDataComponent;
 }
 
 class System {
@@ -64,5 +70,7 @@ class System {
 new Component();
 const x = new Entity();
 x.addComponent('Transform', {'position': [0, 0, 0], 'rotation': [0, 0, 0], 'scale': [1, 1, 1]});
+x.addComponent('AABB', {'position': [0, 0, 0], 'rotation': [0, 0, 0], 'scale': [1, 1, 1]});
+x.addComponent('PlayerControlled');
 
 export {Entity, Component, System};

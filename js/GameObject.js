@@ -3,7 +3,7 @@ import {scene, renderer, camera, lastTimestamp, dt, config, assets, peerID, conn
 import {Entity, Component, System} from './ECS.js'
 
 let paused = false;
-const keyEnum = {}
+const keyInput = {}
 
 class Player {
 	constructor() {
@@ -66,8 +66,8 @@ class Player {
 		});
 
 		window.addEventListener('blur', () => {
-			for (const property in keyEnum) {
-				keyEnum[property] = false;
+			for (const property in keyInput) {
+				keyInput[property] = false;
 			}
 		});
 
@@ -149,7 +149,7 @@ class Player {
 				return;
 
 			const key = event.code;
-			keyEnum[key] = true;
+			keyInput[key] = true;
 
 			if (key === 'Tab') {
 				event.preventDefault();
@@ -163,15 +163,15 @@ class Player {
 					paused = true;
 					document.getElementById('menu').style.display = '';
 					document.exitPointerLock();
-					for (const property in keyEnum)
-						keyEnum[property] = false;
+					for (const property in keyInput)
+						keyInput[property] = false;
 				}
 			}
 		});
 
 		document.addEventListener('keyup', (event) => {
 			const key = event.code;
-			keyEnum[key] = false;
+			keyInput[key] = false;
 		});
 
 		document.getElementById('setting-back').addEventListener('click', () => {
@@ -201,27 +201,27 @@ class Player {
 		}
 
 		if (!paused) {
-			if (keyEnum[controls['moveForward']]) {
+			if (keyInput[controls['moveForward']]) {
 				zVel -= 1;
 			}
-			if (keyEnum[controls['moveBackward']]) {
+			if (keyInput[controls['moveBackward']]) {
 				zVel += 1;
 			}
-			if (keyEnum[controls['strafeLeft']]) {
+			if (keyInput[controls['strafeLeft']]) {
 				xVel -= 1;
 			}
-			if (keyEnum[controls['strafeRight']]) {
+			if (keyInput[controls['strafeRight']]) {
 				xVel += 1;
 			}
 			if (pos.y === 0) {
-				if (keyEnum[controls['jump']]) {
+				if (keyInput[controls['jump']]) {
 					yVel += this.jumpVel;
 					let jump = 'WalkJump'
 					if (xVel === 0 && zVel === 0)
 						jump = 'Jump'
 					fadeToAction.call(this, jump, 0.4);
 				}
-				if (keyEnum[controls['sprint']]) {
+				if (keyInput[controls['sprint']]) {
 					speed *= this.sprintFactor;
 				}
 			}
