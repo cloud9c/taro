@@ -62,15 +62,20 @@ const Component = {
 }
 
 const System = {
-    movement: () => {
+    movement: {
+        init: () => {
 
+        },
+        update: () => {
+
+        }
     }
 }
 
-Component.init();
-const x = new Entity();
-x.addComponent('Transform', {'position': [0, 0, 0], 'rotation': [0, 0, 0], 'scale': [1, 1, 1]});
-x.addComponent('AABB', {'position': [0, 0, 0], 'rotation': [0, 0, 0], 'scale': [1, 1, 1]});
-x.addComponent('PlayerControlled');
+// Component.init();
+// const x = new Entity();
+// x.addComponent('Transform', {'position': [0, 0, 0], 'rotation': [0, 0, 0], 'scale': [1, 1, 1]});
+// x.addComponent('AABB', {'position': [0, 0, 0], 'rotation': [0, 0, 0], 'scale': [1, 1, 1]});
+// x.addComponent('PlayerControlled');
 
 export {Entity, Component, System};
