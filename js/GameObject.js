@@ -1,6 +1,6 @@
 import * as THREE from 'https://threejs.org/build/three.module.js';
 import {scene, renderer, camera, lastTimestamp, dt, config, assets, peerID, connections} from './main.js';
-import {Entity, Component, System} from './ECS.js'
+// import {Entity, Component, System} from './ECS.js'
 
 let paused = false;
 const keyInput = {}
@@ -30,7 +30,7 @@ class Player {
 		this.gravity = this.jumpVel * 2.5;
 		this.firstPerson = true;
 
-		const mesh = setGltf.call(this, 'player.glb', true);
+		const mesh = setGltf.call(this, 'player.glb');
 
 		mesh.traverse(node => {
 			if (node.material) {
@@ -39,10 +39,10 @@ class Player {
 			}
 		});	
 
-		// aabb
-		this.aabb = new THREE.Box3().setFromObject(mesh.children[0].children[0]);
-		var helper = new THREE.Box3Helper( this.aabb, 0xffff00 );
-		scene.add( helper );
+		// aabb ADD THIS
+		// this.aabb = new THREE.Box3().setFromObject(mesh.children[0].children[0]);
+		// var helper = new THREE.Box3Helper( this.aabb, 0xffff00 );
+		// scene.add( helper );
 
 		// camera setting
 		camera.position.set(0, 3.8, 0);
@@ -302,7 +302,7 @@ class OtherPlayer {
 				playerList: Object.keys(connections)
 			});
 		}
-		const mesh = setGltf.call(this, 'player.glb', false);
+		const mesh = setGltf.call(this, 'player.glb');
 		this.animationName = 'Idle';
 		this.animationDir = 1;
 
@@ -346,17 +346,17 @@ class OtherPlayer {
 	}
 }
 
-class PhysicsProp {
+// class PhysicsProp {
 
-}
+// }
 
-class StaticProp {
+// class StaticProp {
 
-}
+// }
 
-class Item {
+// class Item {
 
-}
+// }
 
 function setGltf(assetName) {
 	const original = assets[assetName];
@@ -452,4 +452,4 @@ function fadeToAction(name, duration, timeScale = 1) {
 		.play();
 }
 
-export {Player, OtherPlayer, PhysicsProp, StaticProp, Item}
+export {Player, OtherPlayer}
