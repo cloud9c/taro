@@ -93,33 +93,66 @@ const System = {
 
             const camera = new THREE.PerspectiveCamera(+config.fov, aspectRatio, 1, +config.renderDistance);
 
-            camera.position.set(0, 3.8, 0);
-            camera.rotation.set(0, Math.PI, 0);
             target.add(camera);
-            this.cameraRadius = Math.sqrt(camera.position.z * camera.position.z + camera.position.y * camera.position.y);
-            this.cameraAngle = Math.acos(-camera.position.z / this.cameraRadius);
+            camera.rotation.order = "YXZ";
             this.perspectiveCamera = camera;
+            this.firstPersonMode();
+        },
+        thirdPersonMode: function() {
+            const camera = this.perspectiveCamera;
+            this.firstPerson = false;
+            // this.mesh.traverse(node => {
+            //     if (node.material) {
+            //         node.material.colorWrite = true;
+            //         node.material.depthWrite = true;
+            //     }
+            // });
+            camera.position.set(-2, 10, -15);
+            camera.rotation.set(-160 * Math.PI / 180, 0, Math.PI);
+            this.cameraRadius = Math.sqrt(camera.position.z * camera.position.z + camera.position.y * camera.position.y);
+            this.cameraArc = Math.acos(-camera.position.z / this.cameraRadius);
+            this.matrix = new THREE.Matrix4();
+            camera.zoom = 1.65;
+        },
+        firstPersonMode: function() {
+            const camera = this.perspectiveCamera;
             this.firstPerson = true;
+            // this.mesh.traverse(node => {
+            //     if (node.material) {
+            //         node.material.colorWrite = false;
+            //         node.material.depthWrite = false;
+            //     }
+            // });
+            camera.position.set(0, 4, 0);
+            camera.rotation.set(0, 0, 0);
+            camera.zoom = 1;
         },
         update: function() {
-            console.log(this.perspectiveCamera.rotation)
-
             const camera = this.perspectiveCamera;
             const keyInput = System.input.keyInput;
 
-            camera.rotation.y -= keyInput.MouseX;
+            if (keyInput.MouseX != 0) {
+                if (this.firstPerson)
+                        camera.rotation.y -= keyInput.MouseX;
+                else {
+                    camera.parent.rotation.y -= keyInput.MouseX
+                }
+            }
             
             if (keyInput.MouseY != 0) {
-                const newCameraAngle = this.cameraAngle + keyInput.MouseY;
-                const newX = camera.rotation.x + keyInput.MouseY;
                 if (this.firstPerson) {
+                    const newX = camera.rotation.x - keyInput.MouseY;
                     if (newX < 1.5 && newX > -1.5)
                         camera.rotation.x = newX;
-                } else if (newCameraAngle < 1.1 && newCameraAngle > 0.1) {
-                    this.cameraAngle = newCameraAngle;
-                    camera.position.z = -Math.cos(newCameraAngle) * this.cameraRadius;
-                    camera.position.y = Math.sin(newCameraAngle) * this.cameraRadius;
-                    camera.rotation.x = newX;
+                } else {
+                    const newCameraArc = this.cameraArc + keyInput.MouseY;
+                    if (newCameraArc < 1.1 && newCameraArc > 0.1) {
+                        const newX = camera.rotation.x + keyInput.MouseY;
+                        this.cameraArc = newCameraArc;
+                        camera.position.z = -Math.cos(newCameraArc) * this.cameraRadius;
+                        camera.position.y = Math.sin(newCameraArc) * this.cameraRadius;
+                        camera.rotation.x = newX;
+                    }
                 }
             }
 
@@ -127,33 +160,13 @@ const System = {
                 if (keyInput.WheelY < 0) {
                     camera.zoom = Math.max(camera.zoom - 0.05, 1);
                     if (this.firstPerson) {
-                        this.firstPerson = false;
-                        // this.mesh.traverse(node => {
-                        //     if (node.material) {
-                        //         node.material.colorWrite = true;
-                        //         node.material.depthWrite = true;
-                        //     }
-                        // });
-                        camera.position.set(-2, 10, -15);
-                        camera.rotation.set(-160 * Math.PI / 180, 0, Math.PI);
-                        this.cameraRadius = Math.sqrt(camera.position.z * camera.position.z + camera.position.y * camera.position.y);
-                        this.cameraAngle = Math.acos(-camera.position.z / this.cameraRadius);
-                        camera.zoom = 1.65;
+                        this.thirdPersonMode();
                     }
                 } else {
                     const newZoom = camera.zoom + 0.05;
                     if (!this.firstPerson) {
                         if (camera.zoom >= 1.65) {
-                            this.firstPerson = true;
-                            // this.mesh.traverse(node => {
-                            //     if (node.material) {
-                            //         node.material.colorWrite = false;
-                            //         node.material.depthWrite = false;
-                            //     }
-                            // });
-                            camera.position.set(0, 4, 0);
-                            camera.rotation.set(0, Math.PI, 0);
-                            camera.zoom = 1;
+                            this.firstPersonMode();
                         } else {
                             camera.zoom = Math.min(newZoom, 1.65);
                         }

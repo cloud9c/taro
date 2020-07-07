@@ -3,7 +3,7 @@ import { GLTFLoader } from 'https://threejs.org/examples/jsm/loaders/GLTFLoader.
 import {Entity, Component, System} from './ECS.js'
 // import * as GAMEOBJECT from './GameObject.js'
 
-let scene, renderer, camera;
+// let scene, renderer, camera;
 let lastTimestamp = 0, dt;
 // const gameObjects = {};
 let config;
@@ -298,24 +298,23 @@ function gameLoop(timestamp) {
 };
 
 function applyChanges(name) {
-	const player = gameObjects['player'];
 	switch(name) {
 		case 'mouseSensitivity':
-			player.sensitivityX = config['mouseSensitivity'] / 1400;
-			player.sensitivityY = config['mouseSensitivity'] / 1400;
+			System.input.sensitivityX = config['mouseSensitivity'] / 1400;
+			System.input.sensitivityY = config['mouseSensitivity'] / 1400;
 			break;
 		case 'mouseInvert':
 			if (config['mouseInvert'] === 'true')
-				player.sensitivityY *= -1;
+				System.input.sensitivityY *= -1;
 			break;
 		case 'resolution':
-			renderer.setPixelRatio(+config['resolution']);
+			System.render.renderer.setPixelRatio(+config['resolution']);
 			break;
 		case 'brightness':
 			document.getElementById('c').style.filter = 'brightness(' + (+config['brightness'] + 50)/100 + ')';
 			break;
 		case 'fov':
-			camera.fov = +config['fov'];
+			System.camera.perspectiveCamera.fov = +config['fov'];
 			break;
 		case 'aspectRatio':
 			let aspectRatio = window.innerWidth / window.innerHeight;
@@ -323,14 +322,14 @@ function applyChanges(name) {
 				const configRatio = config['aspectRatio'].split(":");
 				aspectRatio = configRatio[0]/configRatio[1];
 			}
-			camera.aspect = aspectRatio;
+			System.camera.perspectiveCamera.aspect = aspectRatio;
 			break;
 		case 'renderDistance':
-			camera.far = +config['renderDistance'];
+			System.camera.perspectiveCamera.far = +config['renderDistance'];
 			scene.fog = new THREE.Fog(new THREE.Color(0x0080ff), +config['renderDistance'] - 4, +config['renderDistance']);
 			break;
 	}
-	camera.updateProjectionMatrix();
+	System.camera.perspectiveCamera.updateProjectionMatrix();
 }
 
 window.addEventListener('load', () => {
@@ -437,4 +436,4 @@ window.addEventListener('load', () => {
 	});
 });
 
-export {scene, renderer, camera, lastTimestamp, dt, config, assets, peerID, connections};
+// export {scene, renderer, camera, lastTimestamp, dt, config, assets, peerID, connections};
