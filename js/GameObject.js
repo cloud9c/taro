@@ -11,14 +11,18 @@ class Player {
 		const animations = gltf.animations;
 		const entity = new Entity;
 
-		entity.addComponent('Transform', {position: new THREE.Vector3(0, 0,0), rotation: new THREE.Euler(), scale: new THREE.Vector3(1, 1, 1)})
-		entity.addComponent('Rigidbody', {
-			velocity: new THREE.Vector3(),
-			acceleration: new THREE.Vector3(),
-			mass: 60
-		});
 		entity.addComponent('Object3D', mesh);
 		entity.addComponent('Animation', setAnimation(mesh, animations, 'Idle'));
+		entity.addComponent('Transform', {
+			position: new THREE.Vector3(),
+			rotation: new THREE.Euler(),
+			scale: new THREE.Vector3(1, 1, 1)
+		});
+		entity.addComponent('Rigidbody', {
+			velocity: new THREE.Vector3(),
+			angularVelocity: new THREE.Vector3(),
+			mass: 60
+		});
 		entity.addComponent('Collider', {
 			material: {
 				

@@ -1,6 +1,6 @@
 import * as THREE from 'https://threejs.org/build/three.module.js';
-import { GLTFLoader } from 'https://threejs.org/examples/jsm/loaders/GLTFLoader.js';
-import { ConvexHull } from 'https://threejs.org/examples/jsm/math/ConvexHull.js';
+import {GLTFLoader} from 'https://threejs.org/examples/jsm/loaders/GLTFLoader.js';
+import {ConvexHull} from 'https://threejs.org/examples/jsm/math/ConvexHull.js';
 
 class Entity {
     constructor() {
@@ -36,8 +36,9 @@ const Component = {
         const obj = Component.components.Object3D[id];
         if (obj === undefined)
             throw 'Object3D dependency';
-        data.boundingBox = new THREE.Box3().setFromObject(obj);
         data.Object3D = obj;
+        data.boundingBox = new THREE.Box3();
+
         setDataComponent(id, type, data);
     },
     Interactable: setDataComponent,
@@ -58,6 +59,21 @@ const Component = {
         data.isGrounded = function() {
             return this.velocity.y == 0;
         };
+
+        // get center of mass
+        const obj = Component.components.Object3D[id];
+        if (obj === undefined)
+            throw 'Object3D dependency'
+        const translation = obj.position;
+        const vertices = new ConvexHull().setFromObject(obj).vertices.map( a => a.point);
+        const vertLen = vertices.length;
+        const centerOfMass = new THREE.Vector3();
+        for ( var i = 0; i < vertLen; i ++ ) {
+            centerOfMass.add(vertices[i].sub(translation));
+        }
+        centerOfMass.divideScalar(vertLen);
+        data.centerOfMass = centerOfMass;
+
         setDataComponent(id, type, data);
     },
     Transform: (id, type, data) => {
@@ -328,151 +344,17 @@ const System = {
             }
         }
     },
-    input: {
-        init() {
-            const config = System.config;
-            this.sensitivityX = config.mouseSensitivity / 1400;
-            this.sensitivityY = config.mouseSensitivity / 1400;
-            if (config.mouseInvert === 'true')
-                this.sensitivityY *= -1;
-
-            const keyInput = {MouseX: 0, MouseY: 0, WheelX: 0, WheelY: 0};
-
-            for (const control in System.config.controls) {
-                keyInput[control] = () => {
-                    return keyInput[System.config.controls[control]] || false;
-                };
-            }
-
-            document.getElementById('c').addEventListener('click', () => {
-                if (config.displayMode === 'fullscreen')
-                    document.body.requestFullscreen();
-                document.body.requestPointerLock();
-            });
-
-            window.addEventListener('blur', () => {
-                for (const property in keyInput) {
-                    if (typeof keyInput[property] === 'boolean')
-                        keyInput[property] = false;
-                    else if (typeof keyInput[property] === 'number')
-                        keyInput[property] = 0;
-                }
-            });
-
-            window.addEventListener('resize', () => {
-                System.camera.perspectiveCamera.aspect = window.innerWidth / window.innerHeight;
-                System.camera.perspectiveCamera.updateProjectionMatrix();
-                System.render.renderer.setSize(window.innerWidth, window.innerHeight);
-            });
-
-            document.getElementById('setting-back').addEventListener('click', () => {
-                document.getElementById('menu').style.display = 'none';
-                if (config.displayMode === 'fullscreen')
-                    document.body.requestFullscreen();
-                document.body.requestPointerLock();
-            });
-
-            window.addEventListener('beforeunload', (event) => {
-                event.preventDefault();
-                localStorage.setItem('config', JSON.stringify(System.config));
-                event.returnValue = '';
-            });
-
-            const onMouseMove = (event) => {
-                keyInput.MouseX = event.movementX * this.sensitivityX;
-                keyInput.MouseY = event.movementY * this.sensitivityY;
-            }
-
-            const onWheel = () => {
-                keyInput.WheelX = event.wheelDeltaX;
-                keyInput.WheelY = event.wheelDeltaY;
-            }
-
-            const onKeyDown = () => {
-                if (event.repeat)
-                    return;
-
-                keyInput[event.code] = true;
-
-                if (event.code === 'Tab') {
-                    enterMenu()
-                    document.getElementById('menu').style.display = '';
-                    document.exitPointerLock();
-                }
-
-            }
-
-            const onMenuKeyDown = () => {
-                if (event.code === 'Tab') {
-                    document.getElementById('menu').style.display = 'none';
-                    exitMenu();
-                    if (config.displayMode === 'fullscreen')
-                        document.body.requestFullscreen();
-                    document.body.requestPointerLock();
-                }
-            }
-
-            const onKeyUp = () => {
-                keyInput[event.code] = false;
-            }
-
-            const exitMenu = () => {
-                document.removeEventListener('keydown', onMenuKeyDown);
-                document.addEventListener('mousemove', onMouseMove);
-                document.addEventListener('wheel', onWheel);
-                document.addEventListener('keydown', onKeyDown);
-                document.addEventListener('keyup', onKeyUp);
-            }
-
-            const enterMenu = () => {
-                document.addEventListener('keydown', onMenuKeyDown);
-                document.removeEventListener('mousemove', onMouseMove);
-                document.removeEventListener('wheel', onWheel);
-                document.removeEventListener('keydown', onKeyDown);
-                document.removeEventListener('keyup', onKeyUp);            
-            }
-
-            document.addEventListener('mousemove', onMouseMove);
-            document.addEventListener('wheel', onWheel);
-            document.addEventListener('keydown', onKeyDown);
-            document.addEventListener('keyup', onKeyUp);
-
-            this.keyInput = keyInput;
-        },
-        update() {
-            const keyInput = this.keyInput;
-            keyInput.MouseX = 0;
-            keyInput.MouseY = 0;
-            keyInput.WheelX = 0;
-            keyInput.WheelY = 0;
-        }
-    },
-    physics: {
-        init() {
-            this.Rigidbody = Component.components.Rigidbody;
-            this.Transform = Component.components.Transform;
-            this.Object3D = Component.components.Object3D;
-        },
-        update(dt) {
-            const Rigidbody = this.Rigidbody;
-            const Transform = this.Transform;
-            for (const entity in Rigidbody) {
-                const physics = Rigidbody[entity];
-                physics.velocity.add(physics.acceleration.clone().multiplyScalar(dt));
-                Transform[entity].position.add(physics.velocity.clone().multiplyScalar(dt));
-            }
-        }
-    },
     collision: {
         init() {
             this.Collider = Component.components.Collider;
+            this.convexHull = new ConvexHull();
         },
         getFurthestPointInDirection(verts, dir) {
             let index = 0;
             let maxDot = -Infinity;
         
             for (let i = 0; i < verts.length; i++) {
-                const dot = verts[i].point.clone().dot(dir);
+                const dot = verts[i].clone().dot(dir);
         
                 if (dot > maxDot) {
                     maxDot = dot;
@@ -480,7 +362,7 @@ const System = {
                 }
             }
 
-            return verts[index].point;
+            return verts[index];
         },
         support(aVerts, bVerts, dir) {
             const a = this.getFurthestPointInDirection(aVerts, dir);
@@ -641,7 +523,7 @@ const System = {
         findClosestFace(simplex, simplexFaces) {
             let closest = {dist: Infinity};
         
-            for (let i = 0; i < simplexFaces.length; i++) {
+            for (let i = 0, len = simplexFaces.length; i < len; i++) {
                 const face = simplexFaces[i];
         
                 const ab = simplex[face.b].clone().sub(simplex[face.a]);
@@ -661,7 +543,6 @@ const System = {
                 if (dist < closest.dist)
                     closest = {index: i, dist: dist, norm: norm, a: face.a, b: face.b, c: face.c};
             }
-        
             return closest;
         },
         EPA(aWorldVerts, bWorldVerts, simplex) {
@@ -691,11 +572,8 @@ const System = {
         },
         GJK(colA, colB, initDir) {
             // really should preprocess this information for all objects but its fine for now
-            const hullA = (new ConvexHull).setFromObject(colA.Object3D);
-            const hullB = (new ConvexHull).setFromObject(colB.Object3D);
-
-            const aWorldVerts = hullA.vertices;
-            const bWorldVerts = hullB.vertices;
+            const aWorldVerts = this.convexHull.setFromObject(colA).vertices.map( a => a.point);
+            const bWorldVerts = this.convexHull.setFromObject(colB).vertices.map( a => a.point);
 
             let colliding = null;
             const simplex = [];
@@ -728,21 +606,22 @@ const System = {
                 Collider[entity].boundingBox.setFromObject(Collider[entity].Object3D);
             }
 
-            const Object3D = this.Object3D;
             const colliders = Object.values(Collider);
             const len = colliders.length;
             for (let i = 0; i < len; i++) {
                 for (let j = i + 1; j < len; j++) {
                     const colA = colliders[i];
                     const colB = colliders[j];
-                    // broad phase (NEED TO ADD SPATIAL INDEX)
+                    // broad phase (NEED TO ADD SPATIAL INDEX) TODO
                     if (colA.boundingBox.intersectsBox(colB.boundingBox)) {
                         // narrow phase
                         const centerA = colA.boundingBox.getCenter(new THREE.Vector3());
                         const centerB = colB.boundingBox.getCenter(new THREE.Vector3());
 
                         // collision detection
-                        const res = this.GJK(colA, colB, centerA.sub(centerB));
+                        const res = this.GJK(colA.Object3D, colB.Object3D, centerA.sub(centerB));
+
+                        console.log(res)
 
                         // collision response
                         if (res !== null) {
@@ -750,6 +629,147 @@ const System = {
                         }
                     }
                 }
+            }
+        }
+    },
+    input: {
+        init() {
+            const config = System.config;
+            this.sensitivityX = config.mouseSensitivity / 1400;
+            this.sensitivityY = config.mouseSensitivity / 1400;
+            if (config.mouseInvert === 'true')
+                this.sensitivityY *= -1;
+
+            const keyInput = {MouseX: 0, MouseY: 0, WheelX: 0, WheelY: 0};
+
+            for (const control in System.config.controls) {
+                keyInput[control] = () => {
+                    return keyInput[System.config.controls[control]] || false;
+                };
+            }
+
+            document.getElementById('c').addEventListener('click', () => {
+                if (config.displayMode === 'fullscreen')
+                    document.body.requestFullscreen();
+                document.body.requestPointerLock();
+            });
+
+            window.addEventListener('blur', () => {
+                for (const property in keyInput) {
+                    if (typeof keyInput[property] === 'boolean')
+                        keyInput[property] = false;
+                    else if (typeof keyInput[property] === 'number')
+                        keyInput[property] = 0;
+                }
+            });
+
+            window.addEventListener('resize', () => {
+                System.camera.perspectiveCamera.aspect = window.innerWidth / window.innerHeight;
+                System.camera.perspectiveCamera.updateProjectionMatrix();
+                System.render.renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+
+            document.getElementById('setting-back').addEventListener('click', () => {
+                document.getElementById('menu').style.display = 'none';
+                if (config.displayMode === 'fullscreen')
+                    document.body.requestFullscreen();
+                document.body.requestPointerLock();
+            });
+
+            window.addEventListener('beforeunload', (event) => {
+                event.preventDefault();
+                localStorage.setItem('config', JSON.stringify(System.config));
+                event.returnValue = '';
+            });
+
+            const onMouseMove = (event) => {
+                keyInput.MouseX = event.movementX * this.sensitivityX;
+                keyInput.MouseY = event.movementY * this.sensitivityY;
+            }
+
+            const onWheel = () => {
+                keyInput.WheelX = event.wheelDeltaX;
+                keyInput.WheelY = event.wheelDeltaY;
+            }
+
+            const onKeyDown = () => {
+                if (event.repeat)
+                    return;
+
+                keyInput[event.code] = true;
+
+                if (event.code === 'Tab') {
+                    enterMenu()
+                    document.getElementById('menu').style.display = '';
+                    document.exitPointerLock();
+                }
+
+            }
+
+            const onMenuKeyDown = () => {
+                if (event.code === 'Tab') {
+                    document.getElementById('menu').style.display = 'none';
+                    exitMenu();
+                    if (config.displayMode === 'fullscreen')
+                        document.body.requestFullscreen();
+                    document.body.requestPointerLock();
+                }
+            }
+
+            const onKeyUp = () => {
+                keyInput[event.code] = false;
+            }
+
+            const exitMenu = () => {
+                document.removeEventListener('keydown', onMenuKeyDown);
+                document.addEventListener('mousemove', onMouseMove);
+                document.addEventListener('wheel', onWheel);
+                document.addEventListener('keydown', onKeyDown);
+                document.addEventListener('keyup', onKeyUp);
+            }
+
+            const enterMenu = () => {
+                document.addEventListener('keydown', onMenuKeyDown);
+                document.removeEventListener('mousemove', onMouseMove);
+                document.removeEventListener('wheel', onWheel);
+                document.removeEventListener('keydown', onKeyDown);
+                document.removeEventListener('keyup', onKeyUp);            
+            }
+
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('wheel', onWheel);
+            document.addEventListener('keydown', onKeyDown);
+            document.addEventListener('keyup', onKeyUp);
+
+            this.keyInput = keyInput;
+        },
+        update() {
+            const keyInput = this.keyInput;
+            keyInput.MouseX = 0;
+            keyInput.MouseY = 0;
+            keyInput.WheelX = 0;
+            keyInput.WheelY = 0;
+        }
+    },
+    physics: {
+        init() {
+            this.Rigidbody = Component.components.Rigidbody;
+            this.Transform = Component.components.Transform;
+            this.Object3D = Component.components.Object3D;
+        },
+        update(dt) {
+            const Rigidbody = this.Rigidbody;
+            const Transform = this.Transform;
+            for (const entity in Rigidbody) {
+                const physics = Rigidbody[entity];
+                const transform = Transform[entity];
+                // physics.velocity.add(physics.acceleration.clone().multiplyScalar(dt));
+                transform.position.add(physics.velocity.clone().multiplyScalar(dt));
+
+                const angularDelta = physics.angularVelocity.clone().multiplyScalar(dt);
+                transform.rotation.x += angularDelta.x;
+                transform.rotation.y += angularDelta.y;
+                transform.rotation.z += angularDelta.z;
             }
         }
     },
