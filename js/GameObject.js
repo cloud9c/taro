@@ -1,365 +1,88 @@
 import * as THREE from 'https://threejs.org/build/three.module.js';
-import {scene, renderer, camera, lastTimestamp, dt, config, assets, peerID, connections} from './main.js';
-// import {Entity, Component, System} from './ECS.js'
+import {Asset, Entity, Component, System} from './engine.js'
 
 let paused = false;
 const keyInput = {}
 
 class Player {
 	constructor() {
-		this.xVel = 0;
-		this.yVel = 0;
-		this.zVel = 0;
+		const gltf = setGltf('player.glb');
+		const mesh = gltf.scene;
+		const animations = gltf.animations;
+		const entity = new Entity;
 
-		const configControls = ['moveForward', 'moveBackward', 'strafeLeft', 'strafeRight', 'jump', 'sprint'];
-		this.controls = {};
-		for (const control of configControls)
-			this.controls[control] = config[control];
-		this.walkingSpeed = 10;
-		this.sprintFactor = 2;
-		this.speed = this.walkingSpeed;
-		this.sprinting = false;
-
-		this.sensitivityX = config['mouseSensitivity'] / 1400;
-		this.sensitivityY = config['mouseSensitivity'] / 1400;
-		if (config['mouseInvert'] === 'true')
-			this.sensitivityY *= -1;
-
-		this.onGround = true;
-		this.jumpVel = 8;
-		this.gravity = this.jumpVel * 2.5;
-		this.firstPerson = true;
-
-		const mesh = setGltf.call(this, 'player.glb');
-
-		mesh.traverse(node => {
-			if (node.material) {
-				node.material.colorWrite = false;
-				node.material.depthWrite = false;
-			}
-		});	
-
-		// aabb ADD THIS
-		// this.aabb = new THREE.Box3().setFromObject(mesh.children[0].children[0]);
-		// var helper = new THREE.Box3Helper( this.aabb, 0xffff00 );
-		// scene.add( helper );
-
-		// camera setting
-		camera.position.set(0, 3.8, 0);
-		camera.rotation.set(0, Math.PI, 0);
-		this.cameraRadius = Math.sqrt(camera.position.z * camera.position.z + camera.position.y * camera.position.y);
-		this.cameraAngle = Math.acos(-camera.position.z / this.cameraRadius);
-		mesh.add(camera);
-
-		scene.add(mesh);
-
-		console.log(scene)
-
-		this.addEventListeners();
-	}
-
-	addEventListeners() {
-		document.getElementById('c').addEventListener('click', () => {
-			if (config['displayMode'] === 'fullscreen')
-				document.body.requestFullscreen();
-			document.body.requestPointerLock();
+		entity.addComponent('Transform', {position: new THREE.Vector3(0, 0,0), rotation: new THREE.Euler(), scale: new THREE.Vector3(1, 1, 1)})
+		entity.addComponent('Rigidbody', {
+			velocity: new THREE.Vector3(),
+			acceleration: new THREE.Vector3(),
+			mass: 60
 		});
-
-		window.addEventListener('blur', () => {
-			for (const property in keyInput) {
-				keyInput[property] = false;
+		entity.addComponent('Object3D', mesh);
+		entity.addComponent('Animation', setAnimation(mesh, animations, 'Idle'));
+		entity.addComponent('Collider', {
+			material: {
+				
 			}
 		});
+		System.camera.addTarget(mesh);
 
-		window.addEventListener('resize', () => {
-			camera.aspect = window.innerWidth / window.innerHeight;
-			camera.updateProjectionMatrix();
-			renderer.setSize(window.innerWidth, window.innerHeight);
+		const keyInput = System.input.keyInput;
+		const curVel = entity.components.Rigidbody.velocity;
+		const rotation = entity.components.Transform.rotation;
+		const newVel = new THREE.Vector3();
+		const maxSpeed = 20;
+		entity.addComponent('Behavior', () => {
+			newVel.set(0, 0, 0);
+
+			if (keyInput.moveForward()) {
+				if (curVel.z < 20)
+					if (curVel.z > 0)
+						newVel.z += 20 - curVel.z;
+					else
+						newVel.z += 20;
+			}
+			if (keyInput.moveBackward()) {
+				if (curVel.z > -20)
+					if (curVel.z < 0)
+						newVel.z -= 20 + curVel.z;
+					else
+						newVel.z -= 20;
+			}
+			if (keyInput.strafeLeft()) {
+				if (curVel.x < 20)
+					if (curVel.x > 0)
+						newVel.x += 20 - curVel.x;
+					else
+						newVel.x += 20;
+			}
+			if (keyInput.strafeRight()) {
+				if (curVel.x > -20)
+					if (curVel.x < 0)
+						newVel.x -= 20 + curVel.x;
+					else
+						newVel.x -= 20;
+			}
+			if (keyInput.jump) {
+
+			}
+			if (keyInput.sprint) {
+
+			}
+
+			length = Math.sqrt(newVel.x * newVel.x + newVel.y * newVel.y);
+			if (length > maxSpeed) {
+				newVel.x = newVel.x / length * maxSpeed;
+				newVel.y = newVel.y / length * maxSpeed;
+			}
+
+			newVel.set((Math.sin(rotation.y) * newVel.z + Math.cos(rotation.y) * newVel.x),newVel.y,(Math.cos(rotation.y) * newVel.z + Math.sin(rotation.y) * newVel.x));
+			curVel.add(newVel);
 		});
-
-		document.addEventListener('mousemove', (event) => {
-			if (paused)
-				return;
-			const sensitivityX = this.sensitivityX;
-			const sensitivityY = this.sensitivityY;
-
-			const dx = event.movementX * sensitivityX
-			const dy = event.movementY * sensitivityY
-
-			this.mesh.rotation.y -= dx;
-			if (dy != 0) {
-				const newCameraAngle = this.cameraAngle + dy;
-				const newX = camera.rotation.x + dy;
-				if (this.firstPerson) {
-					if (newX < 1.5 && newX > -1.5)
-						camera.rotation.x = newX;
-				} else if (newCameraAngle < 1.1 && newCameraAngle > 0.1) {
-					this.cameraAngle = newCameraAngle;
-					camera.position.z = -Math.cos(newCameraAngle) * this.cameraRadius;
-					camera.position.y = Math.sin(newCameraAngle) * this.cameraRadius;
-					camera.rotation.x = newX;
-				}	
-			}
-		});
-
-		document.addEventListener('wheel', (event) => {	
-			if (paused)	
-				return;
-
-			if (event.wheelDeltaY < 0) {	
-				camera.zoom = Math.max(camera.zoom - 0.05, 1);	
-				if (this.firstPerson) {	
-					this.firstPerson = false;
-					this.mesh.traverse(node => {
-						if (node.material) {
-							node.material.colorWrite = true;
-							node.material.depthWrite = true;
-						}
-					});	
-					camera.position.set(-2, 10, -15);	
-					camera.rotation.set(-160 * Math.PI / 180, 0, Math.PI);	
-					this.cameraRadius = Math.sqrt(camera.position.z * camera.position.z + camera.position.y * camera.position.y);	
-					this.cameraAngle = Math.acos(-camera.position.z / this.cameraRadius);	
-					camera.zoom = 1.65;	
-				}	
-			} else {	
-				const newZoom = camera.zoom + 0.05;	
-				if (!this.firstPerson) {
-					if (camera.zoom >= 1.65) {
-						this.firstPerson = true;
-						this.mesh.traverse(node => {
-							if (node.material) {
-								node.material.colorWrite = false;
-								node.material.depthWrite = false;
-							}
-						});	
-						camera.position.set(0, 4, 0);	
-						camera.rotation.set(0, Math.PI, 0);	
-						camera.zoom = 1;	
-					} else {	
-						camera.zoom = Math.min(newZoom, 1.65);	
-					}	
-				}	
-			}	
-			camera.updateProjectionMatrix();	
-		});
-
-		document.addEventListener('keydown', (event) => {
-			if (event.repeat)
-				return;
-
-			const key = event.code;
-			keyInput[key] = true;
-
-			if (key === 'Tab') {
-				event.preventDefault();
-				if (paused) {
-					paused = false;
-					document.getElementById('menu').style.display = 'none';
-					if (config['displayMode'] === 'fullscreen')
-						document.body.requestFullscreen();
-					document.body.requestPointerLock();
-				} else {
-					paused = true;
-					document.getElementById('menu').style.display = '';
-					document.exitPointerLock();
-					for (const property in keyInput)
-						keyInput[property] = false;
-				}
-			}
-		});
-
-		document.addEventListener('keyup', (event) => {
-			const key = event.code;
-			keyInput[key] = false;
-		});
-
-		document.getElementById('setting-back').addEventListener('click', () => {
-			paused = false;
-			document.getElementById('menu').style.display = 'none';
-			if (config['displayMode'] === 'fullscreen')
-				document.body.requestFullscreen();
-			document.body.requestPointerLock();
-		});
-	}
-
-	move() {
-		const pos = this.mesh.position;
-		const controls = this.controls;
-		const newYVel = (this.yVel - this.gravity * dt) * dt;
-		let speed = this.speed;
-
-		let xVel = 0;
-		let yVel = this.yVel;
-		let zVel = 0;
-
-		if (pos.y + newYVel > 0) {
-			yVel -= this.gravity * dt;
-		} else {
-			yVel = 0;
-			pos.y = 0;
-		}
-
-		if (!paused) {
-			if (keyInput[controls['moveForward']]) {
-				zVel -= 1;
-			}
-			if (keyInput[controls['moveBackward']]) {
-				zVel += 1;
-			}
-			if (keyInput[controls['strafeLeft']]) {
-				xVel -= 1;
-			}
-			if (keyInput[controls['strafeRight']]) {
-				xVel += 1;
-			}
-			if (pos.y === 0) {
-				if (keyInput[controls['jump']]) {
-					yVel += this.jumpVel;
-					let jump = 'WalkJump'
-					if (xVel === 0 && zVel === 0)
-						jump = 'Jump'
-					fadeToAction.call(this, jump, 0.4);
-				}
-				if (keyInput[controls['sprint']]) {
-					speed *= this.sprintFactor;
-				}
-			}
-		}
-
-		const magnitude = Math.sqrt(xVel * xVel + zVel * zVel);
-		if (magnitude > 1) {
-			xVel = xVel / magnitude;
-			zVel = zVel / magnitude;
-		}
-
-		let dir = 1
-		if (xVel > 0 || zVel > 0) {
-			dir = -1;
-		}
-
-		if (yVel === 0) { // maybe too spammy? TODO
-			if (speed > this.walkingSpeed || speed > this.walkingSpeed) {
-				fadeToAction.call(this, 'Running', 0.2, dir);
-			} else if (Math.abs(xVel) > 0 || Math.abs(zVel) > 0) {
-				fadeToAction.call(this, 'Walking', 0.2, dir);
-			} else {
-				fadeToAction.call(this, 'Idle', 0.2);
-			}
-		}
-
-		const dx = (Math.sin(this.mesh.rotation.y + Math.PI) * zVel - Math.cos(this.mesh.rotation.y) * xVel) * dt * speed;
-		const dy = yVel * dt;
-		const dz = (Math.cos(this.mesh.rotation.y + Math.PI) * zVel + Math.sin(this.mesh.rotation.y) * xVel) * dt * speed;
-
-		pos.x += dx;
-		pos.y += yVel * dt;
-		pos.z += dz;
-
-		this.aabb.translate(new THREE.Vector3(dx, dy, dz))
-
-		this.yVel = yVel;
-
-		this.mesh.position.set(pos.x, pos.y, pos.z);
-	}
-
-	sendPacket() {
-		const pos = this.mesh.position;
-		const data = {
-			id: peerID,
-			type: 'update',
-			pos: {
-				x: pos.x,
-				y: pos.y,
-				z: pos.z
-			},
-			rotationY: this.mesh.rotation.y,
-			animationName: this.activeAction['_clip']['name'],
-			animationDir: this.activeAction.timeScale
-		}
-
-		for (const c of Object.values(connections)) {
-			c[0].send(data);
-		}
-	}
-
-	update() {
-		this.move();
-		this.mixer.update(dt);
-		this.sendPacket();
 	}
 }
-
-class OtherPlayer {
-	constructor(id) {
-		this.pos = new THREE.Vector3(0, 0, 0);
-		this.rotationY = 0;
-		this.id = id;
-
-		if (hosting) {
-			connections[id][0].send({
-				type: 'playerList',
-				playerList: Object.keys(connections)
-			});
-		}
-		const mesh = setGltf.call(this, 'player.glb');
-		this.animationName = 'Idle';
-		this.animationDir = 1;
-
-		scene.add(mesh);
-	}
-
-	delete() {
-		scene.remove(this.mesh);
-	}
-
-	update() {
-		const pos = this.pos;
-		this.mesh.position.set(pos.x, pos.y, pos.z);
-		this.mesh.rotation.y = this.rotationY;
-		this.mixer.update(dt);
-		fadeToAction.call(this, this.animationName, 0.2, this.animationDir);
-	}
-
-	addOverhead(message) {
-		const fontsize = 24;
-		const tempCanvas = document.createElement('canvas');
-		tempCanvas.width = 512;
-		tempCanvas.height = 256;
-		const context = tempCanvas.getContext('2d');
-		context.font = 'Bold ' + fontsize + 'px sans-serif';
-		context.fillStyle = 'rgba(255, 255, 255, 0.5)';
-		context.strokeStyle = 'rgba(0, 0, 0, 0.5)';
-		context.fillStyle = '#000';
-		context.fillText(message, (tempCanvas.width) / 2 - context.measureText(message).width / 2, fontsize);
-
-		const texture = new THREE.Texture(tempCanvas)
-		texture.needsUpdate = true;
-		const sprite = new THREE.Sprite(new THREE.SpriteMaterial({
-			map: texture
-		}));
-		sprite.scale.set(0.5 * fontsize, 0.25 * fontsize, 0.75 * fontsize);
-
-		const overhead = sprite;
-		overhead.position.setY(2.8);
-		this.mesh.add(overhead);
-	}
-}
-
-// class PhysicsProp {
-
-// }
-
-// class StaticProp {
-
-// }
-
-// class Item {
-
-// }
 
 function setGltf(assetName) {
-	const original = assets[assetName];
+	const original = Asset[assetName];
 	const gltf = {
 		animations: original.animations,
 		scene: original.scene.clone()
@@ -402,20 +125,21 @@ function setGltf(assetName) {
 			cloneSkinnedMesh.matrixWorld);
 	}
 
-	const mesh = gltf.scene;
-	let actions = [];
-
-	mesh.traverse(node => {
+	gltf.scene.traverse(node => {
 		if (node.isMesh) {
 			node.castShadow = true;
 			node.receiveShadow = true;
 		}
 	});
+	return gltf
+}
 
-	// Animation
+function setAnimation(mesh, animations, active) {
 	const mixer = new THREE.AnimationMixer(mesh);
 
-	for (const animation of gltf.animations) {
+	const actions = [];
+
+	for (const animation of animations) {
 		const clip = animation;
 		const action = mixer.clipAction(clip);
 		if (clip.name === 'Jump' && clip.name === 'WalkJump') {
@@ -424,14 +148,14 @@ function setGltf(assetName) {
 		actions[clip.name] = action;
 	}
 
-	let activeAction = actions['Idle'];
+	let activeAction = actions[active];
 	activeAction.play();
-	this.mixer = mixer;
-	this.actions = actions;
-	this.activeAction = activeAction;
-	this.mesh = mesh;
 
-	return mesh
+	return 	{
+		'mixer': mixer,
+		'actions': actions,
+		'activeAction': activeAction
+	};
 }
 
 function fadeToAction(name, duration, timeScale = 1) {
@@ -452,4 +176,4 @@ function fadeToAction(name, duration, timeScale = 1) {
 		.play();
 }
 
-export {Player, OtherPlayer}
+export {Player}

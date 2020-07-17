@@ -1,12 +1,9 @@
 import * as THREE from 'https://threejs.org/build/three.module.js';
 import { GLTFLoader } from 'https://threejs.org/examples/jsm/loaders/GLTFLoader.js';
-import {Entity, Component, System} from './ECS.js'
-// import * as GAMEOBJECT from './GameObject.js'
+import * as Engine from './engine.js'
+import * as GameObject from './gameobject.js'
 
-// let scene, renderer, camera;
 let lastTimestamp = 0, dt;
-// const gameObjects = {};
-let config;
 let peer, connections = [], serverID, peerID, hosting, nickname;
 const assets = {};
 
@@ -16,58 +13,25 @@ function init() {
 	let geo, mat, mesh, entity;
 
 	//html stuff
-	document.getElementById('c').style.filter = 'brightness(' + (+config['brightness'] + 50)/100 + ')'
-
 	document.getElementById('log').textContent = 'Server Code: ' + serverID;
 	document.getElementById('launcher').remove();
 	document.getElementById('loading').remove();
 	document.getElementById('game').style.display = '';
 
-	// scene = new THREE.Scene();
-	// scene.background = new THREE.Color(0x0080ff);
-
-	// let aspectRatio = window.innerWidth / window.innerHeight;
-	// if (config['aspectRatio'] != 'native') {
-	// 	const configRatio = config['aspectRatio'].split(":");
-	// 	aspectRatio = configRatio[0]/configRatio[1];
-	// }
-
-	// camera = new THREE.PerspectiveCamera(+config['fov'], aspectRatio, 1, +config['renderDistance']);
-
-	// renderer = new THREE.WebGLRenderer({
-	// 	canvas: canvas,
-	// 	precision: config['shadowPrecision'],
-	// 	antialias: config['antiAliasing'] === 'true',
-	// 	powerPreference: config['powerPreference'],
-
-	// });
-	// renderer.setSize(window.innerWidth, window.innerHeight);
-	// renderer.shadowMap.enabled = true;
-	// renderer.shadowMap.type = THREE[config['shadowMap']];
-	// renderer.physicallyCorrectLights = config['physicallyCorrectLights'] === 'true';
-	// renderer.toneMapping = THREE[config['toneMap']]
-
-	// renderer.setPixelRatio(+config['resolution']);
-
-	// const maxFiltering = renderer.capabilities.getMaxAnisotropy();
-	// const filterLevels = document.querySelector('select[name=textureFiltering]').children;
-	// for (let i = filterLevels.length - 1; i >= 0; i--) {
-	// 	const element = filterLevels[i];
-	// 	if (element.value > maxFiltering) {
-	// 		element.remove();
-	// 	}
-	// }
-
-	System.init(config);
+	Engine.System.init();
+	Engine.System.behavior.init();
+	Engine.System.camera.init();
+	Engine.System.collision.init();
+	Engine.System.input.init();
+	Engine.System.physics.init();
+	Engine.System.render.init();
 
 	// lighting
 	const hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 0.6);
 	hemiLight.color.setHSL(0.6, 1, 0.6);
 	hemiLight.groundColor.setHSL(0.095, 1, 0.75);
 	hemiLight.position.set(0, 100, 0);
-	// scene.add(hemiLight);
-	entity = new Entity;
-	entity.addComponent('Object3D', hemiLight);
+	(new Engine.Entity).addComponent('Object3D', hemiLight);
 
 	const dirLight = new THREE.DirectionalLight(0xffffff, 1);
 	dirLight.color.setHSL(0.1, 1, 0.95);
@@ -89,8 +53,7 @@ function init() {
 	dirLight.shadow.camera.far = 3500;
 	dirLight.shadow.bias = -0.0001;
 
-	entity = new Entity;
-	entity.addComponent('Object3D', dirLight);
+	(new Engine.Entity).addComponent('Object3D', dirLight);
 
 	// floor
 	geo = new THREE.PlaneBufferGeometry(200, 200);
@@ -102,33 +65,15 @@ function init() {
 	mesh.rotation.x = -Math.PI / 2;
 	mesh.receiveShadow = true;
 
-	entity = new Entity;
-	entity.addComponent('Object3D', mesh);
+	(new Engine.Entity).addComponent('Object3D', mesh).addComponent('Collider', {material: {}});
+	(new Engine.Entity).addComponent('Object3D', new THREE.GridHelper(1000, 1000, 0x0000ff, 0x808080));
 
-	const gridHelper = new THREE.GridHelper(1000, 1000, 0x0000ff, 0x808080);
-
-	entity = new Entity;
-	entity.addComponent('Object3D', gridHelper);
-
-	//player
-	// gameObjects['player'] = new GAMEOBJECT.Player();
-
-	geo = new THREE.BoxGeometry( 1, 1, 1 );
-	mat = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
-	mesh = new THREE.Mesh( geo, mat );
-	mesh.position.set(0, 3, 0)
-	entity = new Entity;
-	entity.addComponent('Object3D', mesh);
-
-	System.camera.init(mesh);
-	System.input.init();
-	System.movement.init();
-	System.render.init();
+	new GameObject.Player();
 
 	window.requestAnimationFrame(gameLoop);
 }
 
-function loadGame(event) {
+async function loadGame(event) {
 	if (!event.path[1].reportValidity())
 		return;
 
@@ -142,40 +87,15 @@ function loadGame(event) {
 	localStorage.setItem('nickname', nickname);
 	serverID = document.getElementById('join').value.replace(/\s/g, '');
 
-	const manager = new THREE.LoadingManager();
-	const modelLoader = new GLTFLoader(manager);
-	const models = ['player.glb'];
+	await Engine.Asset.init();
 
-	if (config['displayMode'] === 'fullscreen') {
-		document.body.requestFullscreen();
-	}
+	document.getElementById('loading-info').textContent = 'Connecting to server...';
 
-	for (const model of models) {
-		modelLoader.load('assets/models/' + model, gltf => {
-			assets[model] = gltf;
-		});
-	}
+    newPeer();
 
-	manager.onProgress = (url, itemsLoaded, itemsTotal) => {
-		document.getElementById('loading-info').textContent = 'Loading: ' + url;
-		document.getElementById('bar-percentage').style.width = itemsLoaded / itemsTotal * 100 + '%';
-	}
-
-	manager.onLoad = () => {
-		document.getElementById('loading-info').textContent = 'Connecting to server...';
-
-		newPeer();
-
-		window.addEventListener('beforeunload', (event) => {
-			event.preventDefault();
-			localStorage.setItem('config', JSON.stringify(config));
-			event.returnValue = '';
-		});
-
-		window.addEventListener('unload', () => {
-			peer.destroy();
-		})
-	}
+    window.addEventListener('unload', () => {
+        peer.destroy();
+    })
 }
 
 function addNewConnection(conn) {
@@ -284,53 +204,15 @@ function gameLoop(timestamp) {
 	dt = timestamp - lastTimestamp;
 	lastTimestamp = timestamp;
 
-	System.camera.update();
-	System.movement.update();
-	System.render.update();
-	System.input.update();
+	Engine.System.camera.update();
+	Engine.System.physics.update(dt);
+	Engine.System.collision.update();
+	Engine.System.render.update();
+	Engine.System.input.update();
+	Engine.System.behavior.update();
 
-	// for (const property in gameObjects) {
-	// 	gameObjects[property].update();
-	// }
-
-	// renderer.render(scene, camera);
 	window.requestAnimationFrame(gameLoop);
 };
-
-function applyChanges(name) {
-	switch(name) {
-		case 'mouseSensitivity':
-			System.input.sensitivityX = config['mouseSensitivity'] / 1400;
-			System.input.sensitivityY = config['mouseSensitivity'] / 1400;
-			break;
-		case 'mouseInvert':
-			if (config['mouseInvert'] === 'true')
-				System.input.sensitivityY *= -1;
-			break;
-		case 'resolution':
-			System.render.renderer.setPixelRatio(+config['resolution']);
-			break;
-		case 'brightness':
-			document.getElementById('c').style.filter = 'brightness(' + (+config['brightness'] + 50)/100 + ')';
-			break;
-		case 'fov':
-			System.camera.perspectiveCamera.fov = +config['fov'];
-			break;
-		case 'aspectRatio':
-			let aspectRatio = window.innerWidth / window.innerHeight;
-			if (config['aspectRatio'] != 'native') {
-				const configRatio = config['aspectRatio'].split(":");
-				aspectRatio = configRatio[0]/configRatio[1];
-			}
-			System.camera.perspectiveCamera.aspect = aspectRatio;
-			break;
-		case 'renderDistance':
-			System.camera.perspectiveCamera.far = +config['renderDistance'];
-			scene.fog = new THREE.Fog(new THREE.Color(0x0080ff), +config['renderDistance'] - 4, +config['renderDistance']);
-			break;
-	}
-	System.camera.perspectiveCamera.updateProjectionMatrix();
-}
 
 window.addEventListener('load', () => {
 	const oldNickname = localStorage.getItem('nickname');
@@ -339,101 +221,10 @@ window.addEventListener('load', () => {
 		document.getElementsByClassName('nickname')[1].value = oldNickname;
 	}
 
-	const oldConfig = localStorage.getItem('config');
-	if (oldConfig !== null) {
-		config = JSON.parse(oldConfig);
-	} else {
-		config = {};
-	}
-
 	document.getElementById('join-button').addEventListener('click', loadGame);
 	document.getElementById('host-button').addEventListener('click', loadGame);
 	document.getElementById('next-button').addEventListener('click', () => {
 		document.getElementById('splash-page').style.display = 'none';
 		document.getElementById('host-submit').style.display = 'block';
 	})
-
-	for (const element of document.getElementById('menu-sidebar').children) {
-		element.addEventListener('click', () => {
-			document.querySelector('.setting-label[data-selected]').removeAttribute('data-selected');
-			document.querySelector('.setting[data-selected]').removeAttribute('data-selected');
-			element.setAttribute('data-selected', '');
-			document.querySelector('.setting[data-setting=' + element.getAttribute('data-setting') + ']').setAttribute('data-selected', '');
-		})
-	}
-
-	for (const element of document.querySelectorAll('.setting input:not([type=number]), .setting select')) {
-		if (oldConfig === null || oldConfig.hasOwnProperty(element.name)) {
-			element.value = element.getAttribute('data-default');
-			config[element.name] = element.getAttribute('data-default');
-		} else {
-			element.value = config[element.name];
-		}
-
-		switch (element.type) {
-			case 'range':	
-				const percent = 100 * (element.value - element.getAttribute('min')) / (element.getAttribute('max') - element.getAttribute('min'));
-				element.style.background = 'linear-gradient(to right, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.8) ' + percent + '%, rgba(255,255,255,0.4) ' + percent + '%, rgba(255,255,255,0.4) 100%)';
-				element.nextElementSibling.value = element.value;
-				element.addEventListener('input', function() {
-					const percent = 100 * (this.value - this.getAttribute('min')) / (this.getAttribute('max') - this.getAttribute('min'));
-					this.style.background = 'linear-gradient(to right, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.8) ' + percent + '%, rgba(255,255,255,0.4) ' + percent + '%, rgba(255,255,255,0.4) 100%)'
-					this.nextElementSibling.value = this.value;
-					config[this.name] = this.value;
-
-					// const player = gameObjects['player'];
-					applyChanges(this.name);
-				});
-				break;
-			case 'text':
-				element.addEventListener('keydown', function(event) {
-					const key = event.code;
-
-					if (key === 'Tab')
-						return;
-
-					const controls = document.querySelectorAll('input[type=text]');
-					for (const control of controls) {
-						if (control.value === key) {
-							control.value = '';
-							config[control.name] = '';
-						}
-					}
-					this.value = key;
-					config[this.name] = key;
-					this.blur();
-					// gameObjects['player'].controls[this.name] = key;
-					applyChanges(this.name);
-				});
-				element.nextElementSibling.addEventListener('click', () => {
-					element.value = '';
-					config[element.name] = '';
-					applyChanges(element.name);
-				});
-				break;
-			default:
-				element.addEventListener('input', function() {
-					config[this.name] = this.value;
-					applyChanges(this.name);
-				});	
-		}
-	}
-
-	document.getElementById('restore-defaults').addEventListener('click', () => {
-		for (const element of document.querySelectorAll('.setting[data-selected] input:not([type=number]), .setting select')) {
-			const dataDefault = element.getAttribute('data-default');
-
-			if (element.type === 'range') {
-				const percent = 100 * (dataDefault - element.getAttribute('min')) / (element.getAttribute('max') - element.getAttribute('min'));
-				element.style.background = 'linear-gradient(to right, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.8) ' + percent + '%, rgba(255,255,255,0.4) ' + percent + '%, rgba(255,255,255,0.4) 100%)';
-				element.nextElementSibling.value = dataDefault;
-			}
-
-			element.value = dataDefault
-			config[element.name] = dataDefault;
-			applyChanges(element.name);
-		}
-	});
 });
-
-// export {scene, renderer, camera, lastTimestamp, dt, config, assets, peerID, connections};
