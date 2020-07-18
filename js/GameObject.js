@@ -20,12 +20,14 @@ class Player {
 		});
 		entity.addComponent('Rigidbody', {
 			velocity: new THREE.Vector3(),
-			angularVelocity: new THREE.Vector3(),
+			angularVelocity: new THREE.Vector3(0, 0, 0),
 			mass: 60
 		});
 		entity.addComponent('Collider', {
 			material: {
-				
+				dynamicFriction: 1,
+				staticFriction: 1,
+				elasticity: 1
 			}
 		});
 		System.camera.addTarget(mesh);

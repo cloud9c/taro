@@ -38,6 +38,7 @@ const Component = {
             throw 'Object3D dependency';
         data.Object3D = obj;
         data.boundingBox = new THREE.Box3();
+        data.vertices = new ConvexHull().setFromObject(obj).vertices.map( a => a.point.sub(obj.position));
 
         setDataComponent(id, type, data);
     },
@@ -45,9 +46,9 @@ const Component = {
     Object3D: (id, type, data) => {
         const transform = Component.components.Transform[id];
         if (transform) {
-            transform.position = data.position.copy(transform.position);
-            transform.rotation = data.rotation.copy(transform.rotation);
-            transform.scale = data.scale.copy(transform.scale);
+            transform.position = data.position;
+            transform.rotation = data.rotation;
+            transform.scale = data.scale;
         }
         setDataComponent(id, type, data);
         System.render.scene.add(data);
@@ -79,9 +80,9 @@ const Component = {
     Transform: (id, type, data) => {
         const object = Component.components.Object3D[id];
         if (object) {
-            data.position = object.position.copy(data.position);
-            data.rotation = object.rotation.copy(data.rotation);
-            data.scale = object.scale.copy(data.scale);
+            data.position = object.position;
+            data.rotation = object.rotation;
+            data.scale = object.scale;
         }
         setDataComponent(id, type, data);
     }
@@ -272,7 +273,6 @@ const System = {
             camera.rotation.set(-160 * Math.PI / 180, 0, Math.PI);
             this.cameraRadius = Math.sqrt(camera.position.z * camera.position.z + camera.position.y * camera.position.y);
             this.cameraArc = Math.acos(-camera.position.z / this.cameraRadius);
-            this.matrix = new THREE.Matrix4();
             camera.zoom = 1.65;
         },
         firstPersonMode() {
@@ -348,6 +348,7 @@ const System = {
         init() {
             this.Collider = Component.components.Collider;
             this.convexHull = new ConvexHull();
+            this.axis = [new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 0, 1)];
         },
         getFurthestPointInDirection(verts, dir) {
             let index = 0;
@@ -525,45 +526,35 @@ const System = {
         
             for (let i = 0, len = simplexFaces.length; i < len; i++) {
                 const face = simplexFaces[i];
-        
                 const ab = simplex[face.b].clone().sub(simplex[face.a]);
                 const ac = simplex[face.c].clone().sub(simplex[face.a]);
                 const norm = ab.cross(ac).normalize();
-        
                 const a0 = new THREE.Vector3().sub(simplex[face.a]);
                 if (a0.dot(norm) > 0)
                     norm.negate();
         
                 const dist = simplex[face.a].clone().dot(norm);
-                /*const distA = simplex[face.a].clone().dot(norm);
-                const distB = simplex[face.b].clone().dot(norm);
-                const distC = simplex[face.c].clone().dot(norm);
-                const dist = Math.min(distA, distB, distC); //is this necessary?*/
-        
                 if (dist < closest.dist)
                     closest = {index: i, dist: dist, norm: norm, a: face.a, b: face.b, c: face.c};
             }
             return closest;
         },
-        EPA(aWorldVerts, bWorldVerts, simplex) {
-            const simplexFaces = [{a: 0, b: 1, c: 2},
-                                {a: 0, b: 1, c: 3},
-                                {a: 0, b: 2, c: 3},
-                                {a: 1, b: 2, c: 3}];
+        EPA(vertA, vertB, simplex) {
+            const simplexFaces = [{a: 0, b: 1, c: 2}, {a: 0, b: 1, c: 3}, {a: 0, b: 2, c: 3}, {a: 1, b: 2, c: 3}];
         
             const epsilon = 0.00001;
             let res = null;
         
-            while(true) {
+            while (true) {
                 const face = this.findClosestFace(simplex, simplexFaces);
-                const point = this.support(aWorldVerts, bWorldVerts, face.norm);
+                const point = this.support(vertA, vertB, face.norm);
                 const dist = point.clone().dot(face.norm);
         
                 if (dist - face.dist < epsilon) {
                     res = {dir: face.norm.negate(), dist: dist + epsilon};
                     break;
                 }
-        
+
                 simplex.push(point);
                 this.expand(simplex, simplexFaces, point);
             }
@@ -572,18 +563,34 @@ const System = {
         },
         GJK(colA, colB, initDir) {
             // really should preprocess this information for all objects but its fine for now
-            const aWorldVerts = this.convexHull.setFromObject(colA).vertices.map( a => a.point);
-            const bWorldVerts = this.convexHull.setFromObject(colB).vertices.map( a => a.point);
+            const posA = colA.Object3D.position;
+            const posB = colB.Object3D.position;
+            const rotA = colA.Object3D.rotation;
+            const rotB = colB.Object3D.rotation;
+
+            const axis = this.axis;
+
+            // console.log(colB.vertices[0], colB.vertices[0].clone().applyAxisAngle(axis[0], rotA.x));
+            console.log(rotB)
+
+            // const vertA = colA.vertices.map(a => a.clone().applyAxisAngle(axis[0], rotA.x).applyAxisAngle(axis[1], rotA.y).applyAxisAngle(axis[2], rotA.z).add(posA));
+            // const vertB = colB.vertices.map(a => a.clone().applyAxisAngle(axis[0], rotB.x).applyAxisAngle(axis[1], rotB.y).applyAxisAngle(axis[2], rotB.z).add(posB));
+
+            // const vertA = colA.vertices.map(a => a.clone().applyAxisAngle(axis[0], rotA.x).add(posA));
+            // const vertB = colB.vertices.map(a => a.clone().applyAxisAngle(axis[0], rotB.x).add(posB));
+
+            const vertA = colA.vertices.map(a => a.clone().add(posA));
+            const vertB = colB.vertices.map(a => a.clone().add(posB));
 
             let colliding = null;
             const simplex = [];
             const dir = initDir;
 
-            simplex.push(this.support(aWorldVerts, bWorldVerts, dir));
+            simplex.push(this.support(vertA, vertB, dir));
             dir.negate();
 
             while(true) {
-                const p = this.support(aWorldVerts, bWorldVerts, dir);
+                const p = this.support(vertA, vertB, dir);
                 simplex.push(p);
 
                 if (p.clone().dot(dir) <= 0) {
@@ -597,7 +604,7 @@ const System = {
                 }
             }
 
-            return colliding ? this.EPA(aWorldVerts, bWorldVerts, simplex) : null;
+            return colliding ? this.EPA(vertA, vertB, simplex) : null;
         },
         update() {
             const Collider = this.Collider;
@@ -619,7 +626,7 @@ const System = {
                         const centerB = colB.boundingBox.getCenter(new THREE.Vector3());
 
                         // collision detection
-                        const res = this.GJK(colA.Object3D, colB.Object3D, centerA.sub(centerB));
+                        const res = this.GJK(colA, colB, centerA.sub(centerB));
 
                         console.log(res)
 
