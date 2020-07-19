@@ -36,9 +36,94 @@ const Component = {
         const obj = Component.components.Object3D[id];
         if (obj === undefined)
             throw 'Object3D dependency';
-        data.Object3D = obj;
-        data.boundingBox = new THREE.Box3();
-        data.vertices = new ConvexHull().setFromObject(obj).vertices.map( a => a.point.sub(obj.position));
+
+        // create cached convex hull and box3
+        data.cached = {
+            AABB: {
+                updated: false,
+                position: obj.position.clone(),
+                rotation: obj.rotation.clone(),
+                scale: obj.scale.clone()
+            },
+            vertices: {
+                updated: false,
+                position: obj.position.clone(),
+                rotation: obj.rotation.clone(),
+                scale: obj.scale.clone()
+            }
+        };
+        data.AABB = new THREE.Box3().setFromObject(obj);
+        obj.position.set(0, 0, 0);
+        obj.rotation.set(0, 0, 0);
+        obj.scale.set(1, 1, 1);
+
+        const origin = new ConvexHull().setFromObject(obj).vertices;
+        
+        obj.position.copy(data.cached.AABB.position);
+        obj.rotation.copy(data.cached.AABB.rotation);
+        obj.scale.copy(data.cached.AABB.scale);
+
+        data.vertices = [];
+        for (let i = 0, len = origin.length; i < len; i++) {
+            origin[i] = origin[i].point;
+            data.vertices.push(origin[i].clone().applyEuler(obj.rotation).add(obj.position).multiply(obj.scale));
+        }
+        data.cached.vertices.origin = origin;
+
+        // add centroid
+        const vertLen = data.vertices.length;
+        data.centroid = new THREE.Vector3();
+        for ( var i = 0; i < vertLen; i ++ ) {
+            data.centroid.add(data.vertices[i]);
+        }
+        data.centroid.divideScalar(vertLen);
+
+        // add center of mass to rigidbody
+        const rigidbody = Component.components.Rigidbody[id];
+        if (rigidbody !== undefined)
+            rigidbody.centerOfMass = data.centroid;
+
+        data.getAABB = () => {
+            const cached = data.cached.AABB;
+            if (!cached.updated) {
+                // TODO! can optimize to transform diff rather than setFromObject each time
+
+                if (!cached.position.equals(obj.position) || !cached.rotation.equals(obj.rotation) || !cached.scale.equals(obj.scale)) {
+                    data.AABB.setFromObject(obj);
+                    cached.position = obj.position.clone();
+                    cached.rotation = obj.rotation.clone();
+                    cached.scale = obj.scale.clone();
+                }
+                cached.updated = true;
+            }
+
+            return data.AABB;
+        };
+
+        data.getVertices = () => {
+            const cached = data.cached.vertices;
+            if (!cached.updated) {
+                // TODO! can optimize to transform diff rather than clone origin each time
+
+                if (!cached.position.equals(obj.position) || !cached.rotation.equals(obj.rotation) || !cached.scale.equals(obj.scale)) {
+                    for (let i = 0, len = data.vertices.length; i < len; i++) {
+                        data.vertices[i] = cached.origin[i].clone().applyEuler(obj.rotation).add(obj.position).multiply(obj.scale);
+                    }
+                    cached.position = obj.position.clone();
+                    cached.rotation = obj.rotation.clone();
+                    cached.scale = obj.scale.clone();                    
+                }
+
+                cached.updated = true;
+            }
+
+            return data.vertices;
+        };
+
+        data.resetUpdate = () => {
+            data.cached.AABB.updated = false;
+            data.cached.vertices.updated = false;
+        };
 
         setDataComponent(id, type, data);
     },
@@ -60,20 +145,6 @@ const Component = {
         data.isGrounded = function() {
             return this.velocity.y == 0;
         };
-
-        // get center of mass
-        const obj = Component.components.Object3D[id];
-        if (obj === undefined)
-            throw 'Object3D dependency'
-        const translation = obj.position;
-        const vertices = new ConvexHull().setFromObject(obj).vertices.map( a => a.point);
-        const vertLen = vertices.length;
-        const centerOfMass = new THREE.Vector3();
-        for ( var i = 0; i < vertLen; i ++ ) {
-            centerOfMass.add(vertices[i].sub(translation));
-        }
-        centerOfMass.divideScalar(vertLen);
-        data.centerOfMass = centerOfMass;
 
         setDataComponent(id, type, data);
     },
@@ -347,8 +418,6 @@ const System = {
     collision: {
         init() {
             this.Collider = Component.components.Collider;
-            this.convexHull = new ConvexHull();
-            this.axis = [new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 0, 1)];
         },
         getFurthestPointInDirection(verts, dir) {
             let index = 0;
@@ -561,27 +630,8 @@ const System = {
         
             return res;
         },
-        GJK(colA, colB, initDir) {
+        GJK(vertA, vertB, initDir) {
             // really should preprocess this information for all objects but its fine for now
-            const posA = colA.Object3D.position;
-            const posB = colB.Object3D.position;
-            const rotA = colA.Object3D.rotation;
-            const rotB = colB.Object3D.rotation;
-
-            const axis = this.axis;
-
-            // console.log(colB.vertices[0], colB.vertices[0].clone().applyAxisAngle(axis[0], rotA.x));
-            console.log(rotB)
-
-            // const vertA = colA.vertices.map(a => a.clone().applyAxisAngle(axis[0], rotA.x).applyAxisAngle(axis[1], rotA.y).applyAxisAngle(axis[2], rotA.z).add(posA));
-            // const vertB = colB.vertices.map(a => a.clone().applyAxisAngle(axis[0], rotB.x).applyAxisAngle(axis[1], rotB.y).applyAxisAngle(axis[2], rotB.z).add(posB));
-
-            // const vertA = colA.vertices.map(a => a.clone().applyAxisAngle(axis[0], rotA.x).add(posA));
-            // const vertB = colB.vertices.map(a => a.clone().applyAxisAngle(axis[0], rotB.x).add(posB));
-
-            const vertA = colA.vertices.map(a => a.clone().add(posA));
-            const vertB = colB.vertices.map(a => a.clone().add(posB));
-
             let colliding = null;
             const simplex = [];
             const dir = initDir;
@@ -609,24 +659,21 @@ const System = {
         update() {
             const Collider = this.Collider;
             // update box3
-            for (const entity in Collider) {
-                Collider[entity].boundingBox.setFromObject(Collider[entity].Object3D);
-            }
-
             const colliders = Object.values(Collider);
             const len = colliders.length;
+
+            for (let i = 0; i < len; i++) {
+                colliders[i].resetUpdate();
+            }
+
             for (let i = 0; i < len; i++) {
                 for (let j = i + 1; j < len; j++) {
                     const colA = colliders[i];
                     const colB = colliders[j];
                     // broad phase (NEED TO ADD SPATIAL INDEX) TODO
-                    if (colA.boundingBox.intersectsBox(colB.boundingBox)) {
-                        // narrow phase
-                        const centerA = colA.boundingBox.getCenter(new THREE.Vector3());
-                        const centerB = colB.boundingBox.getCenter(new THREE.Vector3());
-
+                    if (colA.getAABB().intersectsBox(colB.getAABB())) {
                         // collision detection
-                        const res = this.GJK(colA, colB, centerA.sub(centerB));
+                        const res = this.GJK(colA.getVertices(), colB.getVertices(), colA.centroid.clone().sub(colB.centroid.clone()));
 
                         console.log(res)
 
