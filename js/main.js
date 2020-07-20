@@ -1,6 +1,6 @@
 import * as THREE from 'https://threejs.org/build/three.module.js';
 import { GLTFLoader } from 'https://threejs.org/examples/jsm/loaders/GLTFLoader.js';
-import * as Engine from './engine.js'
+import * as Engine from './core/engine.js'
 import * as GameObject from './gameobject.js'
 
 let lastTimestamp = 0, dt;
@@ -19,12 +19,6 @@ function init() {
 	document.getElementById('game').style.display = '';
 
 	Engine.System.init();
-	Engine.System.behavior.init();
-	Engine.System.camera.init();
-	Engine.System.collision.init();
-	Engine.System.input.init();
-	Engine.System.physics.init();
-	Engine.System.render.init();
 
 	// lighting
 	const hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 0.6);
@@ -204,12 +198,7 @@ function gameLoop(timestamp) {
 	dt = timestamp - lastTimestamp;
 	lastTimestamp = timestamp;
 
-	Engine.System.camera.update();
-	Engine.System.physics.update(dt);
-	Engine.System.collision.update();
-	Engine.System.render.update();
-	Engine.System.input.update();
-	Engine.System.behavior.update();
+	Engine.System.update(dt);
 
 	window.requestAnimationFrame(gameLoop);
 };

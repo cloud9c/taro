@@ -1,301 +1,28 @@
 import * as THREE from 'https://threejs.org/build/three.module.js';
-import {GLTFLoader} from 'https://threejs.org/examples/jsm/loaders/GLTFLoader.js';
-import {ConvexHull} from 'https://threejs.org/examples/jsm/math/ConvexHull.js';
-
-class Entity {
-    constructor() {
-        this.components = new Object();
-        this.id = (+new Date()).toString(16) + (Math.random() * 100000000 | 0).toString(16);
-
-        Entity.entities[this.id] = this.components;
-    }
-
-    static entities = new Object();
-
-    addComponent(type, data = null) {
-        Component[type](this.id, type, data);
-        this.components[type] = Component.components[type][this.id];
-        return this;
-    }
-
-    removeComponent(type) {
-        delete Component.components[type][this.id];
-        delete this.components[type];
-        return this;
-    }
-}
-
-function setDataComponent(id, type, data) {
-    Component.components[type][id] = data;
-}
-
-const Component = {
-    Animation: setDataComponent,
-    Behavior: setDataComponent,
-    Collider: (id, type, data) => {
-        const obj = Component.components.Object3D[id];
-        if (obj === undefined)
-            throw 'Object3D dependency';
-
-        // create cached convex hull and box3
-        data.cached = {
-            AABB: {
-                updated: false,
-                position: obj.position.clone(),
-                rotation: obj.rotation.clone(),
-                scale: obj.scale.clone()
-            },
-            vertices: {
-                updated: false,
-                position: obj.position.clone(),
-                rotation: obj.rotation.clone(),
-                scale: obj.scale.clone()
-            }
-        };
-        data.AABB = new THREE.Box3().setFromObject(obj);
-        obj.position.set(0, 0, 0);
-        obj.rotation.set(0, 0, 0);
-        obj.scale.set(1, 1, 1);
-
-        const origin = new ConvexHull().setFromObject(obj).vertices;
-        
-        obj.position.copy(data.cached.AABB.position);
-        obj.rotation.copy(data.cached.AABB.rotation);
-        obj.scale.copy(data.cached.AABB.scale);
-
-        data.vertices = [];
-        for (let i = 0, len = origin.length; i < len; i++) {
-            origin[i] = origin[i].point;
-            data.vertices.push(origin[i].clone().applyEuler(obj.rotation).add(obj.position).multiply(obj.scale));
-        }
-        data.cached.vertices.origin = origin;
-
-        // add centroid
-        const vertLen = data.vertices.length;
-        data.centroid = new THREE.Vector3();
-        for ( var i = 0; i < vertLen; i ++ ) {
-            data.centroid.add(data.vertices[i]);
-        }
-        data.centroid.divideScalar(vertLen);
-
-        // add center of mass to rigidbody
-        const rigidbody = Component.components.Rigidbody[id];
-        if (rigidbody !== undefined)
-            rigidbody.centerOfMass = data.centroid;
-
-        data.getAABB = () => {
-            const cached = data.cached.AABB;
-            if (!cached.updated) {
-                // TODO! can optimize to transform diff rather than setFromObject each time
-
-                if (!cached.position.equals(obj.position) || !cached.rotation.equals(obj.rotation) || !cached.scale.equals(obj.scale)) {
-                    data.AABB.setFromObject(obj);
-                    cached.position = obj.position.clone();
-                    cached.rotation = obj.rotation.clone();
-                    cached.scale = obj.scale.clone();
-                }
-                cached.updated = true;
-            }
-
-            return data.AABB;
-        };
-
-        data.getVertices = () => {
-            const cached = data.cached.vertices;
-            if (!cached.updated) {
-                // TODO! can optimize to transform diff rather than clone origin each time
-
-                if (!cached.position.equals(obj.position) || !cached.rotation.equals(obj.rotation) || !cached.scale.equals(obj.scale)) {
-                    for (let i = 0, len = data.vertices.length; i < len; i++) {
-                        data.vertices[i] = cached.origin[i].clone().applyEuler(obj.rotation).add(obj.position).multiply(obj.scale);
-                    }
-                    cached.position = obj.position.clone();
-                    cached.rotation = obj.rotation.clone();
-                    cached.scale = obj.scale.clone();                    
-                }
-
-                cached.updated = true;
-            }
-
-            return data.vertices;
-        };
-
-        data.resetUpdate = () => {
-            data.cached.AABB.updated = false;
-            data.cached.vertices.updated = false;
-        };
-
-        setDataComponent(id, type, data);
-    },
-    Interactable: setDataComponent,
-    Object3D: (id, type, data) => {
-        const transform = Component.components.Transform[id];
-        if (transform) {
-            transform.position = data.position;
-            transform.rotation = data.rotation;
-            transform.scale = data.scale;
-        }
-        setDataComponent(id, type, data);
-        System.render.scene.add(data);
-    },
-    Rigidbody: (id, type, data) => {
-        data.isMoving = function() {
-            return this.velocity.x != 0 && this.velocity.z != 0;
-        };
-        data.isGrounded = function() {
-            return this.velocity.y == 0;
-        };
-
-        setDataComponent(id, type, data);
-    },
-    Transform: (id, type, data) => {
-        const object = Component.components.Object3D[id];
-        if (object) {
-            data.position = object.position;
-            data.rotation = object.rotation;
-            data.scale = object.scale;
-        }
-        setDataComponent(id, type, data);
-    }
-}
-
-Object.defineProperty(Component, 'components', {value: new Object(), enumerable: false });
-for (const type in Component) {
-    Component.components[type] = new Object();
-}
-
-function applyChanges(name) {
-    const config = System.config;
-    switch(name) {
-        case 'mouseSensitivity':
-            System.input.sensitivityX = config.mouseSensitivity / 1400;
-            System.input.sensitivityY = config.mouseSensitivity / 1400;
-            break;
-        case 'mouseInvert':
-            if (config.mouseInvert === 'true')
-                System.input.sensitivityY *= -1;
-            break;
-        case 'resolution':
-            System.render.renderer.setPixelRatio(+config.resolution);
-            break;
-        case 'brightness':
-            document.getElementById('c').style.filter = 'brightness(' + (+config.brightness + 50)/100 + ')';
-            break;
-        case 'fov':
-            System.camera.perspectiveCamera.fov = +config.fov;
-            break;
-        case 'aspectRatio':
-            let aspectRatio = window.innerWidth / window.innerHeight;
-            if (config.aspectRatio != 'native') {
-                const configRatio = config.aspectRatio.split(":");
-                aspectRatio = configRatio[0]/configRatio[1];
-            }
-            System.camera.perspectiveCamera.aspect = aspectRatio;
-            break;
-        case 'renderDistance':
-            System.camera.perspectiveCamera.far = +config.renderDistance;
-            break;
-    }
-    System.camera.perspectiveCamera.updateProjectionMatrix();
-}
+import Component from './component.js';
 
 const System = {
     init() {
-        //init config
-        let config;
         const cachedConfig = localStorage.getItem('config');
         const cached = cachedConfig !== null;
-
-        if (cached)
-            config = JSON.parse(cachedConfig);
-        else
-            config = {controls:{}};
-
+        const config = cached ? JSON.parse(cachedConfig) : {controls: new Object()};
         this.config = config;
+        initMenu(cached, config);
 
-        //init menu
-        for (const element of document.getElementById('menu-sidebar').children) {
-            element.addEventListener('click', () => {
-                document.querySelector('.setting-label[data-selected]').removeAttribute('data-selected');
-                document.querySelector('.setting[data-selected]').removeAttribute('data-selected');
-                element.setAttribute('data-selected', '');
-                document.querySelector('.setting[data-setting=' + element.getAttribute('data-setting') + ']').setAttribute('data-selected', '');
-            })
-        }
-
-        for (const element of document.querySelectorAll('.setting input:not([type=number]), .setting select')) {
-            if (element.type === 'text') {
-                if (!cached || !config.controls.hasOwnProperty(element.name))
-                    config.controls[element.name] = element.getAttribute('data-default');
-                else
-                    element.value = config.controls[element.name];
-            }
-            else {
-                if (!cached || !config.hasOwnProperty(element.name))
-                    config[element.name] = element.getAttribute('data-default');
-                else
-                    element.value = config[element.name];
-            }
-
-            switch (element.type) {
-                case 'range':   
-                    const percent = 100 * (element.value - element.getAttribute('min')) / (element.getAttribute('max') - element.getAttribute('min'));
-                    element.style.background = 'linear-gradient(to right, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.8) ' + percent + '%, rgba(255,255,255,0.4) ' + percent + '%, rgba(255,255,255,0.4) 100%)';
-                    element.nextElementSibling.value = element.value;
-                    element.addEventListener('input', function() {
-                        const percent = 100 * (this.value - this.getAttribute('min')) / (this.getAttribute('max') - this.getAttribute('min'));
-                        this.style.background = 'linear-gradient(to right, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.8) ' + percent + '%, rgba(255,255,255,0.4) ' + percent + '%, rgba(255,255,255,0.4) 100%)'
-                        this.nextElementSibling.value = this.value;
-                        config[this.name] = this.value;
-                        applyChanges(this.name);
-                    });
-                    break;
-                case 'text':
-                    element.addEventListener('keydown', function(event) {
-                        const key = event.code;
-
-                        if (key === 'Tab')
-                            return;
-
-                        const controls = document.querySelectorAll('input[type=text]');
-                        for (const control of controls) {
-                            if (control.value === key) {
-                                config.controls[control.name] = control.value = '';
-                            }
-                        }
-                        config.controls[this.name] = this.value = key;
-                        this.blur();
-                    });
-                    element.nextElementSibling.addEventListener('click', () => {
-                        System.input.controls[element.name] = config.controls[element.name] = element.value = ''
-                    });
-                    break;
-                default:
-                    element.addEventListener('input', function() {
-                        config[this.name] = this.value;
-                        applyChanges(this.name);
-                    }); 
-            }
-        }
-
-        document.getElementById('restore-defaults').addEventListener('click', () => {
-            for (const element of document.querySelectorAll('.setting[data-selected] input:not([type=number]), .setting select')) {
-                const dataDefault = element.getAttribute('data-default');
-
-                if (element.type === 'range') {
-                    const percent = 100 * (dataDefault - element.getAttribute('min')) / (element.getAttribute('max') - element.getAttribute('min'));
-                    element.style.background = 'linear-gradient(to right, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.8) ' + percent + '%, rgba(255,255,255,0.4) ' + percent + '%, rgba(255,255,255,0.4) 100%)';
-                    element.nextElementSibling.value = dataDefault;
-                }
-
-                element.value = dataDefault
-                if (element.type === 'text')
-                    config.controls[element.name] = dataDefault;
-                else
-                    config[element.name] = dataDefault;
-                applyChanges(element.name);
-            }
-        });
+        this.behavior.init();
+        this.camera.init();
+        this.collision.init();
+        this.input.init();
+        this.physics.init();
+        this.render.init(); 
+    },
+    update(dt) {
+        this.camera.update();
+        this.physics.update(dt);
+        this.collision.update();
+        this.render.update();
+        this.input.update();
+        this.behavior.update();
     },
     animation: {
         init() {
@@ -418,26 +145,37 @@ const System = {
     collision: {
         init() {
             this.Collider = Component.components.Collider;
-        },
-        getFurthestPointInDirection(verts, dir) {
-            let index = 0;
-            let maxDot = -Infinity;
-        
-            for (let i = 0; i < verts.length; i++) {
-                const dot = verts[i].clone().dot(dir);
-        
-                if (dot > maxDot) {
-                    maxDot = dot;
-                    index = i;
-                }
+            this.immovable = {
+                mass: Infinity,
+                velocity: 0,
+                angularVelocity: 0
             }
-
-            return verts[index];
         },
-        support(aVerts, bVerts, dir) {
-            const a = this.getFurthestPointInDirection(aVerts, dir);
-            const b = this.getFurthestPointInDirection(bVerts, dir.clone().negate());
-            return a.clone().sub(b);
+        edgeInEdges(edges, edge) {
+            for (let i = 0, len = edges.length; i < len; i++)
+                if (edges[i].a == edge.a && edges[i].b == edge.b)
+                    return i;
+        
+            return -1;
+        },
+        EPA(vertA, vertB, simplex) {
+            const simplexFaces = [{a: 0, b: 1, c: 2}, {a: 0, b: 1, c: 3}, {a: 0, b: 2, c: 3}, {a: 1, b: 2, c: 3}];
+        
+            const epsilon = 0.00001;
+            let res;
+        
+            while (true) {
+                const face = this.findClosestFace(simplex, simplexFaces);
+                const point = this.support(vertA, vertB, face.norm);
+                const dist = point.clone().dot(face.norm);
+        
+                if (dist - face.dist < epsilon) {
+                    return {dir: face.norm.negate(), dist: dist + epsilon};
+                }
+
+                simplex.push(point);
+                this.expand(simplex, simplexFaces, point);
+            }
         },
         evaluateAndChangeDir(simplex, dir) {
             let ab, ac, ad, a0, ba, bc, bd, b0;
@@ -583,13 +321,6 @@ const System = {
                 simplexFaces.push({a: edges[i].a, b: edges[i].b, c: simplex.length - 1});
             }
         },
-        edgeInEdges(edges, edge) {
-            for (let i = 0, len = edges.length; i < len; i++)
-                if (edges[i].a == edge.a && edges[i].b == edge.b)
-                    return i;
-        
-            return -1;
-        },
         findClosestFace(simplex, simplexFaces) {
             let closest = {dist: Infinity};
         
@@ -608,53 +339,72 @@ const System = {
             }
             return closest;
         },
-        EPA(vertA, vertB, simplex) {
-            const simplexFaces = [{a: 0, b: 1, c: 2}, {a: 0, b: 1, c: 3}, {a: 0, b: 2, c: 3}, {a: 1, b: 2, c: 3}];
+        getFurthestPointInDirection(verts, dir) {
+            let index = 0;
+            let maxDot = -Infinity;
         
-            const epsilon = 0.00001;
-            let res = null;
+            for (let i = 0; i < verts.length; i++) {
+                const dot = verts[i].clone().dot(dir);
         
-            while (true) {
-                const face = this.findClosestFace(simplex, simplexFaces);
-                const point = this.support(vertA, vertB, face.norm);
-                const dist = point.clone().dot(face.norm);
-        
-                if (dist - face.dist < epsilon) {
-                    res = {dir: face.norm.negate(), dist: dist + epsilon};
-                    break;
+                if (dot > maxDot) {
+                    maxDot = dot;
+                    index = i;
                 }
-
-                simplex.push(point);
-                this.expand(simplex, simplexFaces, point);
             }
-        
-            return res;
+
+            return verts[index];
         },
-        GJK(vertA, vertB, initDir) {
-            // really should preprocess this information for all objects but its fine for now
-            let colliding = null;
+        narrowPhase(colA, colB, dir) {
+            // GJK Algorithm
             const simplex = [];
-            const dir = initDir;
+            const vertA = colA.getVertices();
+            const vertB = colB.getVertices();
 
             simplex.push(this.support(vertA, vertB, dir));
-            dir.negate();
 
             while(true) {
                 const p = this.support(vertA, vertB, dir);
                 simplex.push(p);
 
-                if (p.clone().dot(dir) <= 0) {
-                    colliding = false;
-                    break;
-                }
+                if (p.clone().dot(dir) <= 0)
+                    return;
 
                 if (this.evaluateAndChangeDir(simplex, dir)) {
-                    colliding = true;
-                    break;
+                    return this.resolveCollision(colA, colB, this.EPA(vertA, vertB, simplex));
                 }
             }
+        },
+        resolveCollision(colA, colB, res) {
+            // https://research.ncl.ac.uk/game/mastersdegree/gametechnologies/physicstutorials/5collisionresponse/Physics%20-%20Collision%20Response.pdf
 
-            return colliding ? this.EPA(vertA, vertB, simplex) : null;
+            const physA = colA.Rigidbody || this.immovable;
+            const physB = colB.Rigidbody || this.immovable;
+
+            const moveableA = physA.mass !== Infinity;
+            const moveableB = physB.mass !== Infinity;
+
+
+            // make sure both aren't immovables
+            if (moveableA || moveableB) {
+                // const aMass = 1/physA.mass;
+                // const bMass = 1/physB.mass;
+                // const totalMass = aMass + bMass;
+
+                // if (moveableA)
+                //     colA.Object3D.position.sub(res.dir.clone().multiply(res.dist).multiplyScalar( aMass / totalMass));
+                // if (moveableB)
+                //     colA.Object3D.position.sub(res.dir.clone().multiply(res.dist).multiplyScalar( bMass / totalMass));
+
+                // const relativeA = res.point.clone().sub(colA.Object3D.position);
+                // const relativeB = res.point.clone().sub(colA.Object3D.position);
+
+                console.log(res.dir)
+            }
+        },
+        support(aVerts, bVerts, dir) {
+            const a = this.getFurthestPointInDirection(aVerts, dir);
+            const b = this.getFurthestPointInDirection(bVerts, dir.clone().negate());
+            return a.clone().sub(b);
         },
         update() {
             const Collider = this.Collider;
@@ -672,15 +422,8 @@ const System = {
                     const colB = colliders[j];
                     // broad phase (NEED TO ADD SPATIAL INDEX) TODO
                     if (colA.getAABB().intersectsBox(colB.getAABB())) {
-                        // collision detection
-                        const res = this.GJK(colA.getVertices(), colB.getVertices(), colA.centroid.clone().sub(colB.centroid.clone()));
-
-                        console.log(res)
-
-                        // collision response
-                        if (res !== null) {
-                            
-                        }
+                        // collision detection and response
+                        this.narrowPhase(colA, colB, colB.centroid.clone().sub(colA.centroid.clone()));
                     }
                 }
             }
@@ -874,40 +617,124 @@ const System = {
     }
 }
 
-const Asset = {
-    init: function() {
-        const manager = new THREE.LoadingManager();
-        const modelLoader = new GLTFLoader(manager);
-        const models = ['player.glb'];
-
-        return new Promise((resolve, reject) => {
-            const onLoad = manager.onLoad
-
-            for (const model of models) {
-                modelLoader.load('assets/models/' + model, gltf => {
-                    this[model] = gltf;
-                });
+function applyChanges(name) {
+    const config = System.config;
+    switch(name) {
+        case 'mouseSensitivity':
+            System.input.sensitivityX = config.mouseSensitivity / 1400;
+            System.input.sensitivityY = config.mouseSensitivity / 1400;
+            break;
+        case 'mouseInvert':
+            if (config.mouseInvert === 'true')
+                System.input.sensitivityY *= -1;
+            break;
+        case 'resolution':
+            System.render.renderer.setPixelRatio(+config.resolution);
+            break;
+        case 'brightness':
+            document.getElementById('c').style.filter = 'brightness(' + (+config.brightness + 50)/100 + ')';
+            break;
+        case 'fov':
+            System.camera.perspectiveCamera.fov = +config.fov;
+            break;
+        case 'aspectRatio':
+            let aspectRatio = window.innerWidth / window.innerHeight;
+            if (config.aspectRatio != 'native') {
+                const configRatio = config.aspectRatio.split(":");
+                aspectRatio = configRatio[0]/configRatio[1];
             }
-
-            manager.onProgress = (url, itemsLoaded, itemsTotal) => {
-                document.getElementById('loading-info').textContent = 'Loading: ' + url;
-                document.getElementById('bar-percentage').style.width = itemsLoaded / itemsTotal * 100 + '%';
-            }
-
-            manager.onLoad = () => {
-                resolve();
-            }
-
-            manager.onError = (url) => {
-                console.log('Error loading ' + url);
-            }
-        });
+            System.camera.perspectiveCamera.aspect = aspectRatio;
+            break;
+        case 'renderDistance':
+            System.camera.perspectiveCamera.far = +config.renderDistance;
+            break;
     }
+    System.camera.perspectiveCamera.updateProjectionMatrix();
 }
 
-export {
-    Asset,
-    Entity,
-    Component,
-    System
-};
+function initMenu(cached, config) {
+        for (const element of document.getElementById('menu-sidebar').children) {
+            element.addEventListener('click', () => {
+                document.querySelector('.setting-label[data-selected]').removeAttribute('data-selected');
+                document.querySelector('.setting[data-selected]').removeAttribute('data-selected');
+                element.setAttribute('data-selected', '');
+                document.querySelector('.setting[data-setting=' + element.getAttribute('data-setting') + ']').setAttribute('data-selected', '');
+            })
+        }
+
+        for (const element of document.querySelectorAll('.setting input:not([type=number]), .setting select')) {
+            if (element.type === 'text') {
+                if (!cached || !config.controls.hasOwnProperty(element.name))
+                    config.controls[element.name] = element.getAttribute('data-default');
+                else
+                    element.value = config.controls[element.name];
+            }
+            else {
+                if (!cached || !config.hasOwnProperty(element.name))
+                    config[element.name] = element.getAttribute('data-default');
+                else
+                    element.value = config[element.name];
+            }
+
+            switch (element.type) {
+                case 'range':   
+                    const percent = 100 * (element.value - element.getAttribute('min')) / (element.getAttribute('max') - element.getAttribute('min'));
+                    element.style.background = 'linear-gradient(to right, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.8) ' + percent + '%, rgba(255,255,255,0.4) ' + percent + '%, rgba(255,255,255,0.4) 100%)';
+                    element.nextElementSibling.value = element.value;
+                    element.addEventListener('input', function() {
+                        const percent = 100 * (this.value - this.getAttribute('min')) / (this.getAttribute('max') - this.getAttribute('min'));
+                        this.style.background = 'linear-gradient(to right, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.8) ' + percent + '%, rgba(255,255,255,0.4) ' + percent + '%, rgba(255,255,255,0.4) 100%)'
+                        this.nextElementSibling.value = this.value;
+                        config[this.name] = this.value;
+                        applyChanges(this.name);
+                    });
+                    break;
+                case 'text':
+                    element.addEventListener('keydown', function(event) {
+                        const key = event.code;
+
+                        if (key === 'Tab')
+                            return;
+
+                        const controls = document.querySelectorAll('input[type=text]');
+                        for (const control of controls) {
+                            if (control.value === key) {
+                                config.controls[control.name] = control.value = '';
+                            }
+                        }
+                        config.controls[this.name] = this.value = key;
+                        this.blur();
+                    });
+                    element.nextElementSibling.addEventListener('click', () => {
+                        System.input.controls[element.name] = config.controls[element.name] = element.value = ''
+                    });
+                    break;
+                default:
+                    element.addEventListener('input', function() {
+                        config[this.name] = this.value;
+                        applyChanges(this.name);
+                    }); 
+            }
+        }
+
+        document.getElementById('restore-defaults').addEventListener('click', () => {
+            for (const element of document.querySelectorAll('.setting[data-selected] input:not([type=number]), .setting select')) {
+                const dataDefault = element.getAttribute('data-default');
+
+                if (element.type === 'range') {
+                    const percent = 100 * (dataDefault - element.getAttribute('min')) / (element.getAttribute('max') - element.getAttribute('min'));
+                    element.style.background = 'linear-gradient(to right, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.8) ' + percent + '%, rgba(255,255,255,0.4) ' + percent + '%, rgba(255,255,255,0.4) 100%)';
+                    element.nextElementSibling.value = dataDefault;
+                }
+
+                element.value = dataDefault
+                if (element.type === 'text')
+                    config.controls[element.name] = dataDefault;
+                else
+                    config[element.name] = dataDefault;
+                applyChanges(element.name);
+            }
+        });
+}
+
+export default System;

@@ -1,5 +1,5 @@
 import * as THREE from 'https://threejs.org/build/three.module.js';
-import {Asset, Entity, Component, System} from './engine.js'
+import {Asset, Entity, System} from './core/engine.js'
 
 let paused = false;
 const keyInput = {}
