@@ -14,15 +14,23 @@ const System = {
         this.collision.init();
         this.input.init();
         this.physics.init();
-        this.render.init(); 
+        this.render.init();
+
+        this.lastTimestamp = 0;
     },
-    update(dt) {
-        this.camera.update();
-        this.physics.update(dt);
-        this.collision.update();
-        this.render.update();
-        this.input.update();
-        this.behavior.update();
+    gameLoop(timestamp) {
+        timestamp /= 1000;
+        const dt = timestamp - System.lastTimestamp;
+        System.lastTimestamp = timestamp;
+
+        System.camera.update();
+        System.physics.update(dt);
+        System.collision.update();
+        System.render.update();
+        System.input.update();
+        System.behavior.update();
+
+        window.requestAnimationFrame(System.gameLoop);
     },
     animation: {
         init() {

@@ -63,8 +63,8 @@ function init() {
 	(new Engine.Entity).addComponent('Object3D', new THREE.GridHelper(1000, 1000, 0x0000ff, 0x808080));
 
 	new GameObject.Player();
-
-	window.requestAnimationFrame(gameLoop);
+	
+	window.requestAnimationFrame(Engine.System.gameLoop);
 }
 
 async function loadGame(event) {
