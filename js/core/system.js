@@ -168,15 +168,12 @@ const System = {
         },
         EPA(vertA, vertB, simplex) {
             const simplexFaces = [{a: 0, b: 1, c: 2}, {a: 0, b: 1, c: 3}, {a: 0, b: 2, c: 3}, {a: 1, b: 2, c: 3}];
-        
             const epsilon = 0.00001;
-            let res;
-        
             while (true) {
                 const face = this.findClosestFace(simplex, simplexFaces);
                 const point = this.support(vertA, vertB, face.norm);
                 const dist = point.clone().dot(face.norm);
-        
+
                 if (dist - face.dist < epsilon) {
                     return {dir: face.norm.negate(), dist: dist + epsilon};
                 }
@@ -370,6 +367,8 @@ const System = {
 
             simplex.push(this.support(vertA, vertB, dir));
 
+            dir.negate();
+
             while(true) {
                 const p = this.support(vertA, vertB, dir);
                 simplex.push(p);
@@ -391,23 +390,23 @@ const System = {
             const moveableA = physA.mass !== Infinity;
             const moveableB = physB.mass !== Infinity;
 
-
             // make sure both aren't immovables
-            if (moveableA || moveableB) {
-                // const aMass = 1/physA.mass;
-                // const bMass = 1/physB.mass;
-                // const totalMass = aMass + bMass;
+            // if (moveableA || moveableB) {
+            //     const aMass = 1/physA.mass;
+            //     const bMass = 1/physB.mass;
+            //     const totalMass = aMass + bMass;
 
-                // if (moveableA)
-                //     colA.Object3D.position.sub(res.dir.clone().multiply(res.dist).multiplyScalar( aMass / totalMass));
-                // if (moveableB)
-                //     colA.Object3D.position.sub(res.dir.clone().multiply(res.dist).multiplyScalar( bMass / totalMass));
+            //     if (moveableA)
+            //         colA.Object3D.position.sub(res.dir.clone().multiply(res.dist).multiplyScalar( aMass / totalMass));
+            //     if (moveableB)
+            //         colA.Object3D.position.sub(res.dir.clone().multiply(res.dist).multiplyScalar( bMass / totalMass));
 
-                // const relativeA = res.point.clone().sub(colA.Object3D.position);
-                // const relativeB = res.point.clone().sub(colA.Object3D.position);
+            //     const relativeA = res.point.clone().sub(colA.Object3D.position);
+            //     const relativeB = res.point.clone().sub(colA.Object3D.position);
 
-                console.log(res.dir)
-            }
+            //     console.log(res.dir)
+            // }
+            console.log(res.dir)
         },
         support(aVerts, bVerts, dir) {
             const a = this.getFurthestPointInDirection(aVerts, dir);
@@ -431,7 +430,7 @@ const System = {
                     // broad phase (NEED TO ADD SPATIAL INDEX) TODO
                     if (colA.getAABB().intersectsBox(colB.getAABB())) {
                         // collision detection and response
-                        this.narrowPhase(colA, colB, colB.centroid.clone().sub(colA.centroid.clone()));
+                        this.narrowPhase(colA, colB, colA.centroid.clone().sub(colB.centroid.clone()));
                     }
                 }
             }

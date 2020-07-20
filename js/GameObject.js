@@ -14,7 +14,7 @@ class Player {
 		entity.addComponent('Object3D', mesh);
 		entity.addComponent('Animation', setAnimation(mesh, animations, 'Idle'));
 		entity.addComponent('Transform', {
-			position: new THREE.Vector3(),
+			position: new THREE.Vector3(0, 0, 0),
 			rotation: new THREE.Euler(),
 			scale: new THREE.Vector3(1, 1, 1)
 		});

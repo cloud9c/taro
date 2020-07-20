@@ -25,9 +25,9 @@ const Component = {
     Transform: (id, type, data) => {
         const object = Component.components.Object3D[id];
         if (object) {
-            data.position = object.position;
-            data.rotation = object.rotation;
-            data.scale = object.scale;
+            data.position = object.position.copy(data.position);
+            data.rotation = object.rotation.copy(data.rotation);
+            data.scale = object.scale.copy(data.scale);
         }
         setDataComponent(id, type, data);
     }
