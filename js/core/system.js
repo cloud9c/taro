@@ -5,7 +5,9 @@ const System = {
     init() {
         const cachedConfig = localStorage.getItem('config');
         const cached = cachedConfig !== null;
-        const config = cached ? JSON.parse(cachedConfig) : {controls: new Object()};
+        const config = cached ? JSON.parse(cachedConfig) : {
+            controls: {}
+        };
         this.config = config;
         initMenu(cached, config);
 
@@ -23,12 +25,14 @@ const System = {
         const dt = timestamp - System.lastTimestamp;
         System.lastTimestamp = timestamp;
 
-        System.camera.update();
+        // Input always has to be last bc it resets the delta
+        System.behavior.update();
         System.physics.update(dt);
         System.collision.update();
+
+        System.camera.update();
         System.render.update();
         System.input.update();
-        System.behavior.update();
 
         window.requestAnimationFrame(System.gameLoop);
     },
@@ -59,7 +63,7 @@ const System = {
             let aspectRatio = window.innerWidth / window.innerHeight;
             if (config.aspectRatio != 'native') {
                 const configRatio = config.aspectRatio.split(':');
-                aspectRatio = configRatio[0]/configRatio[1];
+                aspectRatio = configRatio[0] / configRatio[1];
             }
             const camera = new THREE.PerspectiveCamera(+config.fov, aspectRatio, 1, +config.renderDistance);
             camera.rotation.order = "YXZ";
@@ -95,11 +99,11 @@ const System = {
             camera.rotation.set(0, Math.PI, 0);
             camera.zoom = 1;
         },
-        addTarget(target, firstPerson=true, renderFirstPerson=false) {
+        addTarget(target, firstPerson = true, renderFirstPerson = false) {
             target.add(this.perspectiveCamera);
 
             this.renderFirstPerson = renderFirstPerson;
-            
+
             if (firstPerson)
                 this.firstPersonMode();
             else
@@ -112,7 +116,7 @@ const System = {
             if (keyInput.MouseX != 0) { // temp solution
                 camera.parent.rotation.y -= keyInput.MouseX
             }
-            
+
             if (keyInput.MouseY != 0) {
                 if (this.firstPerson) {
                     const newX = camera.rotation.x - keyInput.MouseY;
@@ -163,20 +167,38 @@ const System = {
             for (let i = 0, len = edges.length; i < len; i++)
                 if (edges[i].a == edge.a && edges[i].b == edge.b)
                     return i;
-        
+
             return -1;
         },
         EPA(vertA, vertB, simplex) {
-            const simplexFaces = [{a: 0, b: 1, c: 2}, {a: 0, b: 1, c: 3}, {a: 0, b: 2, c: 3}, {a: 1, b: 2, c: 3}];
+            const simplexFaces = [{
+                a: 0,
+                b: 1,
+                c: 2
+            }, {
+                a: 0,
+                b: 1,
+                c: 3
+            }, {
+                a: 0,
+                b: 2,
+                c: 3
+            }, {
+                a: 1,
+                b: 2,
+                c: 3
+            }];
             const epsilon = 0.00001;
             while (true) {
                 const face = this.findClosestFace(simplex, simplexFaces);
                 const point = this.support(vertA, vertB, face.norm);
                 const dist = point.clone().dot(face.norm);
 
-                if (dist - face.dist < epsilon) {
-                    return {dir: face.norm.negate(), dist: dist + epsilon};
-                }
+                if (dist - face.dist < epsilon)
+                    return {
+                        dir: face.norm,
+                        dist: dist + epsilon
+                    };
 
                 simplex.push(point);
                 this.expand(simplex, simplexFaces, point);
@@ -184,92 +206,92 @@ const System = {
         },
         evaluateAndChangeDir(simplex, dir) {
             let ab, ac, ad, a0, ba, bc, bd, b0;
-            switch(simplex.length) {
+            switch (simplex.length) {
                 case 2:
                     ab = simplex[1].clone().sub(simplex[0]);
                     a0 = simplex[0].clone().negate();
                     dir.copy(ab.clone().cross(a0).cross(ab));
-        
+
                     return false;
                 case 3:
                     ab = simplex[1].clone().sub(simplex[0]);
                     ac = simplex[2].clone().sub(simplex[0]);
                     dir.copy(ab.cross(ac));
-        
+
                     a0 = simplex[0].clone().negate();
                     if (a0.dot(dir) < 0)
                         dir.negate();
-                    
+
                     return false;
                 case 4:
                     //face abc
                     ab = simplex[1].clone().sub(simplex[0]);
                     ac = simplex[2].clone().sub(simplex[0]);
                     dir.copy(ab.cross(ac).normalize());
-        
+
                     ad = simplex[3].clone().sub(simplex[0]);
                     if (ad.dot(dir) > 0) {
                         dir.negate();
                     }
-                    
+
                     a0 = simplex[0].clone().negate();
                     if (a0.dot(dir) > 0) {
                         //remove d
                         simplex.splice(3, 1);
                         return false;
                     }
-        
+
                     //face abd
                     ab = simplex[1].clone().sub(simplex[0]);
                     ad = simplex[3].clone().sub(simplex[0]);
                     dir.copy(ab.cross(ad).normalize());
-        
+
                     ac = simplex[2].clone().sub(simplex[0]);
                     if (ac.dot(dir) > 0) {
                         dir.negate();
                     }
-        
+
                     a0 = simplex[0].clone().negate();
                     if (a0.dot(dir) > 0) {
                         //remove c
                         simplex.splice(2, 1);
                         return false;
                     }
-        
+
                     //face acd
                     ac = simplex[2].clone().sub(simplex[0]);
                     ad = simplex[3].clone().sub(simplex[0]);
                     dir.copy(ac.cross(ad).normalize());
-        
+
                     ab = simplex[1].clone().sub(simplex[0]);
                     if (ab.dot(dir) > 0) {
                         dir.negate();
                     }
-        
+
                     a0 = simplex[0].clone().negate();
                     if (a0.dot(dir) > 0) {
                         //remove b
                         simplex.splice(1, 1);
                         return false;
                     }
-        
+
                     //face bcd
                     bc = simplex[2].clone().sub(simplex[1]);
                     bd = simplex[3].clone().sub(simplex[1]);
                     dir.copy(bc.cross(bd).normalize());
-        
+
                     ba = simplex[0].clone().sub(simplex[1]);
                     if (ba.dot(dir) > 0) {
                         dir.negate();
                     }
-        
+
                     b0 = simplex[1].clone().negate();
                     if (b0.dot(dir) > 0) {
                         //remove a
                         simplex.splice(0, 1);
                         return false;
                     }
-        
+
                     //origin is in center
                     return true;
             }
@@ -279,56 +301,71 @@ const System = {
             const removalFaces = [];
             for (let i = 0, len = simplexFaces.length; i < len; i++) {
                 const face = simplexFaces[i];
-        
+
                 const ab = simplex[face.b].clone().sub(simplex[face.a]);
                 const ac = simplex[face.c].clone().sub(simplex[face.a]);
                 const norm = ab.cross(ac).normalize();
-        
+
                 const a0 = new THREE.Vector3().sub(simplex[face.a]);
                 if (a0.dot(norm) > 0)
                     norm.negate();
-        
+
                 if (norm.clone().dot(extendPoint.clone().sub(simplex[face.a])) > 0)
                     removalFaces.push(i);
             }
-        
+
             const edges = [];
             for (let i = 0, len = removalFaces.length; i < len; i++) {
                 const face = simplexFaces[removalFaces[i]];
-                const edgeAB = {a: face.a, b: face.b};
-                const edgeAC = {a: face.a, b: face.c};
-                const edgeBC = {a: face.b, b: face.c};
-        
+                const edgeAB = {
+                    a: face.a,
+                    b: face.b
+                };
+                const edgeAC = {
+                    a: face.a,
+                    b: face.c
+                };
+                const edgeBC = {
+                    a: face.b,
+                    b: face.c
+                };
+
                 let k = this.edgeInEdges(edges, edgeAB);
                 if (k != -1)
                     edges.splice(k, 1);
                 else
                     edges.push(edgeAB);
-        
+
                 k = this.edgeInEdges(edges, edgeAC);
                 if (k != -1)
                     edges.splice(k, 1);
                 else
                     edges.push(edgeAC);
-        
+
                 k = this.edgeInEdges(edges, edgeBC);
                 if (k != -1)
                     edges.splice(k, 1);
                 else
                     edges.push(edgeBC);
             }
-        
+
             for (let i = removalFaces.length - 1; i >= 0; i--) {
                 simplexFaces.splice(removalFaces[i], 1);
             }
-        
+
             for (let i = 0, len = edges.length; i < len; i++) {
-                simplexFaces.push({a: edges[i].a, b: edges[i].b, c: simplex.length - 1});
+                simplexFaces.push({
+                    a: edges[i].a,
+                    b: edges[i].b,
+                    c: simplex.length - 1
+                });
             }
         },
         findClosestFace(simplex, simplexFaces) {
-            let closest = {dist: Infinity};
-        
+            let closest = {
+                dist: Infinity
+            };
+
             for (let i = 0, len = simplexFaces.length; i < len; i++) {
                 const face = simplexFaces[i];
                 const ab = simplex[face.b].clone().sub(simplex[face.a]);
@@ -337,20 +374,27 @@ const System = {
                 const a0 = new THREE.Vector3().sub(simplex[face.a]);
                 if (a0.dot(norm) > 0)
                     norm.negate();
-        
+
                 const dist = simplex[face.a].clone().dot(norm);
                 if (dist < closest.dist)
-                    closest = {index: i, dist: dist, norm: norm, a: face.a, b: face.b, c: face.c};
+                    closest = {
+                        index: i,
+                        dist: dist,
+                        norm: norm,
+                        a: face.a,
+                        b: face.b,
+                        c: face.c
+                    };
             }
             return closest;
         },
         getFurthestPointInDirection(verts, dir) {
             let index = 0;
             let maxDot = -Infinity;
-        
+
             for (let i = 0; i < verts.length; i++) {
                 const dot = verts[i].clone().dot(dir);
-        
+
                 if (dot > maxDot) {
                     maxDot = dot;
                     index = i;
@@ -359,8 +403,7 @@ const System = {
 
             return verts[index];
         },
-        narrowPhase(colA, colB, dir) {
-            // GJK Algorithm
+        GJK(colA, colB, dir) {
             const simplex = [];
             const vertA = colA.getVertices();
             const vertB = colB.getVertices();
@@ -369,26 +412,33 @@ const System = {
 
             dir.negate();
 
-            while(true) {
+            while (true) {
                 const p = this.support(vertA, vertB, dir);
                 simplex.push(p);
 
                 if (p.clone().dot(dir) <= 0)
                     return;
 
-                if (this.evaluateAndChangeDir(simplex, dir)) {
+                if (this.evaluateAndChangeDir(simplex, dir))
                     return this.resolveCollision(colA, colB, this.EPA(vertA, vertB, simplex));
-                }
             }
         },
         resolveCollision(colA, colB, res) {
             // https://research.ncl.ac.uk/game/mastersdegree/gametechnologies/physicstutorials/5collisionresponse/Physics%20-%20Collision%20Response.pdf
 
-            const physA = colA.Rigidbody || this.immovable;
-            const physB = colB.Rigidbody || this.immovable;
+            // const physA = colA.Physics || this.immovable;
+            // const physB = colB.Physics || this.immovable;
 
-            const moveableA = physA.mass !== Infinity;
-            const moveableB = physB.mass !== Infinity;
+            // const moveableA = physA.mass !== Infinity;
+            // const moveableB = physB.mass !== Infinity;
+
+            colB.Object3D.position.add(res.dir.clone().multiplyScalar(res.dist));
+            colB.Object3D.updateMatrixWorld();
+
+            var quat = new THREE.Quaternion();
+            colB.Object3D.getWorldQuaternion(quat);
+            res.dir.applyQuaternion(quat.inverse());
+            colB.Physics.velocity.projectOnPlane(res.dir);
 
             // make sure both aren't immovables
             // if (moveableA || moveableB) {
@@ -406,7 +456,8 @@ const System = {
 
             //     console.log(res.dir)
             // }
-            console.log(res.dir)
+
+            console.log(res)
         },
         support(aVerts, bVerts, dir) {
             const a = this.getFurthestPointInDirection(aVerts, dir);
@@ -430,7 +481,7 @@ const System = {
                     // broad phase (NEED TO ADD SPATIAL INDEX) TODO
                     if (colA.getAABB().intersectsBox(colB.getAABB())) {
                         // collision detection and response
-                        this.narrowPhase(colA, colB, colA.centroid.clone().sub(colB.centroid.clone()));
+                        this.GJK(colA, colB, colA.centroid.clone().sub(colB.centroid.clone()));
                     }
                 }
             }
@@ -444,7 +495,12 @@ const System = {
             if (config.mouseInvert === 'true')
                 this.sensitivityY *= -1;
 
-            const keyInput = {MouseX: 0, MouseY: 0, WheelX: 0, WheelY: 0};
+            const keyInput = {
+                MouseX: 0,
+                MouseY: 0,
+                WheelX: 0,
+                WheelY: 0
+            };
 
             for (const control in System.config.controls) {
                 keyInput[control] = () => {
@@ -537,7 +593,7 @@ const System = {
                 document.removeEventListener('mousemove', onMouseMove);
                 document.removeEventListener('wheel', onWheel);
                 document.removeEventListener('keydown', onKeyDown);
-                document.removeEventListener('keyup', onKeyUp);            
+                document.removeEventListener('keyup', onKeyUp);
             }
 
             document.addEventListener('mousemove', onMouseMove);
@@ -555,20 +611,22 @@ const System = {
             keyInput.WheelY = 0;
         }
     },
-    physics: {
+    physics: {  
         init() {
-            this.Rigidbody = Component.components.Rigidbody;
+            this.Physics = Component.components.Physics;
             this.Transform = Component.components.Transform;
             this.Object3D = Component.components.Object3D;
+            this.gravity = -9.8;
         },
         update(dt) {
-            const Rigidbody = this.Rigidbody;
+            const Physics = this.Physics;
             const Transform = this.Transform;
-            for (const entity in Rigidbody) {
-                const physics = Rigidbody[entity];
+            for (const entity in Physics) {
+                const physics = Physics[entity];
                 const transform = Transform[entity];
                 // physics.velocity.add(physics.acceleration.clone().multiplyScalar(dt));
                 transform.position.add(physics.velocity.clone().multiplyScalar(dt));
+                physics.velocity.y += this.gravity * dt;
 
                 const angularDelta = physics.angularVelocity.clone().multiplyScalar(dt);
                 transform.rotation.x += angularDelta.x;
@@ -581,7 +639,7 @@ const System = {
         init() {
             const config = System.config;
 
-            document.getElementById('c').style.filter = 'brightness(' + (+config.brightness + 50)/100 + ')';
+            document.getElementById('c').style.filter = 'brightness(' + (+config.brightness + 50) / 100 + ')';
 
             if (config.displayMode === 'fullscreen') {
                 document.body.requestFullscreen();
@@ -626,7 +684,7 @@ const System = {
 
 function applyChanges(name) {
     const config = System.config;
-    switch(name) {
+    switch (name) {
         case 'mouseSensitivity':
             System.input.sensitivityX = config.mouseSensitivity / 1400;
             System.input.sensitivityY = config.mouseSensitivity / 1400;
@@ -639,7 +697,7 @@ function applyChanges(name) {
             System.render.renderer.setPixelRatio(+config.resolution);
             break;
         case 'brightness':
-            document.getElementById('c').style.filter = 'brightness(' + (+config.brightness + 50)/100 + ')';
+            document.getElementById('c').style.filter = 'brightness(' + (+config.brightness + 50) / 100 + ')';
             break;
         case 'fov':
             System.camera.perspectiveCamera.fov = +config.fov;
@@ -648,7 +706,7 @@ function applyChanges(name) {
             let aspectRatio = window.innerWidth / window.innerHeight;
             if (config.aspectRatio != 'native') {
                 const configRatio = config.aspectRatio.split(":");
-                aspectRatio = configRatio[0]/configRatio[1];
+                aspectRatio = configRatio[0] / configRatio[1];
             }
             System.camera.perspectiveCamera.aspect = aspectRatio;
             break;
@@ -660,88 +718,87 @@ function applyChanges(name) {
 }
 
 function initMenu(cached, config) {
-        for (const element of document.getElementById('menu-sidebar').children) {
-            element.addEventListener('click', () => {
-                document.querySelector('.setting-label[data-selected]').removeAttribute('data-selected');
-                document.querySelector('.setting[data-selected]').removeAttribute('data-selected');
-                element.setAttribute('data-selected', '');
-                document.querySelector('.setting[data-setting=' + element.getAttribute('data-setting') + ']').setAttribute('data-selected', '');
-            })
+    for (const element of document.getElementById('menu-sidebar').children) {
+        element.addEventListener('click', () => {
+            document.querySelector('.setting-label[data-selected]').removeAttribute('data-selected');
+            document.querySelector('.setting[data-selected]').removeAttribute('data-selected');
+            element.setAttribute('data-selected', '');
+            document.querySelector('.setting[data-setting=' + element.getAttribute('data-setting') + ']').setAttribute('data-selected', '');
+        })
+    }
+
+    for (const element of document.querySelectorAll('.setting input:not([type=number]), .setting select')) {
+        if (element.type === 'text') {
+            if (!cached || !config.controls.hasOwnProperty(element.name))
+                config.controls[element.name] = element.getAttribute('data-default');
+            else
+                element.value = config.controls[element.name];
+        } else {
+            if (!cached || !config.hasOwnProperty(element.name))
+                config[element.name] = element.getAttribute('data-default');
+            else
+                element.value = config[element.name];
         }
 
-        for (const element of document.querySelectorAll('.setting input:not([type=number]), .setting select')) {
-            if (element.type === 'text') {
-                if (!cached || !config.controls.hasOwnProperty(element.name))
-                    config.controls[element.name] = element.getAttribute('data-default');
-                else
-                    element.value = config.controls[element.name];
-            }
-            else {
-                if (!cached || !config.hasOwnProperty(element.name))
-                    config[element.name] = element.getAttribute('data-default');
-                else
-                    element.value = config[element.name];
-            }
+        switch (element.type) {
+            case 'range':
+                const percent = 100 * (element.value - element.getAttribute('min')) / (element.getAttribute('max') - element.getAttribute('min'));
+                element.style.background = 'linear-gradient(to right, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.8) ' + percent + '%, rgba(255,255,255,0.4) ' + percent + '%, rgba(255,255,255,0.4) 100%)';
+                element.nextElementSibling.value = element.value;
+                element.addEventListener('input', function() {
+                    const percent = 100 * (this.value - this.getAttribute('min')) / (this.getAttribute('max') - this.getAttribute('min'));
+                    this.style.background = 'linear-gradient(to right, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.8) ' + percent + '%, rgba(255,255,255,0.4) ' + percent + '%, rgba(255,255,255,0.4) 100%)'
+                    this.nextElementSibling.value = this.value;
+                    config[this.name] = this.value;
+                    applyChanges(this.name);
+                });
+                break;
+            case 'text':
+                element.addEventListener('keydown', function(event) {
+                    const key = event.code;
 
-            switch (element.type) {
-                case 'range':   
-                    const percent = 100 * (element.value - element.getAttribute('min')) / (element.getAttribute('max') - element.getAttribute('min'));
-                    element.style.background = 'linear-gradient(to right, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.8) ' + percent + '%, rgba(255,255,255,0.4) ' + percent + '%, rgba(255,255,255,0.4) 100%)';
-                    element.nextElementSibling.value = element.value;
-                    element.addEventListener('input', function() {
-                        const percent = 100 * (this.value - this.getAttribute('min')) / (this.getAttribute('max') - this.getAttribute('min'));
-                        this.style.background = 'linear-gradient(to right, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.8) ' + percent + '%, rgba(255,255,255,0.4) ' + percent + '%, rgba(255,255,255,0.4) 100%)'
-                        this.nextElementSibling.value = this.value;
-                        config[this.name] = this.value;
-                        applyChanges(this.name);
-                    });
-                    break;
-                case 'text':
-                    element.addEventListener('keydown', function(event) {
-                        const key = event.code;
+                    if (key === 'Tab')
+                        return;
 
-                        if (key === 'Tab')
-                            return;
-
-                        const controls = document.querySelectorAll('input[type=text]');
-                        for (const control of controls) {
-                            if (control.value === key) {
-                                config.controls[control.name] = control.value = '';
-                            }
+                    const controls = document.querySelectorAll('input[type=text]');
+                    for (const control of controls) {
+                        if (control.value === key) {
+                            config.controls[control.name] = control.value = '';
                         }
-                        config.controls[this.name] = this.value = key;
-                        this.blur();
-                    });
-                    element.nextElementSibling.addEventListener('click', () => {
-                        System.input.controls[element.name] = config.controls[element.name] = element.value = ''
-                    });
-                    break;
-                default:
-                    element.addEventListener('input', function() {
-                        config[this.name] = this.value;
-                        applyChanges(this.name);
-                    }); 
-            }
+                    }
+                    config.controls[this.name] = this.value = key;
+                    this.blur();
+                });
+                element.nextElementSibling.addEventListener('click', () => {
+                    System.input.controls[element.name] = config.controls[element.name] = element.value = ''
+                });
+                break;
+            default:
+                element.addEventListener('input', function() {
+                    config[this.name] = this.value;
+                    applyChanges(this.name);
+                });
         }
+    }
 
-        document.getElementById('restore-defaults').addEventListener('click', () => {
-            for (const element of document.querySelectorAll('.setting[data-selected] input:not([type=number]), .setting select')) {
-                const dataDefault = element.getAttribute('data-default');
+    document.getElementById('restore-defaults').addEventListener('click', () => {
+        for (const element of document.querySelectorAll('.setting[data-selected] input:not([type=number]), .setting select')) {
+            const dataDefault = element.getAttribute('data-default');
 
-                if (element.type === 'range') {
-                    const percent = 100 * (dataDefault - element.getAttribute('min')) / (element.getAttribute('max') - element.getAttribute('min'));
-                    element.style.background = 'linear-gradient(to right, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.8) ' + percent + '%, rgba(255,255,255,0.4) ' + percent + '%, rgba(255,255,255,0.4) 100%)';
-                    element.nextElementSibling.value = dataDefault;
-                }
-
-                element.value = dataDefault
-                if (element.type === 'text')
-                    config.controls[element.name] = dataDefault;
-                else
-                    config[element.name] = dataDefault;
-                applyChanges(element.name);
+            if (element.type === 'range') {
+                const percent = 100 * (dataDefault - element.getAttribute('min')) / (element.getAttribute('max') - element.getAttribute('min'));
+                element.style.background = 'linear-gradient(to right, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.8) ' + percent + '%, rgba(255,255,255,0.4) ' + percent + '%, rgba(255,255,255,0.4) 100%)';
+                element.nextElementSibling.value = dataDefault;
             }
-        });
+
+            element.value = dataDefault
+            if (element.type === 'text')
+                config.controls[element.name] = dataDefault;
+            else
+                config[element.name] = dataDefault;
+            applyChanges(element.name);
+        }
+    });
 }
 
 export default System;

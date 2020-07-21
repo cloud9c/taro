@@ -1,6 +1,11 @@
 import * as THREE from 'https://threejs.org/build/three.module.js';
-import {ConvexHull} from 'https://threejs.org/examples/jsm/math/ConvexHull.js';
 import System from './system.js'
+import {
+    ConvexHull
+} from 'https://threejs.org/examples/jsm/math/ConvexHull.js';
+import {
+    SimplifyModifier
+} from 'https://threejs.org/examples/jsm/modifiers/SimplifyModifier.js';
 
 const Component = {
     Animation: setDataComponent,
@@ -19,8 +24,10 @@ const Component = {
         setDataComponent(id, type, data);
         System.render.scene.add(data);
     },
-    Rigidbody: (id, type, data) => {
-        setDataComponent(id, type, new Rigidbody(data));
+    Physics: (id, type, data) => {
+        if (data.useGravity === undefined)
+            data.useGravity = true
+        setDataComponent(id, type, new Physics(data));
     },
     Transform: (id, type, data) => {
         const object = Component.components.Object3D[id];
@@ -32,6 +39,8 @@ const Component = {
         setDataComponent(id, type, data);
     }
 }
+
+const simplify = new SimplifyModifier();
 
 class Collider {
     constructor(id, data) {
@@ -63,8 +72,29 @@ class Collider {
         obj.rotation.set(0, 0, 0);
         obj.scale.set(1, 1, 1);
 
-        const origin = new ConvexHull().setFromObject(obj).vertices;
-        
+        const reducedObj = obj.clone();
+        const MAX_VERTICES = 100;
+        let TOTAL_VERTICES;
+
+        reducedObj.traverse((o) => {
+            if (o.isMesh)
+                TOTAL_VERTICES += o.geometry.attributes.position.count;
+        });
+
+        const REDUCTION_FACTOR = MAX_VERTICES/TOTAL_VERTICES;
+
+        if (REDUCTION_FACTOR < 1)
+            reducedObj.traverse((o) => {
+                if (o.isMesh) {
+                    const count = o.geometry.attributes.position.count;
+                    const amount = Math.floor(count * REDUCTION_FACTOR);
+                    if (amount < count)
+                        o.geometry = modifer.modify(o.geometry, amount);
+                }
+            });
+
+        const origin = new ConvexHull().setFromObject(reducedObj).vertices;
+
         obj.position.copy(this.cached.AABB.position);
         obj.rotation.copy(this.cached.AABB.rotation);
         obj.scale.copy(this.cached.AABB.scale);
@@ -79,15 +109,15 @@ class Collider {
         // add centroid
         const vertLen = this.vertices.length;
         this.centroid = new THREE.Vector3();
-        for ( var i = 0; i < vertLen; i ++ ) {
+        for (var i = 0; i < vertLen; i++) {
             this.centroid.add(this.vertices[i]);
         }
         this.centroid.divideScalar(vertLen);
 
-        // add center of mass to rigidbody
-        this.Rigidbody = Component.components.Rigidbody[id];
-        if (this.Rigidbody !== undefined) {
-            this.Rigidbody.centerOfMass = this.centroid;
+        // add center of mass to physics
+        this.Physics = Component.components.Physics[id];
+        if (this.Physics !== undefined) {
+            this.Physics.centerOfMass = this.centroid;
         }
 
         this.Object3D = obj;
@@ -123,7 +153,7 @@ class Collider {
                 }
                 cached.position = obj.position.clone();
                 cached.rotation = obj.rotation.clone();
-                cached.scale = obj.scale.clone();                    
+                cached.scale = obj.scale.clone();
             }
 
             cached.updated = true;
@@ -138,7 +168,7 @@ class Collider {
     };
 }
 
-class Rigidbody {
+class Physics {
     constructor(data) {
         this.velocity = data.velocity;
         this.angularVelocity = data.angularVelocity;
@@ -158,7 +188,11 @@ function setDataComponent(id, type, data) {
     Component.components[type][id] = data;
 }
 
-Object.defineProperty(Component, 'components', {value: new Object(), enumerable: false });
+Object.defineProperty(Component, 'components', {
+    value: new Object(),
+    enumerable: false
+});
+
 for (const type in Component) {
     Component.components[type] = new Object();
 }
