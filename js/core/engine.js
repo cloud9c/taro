@@ -1,7 +1,7 @@
-import Asset from './asset.js';
-import Component from './component.js';
-import Entity from './entity.js';
-import System from './system.js';
+import Asset from './Asset.js';
+import Component from './Component.js';
+import Entity from './Entity.js';
+import System from './System.js';
 
 export {
     Asset,

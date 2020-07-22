@@ -1,6 +1,6 @@
 import * as THREE from 'https://threejs.org/build/three.module.js';
-import * as Engine from './core/engine.js';
-import * as GameObject from './gameobject.js';
+import * as Engine from './core/Engine.js';
+import * as GameObject from './Gameobject.js';
 
 let peer, connections = [],
 	serverID, peerID, hosting, nickname;
@@ -57,9 +57,7 @@ function init() {
 	mesh.rotation.x = -Math.PI / 2;
 	mesh.receiveShadow = true;
 
-	new Engine.Entity().addComponent('Object3D', mesh).addComponent('Collider', {
-		material: {}
-	});
+	new Engine.Entity().addComponent('Object3D', mesh).addComponent('Collider');
 	new Engine.Entity().addComponent('Object3D', new THREE.GridHelper(1000, 1000, 0x0000ff, 0x808080));
 
 	GameObject.Player();

@@ -3,35 +3,26 @@ import {
 	Asset,
 	Entity,
 	System
-} from './core/engine.js'
-
-let paused = false;
-const keyInput = {}
+} from './core/Engine.js';
 
 function Player() {
-	const mesh = Asset.getModel('player.glb');
+	const obj = Asset.getObject3D('player.glb');
 	const entity = new Entity();
 
-	entity.addComponent('Object3D', mesh);
-	entity.addComponent('Animation', Asset.getAnimation(mesh, 'player.glb', 'Idle'));
-	entity.addComponent('Transform', {
-		position: new THREE.Vector3(0, 100, 0),
-		rotation: new THREE.Euler(),
-		scale: new THREE.Vector3(1, 1, 1)
-	});
+	entity.addComponent('Object3D', obj);
+	entity.addComponent('Animation', Asset.getAnimation(obj, 'player.glb', 'Idle'));
+	entity.addComponent('Transform');
 	entity.addComponent('Physics', {
-		velocity: new THREE.Vector3(),
-		angularVelocity: new THREE.Vector3(),
 		mass: 60
 	});
 	entity.addComponent('Collider', {
 		material: {
-			dynamicFriction: 1,
-			staticFriction: 1,
-			elasticity: 1
+			dynamicFriction: 0.6,
+			staticFriction: 0.6,
+			bounciness: 1
 		}
 	});
-	System.camera.addTarget(mesh);
+	System.camera.addTarget(obj);
 
 	const keyInput = System.input.keyInput;
 	const curVel = entity.components.Physics.velocity;
@@ -76,7 +67,7 @@ function Player() {
 
 		}
 
-		length = Math.sqrt(newVel.x * newVel.x + newVel.y * newVel.y);
+		const length = Math.sqrt(newVel.x * newVel.x + newVel.y * newVel.y);
 		if (length > maxSpeed) {
 			newVel.x = newVel.x / length * maxSpeed;
 			newVel.y = newVel.y / length * maxSpeed;
@@ -89,7 +80,7 @@ function Player() {
 
 function fadeToAction(name, duration, timeScale = 1) {
 	if (this.actions[name] === this.activeAction && this.activeAction.timeScale === timeScale) {
-		return
+		return;
 	}
 
 	const previousAction = this.activeAction;
@@ -107,4 +98,4 @@ function fadeToAction(name, duration, timeScale = 1) {
 
 export {
 	Player
-}
+};
