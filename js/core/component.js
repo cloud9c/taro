@@ -1,7 +1,7 @@
-import * as THREE from 'https://threejs.org/build/three.module.js';
-import System from './System.js';
-import Asset from './Asset.js'
-import { ConvexHull } from 'https://threejs.org/examples/jsm/math/ConvexHull.js';
+import * as THREE from "https://threejs.org/build/three.module.js";
+import System from "./System.js";
+import Asset from "./Asset.js";
+import { ConvexHull } from "https://threejs.org/examples/jsm/math/ConvexHull.js";
 const Component = {
 	components: {},
 	Animation: setDataComponent,
@@ -18,18 +18,33 @@ const Component = {
 	},
 	Transform: (id, type, data) => {
 		setDataComponent(id, type, Transform(id, data));
-	}
+	},
 };
 
 class Collider {
 	constructor(id, data) {
 		const obj = Component.components.Object3D[id];
 
-		this.isTrigger = data.hasOwnProperty('isTrigger') ? data.isTrigger : false;
-		this.material = data.hasOwnProperty('material') ? data.material : {};
-		this.material.dynamicFriction = this.material.hasOwnProperty('dynamicFriction') ? this.material.dynamicFriction : 0.6;
-		this.material.staticFriction = this.material.hasOwnProperty('staticFriction') ? this.material.staticFriction : 0.6;
-		this.material.bounciness = this.material.hasOwnProperty('bounciness') ? this.material.bounciness : 0;
+		this.onCollisionEnter = data.hasOwnProperty("onCollisionEnter")
+			? data.onCollisionEnter
+			: null;
+		this.onCollisionExit = data.hasOwnProperty("onCollisionExit")
+			? data.onCollisionExit
+			: null;
+		this.material = data.hasOwnProperty("material") ? data.material : {};
+		this.material.dynamicFriction = this.material.hasOwnProperty(
+			"dynamicFriction"
+		)
+			? this.material.dynamicFriction
+			: 0.6;
+		this.material.staticFriction = this.material.hasOwnProperty(
+			"staticFriction"
+		)
+			? this.material.staticFriction
+			: 0.6;
+		this.material.bounciness = this.material.hasOwnProperty("bounciness")
+			? this.material.bounciness
+			: 0;
 
 		// create cached convex hull and box3
 		this.cached = {
@@ -37,23 +52,30 @@ class Collider {
 				updated: false,
 				position: obj.position.clone(),
 				rotation: obj.rotation.clone(),
-				scale: obj.scale.clone()
+				scale: obj.scale.clone(),
 			},
 			vertices: {
 				updated: false,
 				position: obj.position.clone(),
 				rotation: obj.rotation.clone(),
-				scale: obj.scale.clone()
-			}
+				scale: obj.scale.clone(),
+			},
 		};
 		this.AABB = new THREE.Box3().setFromObject(obj);
 
-		const origin = new ConvexHull().setFromObject(Asset.getSimplified(obj)).vertices;
+		const origin = new ConvexHull().setFromObject(Asset.getSimplified(obj))
+			.vertices;
 
 		this.vertices = [];
 		for (let i = 0, len = origin.length; i < len; i++) {
 			origin[i] = origin[i].point;
-			this.vertices.push(origin[i].clone().applyEuler(obj.rotation).add(obj.position).multiply(obj.scale));
+			this.vertices.push(
+				origin[i]
+					.clone()
+					.applyEuler(obj.rotation)
+					.add(obj.position)
+					.multiply(obj.scale)
+			);
 		}
 		this.cached.vertices.origin = origin;
 
@@ -80,7 +102,11 @@ class Collider {
 		if (!cached.updated) {
 			// TODO! can optimize to transform diff rather than setFromObject each time
 
-			if (!cached.position.equals(obj.position) || !cached.rotation.equals(obj.rotation) || !cached.scale.equals(obj.scale)) {
+			if (
+				!cached.position.equals(obj.position) ||
+				!cached.rotation.equals(obj.rotation) ||
+				!cached.scale.equals(obj.scale)
+			) {
 				this.AABB.setFromObject(obj);
 				cached.position = obj.position.clone();
 				cached.rotation = obj.rotation.clone();
@@ -98,9 +124,17 @@ class Collider {
 		if (!cached.updated) {
 			// TODO! can optimize to transform diff rather than clone origin each time
 
-			if (!cached.position.equals(obj.position) || !cached.rotation.equals(obj.rotation) || !cached.scale.equals(obj.scale)) {
+			if (
+				!cached.position.equals(obj.position) ||
+				!cached.rotation.equals(obj.rotation) ||
+				!cached.scale.equals(obj.scale)
+			) {
 				for (let i = 0, len = this.vertices.length; i < len; i++) {
-					this.vertices[i] = cached.origin[i].clone().applyEuler(obj.rotation).add(obj.position).multiply(obj.scale);
+					this.vertices[i] = cached.origin[i]
+						.clone()
+						.applyEuler(obj.rotation)
+						.add(obj.position)
+						.multiply(obj.scale);
 				}
 				cached.position = obj.position.clone();
 				cached.rotation = obj.rotation.clone();
@@ -121,10 +155,16 @@ class Collider {
 
 class Physics {
 	constructor(data) {
-		this.velocity = data.hasOwnProperty('velocity') ? data.velocity : new THREE.Vector3();
-		this.angularVelocity = data.hasOwnProperty('angularVelocity') ? data.angularVelocity : new THREE.Vector3();
-		this.mass = data.hasOwnProperty('mass') ? data.mass : 1;
-		this.useGravity = data.hasOwnProperty('useGravity') ? data.useGravity : true;
+		this.velocity = data.hasOwnProperty("velocity")
+			? data.velocity
+			: new THREE.Vector3();
+		this.angularVelocity = data.hasOwnProperty("angularVelocity")
+			? data.angularVelocity
+			: new THREE.Vector3();
+		this.mass = data.hasOwnProperty("mass") ? data.mass : 1;
+		this.useGravity = data.hasOwnProperty("useGravity")
+			? data.useGravity
+			: true;
 	}
 
 	isMoving() {
@@ -148,9 +188,15 @@ function Object3D(id, data = new THREE.Object3D()) {
 }
 
 function Transform(id, data) {
-	data.position = data.hasOwnProperty('position') ? data.position : new THREE.Vector3();
-	data.rotation = data.hasOwnProperty('rotation') ? data.rotation : new THREE.Euler();
-	data.scale = data.hasOwnProperty('scale') ? data.scale : new THREE.Vector3(1, 1, 1);
+	data.position = data.hasOwnProperty("position")
+		? data.position
+		: new THREE.Vector3();
+	data.rotation = data.hasOwnProperty("rotation")
+		? data.rotation
+		: new THREE.Euler();
+	data.scale = data.hasOwnProperty("scale")
+		? data.scale
+		: new THREE.Vector3(1, 1, 1);
 
 	const object = Component.components.Object3D[id];
 	if (object) {

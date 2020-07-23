@@ -1,31 +1,38 @@
-import {LoadingManager, Skeleton, AnimationMixer, LoopOnce} from 'https://threejs.org/build/three.module.js';
-import {GLTFLoader} from 'https://threejs.org/examples/jsm/loaders/GLTFLoader.js';
-import { SimplifyModifier } from 'https://threejs.org/examples/jsm/modifiers/SimplifyModifier.js';
+import {
+	LoadingManager,
+	Skeleton,
+	AnimationMixer,
+	LoopOnce,
+} from "https://threejs.org/build/three.module.js";
+import { GLTFLoader } from "https://threejs.org/examples/jsm/loaders/GLTFLoader.js";
+import { SimplifyModifier } from "https://threejs.org/examples/jsm/modifiers/SimplifyModifier.js";
 
 const Asset = {
 	init() {
 		const manager = new LoadingManager();
 		const modelLoader = new GLTFLoader(manager);
-		const models = ['player.glb'];
+		const models = ["player.glb"];
 		this.simplifier = new SimplifyModifier();
 
 		return new Promise((resolve, reject) => {
 			for (let i = 0, len = models.length; i < len; i++) {
-				modelLoader.load('assets/models/' + models[i], gltf => {
+				modelLoader.load("assets/models/" + models[i], (gltf) => {
 					gltf.scene.name = models[i];
 					this.models[models[i]] = gltf;
 				});
 			}
 
 			manager.onProgress = (url, itemsLoaded, itemsTotal) => {
-				document.getElementById('loading-info').textContent = 'Loading: ' + url;
-				document.getElementById('bar-percentage').style.width = itemsLoaded / itemsTotal * 100 + '%';
+				document.getElementById("loading-info").textContent =
+					"Loading: " + url;
+				document.getElementById("bar-percentage").style.width =
+					(itemsLoaded / itemsTotal) * 100 + "%";
 			};
 
 			manager.onLoad = resolve;
 
 			manager.onError = (url) => {
-				console.log('Error loading ' + url);
+				console.log("Error loading " + url);
 			};
 		});
 	},
@@ -38,13 +45,13 @@ const Asset = {
 		const cloneBones = {};
 		const cloneSkinnedMeshes = {};
 
-		clone.traverse(node => {
+		clone.traverse((node) => {
 			if (node.isSkinnedMesh) {
 				skinnedMeshes[node.name] = node;
 			}
 		});
 
-		clone.traverse(node => {
+		clone.traverse((node) => {
 			if (node.isBone) {
 				cloneBones[node.name] = node;
 			}
@@ -72,7 +79,8 @@ const Asset = {
 
 			cloneSkinnedMesh.bind(
 				new Skeleton(orderedCloneBones, skeleton.boneInverses),
-				cloneSkinnedMesh.matrixWorld);
+				cloneSkinnedMesh.matrixWorld
+			);
 		}
 		return clone;
 	},
@@ -88,7 +96,7 @@ const Asset = {
 		for (const animation of animations) {
 			const clip = animation;
 			const action = mixer.clipAction(clip);
-			if (clip.name === 'Jump' && clip.name === 'WalkJump') {
+			if (clip.name === "Jump" && clip.name === "WalkJump") {
 				action.setLoop(LoopOnce);
 			}
 			actions[clip.name] = action;
@@ -98,17 +106,22 @@ const Asset = {
 		activeAction.play();
 
 		return {
-			'mixer': mixer,
-			'actions': actions,
-			'activeAction': activeAction
+			mixer: mixer,
+			actions: actions,
+			activeAction: activeAction,
 		};
 	},
-	getSimplified(obj) { // Object3D or model name string
+	getSimplified(obj) {
+		// Object3D or model name string
 		let reducedObj;
 		if (this.simplifiedModels.hasOwnProperty(obj.name)) {
 			reducedObj = this.simplifiedModels[obj.name].clone();
 		} else {
-			const temp = [obj.position.clone(), obj.rotation.clone(), obj.scale.clone()];
+			const temp = [
+				obj.position.clone(),
+				obj.rotation.clone(),
+				obj.scale.clone(),
+			];
 			obj.position.set(0, 0, 0);
 			obj.rotation.set(0, 0, 0);
 			obj.scale.set(1, 1, 1);
@@ -123,7 +136,7 @@ const Asset = {
 				}
 			});
 
-			const REDUCTION_FACTOR = MAX_VERTICES/TOTAL_VERTICES;
+			const REDUCTION_FACTOR = MAX_VERTICES / TOTAL_VERTICES;
 
 			if (REDUCTION_FACTOR < 1)
 				reducedObj.traverse((node) => {
@@ -131,7 +144,10 @@ const Asset = {
 						const count = node.geometry.attributes.position.count;
 						const newCount = Math.ceil(count * REDUCTION_FACTOR);
 						if (newCount < count)
-							node.geometry = this.simplifier.modify(node.geometry, newCount);
+							node.geometry = this.simplifier.modify(
+								node.geometry,
+								newCount
+							);
 					}
 				});
 
@@ -139,8 +155,7 @@ const Asset = {
 			obj.rotation.copy(temp[1]);
 			obj.scale.copy(temp[2]);
 
-			if (obj.name)
-				this.simplifiedModels[obj.name] = reducedObj.clone();
+			if (obj.name) this.simplifiedModels[obj.name] = reducedObj.clone();
 		}
 
 		return reducedObj;
