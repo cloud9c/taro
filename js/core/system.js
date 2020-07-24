@@ -168,6 +168,7 @@ const System = {
 		init() {
 			this.Collider = Component.components.Collider;
 			this.quat = new THREE.Quaternion();
+			this.vector = new THREE.Vector3();
 		},
 		edgeInEdges(edges, edge) {
 			for (let i = 0, len = edges.length; i < len; i++)
@@ -204,12 +205,13 @@ const System = {
 				const point = this.support(vertA, vertB, face.norm);
 				const dist = point.clone().dot(face.norm);
 
-				if (dist - face.dist < epsilon) {
+				console.log(face.a, face.b, face.c);
+
+				if (dist - face.dist < epsilon)
 					return {
 						dir: face.norm,
 						dist: dist + epsilon,
 					};
-				}
 
 				simplex.push(point);
 				this.expand(simplex, simplexFaces, point);
@@ -316,7 +318,7 @@ const System = {
 				const ac = simplex[face.c].clone().sub(simplex[face.a]);
 				const norm = ab.cross(ac).normalize();
 
-				const a0 = new THREE.Vector3().sub(simplex[face.a]);
+				const a0 = this.vector.clone().sub(simplex[face.a]);
 				if (a0.dot(norm) > 0) norm.negate();
 
 				if (
@@ -327,7 +329,8 @@ const System = {
 			}
 
 			const edges = [];
-			for (let i = 0, len = removalFaces.length; i < len; i++) {
+			const removalFacesLen = removalFaces.length;
+			for (let i = 0; i < removalFacesLen; i++) {
 				const face = simplexFaces[removalFaces[i]];
 				const edgeAB = {
 					a: face.a,
@@ -355,7 +358,7 @@ const System = {
 				else edges.push(edgeBC);
 			}
 
-			for (let i = removalFaces.length - 1; i >= 0; i--) {
+			for (let i = removalFacesLen - 1; i >= 0; i--) {
 				simplexFaces.splice(removalFaces[i], 1);
 			}
 
@@ -377,7 +380,7 @@ const System = {
 				const ab = simplex[face.b].clone().sub(simplex[face.a]);
 				const ac = simplex[face.c].clone().sub(simplex[face.a]);
 				const norm = ab.cross(ac).normalize();
-				const a0 = new THREE.Vector3().sub(simplex[face.a]);
+				const a0 = this.vector.clone().sub(simplex[face.a]);
 				if (a0.dot(norm) > 0) norm.negate();
 
 				const dist = simplex[face.a].clone().dot(norm);
@@ -450,8 +453,6 @@ const System = {
 				(colA.material.dynamicFriction +
 					colB.material.dynamicFriction) /
 				2;
-
-			console.log(bounciness, staticFriction, dynamicFriction);
 
 			if (colA.hasOwnProperty("Physics")) {
 				colA.Object3D.position.add(res.dir.multiplyScalar(res.dist));
