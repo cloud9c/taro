@@ -1,4 +1,4 @@
-# Newton's Box
+<h1 align="center">Newton's Box</h1>
 
 <p align="center">
   <a href="https://github.com/prettier/prettier/actions?query=workflow%3AProd+branch%3Amaster">
