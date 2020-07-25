@@ -202,16 +202,17 @@ const System = {
 			const epsilon = 0.00001; // Maybe too small?
 			while (true) {
 				const face = this.findClosestFace(simplex, simplexFaces);
-				const point = this.support(vertA, vertB, face.norm);
-				const dist = point.clone().dot(face.norm);
+				let supA;
+				const point = this.support(vertA, vertB, face.norm, supA);
+				const dist = point.dot(face.norm);
 
-				console.log(face.a, face.b, face.c);
-
-				if (dist - face.dist < epsilon)
+				if (dist - face.dist < epsilon) {
+					this.getContactPoint(point, face.a, face.b, face.c, supA);
 					return {
 						dir: face.norm,
 						dist: dist + epsilon,
 					};
+				}
 
 				simplex.push(point);
 				this.expand(simplex, simplexFaces, point);
@@ -321,10 +322,7 @@ const System = {
 				const a0 = this.vector.clone().sub(simplex[face.a]);
 				if (a0.dot(norm) > 0) norm.negate();
 
-				if (
-					norm.clone().dot(extendPoint.clone().sub(simplex[face.a])) >
-					0
-				)
+				if (norm.dot(extendPoint.clone().sub(simplex[face.a])) > 0)
 					removalFaces.push(i);
 			}
 
@@ -383,15 +381,15 @@ const System = {
 				const a0 = this.vector.clone().sub(simplex[face.a]);
 				if (a0.dot(norm) > 0) norm.negate();
 
-				const dist = simplex[face.a].clone().dot(norm);
+				const dist = simplex[face.a].dot(norm);
 				if (dist < closest.dist)
 					closest = {
 						index: i,
 						dist: dist,
 						norm: norm,
-						a: face.a,
-						b: face.b,
-						c: face.c,
+						a: simplex[face.a],
+						b: simplex[face.b],
+						c: simplex[face.c],
 					};
 			}
 			return closest;
@@ -401,7 +399,7 @@ const System = {
 			let maxDot = -Infinity;
 
 			for (let i = 0; i < verts.length; i++) {
-				const dot = verts[i].clone().dot(dir);
+				const dot = verts[i].dot(dir);
 
 				if (dot > maxDot) {
 					maxDot = dot;
@@ -424,7 +422,7 @@ const System = {
 				const p = this.support(vertA, vertB, dir);
 				simplex.push(p);
 
-				if (p.clone().dot(dir) <= 0) return;
+				if (p.dot(dir) <= 0) return;
 
 				if (this.evaluateAndChangeDir(simplex, dir)) {
 					// TODO add to collision linked list
@@ -474,13 +472,38 @@ const System = {
 					.multiplyScalar(bounciness);
 			}
 		},
-		support(aVerts, bVerts, dir) {
-			const a = this.getFurthestPointInDirection(aVerts, dir);
+		support(aVerts, bVerts, dir, a = null) {
+			a = this.getFurthestPointInDirection(aVerts, dir);
 			const b = this.getFurthestPointInDirection(
 				bVerts,
 				dir.clone().negate()
 			);
 			return a.clone().sub(b);
+		},
+		getContactPoint(p, a, b, c, supA) {
+			const v0 = b.clone().sub(a),
+				v1 = c.clone().sub(a),
+				v2 = p.clone().sub(a),
+				d00 = v0.dot(v0),
+				d01 = v0.dot(v1),
+				d11 = v1.dot(v1),
+				d20 = v2.dot(v0),
+				d21 = v2.dot(v1),
+				denom = d00 * d11 - d01 * d01,
+				v = (d11 * d20 - d01 * d21) / denom,
+				w = (d00 * d21 - d01 * d20) / denom,
+				u = 1 - v - w;
+			// console.log(
+			// 	a.multiplyScalar(u),
+			// 	b.multiplyScalar(v),
+			// 	c.multiplyScalar(w)
+			// );
+			console.log(
+				a
+					.multiplyScalar(u)
+					.add(b.multiplyScalar(v))
+					.add(c.multiplyScalar(w))
+			);
 		},
 		update() {
 			const Collider = this.Collider;
