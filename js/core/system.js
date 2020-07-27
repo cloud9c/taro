@@ -168,18 +168,19 @@ const System = {
 		init() {
 			this.Collider = Component.components.Collider;
 			this.quat = new THREE.Quaternion();
-			this.vector = new THREE.Vector3();
+			const vector = new THREE.Vector3();
 			this.immovable = {
 				get mass() {
 					return Infinity;
 				},
 				get velocity() {
-					return 0;
+					return vector;
 				},
 				get angularVelocity() {
-					return 0;
+					return vector;
 				},
 			};
+			this.vector = vector;
 		},
 		edgeInEdges(edges, edge) {
 			for (let i = 0, len = edges.length; i < len; i++)
@@ -446,8 +447,8 @@ const System = {
 		},
 		GJK(colA, colB, dir) {
 			const simplex = [];
-			const vertA = colA.vertices;
-			const vertB = colB.vertices;
+			const vertA = colA.worldVertices;
+			const vertB = colB.worldVertices;
 
 			const p = this.support(vertA, vertB, dir);
 			simplex.push(p);
@@ -509,8 +510,8 @@ const System = {
 						.multiplyScalar((res.dist * totalMass) / physB.mass)
 				);
 
-			const relativeA = res.point.clone().sub(colA.centroid);
-			const relativeB = res.point.clone().sub(colB.centroid);
+			const relativeA = res.point.clone().sub(colA.worldCentroid);
+			const relativeB = res.point.clone().sub(colB.worldCentroid);
 
 			const angVelocityA = physA.angularVelocity.clone().cross(relativeA);
 			const angVelocityB = physB.angularVelocity.clone().cross(relativeA);
@@ -518,11 +519,11 @@ const System = {
 			const fullVelocityA = angVelocityA.clone().add(physA.velocity);
 			const fullVelocityB = angVelocityB.clone().add(physB.velocity);
 
-			const contactVelocity = fullVelocityB - fullVelocityA;
+			const contactVelocity = fullVelocityB.clone().sub(fullVelocityA);
 
 			const impulseForce = contactVelocity.dot(res.dir);
 
-			const inertiaA = 
+			// const inertiaA =
 		},
 		support(aVerts, bVerts, dir) {
 			const a = this.getFurthestPointInDirection(aVerts, dir);
@@ -551,12 +552,14 @@ const System = {
 					const colA = colliders[i];
 					const colB = colliders[j];
 					// broad phase (NEED TO ADD SPATIAL INDEX) TODO
-					if (colA.AABB.intersectsBox(colB.AABB)) {
+					if (colA.worldAABB.intersectsBox(colB.worldAABB)) {
 						// collision detection and response
 						this.GJK(
 							colA,
 							colB,
-							colA.centroid.clone().sub(colB.centroid.clone())
+							colA.worldCentroid
+								.clone()
+								.sub(colB.worldCentroid.clone())
 						);
 					}
 				}

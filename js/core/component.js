@@ -68,40 +68,36 @@ class Collider {
 				scale: obj.scale.clone(),
 			},
 		};
-		this.dataAABB = new THREE.Box3().setFromObject(obj);
+		this.world = {};
+		this.world.AABB = new THREE.Box3();
 
-		const origin = new ConvexHull().setFromObject(Asset.getSimplified(obj))
-			.vertices;
+		this.world.vertices = [];
+		this.vertices = new ConvexHull().setFromObject(
+			Asset.getSimplified(obj)
+		).vertices;
 
-		this.dataVertices = [];
-		for (let i = 0, len = origin.length; i < len; i++) {
-			origin[i] = origin[i].point;
-			this.dataVertices.push(
-				origin[i]
-					.clone()
-					.applyEuler(obj.rotation)
-					.add(obj.position)
-					.multiply(obj.scale)
-			);
+		for (let i = 0, len = this.vertices.length; i < len; i++) {
+			this.vertices[i] = this.vertices[i].point;
 		}
-		this.cached.vertices.origin = origin;
 
 		// add centroid
-		const vertLen = this.dataVertices.length;
-		this.dataCentroid = new THREE.Vector3();
+		const vertLen = this.vertices.length;
+		this.centroid = new THREE.Vector3();
 		for (var i = 0; i < vertLen; i++) {
-			this.dataCentroid.add(this.dataVertices[i]);
+			this.centroid.add(this.vertices[i]);
 		}
-		this.dataCentroid.divideScalar(vertLen);
+		this.centroid.divideScalar(vertLen);
+		this.world.centroid = [];
 
 		// add center of mass to physics
 		if (Component.components.Physics.hasOwnProperty(id)) {
 			this.Physics = Component.components.Physics[id];
 			this.Physics.centerOfMass = this.centroid;
+			this.Physics.worldCenterOfMass = this.worldCentroid;
 		}
 	}
 
-	get AABB() {
+	get worldAABB() {
 		const cached = this.cached.AABB;
 		const obj = this.Object3D;
 		if (!cached.updated) {
@@ -112,7 +108,7 @@ class Collider {
 				!cached.rotation.equals(obj.rotation) ||
 				!cached.scale.equals(obj.scale)
 			) {
-				this.dataAABB.setFromObject(obj);
+				this.world.AABB.setFromObject(obj);
 				cached.position = obj.position.clone();
 				cached.rotation = obj.rotation.clone();
 				cached.scale = obj.scale.clone();
@@ -120,10 +116,10 @@ class Collider {
 			cached.updated = true;
 		}
 
-		return this.dataAABB;
+		return this.world.AABB;
 	}
 
-	get vertices() {
+	get worldVertices() {
 		const cached = this.cached.vertices;
 		const obj = this.Object3D;
 		if (!cached.updated) {
@@ -134,8 +130,12 @@ class Collider {
 				!cached.rotation.equals(obj.rotation) ||
 				!cached.scale.equals(obj.scale)
 			) {
-				for (let i = 0, len = this.dataVertices.length; i < len; i++) {
-					this.dataVertices[i] = cached.origin[i]
+				for (
+					let i = 0, len = this.world.vertices.length;
+					i < len;
+					i++
+				) {
+					this.world.vertices[i] = this.vertices[i]
 						.clone()
 						.applyEuler(obj.rotation)
 						.add(obj.position)
@@ -149,10 +149,10 @@ class Collider {
 			cached.updated = true;
 		}
 
-		return this.dataVertices;
+		return this.world.vertices;
 	}
 
-	get centroid() {
+	get worldCentroid() {
 		const cached = this.cached.centroid;
 		const obj = this.Object3D;
 		if (!cached.updated) {
@@ -161,13 +161,13 @@ class Collider {
 				!cached.rotation.equals(obj.rotation) ||
 				!cached.scale.equals(obj.scale)
 			) {
-				const verts = this.vertices;
-				const vertLen = verts.length;
-				this.dataCentroid = new THREE.Vector3();
-				for (var i = 0; i < vertLen; i++) {
-					this.dataCentroid.add(verts[i]);
+				for (let i = 0, len = this.centroid.length; i < len; i++) {
+					this.world.centroid[i] = this.centroid[i]
+						.clone()
+						.applyEuler(obj.rotation)
+						.add(obj.position)
+						.multiply(obj.scale);
 				}
-				this.dataCentroid.divideScalar(vertLen);
 
 				cached.position = obj.position.clone();
 				cached.rotation = obj.rotation.clone();
@@ -175,7 +175,7 @@ class Collider {
 			}
 			cached.updated = true;
 		}
-		return this.dataCentroid;
+		return this.world.centroid;
 	}
 
 	resetUpdate() {
