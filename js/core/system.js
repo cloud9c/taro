@@ -169,6 +169,17 @@ const System = {
 			this.Collider = Component.components.Collider;
 			this.quat = new THREE.Quaternion();
 			this.vector = new THREE.Vector3();
+			this.immovable = {
+				get mass() {
+					return Infinity;
+				},
+				get velocity() {
+					return 0;
+				},
+				get angularVelocity() {
+					return 0;
+				},
+			};
 		},
 		edgeInEdges(edges, edge) {
 			for (let i = 0, len = edges.length; i < len; i++)
@@ -176,7 +187,7 @@ const System = {
 
 			return -1;
 		},
-		EPA(vertA, vertB, simplex) {
+		EPA(vertA, vertB, simplex, supportList) {
 			const simplexFaces = [
 				{
 					a: 0,
@@ -202,52 +213,56 @@ const System = {
 			const epsilon = 0.00001; // Maybe too small?
 			while (true) {
 				const face = this.findClosestFace(simplex, simplexFaces);
-				let supA;
-				const point = this.support(vertA, vertB, face.norm, supA);
-				const dist = point.dot(face.norm);
+				const point = this.support(vertA, vertB, face.norm);
+				const dist = point[0].dot(face.norm);
 
 				if (dist - face.dist < epsilon) {
-					this.getContactPoint(point, face.a, face.b, face.c, supA);
 					return {
+						point: this.getContactPoint(
+							face.norm.clone().negate().multiplyScalar(dist),
+							face.a,
+							face.b,
+							face.c
+						),
 						dir: face.norm,
-						dist: dist + epsilon,
+						dist: dist,
 					};
 				}
 
 				simplex.push(point);
-				this.expand(simplex, simplexFaces, point);
+				this.expand(simplex, simplexFaces, point[0]);
 			}
 		},
 		evaluateAndChangeDir(simplex, dir) {
 			let ab, ac, ad, a0, ba, bc, bd, b0;
 			switch (simplex.length) {
 				case 2:
-					ab = simplex[1].clone().sub(simplex[0]);
-					a0 = simplex[0].clone().negate();
+					ab = simplex[1][0].clone().sub(simplex[0][0]);
+					a0 = simplex[0][0].clone().negate();
 					dir.copy(ab.clone().cross(a0).cross(ab));
 
 					return false;
 				case 3:
-					ab = simplex[1].clone().sub(simplex[0]);
-					ac = simplex[2].clone().sub(simplex[0]);
+					ab = simplex[1][0].clone().sub(simplex[0][0]);
+					ac = simplex[2][0].clone().sub(simplex[0][0]);
 					dir.copy(ab.cross(ac));
 
-					a0 = simplex[0].clone().negate();
+					a0 = simplex[0][0].clone().negate();
 					if (a0.dot(dir) < 0) dir.negate();
 
 					return false;
 				case 4:
 					//face abc
-					ab = simplex[1].clone().sub(simplex[0]);
-					ac = simplex[2].clone().sub(simplex[0]);
+					ab = simplex[1][0].clone().sub(simplex[0][0]);
+					ac = simplex[2][0].clone().sub(simplex[0][0]);
 					dir.copy(ab.cross(ac).normalize());
 
-					ad = simplex[3].clone().sub(simplex[0]);
+					ad = simplex[3][0].clone().sub(simplex[0][0]);
 					if (ad.dot(dir) > 0) {
 						dir.negate();
 					}
 
-					a0 = simplex[0].clone().negate();
+					a0 = simplex[0][0].clone().negate();
 					if (a0.dot(dir) > 0) {
 						//remove d
 						simplex.splice(3, 1);
@@ -255,16 +270,16 @@ const System = {
 					}
 
 					//face abd
-					ab = simplex[1].clone().sub(simplex[0]);
-					ad = simplex[3].clone().sub(simplex[0]);
+					ab = simplex[1][0].clone().sub(simplex[0][0]);
+					ad = simplex[3][0].clone().sub(simplex[0][0]);
 					dir.copy(ab.cross(ad).normalize());
 
-					ac = simplex[2].clone().sub(simplex[0]);
+					ac = simplex[2][0].clone().sub(simplex[0][0]);
 					if (ac.dot(dir) > 0) {
 						dir.negate();
 					}
 
-					a0 = simplex[0].clone().negate();
+					a0 = simplex[0][0].clone().negate();
 					if (a0.dot(dir) > 0) {
 						//remove c
 						simplex.splice(2, 1);
@@ -272,16 +287,16 @@ const System = {
 					}
 
 					//face acd
-					ac = simplex[2].clone().sub(simplex[0]);
-					ad = simplex[3].clone().sub(simplex[0]);
+					ac = simplex[2][0].clone().sub(simplex[0][0]);
+					ad = simplex[3][0].clone().sub(simplex[0][0]);
 					dir.copy(ac.cross(ad).normalize());
 
-					ab = simplex[1].clone().sub(simplex[0]);
+					ab = simplex[1][0].clone().sub(simplex[0][0]);
 					if (ab.dot(dir) > 0) {
 						dir.negate();
 					}
 
-					a0 = simplex[0].clone().negate();
+					a0 = simplex[0][0].clone().negate();
 					if (a0.dot(dir) > 0) {
 						//remove b
 						simplex.splice(1, 1);
@@ -289,16 +304,16 @@ const System = {
 					}
 
 					//face bcd
-					bc = simplex[2].clone().sub(simplex[1]);
-					bd = simplex[3].clone().sub(simplex[1]);
+					bc = simplex[2][0].clone().sub(simplex[1][0]);
+					bd = simplex[3][0].clone().sub(simplex[1][0]);
 					dir.copy(bc.cross(bd).normalize());
 
-					ba = simplex[0].clone().sub(simplex[1]);
+					ba = simplex[0][0].clone().sub(simplex[1][0]);
 					if (ba.dot(dir) > 0) {
 						dir.negate();
 					}
 
-					b0 = simplex[1].clone().negate();
+					b0 = simplex[1][0].clone().negate();
 					if (b0.dot(dir) > 0) {
 						//remove a
 						simplex.splice(0, 1);
@@ -315,14 +330,14 @@ const System = {
 			for (let i = 0, len = simplexFaces.length; i < len; i++) {
 				const face = simplexFaces[i];
 
-				const ab = simplex[face.b].clone().sub(simplex[face.a]);
-				const ac = simplex[face.c].clone().sub(simplex[face.a]);
+				const ab = simplex[face.b][0].clone().sub(simplex[face.a][0]);
+				const ac = simplex[face.c][0].clone().sub(simplex[face.a][0]);
 				const norm = ab.cross(ac).normalize();
 
-				const a0 = this.vector.clone().sub(simplex[face.a]);
+				const a0 = this.vector.clone().sub(simplex[face.a][0]);
 				if (a0.dot(norm) > 0) norm.negate();
 
-				if (norm.dot(extendPoint.clone().sub(simplex[face.a])) > 0)
+				if (norm.dot(extendPoint.clone().sub(simplex[face.a][0])) > 0)
 					removalFaces.push(i);
 			}
 
@@ -375,13 +390,13 @@ const System = {
 
 			for (let i = 0, len = simplexFaces.length; i < len; i++) {
 				const face = simplexFaces[i];
-				const ab = simplex[face.b].clone().sub(simplex[face.a]);
-				const ac = simplex[face.c].clone().sub(simplex[face.a]);
+				const ab = simplex[face.b][0].clone().sub(simplex[face.a][0]);
+				const ac = simplex[face.c][0].clone().sub(simplex[face.a][0]);
 				const norm = ab.cross(ac).normalize();
-				const a0 = this.vector.clone().sub(simplex[face.a]);
+				const a0 = this.vector.clone().sub(simplex[face.a][0]);
 				if (a0.dot(norm) > 0) norm.negate();
 
-				const dist = simplex[face.a].dot(norm);
+				const dist = simplex[face.a][0].dot(norm);
 				if (dist < closest.dist)
 					closest = {
 						index: i,
@@ -393,6 +408,26 @@ const System = {
 					};
 			}
 			return closest;
+		},
+		getContactPoint(p, a, b, c) {
+			const v0 = b[0].clone().sub(a[0]),
+				v1 = c[0].clone().sub(a[0]),
+				v2 = p.clone().sub(a[0]),
+				d00 = v0.dot(v0),
+				d01 = v0.dot(v1),
+				d11 = v1.dot(v1),
+				d20 = v2.dot(v0),
+				d21 = v2.dot(v1),
+				denom = d00 * d11 - d01 * d01,
+				v = (d11 * d20 - d01 * d21) / denom,
+				w = (d00 * d21 - d01 * d20) / denom,
+				u = 1 - v - w;
+
+			return a[1]
+				.clone()
+				.multiplyScalar(u)
+				.add(b[1].clone().multiplyScalar(v))
+				.add(c[1].clone().multiplyScalar(w));
 		},
 		getFurthestPointInDirection(verts, dir) {
 			let index = 0;
@@ -411,10 +446,11 @@ const System = {
 		},
 		GJK(colA, colB, dir) {
 			const simplex = [];
-			const vertA = colA.getVertices();
-			const vertB = colB.getVertices();
+			const vertA = colA.vertices;
+			const vertB = colB.vertices;
 
-			simplex.push(this.support(vertA, vertB, dir));
+			const p = this.support(vertA, vertB, dir);
+			simplex.push(p);
 
 			dir.negate();
 
@@ -422,25 +458,26 @@ const System = {
 				const p = this.support(vertA, vertB, dir);
 				simplex.push(p);
 
-				if (p.dot(dir) <= 0) return;
+				if (p[0].dot(dir) <= 0) return;
 
 				if (this.evaluateAndChangeDir(simplex, dir)) {
 					// TODO add to collision linked list
-					if (
-						colA.hasOwnProperty("Physics") ||
-						colB.hasOwnProperty("Physics")
-					) {
+					const isMovingA = colA.hasOwnProperty("Physics");
+					const isMovingB = colB.hasOwnProperty("Physics");
+					if (isMovingA || isMovingB) {
 						this.resolveCollision(
 							colA,
 							colB,
-							this.EPA(vertA, vertB, simplex)
+							this.EPA(vertA, vertB, simplex),
+							isMovingA,
+							isMovingB
 						);
 					}
 					return;
 				}
 			}
 		},
-		resolveCollision(colA, colB, res) {
+		resolveCollision(colA, colB, res, isMovingA, isMovingB) {
 			// https://research.ncl.ac.uk/game/mastersdegree/gametechnologies/physicstutorials/5collisionresponse/Physics%20-%20Collision%20Response.pdf
 			const bounciness =
 				(colA.material.bounciness + colB.material.bounciness) / 2;
@@ -452,58 +489,52 @@ const System = {
 					colB.material.dynamicFriction) /
 				2;
 
-			if (colA.hasOwnProperty("Physics")) {
-				colA.Object3D.position.add(res.dir.multiplyScalar(res.dist));
-				res.dir.applyQuaternion(
-					colA.Object3D.getWorldQuaternion(this.quat)
-				);
-				colA.Physics.velocity
-					.projectOnPlane(res.dir)
-					.multiplyScalar(bounciness);
-			}
+			const physA = isMovingA ? colA.Physics : this.immovable;
 
-			if (colB.hasOwnProperty("Physics")) {
-				colB.Object3D.position.add(res.dir.multiplyScalar(res.dist));
-				res.dir.applyQuaternion(
-					colB.Object3D.getWorldQuaternion(this.quat).inverse()
+			const physB = isMovingB ? colB.Physics : this.immovable;
+
+			const totalMass = 1 / physA.mass + 1 / physB.mass;
+
+			// normal * penetration * (inverse mass / total inverse mass)
+			if (isMovingA)
+				colA.Object3D.position.sub(
+					res.dir
+						.clone()
+						.multiplyScalar((res.dist * totalMass) / physA.mass)
 				);
-				colB.Physics.velocity
-					.projectOnPlane(res.dir)
-					.multiplyScalar(bounciness);
-			}
+			if (isMovingB)
+				colB.Object3D.position.sub(
+					res.dir
+						.clone()
+						.multiplyScalar((res.dist * totalMass) / physB.mass)
+				);
+
+			const relativeA = res.point.clone().sub(colA.centroid);
+			const relativeB = res.point.clone().sub(colB.centroid);
+
+			const angVelocityA = physA.angularVelocity.clone().cross(relativeA);
+			const angVelocityB = physB.angularVelocity.clone().cross(relativeA);
+
+			const fullVelocityA = angVelocityA.clone().add(physA.velocity);
+			const fullVelocityB = angVelocityB.clone().add(physB.velocity);
+
+			const contactVelocity = fullVelocityB - fullVelocityA;
+
+			const impulseForce = contactVelocity.dot(res.dir);
+
+			const inertiaA = 
 		},
-		support(aVerts, bVerts, dir, a = null) {
-			a = this.getFurthestPointInDirection(aVerts, dir);
-			const b = this.getFurthestPointInDirection(
-				bVerts,
-				dir.clone().negate()
-			);
-			return a.clone().sub(b);
-		},
-		getContactPoint(p, a, b, c, supA) {
-			const v0 = b.clone().sub(a),
-				v1 = c.clone().sub(a),
-				v2 = p.clone().sub(a),
-				d00 = v0.dot(v0),
-				d01 = v0.dot(v1),
-				d11 = v1.dot(v1),
-				d20 = v2.dot(v0),
-				d21 = v2.dot(v1),
-				denom = d00 * d11 - d01 * d01,
-				v = (d11 * d20 - d01 * d21) / denom,
-				w = (d00 * d21 - d01 * d20) / denom,
-				u = 1 - v - w;
-			// console.log(
-			// 	a.multiplyScalar(u),
-			// 	b.multiplyScalar(v),
-			// 	c.multiplyScalar(w)
-			// );
-			console.log(
-				a
-					.multiplyScalar(u)
-					.add(b.multiplyScalar(v))
-					.add(c.multiplyScalar(w))
-			);
+		support(aVerts, bVerts, dir) {
+			const a = this.getFurthestPointInDirection(aVerts, dir);
+			const diff = a
+				.clone()
+				.sub(
+					this.getFurthestPointInDirection(
+						bVerts,
+						dir.clone().negate()
+					)
+				);
+			return [diff, a];
 		},
 		update() {
 			const Collider = this.Collider;
@@ -520,7 +551,7 @@ const System = {
 					const colA = colliders[i];
 					const colB = colliders[j];
 					// broad phase (NEED TO ADD SPATIAL INDEX) TODO
-					if (colA.getAABB().intersectsBox(colB.getAABB())) {
+					if (colA.AABB.intersectsBox(colB.AABB)) {
 						// collision detection and response
 						this.GJK(
 							colA,
