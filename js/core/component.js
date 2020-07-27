@@ -69,13 +69,24 @@ class Collider {
 			},
 		};
 		this.world = {};
+
+		// AABB
 		this.world.AABB = new THREE.Box3();
 
-		this.world.vertices = [];
-		this.vertices = new ConvexHull().setFromObject(
+		// Convex Hull
+		this.convexHull = new ConvexHull().setFromObject(
 			Asset.getSimplified(obj)
-		).vertices;
+		);
+		this.volume = 0;
+		for (let i = 0, len = this.convexHull.faces.length; i < len; i++) {
+			const face = this.convexHull.faces[i];
+			this.volume += face.edge.vertex.point.dot(face.normal) * face.area;
+		}
+		this.volume /= 3;
 
+		// add vertices
+		this.world.vertices = [];
+		this.vertices = this.convexHull.vertices;
 		for (let i = 0, len = this.vertices.length; i < len; i++) {
 			this.vertices[i] = this.vertices[i].point;
 		}
@@ -94,6 +105,7 @@ class Collider {
 			this.Physics = Component.components.Physics[id];
 			this.Physics.centerOfMass = this.centroid;
 			this.Physics.worldCenterOfMass = this.worldCentroid;
+			this.Physics.volume = this.volume;
 		}
 	}
 
@@ -198,10 +210,12 @@ class Physics {
 			? data.useGravity
 			: true;
 
-		// add center of mass to physics
+		// add collider properties to physics
 		if (Component.components.Collider.hasOwnProperty(id)) {
-			Component.components.Collider[id].Physics = this;
-			this.centerOfMass = Component.components.Collider[id].centroid;
+			this.Collider = Component.components.Collider[id];
+			this.centerOfMass = this.Collider.centroid;
+			this.worldCenterOfMass = this.Collider.worldCentroid;
+			this.volume = this.Collider.volume;
 		}
 	}
 
