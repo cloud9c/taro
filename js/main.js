@@ -81,6 +81,7 @@ function init() {
 	);
 
 	GameObject.Player();
+	GameObject.Ball();
 
 	window.requestAnimationFrame(Engine.System.gameLoop);
 }

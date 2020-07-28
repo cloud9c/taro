@@ -167,20 +167,6 @@ const System = {
 	collision: {
 		init() {
 			this.Collider = Component.components.Collider;
-			this.quat = new THREE.Quaternion();
-			const vector = new THREE.Vector3();
-			this.immovable = {
-				get mass() {
-					return Infinity;
-				},
-				get velocity() {
-					return vector;
-				},
-				get angularVelocity() {
-					return vector;
-				},
-			};
-			this.vector = vector;
 		},
 		edgeInEdges(edges, edge) {
 			for (let i = 0, len = edges.length; i < len; i++)
@@ -219,12 +205,7 @@ const System = {
 
 				if (dist - face.dist < epsilon) {
 					return {
-						point: this.getContactPoint(
-							face.norm.clone().negate().multiplyScalar(dist),
-							face.a,
-							face.b,
-							face.c
-						),
+						face: face,
 						dir: face.norm,
 						dist: dist,
 					};
@@ -335,7 +316,7 @@ const System = {
 				const ac = simplex[face.c][0].clone().sub(simplex[face.a][0]);
 				const norm = ab.cross(ac).normalize();
 
-				const a0 = this.vector.clone().sub(simplex[face.a][0]);
+				const a0 = new THREE.Vector3().sub(simplex[face.a][0]);
 				if (a0.dot(norm) > 0) norm.negate();
 
 				if (norm.dot(extendPoint.clone().sub(simplex[face.a][0])) > 0)
@@ -394,7 +375,7 @@ const System = {
 				const ab = simplex[face.b][0].clone().sub(simplex[face.a][0]);
 				const ac = simplex[face.c][0].clone().sub(simplex[face.a][0]);
 				const norm = ab.cross(ac).normalize();
-				const a0 = this.vector.clone().sub(simplex[face.a][0]);
+				const a0 = new THREE.Vector3().sub(simplex[face.a][0]);
 				if (a0.dot(norm) > 0) norm.negate();
 
 				const dist = simplex[face.a][0].dot(norm);
@@ -465,65 +446,96 @@ const System = {
 					// TODO add to collision linked list
 					const isMovingA = colA.hasOwnProperty("Physics");
 					const isMovingB = colB.hasOwnProperty("Physics");
-					if (isMovingA || isMovingB) {
-						this.resolveCollision(
-							colA,
-							colB,
-							this.EPA(vertA, vertB, simplex),
-							isMovingA,
-							isMovingB
-						);
+					const res = this.EPA(vertA, vertB, simplex);
+					const mat = {
+						bounciness:
+							(colA.material.bounciness +
+								colB.material.bounciness) /
+							2,
+						staticFriction:
+							(colA.material.staticFriction +
+								colB.material.staticFriction) /
+							2,
+						dynamicFriction:
+							(colA.material.dynamicFriction +
+								colB.material.dynamicFriction) /
+							2,
+					};
+					if (isMovingA && isMovingB) {
+						this.resolveCollision(colA, colB, res, mat);
+					} else if (isMovingA) {
+						this.reflectCollision(colA, false, res, mat);
+					} else if (isMovingB) {
+						this.reflectCollision(colB, true, res, mat);
 					}
 					return;
 				}
 			}
 		},
-		resolveCollision(colA, colB, res, isMovingA, isMovingB) {
+		reflectCollision(movable, isB, res, mat) {
+			movable.Object3D.position.add(res.dir.multiplyScalar(res.dist));
+			const quat = movable.Object3D.getWorldQuaternion(
+				new THREE.Quaternion()
+			);
+			if (isB) quat.inverse();
+			res.dir.applyQuaternion(quat);
+			movable.Physics.velocity
+				.projectOnPlane(res.dir)
+				.multiplyScalar(mat.bounciness);
+		},
+		resolveCollision(colA, colB, res, mat) {
 			// https://research.ncl.ac.uk/game/mastersdegree/gametechnologies/physicstutorials/5collisionresponse/Physics%20-%20Collision%20Response.pdf
-			const bounciness =
-				(colA.material.bounciness + colB.material.bounciness) / 2;
-			const staticFriction =
-				(colA.material.staticFriction + colB.material.staticFriction) /
-				2;
-			const dynamicFriction =
-				(colA.material.dynamicFriction +
-					colB.material.dynamicFriction) /
-				2;
-
-			const physA = isMovingA ? colA.Physics : this.immovable;
-
-			const physB = isMovingB ? colB.Physics : this.immovable;
-
+			const point = this.getContactPoint(
+				res.face.norm.clone().negate().multiplyScalar(res.dist),
+				res.face.a,
+				res.face.b,
+				res.face.c
+			);
+			const physA = colA.Physics;
+			const physB = colB.Physics;
 			const totalMass = 1 / physA.mass + 1 / physB.mass;
-
 			// normal * penetration * (inverse mass / total inverse mass)
-			if (isMovingA)
-				colA.Object3D.position.sub(
-					res.dir
-						.clone()
-						.multiplyScalar((res.dist * totalMass) / physA.mass)
-				);
-			if (isMovingB)
-				colB.Object3D.position.sub(
-					res.dir
-						.clone()
-						.multiplyScalar((res.dist * totalMass) / physB.mass)
-				);
-
-			const relativeA = res.point.clone().sub(colA.worldCentroid);
-			const relativeB = res.point.clone().sub(colB.worldCentroid);
-
+			colA.Object3D.position.sub(
+				res.dir
+					.clone()
+					.multiplyScalar((res.dist * totalMass) / physA.mass)
+			);
+			colB.Object3D.position.sub(
+				res.dir
+					.clone()
+					.multiplyScalar((res.dist * totalMass) / physB.mass)
+			);
+			const relativeA = point.clone().sub(colA.worldCentroid);
+			const relativeB = point.clone().sub(colB.worldCentroid);
 			const angVelocityA = physA.angularVelocity.clone().cross(relativeA);
-			const angVelocityB = physB.angularVelocity.clone().cross(relativeA);
-
+			const angVelocityB = physB.angularVelocity.clone().cross(relativeB);
 			const fullVelocityA = angVelocityA.clone().add(physA.velocity);
 			const fullVelocityB = angVelocityB.clone().add(physB.velocity);
-
-			const contactVelocity = fullVelocityB.clone().sub(fullVelocityA);
-
+			const contactVelocity = fullVelocityB.sub(fullVelocityA);
 			const impulseForce = contactVelocity.dot(res.dir);
-
-			// const inertiaA =
+			const inertiaA = physA.inertiaTensor
+				.clone()
+				.negate()
+				.multiply(relativeA.clone().cross(res.dir))
+				.cross(relativeA);
+			const inertiaB = physB.inertiaTensor
+				.clone()
+				.negate()
+				.multiply(relativeB.clone().cross(res.dir))
+				.cross(relativeB);
+			const angularEffect = inertiaA.add(inertiaB).dot(res.dir);
+			const j =
+				(-(1 + mat.bounciness) * impulseForce) /
+				(totalMass + angularEffect);
+			const fullImpulse = res.dir.multiplyScalar(j);
+			physA.velocity.add(
+				fullImpulse.clone().negate().divideScalar(physA.mass)
+			);
+			physB.velocity.add(fullImpulse.clone().divideScalar(physB.mass));
+			physA.angularVelocity.add(
+				relativeA.clone().cross(fullImpulse.clone().negate())
+			);
+			physB.angularVelocity.add(relativeB.cross(fullImpulse));
 		},
 		support(aVerts, bVerts, dir) {
 			const a = this.getFurthestPointInDirection(aVerts, dir);
@@ -544,10 +556,6 @@ const System = {
 			const len = colliders.length;
 
 			for (let i = 0; i < len; i++) {
-				colliders[i].resetUpdate();
-			}
-
-			for (let i = 0; i < len; i++) {
 				for (let j = i + 1; j < len; j++) {
 					const colA = colliders[i];
 					const colB = colliders[j];
@@ -557,9 +565,7 @@ const System = {
 						this.GJK(
 							colA,
 							colB,
-							colA.worldCentroid
-								.clone()
-								.sub(colB.worldCentroid.clone())
+							colA.worldCentroid.clone().sub(colB.worldCentroid)
 						);
 					}
 				}

@@ -50,19 +50,16 @@ class Collider {
 		// create cached convex hull and box3
 		this.cached = {
 			AABB: {
-				updated: false,
 				position: obj.position.clone(),
 				rotation: obj.rotation.clone(),
 				scale: obj.scale.clone(),
 			},
 			vertices: {
-				updated: false,
 				position: obj.position.clone(),
 				rotation: obj.rotation.clone(),
 				scale: obj.scale.clone(),
 			},
 			centroid: {
-				updated: false,
 				position: obj.position.clone(),
 				rotation: obj.rotation.clone(),
 				scale: obj.scale.clone(),
@@ -71,61 +68,55 @@ class Collider {
 		this.world = {};
 
 		// AABB
-		this.world.AABB = new THREE.Box3();
+		this.world.AABB = new THREE.Box3().setFromObject(obj);
 
-		// Convex Hull
-		this.convexHull = new ConvexHull().setFromObject(
-			Asset.getSimplified(obj)
-		);
-		this.volume = 0;
-		for (let i = 0, len = this.convexHull.faces.length; i < len; i++) {
-			const face = this.convexHull.faces[i];
-			this.volume += face.edge.vertex.point.dot(face.normal) * face.area;
-		}
-		this.volume /= 3;
-
-		// add vertices
+		// add vertices from Convex Hull
 		this.world.vertices = [];
-		this.vertices = this.convexHull.vertices;
+		this.vertices = new ConvexHull().setFromObject(
+			Asset.getSimplified(obj)
+		).vertices;
 		for (let i = 0, len = this.vertices.length; i < len; i++) {
 			this.vertices[i] = this.vertices[i].point;
+			this.world.vertices.push(
+				this.vertices[i]
+					.clone()
+					.applyEuler(obj.rotation)
+					.add(obj.position)
+					.multiply(obj.scale)
+			);
 		}
 
 		// add centroid
 		const vertLen = this.vertices.length;
 		this.centroid = new THREE.Vector3();
+		this.world.centroid = [];
 		for (var i = 0; i < vertLen; i++) {
 			this.centroid.add(this.vertices[i]);
 		}
 		this.centroid.divideScalar(vertLen);
-		this.world.centroid = [];
+		this.world.centroid = this.centroid
+			.clone()
+			.applyEuler(obj.rotation)
+			.add(obj.position)
+			.multiply(obj.scale);
 
 		// add center of mass to physics
-		if (Component.components.Physics.hasOwnProperty(id)) {
-			this.Physics = Component.components.Physics[id];
-			this.Physics.centerOfMass = this.centroid;
-			this.Physics.worldCenterOfMass = this.worldCentroid;
-			this.Physics.volume = this.volume;
-		}
+		if (Component.components.Physics.hasOwnProperty(id))
+			Component.components.Physics[id].addColliderProperties(this);
 	}
 
 	get worldAABB() {
 		const cached = this.cached.AABB;
 		const obj = this.Object3D;
-		if (!cached.updated) {
-			// TODO! can optimize to transform diff rather than setFromObject each time
-
-			if (
-				!cached.position.equals(obj.position) ||
-				!cached.rotation.equals(obj.rotation) ||
-				!cached.scale.equals(obj.scale)
-			) {
-				this.world.AABB.setFromObject(obj);
-				cached.position = obj.position.clone();
-				cached.rotation = obj.rotation.clone();
-				cached.scale = obj.scale.clone();
-			}
-			cached.updated = true;
+		if (
+			!cached.position.equals(obj.position) ||
+			!cached.rotation.equals(obj.rotation) ||
+			!cached.scale.equals(obj.scale)
+		) {
+			this.world.AABB.setFromObject(obj);
+			cached.position = obj.position.clone();
+			cached.rotation = obj.rotation.clone();
+			cached.scale = obj.scale.clone();
 		}
 
 		return this.world.AABB;
@@ -134,31 +125,21 @@ class Collider {
 	get worldVertices() {
 		const cached = this.cached.vertices;
 		const obj = this.Object3D;
-		if (!cached.updated) {
-			// TODO! can optimize to transform diff rather than clone origin each time
-
-			if (
-				!cached.position.equals(obj.position) ||
-				!cached.rotation.equals(obj.rotation) ||
-				!cached.scale.equals(obj.scale)
-			) {
-				for (
-					let i = 0, len = this.world.vertices.length;
-					i < len;
-					i++
-				) {
-					this.world.vertices[i] = this.vertices[i]
-						.clone()
-						.applyEuler(obj.rotation)
-						.add(obj.position)
-						.multiply(obj.scale);
-				}
-				cached.position = obj.position.clone();
-				cached.rotation = obj.rotation.clone();
-				cached.scale = obj.scale.clone();
+		if (
+			!cached.position.equals(obj.position) ||
+			!cached.rotation.equals(obj.rotation) ||
+			!cached.scale.equals(obj.scale)
+		) {
+			for (let i = 0, len = this.world.vertices.length; i < len; i++) {
+				this.world.vertices[i] = this.vertices[i]
+					.clone()
+					.applyEuler(obj.rotation)
+					.add(obj.position)
+					.multiply(obj.scale);
 			}
-
-			cached.updated = true;
+			cached.position = obj.position.clone();
+			cached.rotation = obj.rotation.clone();
+			cached.scale = obj.scale.clone();
 		}
 
 		return this.world.vertices;
@@ -167,33 +148,22 @@ class Collider {
 	get worldCentroid() {
 		const cached = this.cached.centroid;
 		const obj = this.Object3D;
-		if (!cached.updated) {
-			if (
-				!cached.position.equals(obj.position) ||
-				!cached.rotation.equals(obj.rotation) ||
-				!cached.scale.equals(obj.scale)
-			) {
-				for (let i = 0, len = this.centroid.length; i < len; i++) {
-					this.world.centroid[i] = this.centroid[i]
-						.clone()
-						.applyEuler(obj.rotation)
-						.add(obj.position)
-						.multiply(obj.scale);
-				}
+		if (
+			!cached.position.equals(obj.position) ||
+			!cached.rotation.equals(obj.rotation) ||
+			!cached.scale.equals(obj.scale)
+		) {
+			this.world.centroid = this.centroid
+				.clone()
+				.applyEuler(obj.rotation)
+				.add(obj.position)
+				.multiply(obj.scale);
 
-				cached.position = obj.position.clone();
-				cached.rotation = obj.rotation.clone();
-				cached.scale = obj.scale.clone();
-			}
-			cached.updated = true;
+			cached.position = obj.position.clone();
+			cached.rotation = obj.rotation.clone();
+			cached.scale = obj.scale.clone();
 		}
 		return this.world.centroid;
-	}
-
-	resetUpdate() {
-		this.cached.AABB.updated = false;
-		this.cached.vertices.updated = false;
-		this.cached.centroid.updated = false;
 	}
 }
 
@@ -211,12 +181,8 @@ class Physics {
 			: true;
 
 		// add collider properties to physics
-		if (Component.components.Collider.hasOwnProperty(id)) {
-			this.Collider = Component.components.Collider[id];
-			this.centerOfMass = this.Collider.centroid;
-			this.worldCenterOfMass = this.Collider.worldCentroid;
-			this.volume = this.Collider.volume;
-		}
+		if (Component.components.Collider.hasOwnProperty(id))
+			this.addColliderProperties(Component.components.Collider[id]);
 	}
 
 	isMoving() {
@@ -225,6 +191,25 @@ class Physics {
 
 	isGrounded() {
 		return this.velocity.y == 0;
+	}
+
+	addColliderProperties(collider) {
+		this.centerOfMass = collider.centroid;
+		this.worldCenterOfMass = collider.worldCentroid;
+		collider.Physics = this;
+		this.Collider = collider;
+	}
+
+	get inertiaTensor() {
+		const AABB = this.Collider.worldAABB;
+		const x = AABB.max.x - AABB.min.x,
+			y = AABB.max.y - AABB.min.y,
+			z = AABB.max.z - AABB.min.z;
+		return new THREE.Vector3(
+			(1 / 3) * this.mass * (y * y + z * z),
+			(1 / 3) * this.mass * (x * x + z * z),
+			(1 / 3) * this.mass * (y * y + x * x)
+		);
 	}
 }
 

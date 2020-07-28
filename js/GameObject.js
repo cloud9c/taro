@@ -1,7 +1,7 @@
 import * as THREE from "https://threejs.org/build/three.module.js";
 import { Asset, Entity, System } from "./core/Engine.js";
 
-function Player() {
+export function Player() {
 	const obj = Asset.getObject3D("player.glb");
 	const entity = new Entity();
 
@@ -71,6 +71,29 @@ function Player() {
 	});
 }
 
+export function Ball() {
+	const obj = Asset.getObject3D("player.glb");
+	const entity = new Entity();
+
+	const geo = new THREE.SphereBufferGeometry(1, 32, 32);
+	const mat = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+
+	entity.addComponent("Object3D", new THREE.Mesh(geo, mat));
+	entity.addComponent("Transform", {
+		position: new THREE.Vector3(0, 10, 0),
+	});
+	entity.addComponent("Physics", {
+		mass: 10,
+	});
+	entity.addComponent("Collider", {
+		material: {
+			dynamicFriction: 0.6,
+			staticFriction: 0.6,
+			bounciness: 1,
+		},
+	});
+}
+
 function fadeToAction(name, duration, timeScale = 1) {
 	if (
 		this.actions[name] === this.activeAction &&
@@ -91,5 +114,3 @@ function fadeToAction(name, duration, timeScale = 1) {
 		.fadeIn(duration)
 		.play();
 }
-
-export { Player };
