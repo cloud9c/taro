@@ -7,7 +7,7 @@ class Entity {
 			(+new Date()).toString(16) +
 			(Math.random() * 100000000 || 0).toString(16);
 
-		Entity.entities[this.id] = this.components;
+		Entity.entities[this.id] = this;
 	}
 
 	addComponent(type, data = {}) {
@@ -19,7 +19,6 @@ class Entity {
 	removeComponent(type) {
 		delete Component.components[type][this.id];
 		delete this.components[type];
-		return this;
 	}
 }
 

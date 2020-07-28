@@ -16,8 +16,8 @@ window.addEventListener("load", () => {
 		document.getElementsByClassName("nickname")[1].value = oldNickname;
 	}
 
-	document.getElementById("join-button").addEventListener("click", loadGame);
-	document.getElementById("host-button").addEventListener("click", loadGame);
+	document.getElementById("join-submit").addEventListener("submit", loadGame);
+	document.getElementById("host-submit").addEventListener("submit", loadGame);
 	document.getElementById("next-button").addEventListener("click", () => {
 		document.getElementById("splash-page").style.display = "none";
 		document.getElementById("host-submit").style.display = "block";
@@ -80,6 +80,7 @@ function init() {
 		new THREE.GridHelper(1000, 1000, 0x0000ff, 0x808080)
 	);
 
+	GameObject.Cube();
 	GameObject.Player();
 	GameObject.Ball();
 
@@ -87,18 +88,10 @@ function init() {
 }
 
 async function loadGame(event) {
-	if (!event.path[1].reportValidity()) return;
-
-	document
-		.getElementById("join-button")
-		.removeEventListener("click", loadGame);
-	document
-		.getElementById("host-button")
-		.removeEventListener("click", loadGame);
 	document.getElementById("launcher").style.display = "none";
 	document.getElementById("loading").style.display = "flex";
 
-	isHosting = event.target.id === "host-button";
+	isHosting = event.target.id === "host-submit";
 	nickname = document.getElementsByClassName("nickname")[+isHosting].value;
 	localStorage.setItem("nickname", nickname);
 	serverID = document.getElementById("join").value.replace(/\s/g, "");

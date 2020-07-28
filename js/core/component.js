@@ -1,4 +1,5 @@
 import * as THREE from "https://threejs.org/build/three.module.js";
+import Entity from "./Entity.js";
 import System from "./System.js";
 import Asset from "./Asset.js";
 import { ConvexHull } from "https://threejs.org/examples/jsm/math/ConvexHull.js";
@@ -214,11 +215,17 @@ class Physics {
 }
 
 function Object3D(id, data = new THREE.Object3D()) {
-	const transform = Component.components.Transform[id];
-	if (transform) {
-		transform.position = data.position;
-		transform.rotation = data.rotation;
-		transform.scale = data.scale;
+	if (!Component.components.Transform.hasOwnProperty(id)) {
+		Entity.entities[id].addComponent("Transform", {
+			position: data.position,
+			rotation: data.rotation,
+			scale: data.scale,
+		});
+	} else {
+		const transform = Component.components.Transform;
+		transform.position = data.position.copy(transform.position);
+		transform.rotation = data.rotation.copy(transform.rotation);
+		transform.scale = data.scale.copy(transform.scale);
 	}
 	System.render.scene.add(data);
 	return data;
@@ -235,11 +242,11 @@ function Transform(id, data) {
 		? data.scale
 		: new THREE.Vector3(1, 1, 1);
 
-	const object = Component.components.Object3D[id];
-	if (object) {
-		data.position = object.position.copy(data.position);
-		data.rotation = object.rotation.copy(data.rotation);
-		data.scale = object.scale.copy(data.scale);
+	if (Component.components.Object3D.hasOwnProperty(id)) {
+		const obj = Component.components.Object3D[id];
+		data.position = obj.position.copy(data.position);
+		data.rotation = obj.rotation.copy(data.rotation);
+		data.scale = obj.scale.copy(data.scale);
 	}
 	return data;
 }

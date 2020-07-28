@@ -20,11 +20,11 @@ const System = {
 		this.physics.init();
 		this.render.init();
 
-		this.lastTimestamp = 0;
+		this.lastTimestamp;
 	},
 	gameLoop(timestamp) {
 		timestamp /= 1000;
-		const dt = timestamp - System.lastTimestamp;
+		const dt = timestamp - System.lastTimestamp || 0;
 		System.lastTimestamp = timestamp;
 
 		// Input always has to be last bc it resets the delta
@@ -205,7 +205,12 @@ const System = {
 
 				if (dist - face.dist < epsilon) {
 					return {
-						face: face,
+						point: this.getContactPoint(
+							face.norm.clone().negate().multiplyScalar(dist),
+							face.a,
+							face.b,
+							face.c
+						),
 						dir: face.norm,
 						dist: dist,
 					};
@@ -464,33 +469,53 @@ const System = {
 					if (isMovingA && isMovingB) {
 						this.resolveCollision(colA, colB, res, mat);
 					} else if (isMovingA) {
-						this.reflectCollision(colA, false, res, mat);
+						this.reflectCollision(colA, true, res, mat);
 					} else if (isMovingB) {
-						this.reflectCollision(colB, true, res, mat);
+						this.reflectCollision(colB, false, res, mat);
 					}
 					return;
 				}
 			}
 		},
-		reflectCollision(movable, isB, res, mat) {
-			movable.Object3D.position.add(res.dir.multiplyScalar(res.dist));
-			const quat = movable.Object3D.getWorldQuaternion(
-				new THREE.Quaternion()
+		reflectCollision(movable, immovable, res, mat) {
+			// https://research.ncl.ac.uk/game/mastersdegree/gametechnologies/physicstutorials/5collisionresponse/Physics%20-%20Collision%20Response.pdf
+			const physMovable = movable.Physics;
+			const totalMass = 1 / physMovable.mass;
+			// normal * penetration * (inverse mass / total inverse mass)
+			// colA.Object3D.position.sub(
+			// 	res.dir
+			// 		.clone()
+			// 		.multiplyScalar((res.dist * totalMass) / physA.mass)
+			// );
+			movable.Object3D.position.sub(
+				res.dir
+					.clone()
+					.multiplyScalar((res.dist * totalMass) / physMovable.mass)
 			);
-			if (isB) quat.inverse();
-			res.dir.applyQuaternion(quat);
-			movable.Physics.velocity
-				.projectOnPlane(res.dir)
-				.multiplyScalar(mat.bounciness);
+			const relativeB = res.point.sub(movable.worldCentroid);
+			const angVelocityB = physMovable.angularVelocity
+				.clone()
+				.cross(relativeB);
+			const fullVelocityB = angVelocityB.add(physMovable.velocity);
+			const contactVelocity = fullVelocityB;
+			const impulseForce = contactVelocity.dot(res.dir);
+			const inertiaB = physMovable.inertiaTensor
+				.clone()
+				.negate()
+				.multiply(relativeB.clone().cross(res.dir))
+				.cross(relativeB);
+			const angularEffect = inertiaB.dot(res.dir);
+			const j =
+				(-(1 + mat.bounciness) * impulseForce) /
+				(totalMass + angularEffect);
+			const fullImpulse = res.dir.multiplyScalar(j);
+			physMovable.velocity.add(
+				fullImpulse.clone().divideScalar(physMovable.mass)
+			);
+			physMovable.angularVelocity.add(relativeB.cross(fullImpulse));
 		},
 		resolveCollision(colA, colB, res, mat) {
 			// https://research.ncl.ac.uk/game/mastersdegree/gametechnologies/physicstutorials/5collisionresponse/Physics%20-%20Collision%20Response.pdf
-			const point = this.getContactPoint(
-				res.face.norm.clone().negate().multiplyScalar(res.dist),
-				res.face.a,
-				res.face.b,
-				res.face.c
-			);
 			const physA = colA.Physics;
 			const physB = colB.Physics;
 			const totalMass = 1 / physA.mass + 1 / physB.mass;
@@ -505,13 +530,17 @@ const System = {
 					.clone()
 					.multiplyScalar((res.dist * totalMass) / physB.mass)
 			);
-			const relativeA = point.clone().sub(colA.worldCentroid);
-			const relativeB = point.clone().sub(colB.worldCentroid);
+			const relativeA = res.point.clone().sub(colA.worldCentroid);
+			const relativeB = res.point.sub(colB.worldCentroid);
+
 			const angVelocityA = physA.angularVelocity.clone().cross(relativeA);
 			const angVelocityB = physB.angularVelocity.clone().cross(relativeB);
+
 			const fullVelocityA = angVelocityA.clone().add(physA.velocity);
-			const fullVelocityB = angVelocityB.clone().add(physB.velocity);
+			const fullVelocityB = angVelocityB.add(physB.velocity);
+
 			const contactVelocity = fullVelocityB.sub(fullVelocityA);
+
 			const impulseForce = contactVelocity.dot(res.dir);
 			const inertiaA = physA.inertiaTensor
 				.clone()
@@ -523,15 +552,19 @@ const System = {
 				.negate()
 				.multiply(relativeB.clone().cross(res.dir))
 				.cross(relativeB);
+
 			const angularEffect = inertiaA.add(inertiaB).dot(res.dir);
 			const j =
 				(-(1 + mat.bounciness) * impulseForce) /
 				(totalMass + angularEffect);
+
 			const fullImpulse = res.dir.multiplyScalar(j);
+
 			physA.velocity.add(
 				fullImpulse.clone().negate().divideScalar(physA.mass)
 			);
 			physB.velocity.add(fullImpulse.clone().divideScalar(physB.mass));
+
 			physA.angularVelocity.add(
 				relativeA.clone().cross(fullImpulse.clone().negate())
 			);
@@ -704,19 +737,21 @@ const System = {
 			this.Physics = Component.components.Physics;
 			this.Transform = Component.components.Transform;
 			this.Object3D = Component.components.Object3D;
-			this.gravity = -9.8;
+			this.gravity = new THREE.Vector3(0, -9.8, 0);
 		},
 		update(dt) {
-			const Physics = this.Physics;
-			const Transform = this.Transform;
-			for (const entity in Physics) {
-				const physics = Physics[entity];
-				const transform = Transform[entity];
-				// physics.velocity.add(physics.acceleration.clone().multiplyScalar(dt));
+			for (const entity in this.Physics) {
+				const physics = this.Physics[entity];
+				const transform = this.Transform[entity];
+
 				transform.position.add(
-					physics.velocity.clone().multiplyScalar(dt)
+					physics.velocity
+						.clone()
+						.add(this.gravity.clone().multiplyScalar(dt))
+						.divideScalar(2)
+						.multiplyScalar(dt)
 				);
-				physics.velocity.y += this.gravity * dt;
+				physics.velocity.add(this.gravity.clone().multiplyScalar(dt));
 
 				const angularDelta = physics.angularVelocity
 					.clone()
@@ -768,7 +803,6 @@ const System = {
 			const scene = new THREE.Scene();
 			scene.background = new THREE.Color(0x0080ff);
 			this.scene = scene;
-
 			this.camera = System.camera.perspectiveCamera;
 		},
 		update() {

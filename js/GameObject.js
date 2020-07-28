@@ -10,7 +10,6 @@ export function Player() {
 		"Animation",
 		Asset.getAnimation(obj, "player.glb", "Idle")
 	);
-	entity.addComponent("Transform");
 	entity.addComponent("Physics", {
 		mass: 60,
 	});
@@ -79,9 +78,28 @@ export function Ball() {
 	const mat = new THREE.MeshBasicMaterial({ color: 0xffff00 });
 
 	entity.addComponent("Object3D", new THREE.Mesh(geo, mat));
-	entity.addComponent("Transform", {
-		position: new THREE.Vector3(0, 10, 0),
+	entity.components["Transform"].position.set(5, 10, 0);
+	entity.addComponent("Physics", {
+		mass: 10,
 	});
+	entity.addComponent("Collider", {
+		material: {
+			dynamicFriction: 0.6,
+			staticFriction: 0.6,
+			bounciness: 1,
+		},
+	});
+}
+
+export function Cube() {
+	const obj = Asset.getObject3D("player.glb");
+	const entity = new Entity();
+
+	const geo = new THREE.BoxBufferGeometry(2, 2, 2);
+	const mat = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+
+	entity.addComponent("Object3D", new THREE.Mesh(geo, mat));
+	entity.components["Transform"].position.set(5, 2, 0);
 	entity.addComponent("Physics", {
 		mass: 10,
 	});
