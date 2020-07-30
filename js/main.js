@@ -64,6 +64,8 @@ function init() {
 
 	new Engine.Entity().addComponent("Object3D", dirLight);
 
+	// GameObject.Player();
+
 	// floor
 	geo = new THREE.PlaneBufferGeometry(200, 200);
 	mat = new THREE.MeshPhongMaterial({
@@ -75,6 +77,18 @@ function init() {
 	mesh.receiveShadow = true;
 
 	new Engine.Entity().addComponent("Object3D", mesh).addComponent("Collider");
+
+	// wall
+	geo = new THREE.PlaneBufferGeometry(200, 200);
+	mat = new THREE.MeshPhongMaterial({
+		color: 0x718e3e,
+	});
+	mesh = new THREE.Mesh(geo, mat);
+	mesh.position.z = -10;
+	mesh.receiveShadow = true;
+
+	new Engine.Entity().addComponent("Object3D", mesh).addComponent("Collider");
+
 	new Engine.Entity().addComponent(
 		"Object3D",
 		new THREE.GridHelper(1000, 1000, 0x0000ff, 0x808080)

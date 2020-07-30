@@ -196,21 +196,33 @@ class Physics {
 
 	addColliderProperties(collider) {
 		this.centerOfMass = collider.centroid;
-		this.worldCenterOfMass = collider.worldCentroid;
 		collider.Physics = this;
 		this.Collider = collider;
+
+		const size = this.Collider.worldAABB.getSize(new THREE.Vector3());
+		const x = size.x;
+		const y = size.y;
+		const z = size.z;
+		this.inertiaTensor = new THREE.Vector3(
+			0.083 * this.mass * (y * y + z * z),
+			0.083 * this.mass * (x * x + z * z),
+			0.083 * this.mass * (y * y + x * x)
+		);
 	}
 
-	get inertiaTensor() {
-		const AABB = this.Collider.worldAABB;
-		const x = AABB.max.x - AABB.min.x,
-			y = AABB.max.y - AABB.min.y,
-			z = AABB.max.z - AABB.min.z;
-		return new THREE.Vector3(
-			(1 / 3) * this.mass * (y * y + z * z),
-			(1 / 3) * this.mass * (x * x + z * z),
-			(1 / 3) * this.mass * (y * y + x * x)
-		);
+	getPointVelocity(worldPoint) {
+		return this.velocity
+			.clone()
+			.add(
+				worldPoint
+					.clone()
+					.sub(this.worldCenterOfMass)
+					.cross(this.angularVelocity)
+			);
+	}
+
+	get worldCenterOfMass() {
+		return this.Collider.worldCentroid;
 	}
 }
 

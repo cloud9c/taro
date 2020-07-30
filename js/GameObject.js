@@ -6,6 +6,7 @@ export function Player() {
 	const entity = new Entity();
 
 	entity.addComponent("Object3D", obj);
+	entity.components["Transform"].position.set(0, 5, 0);
 	entity.addComponent(
 		"Animation",
 		Asset.getAnimation(obj, "player.glb", "Idle")
