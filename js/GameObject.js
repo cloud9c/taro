@@ -3,10 +3,9 @@ import { Asset, Entity, System } from "./core/Engine.js";
 
 export function Player() {
 	const obj = Asset.getObject3D("player.glb");
-	const entity = new Entity();
+	const entity = new Entity({ position: new THREE.Vector3(0, 5, 0) });
 
 	entity.addComponent("Object3D", obj);
-	entity.components["Transform"].position.set(0, 5, 0);
 	entity.addComponent(
 		"Animation",
 		Asset.getAnimation(obj, "player.glb", "Idle")
@@ -21,7 +20,7 @@ export function Player() {
 			bounciness: 1,
 		},
 	});
-	System.camera.addTarget(obj);
+	System.camera.addTarget(entity);
 
 	const keyInput = System.input.keyInput;
 	const curVel = entity.components.Physics.velocity;
@@ -73,13 +72,12 @@ export function Player() {
 
 export function Ball() {
 	const obj = Asset.getObject3D("player.glb");
-	const entity = new Entity();
+	const entity = new Entity({ position: new THREE.Vector3(5, 10, 0) });
 
 	const geo = new THREE.SphereBufferGeometry(1, 32, 32);
 	const mat = new THREE.MeshBasicMaterial({ color: 0xffff00 });
 
 	entity.addComponent("Object3D", new THREE.Mesh(geo, mat));
-	entity.components["Transform"].position.set(5, 10, 0);
 	entity.addComponent("Physics", {
 		mass: 10,
 	});
@@ -94,13 +92,12 @@ export function Ball() {
 
 export function Cube() {
 	const obj = Asset.getObject3D("player.glb");
-	const entity = new Entity();
+	const entity = new Entity({ position: new THREE.Vector3(5, 2, 0) });
 
 	const geo = new THREE.BoxBufferGeometry(2, 2, 2);
 	const mat = new THREE.MeshBasicMaterial({ color: 0xff0000 });
 
 	entity.addComponent("Object3D", new THREE.Mesh(geo, mat));
-	entity.components["Transform"].position.set(5, 2, 0);
 	entity.addComponent("Physics", {
 		mass: 10,
 	});

@@ -1,13 +1,14 @@
 import Component from "./Component.js";
 
 class Entity {
-	constructor() {
+	constructor(data = {}) {
 		this.components = {};
 		this.id =
 			(+new Date()).toString(16) +
 			(Math.random() * 100000000 || 0).toString(16);
 
 		Entity.entities[this.id] = this;
+		this.addComponent("Transform", data);
 	}
 
 	addComponent(type, data = {}) {

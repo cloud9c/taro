@@ -24,8 +24,10 @@ const Component = {
 
 class Collider {
 	constructor(id, data) {
+		const transform = Component.components.Transform[id];
 		const obj = Component.components.Object3D[id];
 		this.Object3D = obj;
+		this.Transform = transform;
 
 		this.onCollisionEnter = data.hasOwnProperty("onCollisionEnter")
 			? data.onCollisionEnter
@@ -51,19 +53,19 @@ class Collider {
 		// create cached convex hull and box3
 		this.cached = {
 			AABB: {
-				position: obj.position.clone(),
-				rotation: obj.rotation.clone(),
-				scale: obj.scale.clone(),
+				position: transform.position.clone(),
+				rotation: transform.rotation.clone(),
+				scale: transform.scale.clone(),
 			},
 			vertices: {
-				position: obj.position.clone(),
-				rotation: obj.rotation.clone(),
-				scale: obj.scale.clone(),
+				position: transform.position.clone(),
+				rotation: transform.rotation.clone(),
+				scale: transform.scale.clone(),
 			},
 			centroid: {
-				position: obj.position.clone(),
-				rotation: obj.rotation.clone(),
-				scale: obj.scale.clone(),
+				position: transform.position.clone(),
+				rotation: transform.rotation.clone(),
+				scale: transform.scale.clone(),
 			},
 		};
 		this.world = {};
@@ -81,9 +83,9 @@ class Collider {
 			this.world.vertices.push(
 				this.vertices[i]
 					.clone()
-					.applyEuler(obj.rotation)
-					.add(obj.position)
-					.multiply(obj.scale)
+					.applyEuler(transform.rotation)
+					.add(transform.position)
+					.multiply(transform.scale)
 			);
 		}
 
@@ -97,9 +99,9 @@ class Collider {
 		this.centroid.divideScalar(vertLen);
 		this.world.centroid = this.centroid
 			.clone()
-			.applyEuler(obj.rotation)
-			.add(obj.position)
-			.multiply(obj.scale);
+			.applyEuler(transform.rotation)
+			.add(transform.position)
+			.multiply(transform.scale);
 
 		// add center of mass to physics
 		if (Component.components.Physics.hasOwnProperty(id))
@@ -108,16 +110,16 @@ class Collider {
 
 	get worldAABB() {
 		const cached = this.cached.AABB;
-		const obj = this.Object3D;
+		const transform = this.Transform;
 		if (
-			!cached.position.equals(obj.position) ||
-			!cached.rotation.equals(obj.rotation) ||
-			!cached.scale.equals(obj.scale)
+			!cached.position.equals(transform.position) ||
+			!cached.rotation.equals(transform.rotation) ||
+			!cached.scale.equals(transform.scale)
 		) {
-			this.world.AABB.setFromObject(obj);
-			cached.position = obj.position.clone();
-			cached.rotation = obj.rotation.clone();
-			cached.scale = obj.scale.clone();
+			this.world.AABB.setFromObject(this.Object3D);
+			cached.position = transform.position.clone();
+			cached.rotation = transform.rotation.clone();
+			cached.scale = transform.scale.clone();
 		}
 
 		return this.world.AABB;
@@ -125,22 +127,22 @@ class Collider {
 
 	get worldVertices() {
 		const cached = this.cached.vertices;
-		const obj = this.Object3D;
+		const transform = this.Transform;
 		if (
-			!cached.position.equals(obj.position) ||
-			!cached.rotation.equals(obj.rotation) ||
-			!cached.scale.equals(obj.scale)
+			!cached.position.equals(transform.position) ||
+			!cached.rotation.equals(transform.rotation) ||
+			!cached.scale.equals(transform.scale)
 		) {
 			for (let i = 0, len = this.world.vertices.length; i < len; i++) {
 				this.world.vertices[i] = this.vertices[i]
 					.clone()
-					.applyEuler(obj.rotation)
-					.add(obj.position)
-					.multiply(obj.scale);
+					.applyEuler(transform.rotation)
+					.add(transform.position)
+					.multiply(transform.scale);
 			}
-			cached.position = obj.position.clone();
-			cached.rotation = obj.rotation.clone();
-			cached.scale = obj.scale.clone();
+			cached.position = transform.position.clone();
+			cached.rotation = transform.rotation.clone();
+			cached.scale = transform.scale.clone();
 		}
 
 		return this.world.vertices;
@@ -148,21 +150,21 @@ class Collider {
 
 	get worldCentroid() {
 		const cached = this.cached.centroid;
-		const obj = this.Object3D;
+		const transform = this.Transform;
 		if (
-			!cached.position.equals(obj.position) ||
-			!cached.rotation.equals(obj.rotation) ||
-			!cached.scale.equals(obj.scale)
+			!cached.position.equals(transform.position) ||
+			!cached.rotation.equals(transform.rotation) ||
+			!cached.scale.equals(transform.scale)
 		) {
 			this.world.centroid = this.centroid
 				.clone()
-				.applyEuler(obj.rotation)
-				.add(obj.position)
-				.multiply(obj.scale);
+				.applyEuler(transform.rotation)
+				.add(transform.position)
+				.multiply(transform.scale);
 
-			cached.position = obj.position.clone();
-			cached.rotation = obj.rotation.clone();
-			cached.scale = obj.scale.clone();
+			cached.position = transform.position.clone();
+			cached.rotation = transform.rotation.clone();
+			cached.scale = transform.scale.clone();
 		}
 		return this.world.centroid;
 	}
@@ -184,6 +186,18 @@ class Physics {
 		// add collider properties to physics
 		if (Component.components.Collider.hasOwnProperty(id))
 			this.addColliderProperties(Component.components.Collider[id]);
+
+		this.Transform = Component.components.Transform[id];
+
+		this.currentState = {
+			position: this.Transform.position.clone(),
+			rotation: this.Transform.rotation.clone(),
+		};
+
+		this.previousState = {
+			position: new THREE.Vector3(),
+			rotation: new THREE.Euler(),
+		};
 	}
 
 	isMoving() {
@@ -227,18 +241,6 @@ class Physics {
 }
 
 function Object3D(id, data = new THREE.Object3D()) {
-	if (!Component.components.Transform.hasOwnProperty(id)) {
-		Entity.entities[id].addComponent("Transform", {
-			position: data.position,
-			rotation: data.rotation,
-			scale: data.scale,
-		});
-	} else {
-		const transform = Component.components.Transform;
-		transform.position = data.position.copy(transform.position);
-		transform.rotation = data.rotation.copy(transform.rotation);
-		transform.scale = data.scale.copy(transform.scale);
-	}
 	System.render.scene.add(data);
 	return data;
 }
@@ -254,12 +256,6 @@ function Transform(id, data) {
 		? data.scale
 		: new THREE.Vector3(1, 1, 1);
 
-	if (Component.components.Object3D.hasOwnProperty(id)) {
-		const obj = Component.components.Object3D[id];
-		data.position = obj.position.copy(data.position);
-		data.rotation = obj.rotation.copy(data.rotation);
-		data.scale = obj.scale.copy(data.scale);
-	}
 	return data;
 }
 

@@ -39,13 +39,13 @@ function init() {
 	const hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 0.6);
 	hemiLight.color.setHSL(0.6, 1, 0.6);
 	hemiLight.groundColor.setHSL(0.095, 1, 0.75);
-	hemiLight.position.set(0, 100, 0);
-	new Engine.Entity().addComponent("Object3D", hemiLight);
+	new Engine.Entity({ position: new THREE.Vector3(0, 100, 0) }).addComponent(
+		"Object3D",
+		hemiLight
+	);
 
 	const dirLight = new THREE.DirectionalLight(0xffffff, 1);
 	dirLight.color.setHSL(0.1, 1, 0.95);
-	dirLight.position.set(-1, 1.75, 1);
-	dirLight.position.multiplyScalar(100);
 
 	dirLight.castShadow = true;
 
@@ -62,7 +62,9 @@ function init() {
 	dirLight.shadow.camera.far = 3500;
 	dirLight.shadow.bias = -0.0001;
 
-	new Engine.Entity().addComponent("Object3D", dirLight);
+	new Engine.Entity({
+		position: new THREE.Vector3(-100, 175, 100),
+	}).addComponent("Object3D", dirLight);
 
 	// GameObject.Player();
 
@@ -72,11 +74,11 @@ function init() {
 		color: 0x718e3e,
 	});
 	mesh = new THREE.Mesh(geo, mat);
-	mesh.position.y = 0;
-	mesh.rotation.x = -Math.PI / 2;
 	mesh.receiveShadow = true;
 
-	new Engine.Entity().addComponent("Object3D", mesh).addComponent("Collider");
+	new Engine.Entity({ rotation: new THREE.Euler(-Math.PI / 2, 0, 0) })
+		.addComponent("Object3D", mesh)
+		.addComponent("Collider");
 
 	// wall
 	geo = new THREE.PlaneBufferGeometry(200, 200);
@@ -84,10 +86,11 @@ function init() {
 		color: 0x718e3e,
 	});
 	mesh = new THREE.Mesh(geo, mat);
-	mesh.position.z = -10;
 	mesh.receiveShadow = true;
 
-	new Engine.Entity().addComponent("Object3D", mesh).addComponent("Collider");
+	new Engine.Entity({ position: new THREE.Vector3(0, 0, -10) })
+		.addComponent("Object3D", mesh)
+		.addComponent("Collider");
 
 	new Engine.Entity().addComponent(
 		"Object3D",
