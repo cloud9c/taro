@@ -3,8 +3,8 @@ import Entity from "./Entity.js";
 import System from "./System.js";
 import Asset from "./Asset.js";
 import { ConvexHull } from "https://threejs.org/examples/jsm/math/ConvexHull.js";
+
 const Component = {
-	components: {},
 	Animation: setDataComponent,
 	Behavior: setDataComponent,
 	Collider: (id, type, data) => {
@@ -21,6 +21,15 @@ const Component = {
 		setDataComponent(id, type, Transform(id, data));
 	},
 };
+
+Object.defineProperty(Component, "components", {
+	enumerable: false,
+	value: {},
+});
+
+for (const type in Component) {
+	Component.components[type] = {};
+}
 
 class Collider {
 	constructor(id, data) {
@@ -189,6 +198,8 @@ class Physics {
 
 		this.Transform = Component.components.Transform[id];
 
+		this.hasCollider = false;
+
 		this.currentState = {
 			position: this.Transform.position.clone(),
 			rotation: this.Transform.rotation.clone(),
@@ -209,6 +220,8 @@ class Physics {
 	}
 
 	addColliderProperties(collider) {
+		this.hasCollider = true;
+
 		this.centerOfMass = collider.centroid;
 		collider.Physics = this;
 		this.Collider = collider;
@@ -261,10 +274,6 @@ function Transform(id, data) {
 
 function setDataComponent(id, type, data) {
 	Component.components[type][id] = data;
-}
-
-for (const type in Component) {
-	Component.components[type] = {};
 }
 
 export default Component;

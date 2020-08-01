@@ -351,6 +351,9 @@ const System = {
 		collision: {
 			init() {
 				this.Collider = Component.components.Collider;
+				this.tolerance = 0.001;
+
+				this.slop = 0.01;
 			},
 			edgeInEdges(edges, edge) {
 				for (let i = 0, len = edges.length; i < len; i++)
@@ -381,15 +384,14 @@ const System = {
 						c: 3,
 					},
 				];
-				const epsilon = 0.00001; // Maybe too small?
 				while (true) {
 					const face = this.findClosestFace(simplex, simplexFaces);
 					const point = this.support(vertA, vertB, face.normal);
 					const dist = point[0].dot(face.normal);
 
-					if (dist - face.dist < epsilon) {
+					if (dist - face.dist < this.tolerance) {
 						return {
-							dist: dist,
+							depth: dist,
 							point: this.getContactPoint(
 								face.normal
 									.clone()
@@ -685,37 +687,49 @@ const System = {
 					1 / phys.inertiaTensor.z
 				);
 				const r = phys.worldCenterOfMass.sub(contact.point);
+				const velAlongNormal = phys
+					.getPointVelocity(contact.point)
+					.dot(contact.normal);
 
-				const j = contact.normal.clone().multiplyScalar(
-					phys
-						.getPointVelocity(contact.point)
-						.multiplyScalar(-1 - mat.bounciness)
-						.dot(contact.normal) /
-						(1 / phys.mass +
-							i
-								.clone()
-								.multiply(r.clone().cross(contact.normal))
-								.cross(r.clone())
-								.dot(contact.normal))
-				);
+				if (velAlongNormal > 0) return;
 
-				console.log(
-					contact.normal.clone().multiply(j).divideScalar(phys.mass).y
-				);
+				const j = contact.normal
+					.clone()
+					.multiplyScalar(
+						(-(1 + mat.bounciness) * velAlongNormal) /
+							(1 / phys.mass +
+								i
+									.clone()
+									.multiply(r.clone().cross(contact.normal))
+									.cross(r.clone())
+									.dot(contact.normal))
+					);
 
 				phys.velocity.add(
 					contact.normal.clone().multiply(j).divideScalar(phys.mass)
 				);
 				phys.angularVelocity.add(
-					i.multiply(j).multiply(r.cross(contact.normal))
+					i.multiply(j).multiply(r.clone().cross(contact.normal))
+				);
+
+				// frictional impulse
+
+				phys.Transform.position.add(
+					contact.normal.multiplyScalar(
+						Math.max(contact.depth - this.slop, 0)
+					)
 				);
 			},
 			resolveCollision(colA, colB, contact, mat) {
 				const physA = colA.Physics;
 				const physB = colB.Physics;
-				const v = physB
+
+				const velAlongNormal = physB
 					.getPointVelocity(contact.point)
-					.sub(physA.getPointVelocity(contact.point));
+					.sub(physA.getPointVelocity(contact.point))
+					.dot(contact.normal);
+				if (velAlongNormal > 0) return;
+
 				const iA = new THREE.Vector3(
 					1 / physA.inertiaTensor.x,
 					1 / physA.inertiaTensor.y,
@@ -728,8 +742,9 @@ const System = {
 				);
 				const rA = physA.worldCenterOfMass.sub(contact.point);
 				const rB = physB.worldCenterOfMass.sub(contact.point);
+
 				const j = contact.normal.clone().multiplyScalar(
-					v.multiplyScalar(-1 - mat.bounciness).dot(contact.normal) /
+					(-(1 + mat.bounciness) * velAlongNormal) /
 						(1 / physA.mass +
 							1 / physB.mass +
 							contact.normal.clone().dot(
@@ -758,6 +773,18 @@ const System = {
 				);
 				physB.angularVelocity.add(
 					iB.multiply(j).multiply(rB.cross(contact.normal))
+				);
+
+				const correction = contact.normal.multiplyScalar(
+					Math.max(contact.depth - this.slop, 0) /
+						(1 / physA.mass + 1 / physB.mass)
+				);
+				physA.Transform.position.sub(
+					correction.multiplyScalar(1 / physA.mass)
+				);
+
+				physB.Transform.position.add(
+					correction.multiplyScalar(1 / physB.mass)
 				);
 			},
 			support(aVerts, bVerts, dir) {
