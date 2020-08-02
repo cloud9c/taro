@@ -66,8 +66,6 @@ function init() {
 		position: new THREE.Vector3(-100, 175, 100),
 	}).addComponent("Object3D", dirLight);
 
-	// GameObject.Player();
-
 	// floor
 	geo = new THREE.PlaneBufferGeometry(200, 200);
 	mat = new THREE.MeshPhongMaterial({
@@ -99,7 +97,7 @@ function init() {
 
 	GameObject.Cube();
 	GameObject.Player();
-	GameObject.Ball();
+	// GameObject.Ball();
 
 	window.requestAnimationFrame(Engine.System.gameLoop);
 }

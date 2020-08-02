@@ -34,8 +34,7 @@ for (const type in Component) {
 class Collider {
 	constructor(id, data) {
 		const transform = Component.components.Transform[id];
-		const obj = Component.components.Object3D[id];
-		this.Object3D = obj;
+		this.Object3D = Component.components.Object3D[id];
 		this.Transform = transform;
 
 		this.onCollisionEnter = data.hasOwnProperty("onCollisionEnter")
@@ -59,6 +58,8 @@ class Collider {
 			? this.material.bounciness
 			: 0;
 
+		this.hasPhysics = false;
+
 		// create cached convex hull and box3
 		this.cached = {
 			AABB: {
@@ -80,12 +81,12 @@ class Collider {
 		this.world = {};
 
 		// AABB
-		this.world.AABB = new THREE.Box3().setFromObject(obj);
+		this.world.AABB = new THREE.Box3();
 
 		// add vertices from Convex Hull
 		this.world.vertices = [];
 		this.vertices = new ConvexHull().setFromObject(
-			Asset.getSimplified(obj)
+			Asset.getSimplified(this.Object3D)
 		).vertices;
 		for (let i = 0, len = this.vertices.length; i < len; i++) {
 			this.vertices[i] = this.vertices[i].point;
@@ -97,6 +98,9 @@ class Collider {
 					.multiply(transform.scale)
 			);
 		}
+
+		this.world.AABB.setFromPoints(this.world.vertices);
+		console.log(this.world.AABB);
 
 		// add centroid
 		const vertLen = this.vertices.length;
@@ -125,7 +129,8 @@ class Collider {
 			!cached.rotation.equals(transform.rotation) ||
 			!cached.scale.equals(transform.scale)
 		) {
-			this.world.AABB.setFromObject(this.Object3D);
+			this.world.AABB.setFromPoints(this.worldVertices);
+
 			cached.position = transform.position.clone();
 			cached.rotation = transform.rotation.clone();
 			cached.scale = transform.scale.clone();
@@ -188,6 +193,7 @@ class Physics {
 			? data.angularVelocity
 			: new THREE.Vector3();
 		this.mass = data.hasOwnProperty("mass") ? data.mass : 1;
+		this.inverseMass = 1 / this.mass;
 		this.useGravity = data.hasOwnProperty("useGravity")
 			? data.useGravity
 			: true;
@@ -221,10 +227,17 @@ class Physics {
 
 	addColliderProperties(collider) {
 		this.hasCollider = true;
+		collider.hasPhysics = true;
 
 		this.centerOfMass = collider.centroid;
 		collider.Physics = this;
 		this.Collider = collider;
+
+		Object.defineProperty(this, "worldCenterOfMass", {
+			get() {
+				return this.Collider.worldCentroid.clone();
+			},
+		});
 
 		const size = this.Collider.worldAABB.getSize(new THREE.Vector3());
 		const x = size.x;
@@ -234,6 +247,21 @@ class Physics {
 			0.083 * this.mass * (y * y + z * z),
 			0.083 * this.mass * (x * x + z * z),
 			0.083 * this.mass * (y * y + x * x)
+		);
+		this.inverseInertiaTensor = new THREE.Vector3(
+			1 / this.inertiaTensor.x,
+			1 / this.inertiaTensor.y,
+			1 / this.inertiaTensor.z
+		);
+	}
+
+	applyImpulse(impulse) {
+		this.velocity.add(impulse.clone().divideScalar(this.mass));
+	}
+
+	applyAngularImpulse(impulse) {
+		this.angularVelocity.add(
+			this.inverseInertiaTensor.clone().multiply(impulse)
 		);
 	}
 
@@ -246,10 +274,6 @@ class Physics {
 					.sub(this.worldCenterOfMass)
 					.cross(this.angularVelocity)
 			);
-	}
-
-	get worldCenterOfMass() {
-		return this.Collider.worldCentroid;
 	}
 }
 

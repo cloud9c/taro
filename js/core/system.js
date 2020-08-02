@@ -649,8 +649,8 @@ const System = {
 
 					if (this.evaluateAndChangeDir(simplex, dir)) {
 						// TODO add to collision linked list
-						const isMovingA = colA.hasOwnProperty("Physics");
-						const isMovingB = colB.hasOwnProperty("Physics");
+
+						// Physics reaction
 						const contact = this.EPA(vertA, vertB, simplex);
 						const mat = {
 							bounciness:
@@ -666,12 +666,13 @@ const System = {
 									colB.material.dynamicFriction) /
 								2,
 						};
-						if (isMovingA && isMovingB)
+
+						if (colA.hasPhysics && colB.hasPhysics)
 							this.resolveCollision(colA, colB, contact, mat);
-						else if (isMovingA) {
+						else if (colA.hasPhysics) {
 							contact.normal.negate();
 							this.reflectCollision(colA, contact, mat);
-						} else if (isMovingB) {
+						} else {
 							this.reflectCollision(colB, contact, mat);
 						}
 						return;
@@ -681,39 +682,64 @@ const System = {
 			reflectCollision(movable, contact, mat) {
 				const phys = movable.Physics;
 
-				const i = new THREE.Vector3(
-					1 / phys.inertiaTensor.x,
-					1 / phys.inertiaTensor.y,
-					1 / phys.inertiaTensor.z
-				);
-				const r = phys.worldCenterOfMass.sub(contact.point);
-				const velAlongNormal = phys
+				const vn = phys
 					.getPointVelocity(contact.point)
 					.dot(contact.normal);
 
-				if (velAlongNormal > 0) return;
+				if (vn > 0) return;
 
-				const j = contact.normal
-					.clone()
-					.multiplyScalar(
-						(-(1 + mat.bounciness) * velAlongNormal) /
-							(1 / phys.mass +
-								i
-									.clone()
-									.multiply(r.clone().cross(contact.normal))
-									.cross(r.clone())
-									.dot(contact.normal))
-					);
+				const i = phys.inverseInertiaTensor;
 
-				phys.velocity.add(
-					contact.normal.clone().multiply(j).divideScalar(phys.mass)
+				// apply collision impulse
+				const r = phys.worldCenterOfMass.sub(contact.point);
+
+				const k =
+					phys.inverseMass +
+					i
+						.clone()
+						.multiply(r.clone().cross(contact.normal))
+						.cross(r)
+						.dot(contact.normal);
+
+				const j = (-(1 + mat.bounciness) * vn) / k;
+				const impulse = contact.normal.clone().multiplyScalar(j);
+
+				phys.applyImpulse(impulse);
+				phys.applyAngularImpulse(r.clone().cross(impulse));
+
+				// Re-calculate relative velocity after normal impulse
+				// is applied
+				const rv = phys.getPointVelocity(contact.point);
+
+				// Solve for the tangent vector
+				const t = rv.sub(
+					contact.normal
+						.clone()
+						.multiplyScalar(rv.clone().dot(contact.normal))
 				);
-				phys.angularVelocity.add(
-					i.multiply(j).multiply(r.clone().cross(contact.normal))
-				);
 
-				// frictional impulse
+				if (t.lengthSq() > this.tolerance * this.tolerance) {
+					t.normalize();
 
+					// Solve for magnitude to apply along the friction vector
+					const jt = -rv.dot(t) * phys.mass;
+
+					// Clamp magnitude of friction and create impulse vector
+					let frictionImpulse;
+					if (Math.abs(jt) < j * mat.staticFriction)
+						frictionImpulse = t.multiplyScalar(jt);
+					else {
+						frictionImpulse = t.multiplyScalar(
+							-j * mat.dynamicFriction
+						);
+					}
+
+					// Apply
+					phys.applyImpulse(frictionImpulse);
+					phys.applyAngularImpulse(r.cross(frictionImpulse));
+				}
+
+				// positional correction
 				phys.Transform.position.add(
 					contact.normal.multiplyScalar(
 						Math.max(contact.depth - this.slop, 0)
@@ -728,63 +754,55 @@ const System = {
 					.getPointVelocity(contact.point)
 					.sub(physA.getPointVelocity(contact.point))
 					.dot(contact.normal);
+
 				if (velAlongNormal > 0) return;
 
-				const iA = new THREE.Vector3(
-					1 / physA.inertiaTensor.x,
-					1 / physA.inertiaTensor.y,
-					1 / physA.inertiaTensor.z
-				);
-				const iB = new THREE.Vector3(
-					1 / physB.inertiaTensor.x,
-					1 / physB.inertiaTensor.y,
-					1 / physB.inertiaTensor.z
-				);
+				const iA = physA.inverseInertiaTensor;
+				const iB = physB.inverseInertiaTensor;
 				const rA = physA.worldCenterOfMass.sub(contact.point);
 				const rB = physB.worldCenterOfMass.sub(contact.point);
 
-				const j = contact.normal.clone().multiplyScalar(
+				const j =
 					(-(1 + mat.bounciness) * velAlongNormal) /
-						(1 / physA.mass +
-							1 / physB.mass +
-							contact.normal.clone().dot(
-								iA
-									.clone()
-									.multiply(rA.clone().cross(contact.normal))
-									.cross(rA)
-									.add(
-										iB
-											.clone()
-											.multiply(
-												rB.clone().cross(contact.normal)
-											)
-											.cross(rB)
-									)
-							))
+					(physA.inverseMass +
+						physB.inverseMass +
+						contact.normal.clone().dot(
+							iA
+								.clone()
+								.multiply(rA.clone().cross(contact.normal))
+								.cross(rA)
+								.add(
+									iB
+										.clone()
+										.multiply(
+											rB.clone().cross(contact.normal)
+										)
+										.cross(rB)
+								)
+						));
+
+				const linearImpulse = contact.normal.clone().multiplyScalar(j);
+				physB.applyImpulse(linearImpulse);
+				physA.applyImpulse(linearImpulse.negate());
+
+				physA.applyAngularImpulse(
+					rA.cross(contact.normal).multiplyScalar(-j)
 				);
-				physA.velocity.sub(
-					contact.normal.clone().multiply(j).divideScalar(physA.mass)
-				);
-				physB.velocity.add(
-					contact.normal.clone().multiply(j).divideScalar(physB.mass)
-				);
-				physA.angularVelocity.sub(
-					iA.multiply(j).multiply(rA.cross(contact.normal))
-				);
-				physB.angularVelocity.add(
-					iB.multiply(j).multiply(rB.cross(contact.normal))
+				physB.applyAngularImpulse(
+					rB.cross(contact.normal).multiplyScalar(j)
 				);
 
+				// positional correction
 				const correction = contact.normal.multiplyScalar(
 					Math.max(contact.depth - this.slop, 0) /
-						(1 / physA.mass + 1 / physB.mass)
+						(physA.inverseMass + physB.inverseMass)
 				);
 				physA.Transform.position.sub(
-					correction.multiplyScalar(1 / physA.mass)
+					correction.divideScalar(physA.mass)
 				);
 
 				physB.Transform.position.add(
-					correction.multiplyScalar(1 / physB.mass)
+					correction.divideScalar(physB.mass)
 				);
 			},
 			support(aVerts, bVerts, dir) {
@@ -809,16 +827,19 @@ const System = {
 					for (let j = i + 1; j < len; j++) {
 						const colA = colliders[i];
 						const colB = colliders[j];
-						// broad phase (NEED TO ADD SPATIAL INDEX) TODO
-						if (colA.worldAABB.intersectsBox(colB.worldAABB)) {
-							// collision detection and response
-							this.GJK(
-								colA,
-								colB,
-								colA.worldCentroid
-									.clone()
-									.sub(colB.worldCentroid)
-							);
+
+						if (colA.hasPhysics || colB.hasPhysics) {
+							// broad phase (NEED TO ADD SPATIAL INDEX) TODO
+							if (colA.worldAABB.intersectsBox(colB.worldAABB)) {
+								// collision detection and response
+								this.GJK(
+									colA,
+									colB,
+									colA.worldCentroid
+										.clone()
+										.sub(colB.worldCentroid)
+								);
+							}
 						}
 					}
 				}

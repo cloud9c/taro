@@ -11,6 +11,7 @@ export function Player() {
 		Asset.getAnimation(obj, "player.glb", "Idle")
 	);
 	entity.addComponent("Physics", {
+		useGravity: false,
 		mass: 60,
 	});
 	entity.addComponent("Collider", {
@@ -92,7 +93,7 @@ export function Ball() {
 
 export function Cube() {
 	const obj = Asset.getObject3D("player.glb");
-	const entity = new Entity({ position: new THREE.Vector3(5, 2, 0) });
+	const entity = new Entity({ position: new THREE.Vector3(5, 10, 0) });
 
 	const geo = new THREE.BoxBufferGeometry(2, 2, 2);
 	const mat = new THREE.MeshBasicMaterial({ color: 0xff0000 });
