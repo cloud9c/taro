@@ -1,4 +1,4 @@
-import Component from "./Component.js";
+import Component from "./component.js";
 
 class Entity {
 	constructor(data = {}) {
@@ -12,14 +12,16 @@ class Entity {
 	}
 
 	addComponent(type, data = {}) {
-		Component[type](this.id, type, data);
-		this.components[type] = Component.components[type][this.id];
+		this.components[type] = Component.components[type][
+			this.id
+		] = new Component[type](this.id, data);
 		return this;
 	}
 
 	removeComponent(type) {
 		delete Component.components[type][this.id];
 		delete this.components[type];
+		return this;
 	}
 }
 

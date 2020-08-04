@@ -1,6 +1,6 @@
-import * as THREE from "https://threejs.org/build/three.module.js";
-import * as Engine from "./core/Engine.js";
-import * as GameObject from "./GameObject.js";
+import * as THREE from "./core/three.module.js";
+import * as Engine from "./core/engine.js";
+import * as Prefab from "./prefab.js";
 
 let peer,
 	connections = [],
@@ -95,9 +95,9 @@ function init() {
 		new THREE.GridHelper(1000, 1000, 0x0000ff, 0x808080)
 	);
 
-	GameObject.Cube();
-	GameObject.Player();
-	// GameObject.Ball();
+	// Prefab.Cube();
+	Prefab.Player();
+	Prefab.Ball();
 
 	window.requestAnimationFrame(Engine.System.gameLoop);
 }
@@ -130,7 +130,7 @@ function addNewConnection(conn) {
 			init();
 		}
 		connections[id] = [conn];
-		gameObjects[id] = new GAMEOBJECT.OtherPlayer(id);
+		Prefabs[id] = new Prefab.OtherPlayer(id);
 		conn.send({
 			type: "overhead",
 			id: peerID,
@@ -139,8 +139,8 @@ function addNewConnection(conn) {
 	});
 
 	conn.on("data", (data) => {
-		if (gameObjects.hasOwnProperty(data.id)) {
-			const object = gameObjects[id];
+		if (Prefabs.hasOwnProperty(data.id)) {
+			const object = Prefabs[id];
 			switch (data.type) {
 				case "update":
 					const pos = data.pos;
@@ -171,9 +171,9 @@ function addNewConnection(conn) {
 
 	conn.on("close", () => {
 		const id = conn.peer;
-		if (gameObjects[id]) {
-			gameObjects[id].delete();
-			delete gameObjects[id];
+		if (Prefabs[id]) {
+			Prefabs[id].delete();
+			delete Prefabs[id];
 		}
 		delete connections[id];
 	});

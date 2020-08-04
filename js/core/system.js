@@ -1,5 +1,6 @@
-import * as THREE from "https://threejs.org/build/three.module.js";
-import Component from "./Component.js";
+import * as THREE from "./three.module.js";
+import OIMO from "./oimoPhysics.js";
+import Component from "./component.js";
 
 const System = {
 	init() {
@@ -113,7 +114,7 @@ const System = {
 			camera.rotation.set(0, Math.PI, 0);
 			camera.zoom = 1;
 		},
-		addTarget(target, firstPerson = true, renderFirstPerson = false) {
+		setTarget(target, firstPerson = true, renderFirstPerson = false) {
 			target.components.Object3D.add(this.perspectiveCamera);
 
 			this.target = target;
@@ -300,550 +301,37 @@ const System = {
 	},
 	physics: {
 		init() {
-			this.Physics = Component.components.Physics;
-			this.Transform = Component.components.Transform;
-			this.gravity = new THREE.Vector3(0, -9.8, 0);
-
 			this.accumulator = 0;
+			this.Rigidbody = Component.components.Rigidbody;
 			this.UPDATE_PERIOD = 0.01;
 			this.alpha = 0;
 
-			this.collision.init();
+			this.world = new OIMO.World(2, OIMO.Vec3(0, -9.8, 0));
+			this.world.setNumPositionIterations(8);
+			this.world.setNumVelocityIterations(8);
 		},
 		update(dt) {
+			// https://gafferongames.com/post/fix_your_timestep/
 			this.accumulator += dt > 0.25 ? 0.25 : dt;
 
 			while (this.accumulator >= this.UPDATE_PERIOD) {
-				this.collision.update();
-				for (const entity in this.Physics) {
-					const physics = this.Physics[entity];
-					const transform = this.Transform[entity];
-					const previousState = physics.previousState;
-					previousState.position.copy(transform.position);
-					previousState.rotation.copy(transform.rotation);
+				this.world.step(this.UPDATE_PERIOD);
 
-					// integration
-					if (physics.useGravity)
-						physics.velocity.add(
-							this.gravity
-								.clone()
-								.multiplyScalar(this.UPDATE_PERIOD)
-						);
-					transform.position.add(
-						physics.velocity
-							.clone()
-							.multiplyScalar(this.UPDATE_PERIOD)
+				for (const entity in this.Rigidbody) {
+					const rigidbody = this.Rigidbody[entity];
+
+					rigidbody._previousState.position.copy(rigidbody._position);
+					rigidbody._previousState.rotation.copy(rigidbody._rotation);
+
+					rigidbody._position.copy(rigidbody.getPosition());
+					rigidbody._rotation.copy(
+						rigidbody.getRotation().toEulerXyz()
 					);
-
-					const angularDelta = physics.angularVelocity
-						.clone()
-						.multiplyScalar(this.UPDATE_PERIOD);
-					transform.rotation.x += angularDelta.x;
-					transform.rotation.y += angularDelta.y;
-					transform.rotation.z += angularDelta.z;
 				}
-
 				this.accumulator -= this.UPDATE_PERIOD;
 			}
 
 			this.alpha = this.accumulator / this.UPDATE_PERIOD;
-		},
-		collision: {
-			init() {
-				this.Collider = Component.components.Collider;
-				this.tolerance = 0.001;
-
-				this.slop = 0.01;
-			},
-			edgeInEdges(edges, edge) {
-				for (let i = 0, len = edges.length; i < len; i++)
-					if (edges[i].a == edge.a && edges[i].b == edge.b) return i;
-
-				return -1;
-			},
-			EPA(vertA, vertB, simplex, supportList) {
-				const simplexFaces = [
-					{
-						a: 0,
-						b: 1,
-						c: 2,
-					},
-					{
-						a: 0,
-						b: 1,
-						c: 3,
-					},
-					{
-						a: 0,
-						b: 2,
-						c: 3,
-					},
-					{
-						a: 1,
-						b: 2,
-						c: 3,
-					},
-				];
-				while (true) {
-					const face = this.findClosestFace(simplex, simplexFaces);
-					const point = this.support(vertA, vertB, face.normal);
-					const dist = point[0].dot(face.normal);
-
-					if (dist - face.dist < this.tolerance) {
-						return {
-							depth: dist,
-							point: this.getContactPoint(
-								face.normal
-									.clone()
-									.negate()
-									.multiplyScalar(dist),
-								face.a,
-								face.b,
-								face.c
-							),
-							normal: face.normal,
-						};
-					}
-
-					simplex.push(point);
-					this.expand(simplex, simplexFaces, point[0]);
-				}
-			},
-			evaluateAndChangeDir(simplex, dir) {
-				let ab, ac, ad, a0, ba, bc, bd, b0;
-				switch (simplex.length) {
-					case 2:
-						ab = simplex[1][0].clone().sub(simplex[0][0]);
-						a0 = simplex[0][0].clone().negate();
-						dir.copy(ab.clone().cross(a0).cross(ab));
-
-						return false;
-					case 3:
-						ab = simplex[1][0].clone().sub(simplex[0][0]);
-						ac = simplex[2][0].clone().sub(simplex[0][0]);
-						dir.copy(ab.cross(ac));
-
-						a0 = simplex[0][0].clone().negate();
-						if (a0.dot(dir) < 0) dir.negate();
-
-						return false;
-					case 4:
-						//face abc
-						ab = simplex[1][0].clone().sub(simplex[0][0]);
-						ac = simplex[2][0].clone().sub(simplex[0][0]);
-						dir.copy(ab.cross(ac).normalize());
-
-						ad = simplex[3][0].clone().sub(simplex[0][0]);
-						if (ad.dot(dir) > 0) {
-							dir.negate();
-						}
-
-						a0 = simplex[0][0].clone().negate();
-						if (a0.dot(dir) > 0) {
-							//remove d
-							simplex.splice(3, 1);
-							return false;
-						}
-
-						//face abd
-						ab = simplex[1][0].clone().sub(simplex[0][0]);
-						ad = simplex[3][0].clone().sub(simplex[0][0]);
-						dir.copy(ab.cross(ad).normalize());
-
-						ac = simplex[2][0].clone().sub(simplex[0][0]);
-						if (ac.dot(dir) > 0) {
-							dir.negate();
-						}
-
-						a0 = simplex[0][0].clone().negate();
-						if (a0.dot(dir) > 0) {
-							//remove c
-							simplex.splice(2, 1);
-							return false;
-						}
-
-						//face acd
-						ac = simplex[2][0].clone().sub(simplex[0][0]);
-						ad = simplex[3][0].clone().sub(simplex[0][0]);
-						dir.copy(ac.cross(ad).normalize());
-
-						ab = simplex[1][0].clone().sub(simplex[0][0]);
-						if (ab.dot(dir) > 0) {
-							dir.negate();
-						}
-
-						a0 = simplex[0][0].clone().negate();
-						if (a0.dot(dir) > 0) {
-							//remove b
-							simplex.splice(1, 1);
-							return false;
-						}
-
-						//face bcd
-						bc = simplex[2][0].clone().sub(simplex[1][0]);
-						bd = simplex[3][0].clone().sub(simplex[1][0]);
-						dir.copy(bc.cross(bd).normalize());
-
-						ba = simplex[0][0].clone().sub(simplex[1][0]);
-						if (ba.dot(dir) > 0) {
-							dir.negate();
-						}
-
-						b0 = simplex[1][0].clone().negate();
-						if (b0.dot(dir) > 0) {
-							//remove a
-							simplex.splice(0, 1);
-							return false;
-						}
-
-						//origin is in center
-						return true;
-				}
-			},
-			expand(simplex, simplexFaces, extendPoint) {
-				//def can make all this more efficient
-				const removalFaces = [];
-				for (let i = 0, len = simplexFaces.length; i < len; i++) {
-					const face = simplexFaces[i];
-
-					const ab = simplex[face.b][0]
-						.clone()
-						.sub(simplex[face.a][0]);
-					const ac = simplex[face.c][0]
-						.clone()
-						.sub(simplex[face.a][0]);
-					const norm = ab.cross(ac).normalize();
-
-					const a0 = new THREE.Vector3().sub(simplex[face.a][0]);
-					if (a0.dot(norm) > 0) norm.negate();
-
-					if (
-						norm.dot(extendPoint.clone().sub(simplex[face.a][0])) >
-						0
-					)
-						removalFaces.push(i);
-				}
-
-				const edges = [];
-				const removalFacesLen = removalFaces.length;
-				for (let i = 0; i < removalFacesLen; i++) {
-					const face = simplexFaces[removalFaces[i]];
-					const edgeAB = {
-						a: face.a,
-						b: face.b,
-					};
-					const edgeAC = {
-						a: face.a,
-						b: face.c,
-					};
-					const edgeBC = {
-						a: face.b,
-						b: face.c,
-					};
-
-					let k = this.edgeInEdges(edges, edgeAB);
-					if (k != -1) edges.splice(k, 1);
-					else edges.push(edgeAB);
-
-					k = this.edgeInEdges(edges, edgeAC);
-					if (k != -1) edges.splice(k, 1);
-					else edges.push(edgeAC);
-
-					k = this.edgeInEdges(edges, edgeBC);
-					if (k != -1) edges.splice(k, 1);
-					else edges.push(edgeBC);
-				}
-
-				for (let i = removalFacesLen - 1; i >= 0; i--) {
-					simplexFaces.splice(removalFaces[i], 1);
-				}
-
-				for (let i = 0, len = edges.length; i < len; i++) {
-					simplexFaces.push({
-						a: edges[i].a,
-						b: edges[i].b,
-						c: simplex.length - 1,
-					});
-				}
-			},
-			findClosestFace(simplex, simplexFaces) {
-				let closest = {
-					dist: Infinity,
-				};
-
-				for (let i = 0, len = simplexFaces.length; i < len; i++) {
-					const face = simplexFaces[i];
-					const ab = simplex[face.b][0]
-						.clone()
-						.sub(simplex[face.a][0]);
-					const ac = simplex[face.c][0]
-						.clone()
-						.sub(simplex[face.a][0]);
-					const normal = ab.cross(ac).normalize();
-					const a0 = new THREE.Vector3().sub(simplex[face.a][0]);
-					if (a0.dot(normal) > 0) normal.negate();
-
-					const dist = simplex[face.a][0].dot(normal);
-					if (dist < closest.dist)
-						closest = {
-							index: i,
-							dist: dist,
-							normal: normal,
-							a: simplex[face.a],
-							b: simplex[face.b],
-							c: simplex[face.c],
-						};
-				}
-				return closest;
-			},
-			getContactPoint(p, a, b, c) {
-				const v0 = b[0].clone().sub(a[0]),
-					v1 = c[0].clone().sub(a[0]),
-					v2 = p.clone().sub(a[0]),
-					d00 = v0.dot(v0),
-					d01 = v0.dot(v1),
-					d11 = v1.dot(v1),
-					d20 = v2.dot(v0),
-					d21 = v2.dot(v1),
-					denom = d00 * d11 - d01 * d01,
-					v = (d11 * d20 - d01 * d21) / denom,
-					w = (d00 * d21 - d01 * d20) / denom,
-					u = 1 - v - w;
-
-				return a[1]
-					.clone()
-					.multiplyScalar(u)
-					.add(b[1].clone().multiplyScalar(v))
-					.add(c[1].clone().multiplyScalar(w));
-			},
-			getFurthestPointInDirection(verts, dir) {
-				let index = 0;
-				let maxDot = -Infinity;
-
-				for (let i = 0; i < verts.length; i++) {
-					const dot = verts[i].dot(dir);
-
-					if (dot > maxDot) {
-						maxDot = dot;
-						index = i;
-					}
-				}
-
-				return verts[index];
-			},
-			GJK(colA, colB, dir) {
-				const simplex = [];
-				const vertA = colA.worldVertices;
-				const vertB = colB.worldVertices;
-
-				const p = this.support(vertA, vertB, dir);
-				simplex.push(p);
-
-				dir.negate();
-
-				while (true) {
-					const p = this.support(vertA, vertB, dir);
-					simplex.push(p);
-
-					if (p[0].dot(dir) <= 0) return;
-
-					if (this.evaluateAndChangeDir(simplex, dir)) {
-						// TODO add to collision linked list
-
-						// Physics reaction
-						const contact = this.EPA(vertA, vertB, simplex);
-						const mat = {
-							bounciness:
-								(colA.material.bounciness +
-									colB.material.bounciness) /
-								2,
-							staticFriction:
-								(colA.material.staticFriction +
-									colB.material.staticFriction) /
-								2,
-							dynamicFriction:
-								(colA.material.dynamicFriction +
-									colB.material.dynamicFriction) /
-								2,
-						};
-
-						if (colA.hasPhysics && colB.hasPhysics)
-							this.resolveCollision(colA, colB, contact, mat);
-						else if (colA.hasPhysics) {
-							contact.normal.negate();
-							this.reflectCollision(colA, contact, mat);
-						} else {
-							this.reflectCollision(colB, contact, mat);
-						}
-						return;
-					}
-				}
-			},
-			reflectCollision(movable, contact, mat) {
-				const phys = movable.Physics;
-
-				const vn = phys
-					.getPointVelocity(contact.point)
-					.dot(contact.normal);
-
-				if (vn > 0) return;
-
-				const i = phys.inverseInertiaTensor;
-
-				// apply collision impulse
-				const r = phys.worldCenterOfMass.sub(contact.point);
-
-				const k =
-					phys.inverseMass +
-					i
-						.clone()
-						.multiply(r.clone().cross(contact.normal))
-						.cross(r)
-						.dot(contact.normal);
-
-				const j = (-(1 + mat.bounciness) * vn) / k;
-				const impulse = contact.normal.clone().multiplyScalar(j);
-
-				phys.applyImpulse(impulse);
-				phys.applyAngularImpulse(r.clone().cross(impulse));
-
-				// Re-calculate relative velocity after normal impulse
-				// is applied
-				const rv = phys.getPointVelocity(contact.point);
-
-				// Solve for the tangent vector
-				const t = rv.sub(
-					contact.normal
-						.clone()
-						.multiplyScalar(rv.clone().dot(contact.normal))
-				);
-
-				if (t.lengthSq() > this.tolerance * this.tolerance) {
-					t.normalize();
-
-					// Solve for magnitude to apply along the friction vector
-					const jt = -rv.dot(t) * phys.mass;
-
-					// Clamp magnitude of friction and create impulse vector
-					let frictionImpulse;
-					if (Math.abs(jt) < j * mat.staticFriction)
-						frictionImpulse = t.multiplyScalar(jt);
-					else {
-						frictionImpulse = t.multiplyScalar(
-							-j * mat.dynamicFriction
-						);
-					}
-
-					// Apply
-					phys.applyImpulse(frictionImpulse);
-					phys.applyAngularImpulse(r.cross(frictionImpulse));
-				}
-
-				// positional correction
-				phys.Transform.position.add(
-					contact.normal.multiplyScalar(
-						Math.max(contact.depth - this.slop, 0)
-					)
-				);
-			},
-			resolveCollision(colA, colB, contact, mat) {
-				const physA = colA.Physics;
-				const physB = colB.Physics;
-
-				const velAlongNormal = physB
-					.getPointVelocity(contact.point)
-					.sub(physA.getPointVelocity(contact.point))
-					.dot(contact.normal);
-
-				if (velAlongNormal > 0) return;
-
-				const iA = physA.inverseInertiaTensor;
-				const iB = physB.inverseInertiaTensor;
-				const rA = physA.worldCenterOfMass.sub(contact.point);
-				const rB = physB.worldCenterOfMass.sub(contact.point);
-
-				const j =
-					(-(1 + mat.bounciness) * velAlongNormal) /
-					(physA.inverseMass +
-						physB.inverseMass +
-						contact.normal.clone().dot(
-							iA
-								.clone()
-								.multiply(rA.clone().cross(contact.normal))
-								.cross(rA)
-								.add(
-									iB
-										.clone()
-										.multiply(
-											rB.clone().cross(contact.normal)
-										)
-										.cross(rB)
-								)
-						));
-
-				const linearImpulse = contact.normal.clone().multiplyScalar(j);
-				physB.applyImpulse(linearImpulse);
-				physA.applyImpulse(linearImpulse.negate());
-
-				physA.applyAngularImpulse(
-					rA.cross(contact.normal).multiplyScalar(-j)
-				);
-				physB.applyAngularImpulse(
-					rB.cross(contact.normal).multiplyScalar(j)
-				);
-
-				// positional correction
-				const correction = contact.normal.multiplyScalar(
-					Math.max(contact.depth - this.slop, 0) /
-						(physA.inverseMass + physB.inverseMass)
-				);
-				physA.Transform.position.sub(
-					correction.divideScalar(physA.mass)
-				);
-
-				physB.Transform.position.add(
-					correction.divideScalar(physB.mass)
-				);
-			},
-			support(aVerts, bVerts, dir) {
-				const a = this.getFurthestPointInDirection(aVerts, dir);
-				const diff = a
-					.clone()
-					.sub(
-						this.getFurthestPointInDirection(
-							bVerts,
-							dir.clone().negate()
-						)
-					);
-				return [diff, a];
-			},
-			update() {
-				const Collider = this.Collider;
-				// update box3
-				const colliders = Object.values(Collider);
-				const len = colliders.length;
-
-				for (let i = 0; i < len; i++) {
-					for (let j = i + 1; j < len; j++) {
-						const colA = colliders[i];
-						const colB = colliders[j];
-
-						if (colA.hasPhysics || colB.hasPhysics) {
-							// broad phase (NEED TO ADD SPATIAL INDEX) TODO
-							if (colA.worldAABB.intersectsBox(colB.worldAABB)) {
-								// collision detection and response
-								this.GJK(
-									colA,
-									colB,
-									colA.worldCentroid
-										.clone()
-										.sub(colB.worldCentroid)
-								);
-							}
-						}
-					}
-				}
-			},
 		},
 	},
 	render: {
@@ -890,7 +378,7 @@ const System = {
 			this.camera = System.camera.perspectiveCamera;
 
 			this.Object3D = Component.components.Object3D;
-			this.Physics = Component.components.Physics;
+			this.Rigidbody = Component.components.Rigidbody;
 			this.Transform = Component.components.Transform;
 		},
 		update() {
@@ -900,13 +388,14 @@ const System = {
 				const alpha = System.physics.alpha;
 
 				// physics interpolation
-				if (this.Physics.hasOwnProperty(entity)) {
-					const previousState = this.Physics[entity].previousState;
+				if (this.Rigidbody.hasOwnProperty(entity)) {
+					const _previousState = this.Rigidbody[entity]
+						._previousState;
 
 					obj.position.copy(
 						transform.position
 							.clone()
-							.lerp(previousState.position, alpha)
+							.lerp(_previousState.position, alpha)
 					);
 
 					obj.rotation.setFromQuaternion(
@@ -914,7 +403,7 @@ const System = {
 							.setFromEuler(transform.rotation)
 							.slerp(
 								new THREE.Quaternion().setFromEuler(
-									previousState.rotation
+									_previousState.rotation
 								),
 								alpha
 							)

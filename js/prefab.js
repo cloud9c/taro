@@ -1,5 +1,5 @@
-import * as THREE from "https://threejs.org/build/three.module.js";
-import { Asset, Entity, System } from "./core/Engine.js";
+import * as THREE from "./core/three.module.js";
+import { Asset, Entity, System } from "./core/engine.js";
 
 export function Player() {
 	const obj = Asset.getObject3D("player.glb");
@@ -10,7 +10,7 @@ export function Player() {
 		"Animation",
 		Asset.getAnimation(obj, "player.glb", "Idle")
 	);
-	entity.addComponent("Physics", {
+	entity.addComponent("Rigidbody", {
 		useGravity: false,
 		mass: 60,
 	});
@@ -21,10 +21,10 @@ export function Player() {
 			bounciness: 1,
 		},
 	});
-	System.camera.addTarget(entity);
+	System.camera.setTarget(entity);
 
 	const keyInput = System.input.keyInput;
-	const curVel = entity.components.Physics.velocity;
+	const curVel = entity.components.Rigidbody.velocity;
 	const rotation = entity.components.Transform.rotation;
 	const newVel = new THREE.Vector3();
 	const maxSpeed = 20;
@@ -79,7 +79,7 @@ export function Ball() {
 	const mat = new THREE.MeshBasicMaterial({ color: 0xffff00 });
 
 	entity.addComponent("Object3D", new THREE.Mesh(geo, mat));
-	entity.addComponent("Physics", {
+	entity.addComponent("Rigidbody", {
 		mass: 10,
 	});
 	entity.addComponent("Collider", {
@@ -99,7 +99,7 @@ export function Cube() {
 	const mat = new THREE.MeshBasicMaterial({ color: 0xff0000 });
 
 	entity.addComponent("Object3D", new THREE.Mesh(geo, mat));
-	entity.addComponent("Physics", {
+	entity.addComponent("Rigidbody", {
 		mass: 10,
 	});
 	entity.addComponent("Collider", {

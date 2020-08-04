@@ -3,7 +3,7 @@ import {
 	Skeleton,
 	AnimationMixer,
 	LoopOnce,
-} from "https://threejs.org/build/three.module.js";
+} from "./three.module.js";
 import { GLTFLoader } from "https://threejs.org/examples/jsm/loaders/GLTFLoader.js";
 import { SimplifyModifier } from "https://threejs.org/examples/jsm/modifiers/SimplifyModifier.js";
 
@@ -87,18 +87,11 @@ const Asset = {
 	getAnimation(rootObject, model, active) {
 		const mixer = new AnimationMixer(rootObject);
 		const animations = Asset.models[model].animations;
-		// {
-		//     animations: original.animations,
-		//     scene: original.scene.clone()
-		// };
 		const actions = [];
 
 		for (const animation of animations) {
 			const clip = animation;
 			const action = mixer.clipAction(clip);
-			if (clip.name === "Jump" && clip.name === "WalkJump") {
-				action.setLoop(LoopOnce);
-			}
 			actions[clip.name] = action;
 		}
 
