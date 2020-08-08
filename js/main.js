@@ -16,31 +16,31 @@ window.addEventListener("load", () => {
 		document.getElementsByClassName("nickname")[1].value = oldNickname;
 	}
 
-	document.getElementById("join-submit").addEventListener("submit", loadGame);
-	document.getElementById("host-submit").addEventListener("submit", loadGame);
+	document.getElementById("join-submit").addEventListener("submit", init);
+	document.getElementById("host-submit").addEventListener("submit", init);
 	document.getElementById("next-button").addEventListener("click", () => {
 		document.getElementById("splash-page").style.display = "none";
 		document.getElementById("host-submit").style.display = "block";
 	});
 });
 
-function init() {
+async function init() {
 	let geo, mat, mesh;
 
+	await Engine.init("c");
+
 	//html stuff
-	document.getElementById("log").textContent = "Server Code: " + serverID;
+	// document.getElementById("log").textContent = "Server Code: " + serverID;
 	document.getElementById("launcher").remove();
 	document.getElementById("loading").remove();
 	document.getElementById("game").style.display = "";
-
-	Engine.System.init();
 
 	// lighting
 	const hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 0.6);
 	hemiLight.color.setHSL(0.6, 1, 0.6);
 	hemiLight.groundColor.setHSL(0.095, 1, 0.75);
-	new Engine.Entity({ position: new THREE.Vector3(0, 100, 0) }).addComponent(
-		"Object3D",
+	new Engine.Entity({ position: new Engine.Vector3(0, 100, 0) }).addComponent(
+		"object3D",
 		hemiLight
 	);
 
@@ -63,8 +63,8 @@ function init() {
 	dirLight.shadow.bias = -0.0001;
 
 	new Engine.Entity({
-		position: new THREE.Vector3(-100, 175, 100),
-	}).addComponent("Object3D", dirLight);
+		position: new Engine.Vector3(-100, 175, 100),
+	}).addComponent("object3D", dirLight);
 
 	// floor
 	geo = new THREE.PlaneBufferGeometry(200, 200);
@@ -74,9 +74,17 @@ function init() {
 	mesh = new THREE.Mesh(geo, mat);
 	mesh.receiveShadow = true;
 
-	new Engine.Entity({ rotation: new THREE.Euler(-Math.PI / 2, 0, 0) })
-		.addComponent("Object3D", mesh)
-		.addComponent("Collider");
+	new Engine.Entity({
+		rotation: new Engine.Euler(-Math.PI / 2, 0, 0),
+	})
+		.addComponent("object3D", mesh)
+		.addComponent(
+			"collider",
+			new Engine.Shape({
+				type: "box",
+				halfExtents: new Engine.Vector3(100, 1, 100),
+			})
+		);
 
 	// wall
 	geo = new THREE.PlaneBufferGeometry(200, 200);
@@ -86,141 +94,130 @@ function init() {
 	mesh = new THREE.Mesh(geo, mat);
 	mesh.receiveShadow = true;
 
-	new Engine.Entity({ position: new THREE.Vector3(0, 0, -10) })
-		.addComponent("Object3D", mesh)
-		.addComponent("Collider");
+	new Engine.Entity({ position: new Engine.Vector3(0, 0, -10) })
+		.addComponent("object3D", mesh)
+		.addComponent(
+			"collider",
+			new Engine.Shape({
+				type: "box",
+				halfExtents: new Engine.Vector3(100, 100, 1),
+			})
+		);
 
 	new Engine.Entity().addComponent(
-		"Object3D",
+		"object3D",
 		new THREE.GridHelper(1000, 1000, 0x0000ff, 0x808080)
 	);
 
 	// Prefab.Cube();
 	Prefab.Player();
-	Prefab.Ball();
+	// Prefab.Ball();
 
 	window.requestAnimationFrame(Engine.System.gameLoop);
 }
 
-async function loadGame(event) {
-	document.getElementById("launcher").style.display = "none";
-	document.getElementById("loading").style.display = "flex";
+// function addNewConnection(conn) {
+// 	const id = conn.peer;
 
-	isHosting = event.target.id === "host-submit";
-	nickname = document.getElementsByClassName("nickname")[+isHosting].value;
-	localStorage.setItem("nickname", nickname);
-	serverID = document.getElementById("join").value.replace(/\s/g, "");
+// 	if (id === peerID || connections.hasOwnProperty(id)) return;
 
-	await Engine.Asset.init();
+// 	conn.on("open", () => {
+// 		if (connections.hasOwnProperty(id)) return;
+// 		if (id === serverID) {
+// 			init();
+// 		}
+// 		connections[id] = [conn];
+// 		Prefabs[id] = new Prefab.OtherPlayer(id);
+// 		conn.send({
+// 			type: "overhead",
+// 			id: peerID,
+// 			nickname: nickname,
+// 		});
+// 	});
 
-	document.getElementById("loading-info").textContent =
-		"Connecting to server...";
+// 	conn.on("data", (data) => {
+// 		if (Prefabs.hasOwnProperty(data.id)) {
+// 			const object = Prefabs[id];
+// 			switch (data.type) {
+// 				case "update":
+// 					const pos = data.pos;
+// 					object.pos.set(pos.x, pos.y, pos.z);
+// 					object.rotationY = data.rotationY;
+// 					object.animationName = data.animationName;
+// 					object.animationDir = data.animationDir;
+// 					break;
+// 				case "overhead":
+// 					object.addOverhead(data.nickname);
+// 					break;
+// 			}
+// 		} else {
+// 			switch (data.type) {
+// 				case "playerList":
+// 					const playerList = data.playerList;
+// 					for (const player of playerList)
+// 						addNewConnection(peer.connect(player));
+// 					break;
+// 			}
+// 		}
+// 	});
 
-	newPeer();
-}
+// 	conn.on("error", (err) => {
+// 		const conn = peer.connect(id);
+// 		addNewConnection(conn);
+// 	});
 
-function addNewConnection(conn) {
-	const id = conn.peer;
+// 	conn.on("close", () => {
+// 		const id = conn.peer;
+// 		if (Prefabs[id]) {
+// 			Prefabs[id].delete();
+// 			delete Prefabs[id];
+// 		}
+// 		delete connections[id];
+// 	});
+// }
 
-	if (id === peerID || connections.hasOwnProperty(id)) return;
+// async function newPeer() {
+// 	const options = {
+// 		secure: true,
+// 		host: "peerjs-cloud9c.herokuapp.com",
+// 	};
 
-	conn.on("open", () => {
-		if (connections.hasOwnProperty(id)) return;
-		if (id === serverID) {
-			init();
-		}
-		connections[id] = [conn];
-		Prefabs[id] = new Prefab.OtherPlayer(id);
-		conn.send({
-			type: "overhead",
-			id: peerID,
-			nickname: nickname,
-		});
-	});
+// 	if (isHosting) {
+// 		let id = "";
+// 		const response = await fetch("./js/words.json");
+// 		const data = await response.json();
+// 		for (let i = 0; i < 3; i++)
+// 			id += data
+// 				.splice(Math.floor(Math.random() * data.length), 1)
+// 				.toString();
+// 		peer = new Peer(id, options);
+// 	} else {
+// 		peer = new Peer(options);
+// 	}
 
-	conn.on("data", (data) => {
-		if (Prefabs.hasOwnProperty(data.id)) {
-			const object = Prefabs[id];
-			switch (data.type) {
-				case "update":
-					const pos = data.pos;
-					object.pos.set(pos.x, pos.y, pos.z);
-					object.rotationY = data.rotationY;
-					object.animationName = data.animationName;
-					object.animationDir = data.animationDir;
-					break;
-				case "overhead":
-					object.addOverhead(data.nickname);
-					break;
-			}
-		} else {
-			switch (data.type) {
-				case "playerList":
-					const playerList = data.playerList;
-					for (const player of playerList)
-						addNewConnection(peer.connect(player));
-					break;
-			}
-		}
-	});
+// 	peer.on("open", (id) => {
+// 		peerID = id;
+// 		if (isHosting) {
+// 			serverID = id;
+// 			init();
+// 		} else {
+// 			const conn = peer.connect(serverID);
+// 			addNewConnection(conn);
+// 		}
+// 	});
 
-	conn.on("error", (err) => {
-		const conn = peer.connect(id);
-		addNewConnection(conn);
-	});
+// 	peer.on("connection", addNewConnection);
 
-	conn.on("close", () => {
-		const id = conn.peer;
-		if (Prefabs[id]) {
-			Prefabs[id].delete();
-			delete Prefabs[id];
-		}
-		delete connections[id];
-	});
-}
+// 	peer.on("error", (err) => {
+// 		//TODO, add all errors
+// 		if (err.type === "unavailable-id") newPeer();
+// 	});
 
-async function newPeer() {
-	const options = {
-		secure: true,
-		host: "peerjs-cloud9c.herokuapp.com",
-	};
+// 	peer.on("disconnected", () => {
+// 		peer.reconnect();
+// 	});
 
-	if (isHosting) {
-		let id = "";
-		const response = await fetch("./js/words.json");
-		const data = await response.json();
-		for (let i = 0; i < 3; i++)
-			id += data
-				.splice(Math.floor(Math.random() * data.length), 1)
-				.toString();
-		peer = new Peer(id, options);
-	} else {
-		peer = new Peer(options);
-	}
-
-	peer.on("open", (id) => {
-		peerID = id;
-		if (isHosting) {
-			serverID = id;
-			init();
-		} else {
-			const conn = peer.connect(serverID);
-			addNewConnection(conn);
-		}
-	});
-
-	peer.on("connection", addNewConnection);
-
-	peer.on("error", (err) => {
-		//TODO, add all errors
-		if (err.type === "unavailable-id") newPeer();
-	});
-
-	peer.on("disconnected", () => {
-		peer.reconnect();
-	});
-
-	window.addEventListener("unload", () => {
-		peer.destroy();
-	});
-}
+// 	window.addEventListener("unload", () => {
+// 		peer.destroy();
+// 	});
+// }

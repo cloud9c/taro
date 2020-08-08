@@ -1,8 +1,8 @@
 html,
 body {
 	margin: 0;
-	background: #ADD8E6;
-	font-family: 'Open Sans', sans-serif;
+	background: #add8e6;
+	font-family: sans-serif;
 }
 
 #c {
@@ -58,13 +58,13 @@ body {
 	border-radius: 4px;
 	background: white;
 	margin: auto auto 32px;
-	border: 1px solid #C8C8C8;
+	border: 1px solid #c8c8c8;
 }
 
 .text-input {
 	display: block;
-	border: 1px solid #C8C8C8;
-	background: #F5F5F5;
+	border: 1px solid #c8c8c8;
+	background: #f5f5f5;
 	border-radius: 4px;
 	padding: 8px;
 	margin-bottom: 8px;
@@ -94,7 +94,7 @@ body {
 .launcher-button {
 	border-radius: 4px;
 	border-style: none;
-	background: #1BA8F1;
+	background: #1ba8f1;
 	color: white;
 	font-size: 16px;
 	padding: 6px;
@@ -102,9 +102,9 @@ body {
 	width: 100%;
 }
 
-#splash-page>hr {
+#splash-page > hr {
 	margin: 32px 0;
-	border: 1px solid #C8C8C8;
+	border: 1px solid #c8c8c8;
 }
 
 #crosshair {
@@ -188,7 +188,7 @@ body {
 	display: block;
 }
 
-.setting>div {
+.setting > div {
 	display: flex;
 }
 
@@ -220,16 +220,16 @@ body {
 	border-bottom: 1px solid rgba(255, 255, 255, 0.4);
 }
 
-.setting input[type=range] {
+.setting input[type="range"] {
 	-webkit-appearance: none;
 	height: 4px;
 	float: right;
-	background: #07C;
+	background: #07c;
 	margin: auto 0 auto auto;
 	border-radius: 4px;
 }
 
-.setting input[type=range]::-webkit-slider-thumb {
+.setting input[type="range"]::-webkit-slider-thumb {
 	cursor: pointer;
 	-webkit-appearance: none;
 	height: 12px;
@@ -240,11 +240,11 @@ body {
 	margin-top: 0;
 }
 
-.setting input[type=range]:focus {
+.setting input[type="range"]:focus {
 	outline: none;
 }
 
-.setting input[type=number] {
+.setting input[type="number"] {
 	background: none;
 	border: 1px solid rgba(255, 255, 255, 0.4);
 	border-radius: 4px;
@@ -258,12 +258,12 @@ body {
 	padding-left: 8px;
 }
 
-.setting input[type=number]::-webkit-outer-spin-button,
-.setting input[type=number]::-webkit-inner-spin-button {
+.setting input[type="number"]::-webkit-outer-spin-button,
+.setting input[type="number"]::-webkit-inner-spin-button {
 	-webkit-appearance: none;
 	margin: 0;
 }
-	
+
 .setting h1 {
 	margin: 64px 0 32px;
 	font-size: 20px;
@@ -275,7 +275,7 @@ body {
 	font-weight: 300;
 }
 
-.setting input[type=text] {
+.setting input[type="text"] {
 	border: 1px solid rgba(255, 255, 255, 0.4);
 	background: none;
 	border-radius: 4px;
@@ -291,7 +291,7 @@ body {
 	cursor: pointer;
 }
 
-.setting input[type=text]:focus {
+.setting input[type="text"]:focus {
 	background: rgba(0, 0, 0, 0.2);
 	border-color: #fff;
 }
@@ -320,17 +320,17 @@ body {
 }
 
 .setting-buttons > button {
-    background: none;
-    border: none;
-    font-size: 20px;
-    color: white;
-    padding: 8px;
-    margin-right: 16px;
-    cursor: pointer;
-    transition: 0.2s;
-    border-radius: 4px;
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    outline: none;
+	background: none;
+	border: none;
+	font-size: 20px;
+	color: white;
+	padding: 8px;
+	margin-right: 16px;
+	cursor: pointer;
+	transition: 0.2s;
+	border-radius: 4px;
+	border: 1px solid rgba(255, 255, 255, 0.4);
+	outline: none;
 }
 
 .setting-buttons > button:hover {

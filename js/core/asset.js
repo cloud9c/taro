@@ -5,14 +5,12 @@ import {
 	LoopOnce,
 } from "./three.module.js";
 import { GLTFLoader } from "https://threejs.org/examples/jsm/loaders/GLTFLoader.js";
-import { SimplifyModifier } from "https://threejs.org/examples/jsm/modifiers/SimplifyModifier.js";
 
 const Asset = {
 	init() {
 		const manager = new LoadingManager();
 		const modelLoader = new GLTFLoader(manager);
 		const models = ["player.glb"];
-		this.simplifier = new SimplifyModifier();
 
 		return new Promise((resolve, reject) => {
 			for (let i = 0, len = models.length; i < len; i++) {
@@ -23,10 +21,10 @@ const Asset = {
 			}
 
 			manager.onProgress = (url, itemsLoaded, itemsTotal) => {
-				document.getElementById("loading-info").textContent =
-					"Loading: " + url;
-				document.getElementById("bar-percentage").style.width =
-					(itemsLoaded / itemsTotal) * 100 + "%";
+				// document.getElementById("loading-info").textContent =
+				// 	"Loading: " + url;
+				// document.getElementById("bar-percentage").style.width =
+				// 	(itemsLoaded / itemsTotal) * 100 + "%";
 			};
 
 			manager.onLoad = resolve;
@@ -37,7 +35,6 @@ const Asset = {
 		});
 	},
 	models: {},
-	simplifiedModels: {},
 	getObject3D(model) {
 		const clone = this.models[model].scene.clone();
 
@@ -103,55 +100,6 @@ const Asset = {
 			actions: actions,
 			activeAction: activeAction,
 		};
-	},
-	getSimplified(obj) {
-		// Object3D or model name string
-		let reducedObj;
-		if (this.simplifiedModels.hasOwnProperty(obj.name)) {
-			reducedObj = this.simplifiedModels[obj.name].clone();
-		} else {
-			const temp = [
-				obj.position.clone(),
-				obj.rotation.clone(),
-				obj.scale.clone(),
-			];
-			obj.position.set(0, 0, 0);
-			obj.rotation.set(0, 0, 0);
-			obj.scale.set(1, 1, 1);
-
-			reducedObj = obj.clone();
-			const MAX_VERTICES = 100;
-			let TOTAL_VERTICES = 0;
-
-			reducedObj.traverse((node) => {
-				if (node.isMesh) {
-					TOTAL_VERTICES += node.geometry.attributes.position.count;
-				}
-			});
-
-			const REDUCTION_FACTOR = MAX_VERTICES / TOTAL_VERTICES;
-
-			if (REDUCTION_FACTOR < 1)
-				reducedObj.traverse((node) => {
-					if (node.isMesh) {
-						const count = node.geometry.attributes.position.count;
-						const newCount = Math.ceil(count * REDUCTION_FACTOR);
-						if (newCount < count)
-							node.geometry = this.simplifier.modify(
-								node.geometry,
-								newCount
-							);
-					}
-				});
-
-			obj.position.copy(temp[0]);
-			obj.rotation.copy(temp[1]);
-			obj.scale.copy(temp[2]);
-
-			if (obj.name) this.simplifiedModels[obj.name] = reducedObj.clone();
-		}
-
-		return reducedObj;
 	},
 };
 
