@@ -61,14 +61,17 @@ class Rigidbody {
 		if (data.hasOwnProperty("useGravity") && !data.useGravity) {
 			this.setGravityScale(0);
 		}
-		this._ref.setPosition(this._position);
-		this._ref.setRotation(this._rotation);
 		System.physics.world.addRigidBody(this._ref);
 	}
 
-	_interpolate() {
-		this._previousState.position.copy(this._position);
-		this._previousState.rotation.copy(this._rotation);
+	_update() {
+		if (this.interpolate) {
+			this._previousState.position.copy(this._position);
+			this._previousState.rotation.copy(this._rotation);
+		}
+		console.log(this._position)
+		this._position.copy(this._ref.getPosition())
+		this._rotation.setFromVector3(this._ref.getRotation().toEulerXyz())
 	}
 
 	// https://saharan.github.io/OimoPhysics/oimo/dynamics/rigidbody/RigidBody.html

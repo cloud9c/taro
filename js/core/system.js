@@ -237,9 +237,7 @@ const System = {
 
 			while (this.accumulator >= this.UPDATE_PERIOD) {
 				for (const entity in this.rigidbodies) {
-					const r = this.rigidbodies[entity];
-
-					if (r.interpolate) r._interpolate();
+					this.rigidbodies[entity]._update();
 				}
 				this.world.step(this.UPDATE_PERIOD);
 				this.accumulator -= this.UPDATE_PERIOD;

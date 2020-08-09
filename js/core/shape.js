@@ -1,4 +1,5 @@
 import OIMO from "./oimoPhysics.js";
+import {Vector3} from "./engine.js"
 
 export default class Shape {
 	constructor(data) {
@@ -21,7 +22,7 @@ export default class Shape {
 	}
 
 	get volume() {
-		return this._ref.getVolume();
+		return this._ref.getGeometry().getVolume();
 	}
 
 	getHalfExtents() {
@@ -44,7 +45,7 @@ export default class Shape {
 		switch (data.type) {
 			case "box":
 				geometry = new OIMO.BoxGeometry(
-					data.hasOwnProperty("halfExtents") ? data.halfExtents : 0.5
+					data.hasOwnProperty("halfExtents") ? data.halfExtents : Vector3(1, 1, 1)
 				);
 				break;
 			case "capsule":
@@ -163,8 +164,8 @@ export default class Shape {
 	get bounds() {
 		const aabb = this._ref.getAabb();
 		return {
-			min: new Vector3().copy(aabb.getMin()),
-			max: new Vector3().copy(aabb.getMax()),
+			min: aabb.getMin(),
+			max: aabb.getMax(),
 		};
 	}
 
@@ -192,23 +193,13 @@ export default class Shape {
 		return this._ref.getRestitution();
 	}
 
-	getLocalPosition() {
-		return new Vector3().copy(this._ref.getLocalTransform().getPosition());
+	getPosition() {
+		return this._ref.getLocalTransform().getPosition();
 	}
 
-	getLocalRotation() {
-		return new Euler().copy(
+	getRotation() {
+		return new Euler().setFromVector3(
 			this._ref.getLocalTransform().getRotation().toEulerXyz()
-		);
-	}
-
-	get position() {
-		return new Vector3().copy(this._ref.getTransform().getPosition());
-	}
-
-	get rotation() {
-		return new Euler().copy(
-			this._ref.getTransform().getRotation().toEulerXyz()
 		);
 	}
 
@@ -232,11 +223,11 @@ export default class Shape {
 		this._ref.setFriction(v);
 	}
 
-	setLocalPosition(v) {
+	setPosition(v) {
 		this._ref.setLocalTransform(this._ref.getTransform().setPosition(v));
 	}
 
-	setLocalRotation(v) {
+	setRotation(v) {
 		this._ref.setLocalTransform(this._ref.getTransform().setRotationXyz(v));
 	}
 

@@ -3,7 +3,7 @@ import { Shape, Vector3, Asset, Entity, System } from "./core/engine.js";
 
 export function Player() {
 	const obj = Asset.getObject3D("player.glb");
-	const entity = new Entity({ position: new Vector3(0, 0, 0) });
+	const entity = new Entity({ position: new Vector3(0, 100, 0) });
 
 	entity.addComponent("object3D", obj);
 	entity.addComponent(
@@ -20,11 +20,12 @@ export function Player() {
 			halfExtents: new Vector3(0.5, 1, 0.5),
 		})
 	);
+
 	entity.addComponent("camera");
 
 	const keyInput = System.input.keyInput;
-	const curVel = entity.rigidbody.velocity;
-	const rotation = entity.transform.rotation;
+	// const curVel = entity.rigidbody.velocity;
+	// const rotation = entity.transform.rotation;
 	const maxSpeed = 20;
 	entity.addComponent("behavior", () => {
 		if (keyInput.w) {
@@ -40,7 +41,6 @@ export function Player() {
 		if (keyInput.sprint) {
 		}
 	});
-	console.log(entity.collider);
 }
 
 export function Ball() {
