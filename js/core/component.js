@@ -61,7 +61,7 @@ class Rigidbody {
 		if (data.hasOwnProperty("useGravity") && !data.useGravity) {
 			this.setGravityScale(0);
 		}
-		System.physics.world.addRigidBody(this._ref);
+		System.world.addRigidBody(this._ref);
 	}
 
 	_update() {
@@ -69,9 +69,9 @@ class Rigidbody {
 			this._previousState.position.copy(this._position);
 			this._previousState.rotation.copy(this._rotation);
 		}
-		console.log(this._position)
-		this._position.copy(this._ref.getPosition())
-		this._rotation.setFromVector3(this._ref.getRotation().toEulerXyz())
+		console.log(this._position);
+		this._position.copy(this._ref.getPosition());
+		this._rotation.setFromVector3(this._ref.getRotation().toEulerXyz());
 	}
 
 	// https://saharan.github.io/OimoPhysics/oimo/dynamics/rigidbody/RigidBody.html
@@ -199,7 +199,7 @@ class Collider {
 				Component.components.transform[id]._rotation
 			);
 			this._ref = new OIMO.RigidBody(Collider._config);
-			System.physics.world.addRigidBody(this._ref);
+			System.world.addRigidBody(this._ref);
 		}
 		this.add(data);
 	}
@@ -306,8 +306,8 @@ class Camera {
 		);
 		this._enabled = data.hasOwnProperty("enabled") ? data.enabled : true;
 		if (this._enabled) {
-			this._index = System.camera.cameras.cameras.length;
-			System.camera.cameras.cameras.push(this._ref);
+			this._index = System.cameras.cameras.length;
+			System.cameras.cameras.push(this._ref);
 		}
 	}
 
@@ -319,10 +319,10 @@ class Camera {
 		if (v !== this._enabled) {
 			this._enabled = v;
 			if (this._enabled) {
-				this._index = System.camera.cameras.cameras.length;
-				System.camera.cameras.cameras.push(this._ref);
+				this._index = System.cameras.cameras.length;
+				System.cameras.cameras.push(this._ref);
 			} else {
-				System.camera.cameras.cameras.splice(this._index, 1);
+				System.cameras.cameras.splice(this._index, 1);
 			}
 		}
 	}
@@ -453,7 +453,7 @@ const Component = {
 	camera: Camera,
 	collider: Collider,
 	object3D: function (id, data = new Object3D()) {
-		System.render.scene.add(data);
+		System.scene.add(data);
 		return data;
 	},
 	rigidbody: Rigidbody,

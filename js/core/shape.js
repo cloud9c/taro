@@ -1,5 +1,5 @@
 import OIMO from "./oimoPhysics.js";
-import {Vector3} from "./engine.js"
+import { Vector3 } from "./engine.js";
 
 export default class Shape {
 	constructor(data) {
@@ -45,7 +45,9 @@ export default class Shape {
 		switch (data.type) {
 			case "box":
 				geometry = new OIMO.BoxGeometry(
-					data.hasOwnProperty("halfExtents") ? data.halfExtents : Vector3(1, 1, 1)
+					data.hasOwnProperty("halfExtents")
+						? data.halfExtents
+						: Vector3(1, 1, 1)
 				);
 				break;
 			case "capsule":

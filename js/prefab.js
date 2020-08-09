@@ -23,7 +23,7 @@ export function Player() {
 
 	entity.addComponent("camera");
 
-	const keyInput = System.input.keyInput;
+	const keyInput = System.input;
 	// const curVel = entity.rigidbody.velocity;
 	// const rotation = entity.transform.rotation;
 	const maxSpeed = 20;
