@@ -3,7 +3,7 @@ import {
 	Skeleton,
 	AnimationMixer,
 	LoopOnce,
-} from "./three.module.js";
+} from "./lib/three.module.js";
 import { GLTFLoader } from "https://threejs.org/examples/jsm/loaders/GLTFLoader.js";
 
 const Asset = {

@@ -1,5 +1,5 @@
-import * as THREE from "./core/three.module.js";
-import * as Engine from "./core/engine.js";
+import * as THREE from "./src/lib/three.module.js";
+import * as Engine from "./src/engine.js";
 import * as Prefab from "./prefab.js";
 
 let peer,
@@ -39,10 +39,9 @@ async function init() {
 	const hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 0.6);
 	hemiLight.color.setHSL(0.6, 1, 0.6);
 	hemiLight.groundColor.setHSL(0.095, 1, 0.75);
-	new Engine.Entity({ position: new Engine.Vector3(0, 100, 0) }).addComponent(
-		"object3D",
-		hemiLight
-	);
+	new Engine.Entity()
+		.addComponent(Engine.Object3D, hemiLight)
+		.Transform.setPosition(0, 100, 0);
 
 	const dirLight = new THREE.DirectionalLight(0xffffff, 1);
 	dirLight.color.setHSL(0.1, 1, 0.95);
@@ -62,9 +61,9 @@ async function init() {
 	dirLight.shadow.camera.far = 3500;
 	dirLight.shadow.bias = -0.0001;
 
-	new Engine.Entity({
-		position: new Engine.Vector3(-100, 175, 100),
-	}).addComponent("object3D", dirLight);
+	new Engine.Entity()
+		.addComponent(Engine.Object3D, dirLight)
+		.Transform.setPosition(-100, 175, 100);
 
 	// floor
 	geo = new THREE.PlaneBufferGeometry(200, 200);
@@ -74,17 +73,16 @@ async function init() {
 	mesh = new THREE.Mesh(geo, mat);
 	mesh.receiveShadow = true;
 
-	new Engine.Entity({
-		rotation: new Engine.Euler(-Math.PI / 2, 0, 0),
-	})
-		.addComponent("object3D", mesh)
+	new Engine.Entity()
+		.addComponent(Engine.Object3D, mesh)
 		.addComponent(
-			"collider",
+			Engine.Collider,
 			new Engine.Shape({
 				type: "box",
 				halfExtents: new Engine.Vector3(100, 1, 100),
 			})
-		);
+		)
+		.Transform.setRotation(-Math.PI / 2, 0, 0);
 
 	// wall
 	geo = new THREE.PlaneBufferGeometry(200, 200);
@@ -94,18 +92,19 @@ async function init() {
 	mesh = new THREE.Mesh(geo, mat);
 	mesh.receiveShadow = true;
 
-	new Engine.Entity({ position: new Engine.Vector3(0, 0, -10) })
-		.addComponent("object3D", mesh)
+	new Engine.Entity()
+		.addComponent(Engine.Object3D, mesh)
 		.addComponent(
-			"collider",
+			Engine.Collider,
 			new Engine.Shape({
 				type: "box",
 				halfExtents: new Engine.Vector3(100, 100, 1),
 			})
-		);
+		)
+		.Transform.setPosition(0, 0, -10);
 
 	new Engine.Entity().addComponent(
-		"object3D",
+		Engine.Object3D,
 		new THREE.GridHelper(1000, 1000, 0x0000ff, 0x808080)
 	);
 
@@ -113,7 +112,7 @@ async function init() {
 	Prefab.Player();
 	// Prefab.Ball();
 
-	window.requestAnimationFrame(Engine.System.gameLoop);
+	window.requestAnimationFrame((t) => Engine.System.updateLoop(t));
 }
 
 // function addNewConnection(conn) {

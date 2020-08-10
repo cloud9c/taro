@@ -1,7 +1,7 @@
-import OIMO from "./oimoPhysics.js";
+import OIMO from "./lib/oimoPhysics.js";
 import { Vector3 } from "./engine.js";
 
-export default class Shape {
+class Shape {
 	constructor(data) {
 		this.set(data);
 	}
@@ -238,3 +238,5 @@ export default class Shape {
 	}
 }
 Shape._config = new OIMO.ShapeConfig();
+
+export default Shape;

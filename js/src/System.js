@@ -1,38 +1,32 @@
-import * as THREE from "./three.module.js";
-import OIMO from "./oimoPhysics.js";
-import Component from "./component.js";
+import * as THREE from "./lib/three.module.js";
+import OIMO from "./lib/oimoPhysics.js";
+import Component from "./Component.js";
 import { Color, Quaternion } from "./engine.js";
+import Input from "./Input.js";
 
 const System = {
-	init(canvas) {
+	init: function (canvas) {
 		this.canvas = document.getElementById(canvas);
 
 		// behavior
-		this.behaviors = Component.components.behavior;
+		this.Behavior = Component.components.Behavior;
 
 		// camera
-		this._cameras = Component.components.camera;
+		this.Camera = Component.components.Camera;
 		this.cameras = new THREE.ArrayCamera();
 
 		// input
-		const input = {
-			MouseX: 0,
-			MouseY: 0,
-			WheelX: 0,
-			WheelY: 0,
-		};
-
 		this.canvas.addEventListener("click", () => {
 			document.body.requestFullscreen();
 			document.body.requestPointerLock();
 		});
 
 		window.addEventListener("blur", () => {
-			for (const property in input) {
-				if (typeof input[property] === "boolean")
-					input[property] = false;
-				else if (typeof input[property] === "number")
-					input[property] = 0;
+			for (const property in Input) {
+				if (typeof Input[property] === "boolean")
+					Input[property] = false;
+				else if (typeof Input[property] === "number")
+					Input[property] = 0;
 			}
 			this.lastTimestamp = undefined;
 		});
@@ -44,27 +38,25 @@ const System = {
 		});
 
 		document.addEventListener("mousemove", (event) => {
-			input.MouseX = event.movementX;
-			input.MouseY = event.movementY;
+			Input.MouseX = event.movementX;
+			Input.MouseY = event.movementY;
 		});
 		document.addEventListener("wheel", () => {
-			input.WheelX = event.wheelDeltaX;
-			input.WheelY = event.wheelDeltaY;
+			Input.WheelX = event.wheelDeltaX;
+			Input.WheelY = event.wheelDeltaY;
 		});
 		document.addEventListener("keydown", () => {
 			if (event.repeat) return;
 
-			input[event.code] = true;
+			Input[event.code] = true;
 		});
 		document.addEventListener("keyup", () => {
-			input[event.code] = false;
+			Input[event.code] = false;
 		});
-
-		this.input = input;
 
 		// physics
 		this.accumulator = 0;
-		this.rigidbodies = Component.components.rigidbody;
+		this.Rigidbody = Component.components.Rigidbody;
 		this.UPDATE_PERIOD = 0.01;
 		this.alpha = 0;
 
@@ -80,57 +72,49 @@ const System = {
 			canvas: this.canvas,
 		});
 		this.renderer.setSize(window.innerWidth, window.innerHeight);
-		this.object3Ds = Component.components.object3D;
-		this.rigidbodies = Component.components.rigidbody;
-		this.transforms = Component.components.transform;
+		this.Object3D = Component.components.Object3D;
+		this.Transform = Component.components.Transform;
 
 		this.lastTimestamp = undefined;
 	},
-	gameLoop(timestamp) {
+	updateLoop: function (timestamp) {
 		timestamp /= 1000;
-		const dt = timestamp - System.lastTimestamp || 0;
-		System.lastTimestamp = timestamp;
-
-		// behavior
-		for (const entity in System.behaviors) {
-			System.behaviors[entity]();
-		}
+		const dt = timestamp - this.lastTimestamp || 0;
+		this.lastTimestamp = timestamp;
 
 		// physics
-		System.accumulator += dt > 0.25 ? 0.25 : dt;
+		this.accumulator += dt > 0.25 ? 0.25 : dt;
 
-		while (System.accumulator >= System.UPDATE_PERIOD) {
-			for (const entity in System.rigidbodies) {
-				System.rigidbodies[entity]._update();
+		while (this.accumulator >= this.UPDATE_PERIOD) {
+			for (let i = 0, len = this.Rigidbody.length; i < len; i++) {
+				this.Rigidbody[i]._update();
 			}
-			System.world.step(System.UPDATE_PERIOD);
-			System.accumulator -= System.UPDATE_PERIOD;
+			this.world.step(this.UPDATE_PERIOD);
+			this.accumulator -= this.UPDATE_PERIOD;
 		}
 
-		System.alpha = System.accumulator / System.UPDATE_PERIOD;
+		this.alpha = this.accumulator / this.UPDATE_PERIOD;
 
 		// input - resets delta movements
-		const input = System.input;
-		input.MouseX = input.MouseY = input.WheelX = input.WheelY = 0;
+		Input.MouseX = Input.MouseY = Input.WheelX = Input.WheelY = 0;
 
 		// camera
-		for (const entity in System._cameras) {
-			System._cameras[entity]._updateTransform();
+		for (let i = 0, len = this.Camera.length; i < len; i++) {
+			this.Camera[i]._updateTransform();
 		}
 
 		// render
-		for (const entity in System.object3Ds) {
-			const obj = System.object3Ds[entity];
-			const transform = System.transforms[entity];
-			const alpha = System.alpha;
+		for (let i = 0, len = this.Object3D.length; i < len; i++) {
+			const obj = this.Object3D[i];
+			const transform = obj.entity.Transform;
+			const alpha = this.alpha;
 
 			// physics interpolation
 			if (
-				System.rigidbodies.hasOwnProperty(entity) &&
-				System.rigidbodies[entity].interpolate
+				obj.entity.hasOwnProperty("Rigidbody") &&
+				obj.entity.Rigidbody.interpolate
 			) {
-				const _previousState =
-					System.rigidbodies[entity]._previousState;
+				const _previousState = obj.entity.Rigidbody._previousState;
 
 				obj.position.copy(
 					transform._position
@@ -154,13 +138,13 @@ const System = {
 			}
 			obj.scale.copy(transform._scale);
 		}
-		System.renderer.render(System.scene, System.cameras);
+		this.renderer.render(this.scene, this.cameras);
 
-		window.requestAnimationFrame(System.gameLoop);
+		window.requestAnimationFrame((t) => this.updateLoop(t));
 	},
 	// animation: {
 	// 	init() {
-	// 		this.animations = Component.components.animation;
+	// 		this.animations = Component.components.Animation;
 	// 	},
 	// 	update() {
 	// 		for (const entity in this.animations) {
@@ -203,7 +187,7 @@ const System = {
 	// 	camera.zoom = 1;
 	// },
 	// setTarget(target, firstPerson = true, renderFirstPerson = false) {
-	// 	target.object3D.add(this.camera);
+	// 	target.Object3D.add(this.camera);
 
 	// 	this.target = target;
 
