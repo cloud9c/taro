@@ -1,7 +1,7 @@
-import { Euler, Vector3 } from "../engine.js";
-import Component from "../Component.js";
+import { Euler } from "../math/Euler.js";
+import { Vector3 } from "../math/Vector3.js";
 
-class Transform extends Component {
+class Transform {
 	init(data) {
 		this._position = data.hasOwnProperty("position")
 			? data.position
@@ -39,4 +39,4 @@ class Transform extends Component {
 	}
 }
 
-export default Transform;
+export { Transform };

@@ -1,9 +1,8 @@
-import Component from "../Component.js";
-import System from "../System.js";
-import { Vector4 } from "../engine.js";
+import { System } from "../System.js";
+import { Vector4 } from "../math/Vector4.js";
 import { PerspectiveCamera, OrthographicCamera } from "../lib/three.module.js";
 
-class Camera extends Component {
+class Camera {
 	init(data) {
 		this._position = this.entity.Transform._position;
 		this._rotation = this.entity.Transform._rotation;
@@ -172,4 +171,4 @@ class Camera extends Component {
 	}
 }
 
-export default Camera;
+export { Camera };

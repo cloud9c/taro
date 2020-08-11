@@ -103,4 +103,4 @@ const Asset = {
 	},
 };
 
-export default Asset;
+export { Asset };

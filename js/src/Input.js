@@ -5,4 +5,4 @@ const Input = {
 	WheelY: 0,
 };
 
-export default Input;
+export { Input };

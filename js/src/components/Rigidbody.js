@@ -1,9 +1,9 @@
-import Component from "../Component.js";
-import OIMO from "../lib/oimoPhysics.js";
-import System from "../System.js";
-import { Euler, Vector3 } from "../engine.js";
+import { OIMO } from "../lib/oimoPhysics.js";
+import { System } from "../System.js";
+import { Euler } from "../math/Euler.js";
+import { Vector3 } from "../math/Vector3.js";
 
-class Rigidbody extends Component {
+class Rigidbody {
 	init(data) {
 		this._position = this.entity.Transform._position;
 		this._rotation = this.entity.Transform._rotation;
@@ -183,4 +183,4 @@ class Rigidbody extends Component {
 
 Rigidbody._config = new OIMO.RigidBodyConfig();
 
-export default Rigidbody;
+export { Rigidbody };

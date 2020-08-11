@@ -1,8 +1,8 @@
 import * as THREE from "./lib/three.module.js";
-import OIMO from "./lib/oimoPhysics.js";
-import Component from "./Component.js";
-import { Color, Quaternion } from "./engine.js";
-import Input from "./Input.js";
+import { OIMO } from "./lib/oimoPhysics.js";
+import { Component } from "./Component.js";
+import { Color, Quaternion } from "./Engine.js";
+import { Input } from "./Input.js";
 
 const System = {
 	init: function (canvas) {
@@ -244,4 +244,4 @@ const System = {
 	// },
 };
 
-export default System;
+export { System };

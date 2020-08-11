@@ -1,8 +1,7 @@
-import Component from "../Component.js";
-import OIMO from "../lib/oimoPhysics.js";
-import System from "../System.js";
+import { OIMO } from "../lib/oimoPhysics.js";
+import { System } from "../System.js";
 
-class Collider extends Component {
+class Collider {
 	init(data) {
 		this.shapes = [];
 
@@ -49,4 +48,4 @@ class Collider extends Component {
 Collider._config = new OIMO.RigidBodyConfig();
 Collider._config.type = 1;
 
-export default Collider;
+export { Collider };
