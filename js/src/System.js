@@ -9,10 +9,10 @@ const System = {
 		this.canvas = document.getElementById(canvas);
 
 		// behavior
-		this.Behavior = Component.components.Behavior;
+		this.Behavior = Component._containers.Behavior;
 
 		// camera
-		this.Camera = Component.components.Camera;
+		this.Camera = Component._containers.Camera;
 		this.cameras = new THREE.ArrayCamera();
 
 		// input
@@ -56,7 +56,7 @@ const System = {
 
 		// physics
 		this.accumulator = 0;
-		this.Rigidbody = Component.components.Rigidbody;
+		this.Rigidbody = Component._containers.Rigidbody;
 		this.UPDATE_PERIOD = 0.01;
 		this.alpha = 0;
 
@@ -72,8 +72,8 @@ const System = {
 			canvas: this.canvas,
 		});
 		this.renderer.setSize(window.innerWidth, window.innerHeight);
-		this.Object3D = Component.components.Object3D;
-		this.Transform = Component.components.Transform;
+		this.Object3D = Component._containers.Object3D;
+		this.Transform = Component._containers.Transform;
 
 		this.lastTimestamp = undefined;
 	},
@@ -106,7 +106,7 @@ const System = {
 		// render
 		for (let i = 0, len = this.Object3D.length; i < len; i++) {
 			const obj = this.Object3D[i];
-			const transform = obj.entity.Transform;
+			const transform = obj.entity.transform;
 			const alpha = this.alpha;
 
 			// physics interpolation
@@ -144,7 +144,7 @@ const System = {
 	},
 	// animation: {
 	// 	init() {
-	// 		this.animations = Component.components.Animation;
+	// 		this.animations = Component._containers.Animation;
 	// 	},
 	// 	update() {
 	// 		for (const entity in this.animations) {

@@ -19,14 +19,8 @@ export { Vector2 } from "./math/Vector2.js";
 export { Vector3 } from "./math/Vector3.js";
 export { Vector4 } from "./math/Vector4.js";
 
-// components
-export { Animation } from "./components/Animation.js";
-export { Camera } from "./components/Camera.js";
-export { Collider } from "./components/Collider.js";
-export { Object3D } from "./components/Object3D.js";
-export { Rigidbody } from "./components/Rigidbody.js";
+// component
 export { Shape } from "./Shape.js";
-export { Transform } from "./components/Transform.js";
 
 export async function init(canvas) {
 	await Asset.init();

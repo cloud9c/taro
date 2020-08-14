@@ -4,8 +4,8 @@ import { PerspectiveCamera, OrthographicCamera } from "../lib/three.module.js";
 
 class Camera {
 	init(data) {
-		this._position = this.entity.Transform._position;
-		this._rotation = this.entity.Transform._rotation;
+		this._position = this.entity.transform._position;
+		this._rotation = this.entity.transform._rotation;
 
 		this.type = data.hasOwnProperty("type") ? data.type : "perspective";
 		if (this.type === "perspective") {

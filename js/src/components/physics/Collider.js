@@ -1,46 +1,26 @@
 import { OIMO } from "./lib/oimoPhysics.js";
 import { Vector3 } from "./Engine.js";
+import { System } from "../System.js";
 
-class Shape {
-	constructor(data) {
-		this.set(data);
-	}
-
-	recompute() {
-		switch (this._ref.getType()) {
-			case 0:
-				break;
-			case 1:
-			case 2:
-			case 3:
-				break;
-			case 4:
-				break;
-			case 5:
-				break;
+class Collider {
+	setRef() {
+		if (this.entity.hasOwnProperty("_physicsRef")) {
+			this._ref = this.entity._physicsRef;
+		} else {
+			Collider._config.position = Collider._config.position.copyFrom(
+				this.entity.transform._position
+			);
+			Collider._config.rotation = Collider._config.rotation.fromEulerXyz(
+				this.entity.transform._rotation
+			);
+			this.entity._physicsRef = this._ref = new OIMO.RigidBody(
+				Collider._config
+			);
+			System.world.addRigidBody(this._ref);
 		}
 	}
 
-	get volume() {
-		return this._ref.getGeometry().getVolume();
-	}
-
-	getHalfExtents() {
-		const v = this._ref.getGeometry().getHalfExtents();
-		return new Vector3(v.x, v.y, v.z);
-	}
-
-	get halfHeight() {
-		return this._ref.getGeometry().getHalfHeight();
-	}
-
-	get radius() {
-		return this._ref.getGeometry().getRadius();
-	}
-
-	set(data) {
-		if (!data.hasOwnProperty("type")) throw "Shape type not specified";
-
+	setShape(data) {
 		let geometry;
 		switch (data.type) {
 			case "box":
@@ -82,8 +62,6 @@ class Shape {
 				throw "Invalid shape type";
 		}
 
-		this.type = data.type;
-
 		const material = data.hasOwnProperty("material") ? data.material : {};
 
 		Shape._config.geometry = geometry;
@@ -112,14 +90,43 @@ class Shape {
 			? Shape._config.rotation.fromEulerXyz(data.localRotation)
 			: Shape._config.rotation.init(0, 0, 0, 0, 0, 0, 0, 0, 0);
 
-		if (this.collider !== undefined)
-			this.collider._ref.removeShape(this._ref);
-		this._ref = new OIMO.Shape(Shape._config);
-		if (this.collider !== undefined) this.collider._ref.addShape(this._ref);
+		this._ref.addShape(new OIMO.Shape(Shape._config));
+	}
+
+	recompute() {
+		switch (this._ref.getType()) {
+			case 0:
+				break;
+			case 1:
+			case 2:
+			case 3:
+				break;
+			case 4:
+				break;
+			case 5:
+				break;
+		}
+	}
+
+	get volume() {
+		return this._ref.getGeometry().getVolume();
+	}
+
+	getHalfExtents() {
+		const v = this._ref.getGeometry().getHalfExtents();
+		return new Vector3(v.x, v.y, v.z);
+	}
+
+	get halfHeight() {
+		return this._ref.getGeometry().getHalfHeight();
+	}
+
+	get radius() {
+		return this._ref.getGeometry().getRadius();
 	}
 
 	setHalfExtents(v) {
-		this.set({
+		this.setShape({
 			type: this.type,
 			halfExtents: v,
 			collisionGroup: this.collisionGroup,
@@ -134,7 +141,7 @@ class Shape {
 	}
 
 	set halfHeight(v) {
-		this.set({
+		this.setShape({
 			type: this.type,
 			halfHeight: v,
 			collisionGroup: this.collisionGroup,
@@ -149,7 +156,7 @@ class Shape {
 	}
 
 	set radius(v) {
-		this.set({
+		this.setShape({
 			type: this.type,
 			radius: v,
 			collisionGroup: this.collisionGroup,
@@ -237,6 +244,9 @@ class Shape {
 		this._ref.setRestitution(v);
 	}
 }
-Shape._config = new OIMO.ShapeConfig();
+Collider._shapeConfig = new OIMO.ShapeConfig();
 
-export { Shape };
+Collider._config = new OIMO.RigidBodyConfig();
+Collider._config.type = 1;
+
+export { Collider };

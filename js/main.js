@@ -40,8 +40,8 @@ async function init() {
 	hemiLight.color.setHSL(0.6, 1, 0.6);
 	hemiLight.groundColor.setHSL(0.095, 1, 0.75);
 	new Engine.Entity()
-		.addComponent(Engine.Object3D, hemiLight)
-		.Transform.setPosition(0, 100, 0);
+		.addComponent("Object3D", hemiLight)
+		.transform.setPosition(0, 100, 0);
 
 	const dirLight = new THREE.DirectionalLight(0xffffff, 1);
 	dirLight.color.setHSL(0.1, 1, 0.95);
@@ -62,8 +62,8 @@ async function init() {
 	dirLight.shadow.bias = -0.0001;
 
 	new Engine.Entity()
-		.addComponent(Engine.Object3D, dirLight)
-		.Transform.setPosition(-100, 175, 100);
+		.addComponent("Object3D", dirLight)
+		.transform.setPosition(-100, 175, 100);
 
 	// floor
 	geo = new THREE.PlaneBufferGeometry(200, 200);
@@ -74,15 +74,15 @@ async function init() {
 	mesh.receiveShadow = true;
 
 	new Engine.Entity()
-		.addComponent(Engine.Object3D, mesh)
+		.addComponent("Object3D", mesh)
 		.addComponent(
-			Engine.Collider,
+			"Collider",
 			new Engine.Shape({
 				type: "box",
 				halfExtents: new Engine.Vector3(100, 1, 100),
 			})
 		)
-		.Transform.setRotation(-Math.PI / 2, 0, 0);
+		.transform.setRotation(-Math.PI / 2, 0, 0);
 
 	// wall
 	geo = new THREE.PlaneBufferGeometry(200, 200);
@@ -93,18 +93,18 @@ async function init() {
 	mesh.receiveShadow = true;
 
 	new Engine.Entity()
-		.addComponent(Engine.Object3D, mesh)
+		.addComponent("Object3D", mesh)
 		.addComponent(
-			Engine.Collider,
+			"Collider",
 			new Engine.Shape({
 				type: "box",
 				halfExtents: new Engine.Vector3(100, 100, 1),
 			})
 		)
-		.Transform.setPosition(0, 0, -10);
+		.transform.setPosition(0, 0, -10);
 
 	new Engine.Entity().addComponent(
-		Engine.Object3D,
+		"Object3D",
 		new THREE.GridHelper(1000, 1000, 0x0000ff, 0x808080)
 	);
 

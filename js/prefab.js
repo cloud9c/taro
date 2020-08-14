@@ -5,25 +5,25 @@ export function Player() {
 	const obj = Engine.Asset.getObject3D("player.glb");
 	const entity = new Engine.Entity();
 
-	entity.Transform.setPosition(0, 100, 0);
+	entity.transform.setPosition(0, 100, 0);
 
-	entity.addComponent(Engine.Object3D, obj);
+	entity.addComponent("Object3D", obj);
 	entity.addComponent(
-		Engine.Animation,
+		"Animation",
 		Engine.Asset.getAnimation(obj, "player.glb", "Idle")
 	);
-	entity.addComponent(Engine.Rigidbody, {
+	entity.addComponent("Rigidbody", {
 		mass: 60,
 	});
 	entity.addComponent(
-		Engine.Collider,
+		"Collider",
 		new Engine.Shape({
 			type: "box",
 			halfExtents: new Engine.Vector3(0.5, 1, 0.5),
 		})
 	);
 
-	entity.addComponent(Engine.Camera);
+	entity.addComponent("Camera");
 
 	// const keyInput = Engine.Input;
 	// const maxSpeed = 20;
@@ -48,30 +48,30 @@ export function Ball() {
 	const obj = Engine.Asset.getObject3D("player.glb");
 	const entity = new Engine.Entity();
 
-	entity.Transform.setPosition(5, 10, 0);
+	entity.transform.setPosition(5, 10, 0);
 
 	const geo = new THREE.SphereBufferGeometry(1, 32, 32);
 	const mat = new THREE.MeshBasicMaterial({ color: 0xffff00 });
 
-	entity.addComponent(Engine.Object3D, new THREE.Mesh(geo, mat));
-	entity.addComponent(Engine.Rigidbody, {
+	entity.addComponent("Object3D", new THREE.Mesh(geo, mat));
+	entity.addComponent("Rigidbody", {
 		mass: 10,
 	});
-	entity.addComponent(Engine.Collider, new Engine.Shape({}));
+	entity.addComponent("Collider", new Engine.Shape({}));
 }
 
 export function Cube() {
 	const obj = Engine.Asset.getObject3D("player.glb");
 	const entity = new Engine.Entity();
 
-	entity.Transform.setPosition(5, 10, 0);
+	entity.transform.setPosition(5, 10, 0);
 
 	const geo = new THREE.BoxBufferGeometry(2, 2, 2);
 	const mat = new THREE.MeshBasicMaterial({ color: 0xff0000 });
 
-	entity.addComponent(Engine.Object3D, new THREE.Mesh(geo, mat));
-	entity.addComponent(Engine.Rigidbody, {
+	entity.addComponent("Object3D", new THREE.Mesh(geo, mat));
+	entity.addComponent("Rigidbody", {
 		mass: 10,
 	});
-	entity.addComponent(Engine.Collider, new Engine.Shape({}));
+	entity.addComponent("Collider", new Engine.Shape({}));
 }

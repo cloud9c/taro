@@ -18,24 +18,23 @@ class Transform {
 	}
 	setPosition(x, y, z) {
 		this._position.set(x, y, z);
-		if (this.entity.hasOwnProperty("Rigidbody"))
-			this.entity.Rigidbody._ref.setPosition(this._position);
+		if (this.entity.hasOwnProperty("_physicsRef"))
+			this.entity._physicsRef.setPosition(this._position);
 	}
 	getRotation() {
 		return this._rotation.clone();
 	}
 	setRotation(x, y, z) {
 		this._rotation.set(x, y, z);
-		if (this.entity.hasOwnProperty("Rigidbody"))
-			this.entity.Rigidbody._ref.setRotationXyz(this._rotation);
+		if (this.entity.hasOwnProperty("_physicsRef"))
+			this.entity._physicsRef.setRotationXyz(this._rotation);
 	}
 	getScale() {
 		return this._scale.clone();
 	}
 	setScale(x, y, z) {
 		this._scale.set(x, y, z);
-		if (this.entity.hasOwnProperty("Collider"))
-			this.entity.Collider.recomputeShapes();
+		// collider
 	}
 }
 

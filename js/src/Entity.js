@@ -1,53 +1,92 @@
 import { Component } from "./Component.js";
-import { Transform } from "./Engine.js";
 
 class Entity {
-	constructor() {
-		this.id =
-			(+new Date()).toString(16) +
-			(Math.random() * 100000000 || 0).toString(16);
+	constructor(id) {
+		Entity.entities.push(this);
+		this._components = {};
+		this.id = id;
+		this.tags = [];
 
-		Entity.entities[this.id] = this;
-		this.addComponent(Transform);
+		console.log(this);
+
+		this.addComponent("Transform");
+		this.transform = this._components["Transform"];
+	}
+
+	addTag(name) {
+		if (this.tags.indexOf(name) === -1) {
+			this.tags.push(name);
+
+			if (Entity._tags.hasOwnProperty(name))
+				Entity._tags[name].push(this);
+			else Entity._tags[name] = [this];
+		}
+	}
+
+	removeTag(name) {
+		const index = this.tags.indexOf(name);
+		if (index !== -1) {
+			this.tags.splice(index, 1);
+			if (Entity._tags[name].length > 1) {
+				Entity._tags[name].splice(Entity._tags[name].indexOf(this), 1);
+			} else {
+				delete Entity._tags[name];
+			}
+		}
+	}
+
+	get id() {
+		return this._id;
+	}
+
+	set id(id) {
+		this._id = id;
+		Entity._ids[id] = this;
+	}
+
+	static find(id) {
+		return Entity._ids[id];
+	}
+
+	static findByTag(tag) {
+		return Entity._tags[tag];
+	}
+
+	getComponent(type) {
+		const _c = this._components[type];
+		return Array.isArray(_c) ? _c[type][0] : _c;
+	}
+
+	getComponents(type) {
+		return this._components[type];
 	}
 
 	addComponent(type, data = {}) {
-		const name = type.name;
-		const newComponent = new type(this);
+		const newComponent = new Component._components[type]();
 		newComponent.entity = this;
 
-		if (!Component.components.hasOwnProperty(name))
-			Component.components[name] = [newComponent];
-		else Component.components[name].push(newComponent);
+		if (!Component._containers.hasOwnProperty(type))
+			Component._containers[type] = [newComponent];
+		else Component._containers[type].push(newComponent);
 
-		if (typeof newComponent.init === "function") newComponent.init(data);
+		if ("init" in newComponent) newComponent.init(data);
 
-		if (this.hasOwnProperty(name)) {
-			if (Array.isArray(this[name])) this[name].push(newComponent);
-			else this[name] = [this[name], newComponent];
-		} else this[name] = newComponent;
+		if (this._components.hasOwnProperty(type)) {
+			const _c = this._components[type];
+			if (Array.isArray(_c)) _c.push(newComponent);
+			else _c[type] = [_c, newComponent];
+		} else this._components[type] = newComponent;
 
 		return this;
 	}
 
-	removeComponent(c) {
-		const name = c.name;
-
-		let index = Component.components[name].indexOf(c);
-		if (index === -1) throw "Component doesn't exist";
-		Component.components[name].splice(index, 1);
-
-		index = this[name].indexOf(c);
-		if (index === -1) throw "Component doesn't exist";
-
-		if (Array.isArray(this[name]) && this[name].length > 1)
-			this[name].splice(index, 1);
-		else delete this[name];
-
-		return this;
+	destroy() {
+		Entity.entities.splice(Entity.entities.indexOf(this), 1);
 	}
 }
 
-Entity.entities = {};
+Entity._entities = [];
+Entity._ids = {};
+Entity._tags = {};
 
 export { Entity };

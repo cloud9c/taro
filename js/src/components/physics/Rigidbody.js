@@ -5,8 +5,8 @@ import { Vector3 } from "../math/Vector3.js";
 
 class Rigidbody {
 	init(data) {
-		this._position = this.entity.Transform._position;
-		this._rotation = this.entity.Transform._rotation;
+		this._position = this.entity.transform._position;
+		this._rotation = this.entity.transform._rotation;
 
 		this._previousState = {
 			position: new Vector3(),
@@ -17,31 +17,9 @@ class Rigidbody {
 			? data.interpolate
 			: false;
 
-		if (this.entity.hasOwnProperty("Collider")) {
-			this._ref = this.entity.Collider._ref;
+		if (this.entity.hasOwnProperty("_physicsRef")) {
+			this._ref = this.entity._physicsRef;
 		} else {
-			Rigidbody._config.angularDamping = data.hasOwnProperty(
-				"angularDamping"
-			)
-				? data.angularDamping
-				: 0.05;
-			Rigidbody._config.angularVelocity = data.hasOwnProperty(
-				"angularVelocity"
-			)
-				? Rigidbody._config.angularVelocity.copyFrom(
-						data.angularVelocity
-				  )
-				: Rigidbody._config.angularVelocity.zero();
-			Rigidbody._config.linearDamping = data.hasOwnProperty(
-				"linearDamping"
-			)
-				? data.linearDamping
-				: 0;
-			Rigidbody._config.linearVelocity = data.hasOwnProperty(
-				"linearVelocity"
-			)
-				? Rigidbody._config.linearVelocity.copyFrom(data.linearVelocity)
-				: Rigidbody._config.linearVelocity.zero();
 			Rigidbody._config.position = Rigidbody._config.position.copyFrom(
 				this._position
 			);
@@ -49,18 +27,38 @@ class Rigidbody {
 				this._rotation
 			);
 
-			this._ref = new OIMO.RigidBody(Rigidbody._config);
-			this.mass = data.hasOwnProperty("mass")
-				? data.mass > 0.0000001
-					? data.mass
-					: 0.0000001
-				: 1;
+			this.entity._physicsRef = this._ref = new OIMO.RigidBody(
+				Rigidbody._config
+			);
+			System.world.addRigidBody(this._ref);
 		}
-		this.type = data.hasOwnProperty("type") ? data.type : "dynamic";
+
+		this.mass = data.hasOwnProperty("mass")
+			? data.mass > 0.0000001
+				? data.mass
+				: 0.0000001
+			: 1;
+
+		this.angularDamping = data.hasOwnProperty("angularDamping")
+			? data.angularDamping
+			: 0.05;
+
+		if (data.hasOwnProperty("angularVelocity"))
+			this.setAngularVelocity(data.angularVelocity);
+
+		if (data.hasOwnProperty("linearVelocity"))
+			this.setLinearVelocity(data.linearVelocity);
+
+		if (data.hasOwnProperty("linearDamping"))
+			this.linearDamping = data.linearDamping;
+
+		this.isKinematic = data.hasOwnProperty("isKinematic")
+			? data.isKinematic
+			: false;
+
 		if (data.hasOwnProperty("useGravity") && !data.useGravity) {
-			this.setGravityScale(0);
+			this.gravityScale = 0;
 		}
-		System.world.addRigidBody(this._ref);
 	}
 
 	_update() {
@@ -134,14 +132,12 @@ class Rigidbody {
 	get sleepTime() {
 		return this._ref.getSleepTime();
 	}
-	isKinematic() {
+	get isKinematic() {
 		return this._ref.getType() == 2;
 	}
-	get type() {
-		return this._ref.getType() == 2 ? "kinematic" : "dynamic";
-	}
-	set type(v) {
-		this._ref.setType(v == "kinematic" ? 2 : 0);
+	set isKinematic(v) {
+		if (v) this._ref.setType(2);
+		else this._ref.setType(0);
 	}
 	isSleeping() {
 		return this._ref.isSleeping();
