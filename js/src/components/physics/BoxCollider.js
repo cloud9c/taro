@@ -1,9 +1,10 @@
+import { Collider } from "./Collider.js";
+
 class BoxCollider extends Collider {
 	init(data) {
 		data.type = "box";
-		super.setRef();
-		super.setShape(data);
+		super.init(data);
 	}
 }
 
-export { Collider };
+export { BoxCollider };

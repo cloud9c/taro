@@ -1,4 +1,4 @@
-import { System } from "../System.js";
+import { Render } from "../Render.js";
 import { Vector4 } from "../math/Vector4.js";
 import { PerspectiveCamera, OrthographicCamera } from "../lib/three.module.js";
 
@@ -13,7 +13,7 @@ class Camera {
 				data.hasOwnProperty("fov") ? data.fov : 60,
 				data.hasOwnProperty("aspect")
 					? data.aspect
-					: System.canvas.width / System.canvas.height,
+					: Render.canvas.width / Render.canvas.height,
 				data.hasOwnProperty("near") ? data.near : 0.1,
 				data.hasOwnProperty("far") ? data.far : 1000
 			);
@@ -34,8 +34,8 @@ class Camera {
 		);
 		this._enabled = data.hasOwnProperty("enabled") ? data.enabled : true;
 		if (this._enabled) {
-			this._index = System.cameras.cameras.length;
-			System.cameras.cameras.push(this._ref);
+			this._index = Render.cameras.cameras.length;
+			Render.cameras.cameras.push(this._ref);
 		}
 	}
 
@@ -47,10 +47,10 @@ class Camera {
 		if (v !== this._enabled) {
 			this._enabled = v;
 			if (this._enabled) {
-				this._index = System.cameras.cameras.length;
-				System.cameras.cameras.push(this._ref);
+				this._index = Render.cameras.cameras.length;
+				Render.cameras.cameras.push(this._ref);
 			} else {
-				System.cameras.cameras.splice(this._index, 1);
+				Render.cameras.cameras.splice(this._index, 1);
 			}
 		}
 	}
@@ -163,10 +163,10 @@ class Camera {
 	}
 
 	setViewPort(v) {
-		v.x *= System.canvas.width;
-		v.y *= System.canvas.height;
-		v.z *= System.canvas.width;
-		v.w *= System.canvas.height;
+		v.x *= Render.canvas.width;
+		v.y *= Render.canvas.height;
+		v.z *= Render.canvas.width;
+		v.w *= Render.canvas.height;
 		this._ref.viewport = v;
 	}
 }

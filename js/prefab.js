@@ -15,13 +15,9 @@ export function Player() {
 	entity.addComponent("Rigidbody", {
 		mass: 60,
 	});
-	entity.addComponent(
-		"Collider",
-		new Engine.Shape({
-			type: "box",
-			halfExtents: new Engine.Vector3(0.5, 1, 0.5),
-		})
-	);
+	entity.addComponent("BoxCollider", {
+		halfExtents: new Engine.Vector3(0.5, 1, 0.5),
+	});
 
 	entity.addComponent("Camera");
 
@@ -57,7 +53,7 @@ export function Ball() {
 	entity.addComponent("Rigidbody", {
 		mass: 10,
 	});
-	entity.addComponent("Collider", new Engine.Shape({}));
+	entity.addComponent("BoxCollider");
 }
 
 export function Cube() {
@@ -73,5 +69,5 @@ export function Cube() {
 	entity.addComponent("Rigidbody", {
 		mass: 10,
 	});
-	entity.addComponent("Collider", new Engine.Shape({}));
+	entity.addComponent("BoxCollider");
 }

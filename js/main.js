@@ -75,13 +75,9 @@ async function init() {
 
 	new Engine.Entity()
 		.addComponent("Object3D", mesh)
-		.addComponent(
-			"Collider",
-			new Engine.Shape({
-				type: "box",
-				halfExtents: new Engine.Vector3(100, 1, 100),
-			})
-		)
+		.addComponent("BoxCollider", {
+			halfExtents: new Engine.Vector3(100, 1, 100),
+		})
 		.transform.setRotation(-Math.PI / 2, 0, 0);
 
 	// wall
@@ -94,13 +90,9 @@ async function init() {
 
 	new Engine.Entity()
 		.addComponent("Object3D", mesh)
-		.addComponent(
-			"Collider",
-			new Engine.Shape({
-				type: "box",
-				halfExtents: new Engine.Vector3(100, 100, 1),
-			})
-		)
+		.addComponent("BoxCollider", {
+			halfExtents: new Engine.Vector3(100, 100, 1),
+		})
 		.transform.setPosition(0, 0, -10);
 
 	new Engine.Entity().addComponent(
@@ -112,7 +104,7 @@ async function init() {
 	Prefab.Player();
 	// Prefab.Ball();
 
-	window.requestAnimationFrame((t) => Engine.System.updateLoop(t));
+	window.requestAnimationFrame((t) => Engine.System.updateLoop(t / 1000));
 }
 
 // function addNewConnection(conn) {

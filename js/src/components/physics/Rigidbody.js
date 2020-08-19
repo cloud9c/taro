@@ -1,21 +1,12 @@
-import { OIMO } from "../lib/oimoPhysics.js";
-import { System } from "../System.js";
-import { Euler } from "../math/Euler.js";
-import { Vector3 } from "../math/Vector3.js";
+import { OIMO } from "../../lib/oimoPhysics.js";
+import { Physics } from "../../Physics.js";
+import { Euler } from "../../math/Euler.js";
+import { Vector3 } from "../../math/Vector3.js";
 
 class Rigidbody {
 	init(data) {
 		this._position = this.entity.transform._position;
 		this._rotation = this.entity.transform._rotation;
-
-		this._previousState = {
-			position: new Vector3(),
-			rotation: new Euler(),
-		};
-
-		this.interpolate = data.hasOwnProperty("interpolate")
-			? data.interpolate
-			: false;
 
 		if (this.entity.hasOwnProperty("_physicsRef")) {
 			this._ref = this.entity._physicsRef;
@@ -30,7 +21,7 @@ class Rigidbody {
 			this.entity._physicsRef = this._ref = new OIMO.RigidBody(
 				Rigidbody._config
 			);
-			System.world.addRigidBody(this._ref);
+			Physics._world.addRigidBody(this._ref);
 		}
 
 		this.mass = data.hasOwnProperty("mass")
@@ -61,11 +52,24 @@ class Rigidbody {
 		}
 	}
 
-	_update() {
-		if (this.interpolate) {
-			this._previousState.position.copy(this._position);
-			this._previousState.rotation.copy(this._rotation);
+	onEnable() {
+		if (this._ref.getNumShapes() > 0) {
+			if (this._isKinematic) this._ref.setType(2);
+			else this._ref.setType(0);
+		} else {
+			Physics._world.addRigidBody(this._ref);
 		}
+	}
+
+	onDisable() {
+		if (this._ref.getNumShapes() > 0) {
+			this._ref.setType(1);
+		} else {
+			Physics._world.removeRigidBody(this._ref);
+		}
+	}
+
+	_update() {
 		this._position.copy(this._ref.getPosition());
 		this._rotation.setFromVector3(this._ref.getRotation().toEulerXyz());
 	}
@@ -133,9 +137,10 @@ class Rigidbody {
 		return this._ref.getSleepTime();
 	}
 	get isKinematic() {
-		return this._ref.getType() == 2;
+		return this._isKinematic;
 	}
 	set isKinematic(v) {
+		this._isKinematic = v;
 		if (v) this._ref.setType(2);
 		else this._ref.setType(0);
 	}

@@ -1,22 +1,20 @@
-import * as THREE from "./lib/three.module.js";
-import { OIMO } from "./lib/oimoPhysics.js";
 import { Component } from "./Component.js";
-import { Color, Quaternion } from "./Engine.js";
-import { Input } from "./Input.js";
+
+import { Input } from "../Input.js";
+import { Physics } from "../Physics.js";
+import { Time } from "../Time.js";
+import { Render } from "../Render.js";
 
 const System = {
-	init: function (canvas) {
-		this.canvas = document.getElementById(canvas);
-
+	init() {
 		// behavior
 		this.Behavior = Component._containers.Behavior;
 
 		// camera
 		this.Camera = Component._containers.Camera;
-		this.cameras = new THREE.ArrayCamera();
 
 		// input
-		this.canvas.addEventListener("click", () => {
+		Render.canvas.addEventListener("click", () => {
 			document.body.requestFullscreen();
 			document.body.requestPointerLock();
 		});
@@ -32,9 +30,9 @@ const System = {
 		});
 
 		window.addEventListener("resize", () => {
-			this.cameras.aspect = this.canvas.width / this.canvas.height;
-			this.cameras.updateProjectionMatrix();
-			this.renderer.setSize(this.canvas.width, this.canvas.height);
+			Render.cameras.aspect = Render.canvas.width / Render.canvas.height;
+			Render.cameras.updateProjectionMatrix();
+			Render.renderer.setSize(window.innerWidth, window.innerHeight);
 		});
 
 		document.addEventListener("mousemove", (event) => {
@@ -55,45 +53,28 @@ const System = {
 		});
 
 		// physics
-		this.accumulator = 0;
 		this.Rigidbody = Component._containers.Rigidbody;
-		this.UPDATE_PERIOD = 0.01;
-		this.alpha = 0;
-
-		this.world = new OIMO.World(2);
-		this.world.setNumPositionIterations(8);
-		this.world.setNumVelocityIterations(8);
 
 		// render
-		const scene = new THREE.Scene();
-		scene.background = new Color(0x0080ff);
-		this.scene = scene;
-		this.renderer = new THREE.WebGLRenderer({
-			canvas: this.canvas,
-		});
-		this.renderer.setSize(window.innerWidth, window.innerHeight);
+		Render.renderer.setSize(window.innerWidth, window.innerHeight);
 		this.Object3D = Component._containers.Object3D;
 		this.Transform = Component._containers.Transform;
 
 		this.lastTimestamp = undefined;
 	},
-	updateLoop: function (timestamp) {
-		timestamp /= 1000;
-		const dt = timestamp - this.lastTimestamp || 0;
+	updateLoop(timestamp) {
+		Time.deltaTime = timestamp - this.lastTimestamp || 0;
 		this.lastTimestamp = timestamp;
 
 		// physics
-		this.accumulator += dt > 0.25 ? 0.25 : dt;
-
-		while (this.accumulator >= this.UPDATE_PERIOD) {
+		Physics._accumulator += Time.deltaTime > 0.25 ? 0.25 : Time.deltaTime;
+		while (Physics._accumulator >= Time.fixedTimestep) {
 			for (let i = 0, len = this.Rigidbody.length; i < len; i++) {
 				this.Rigidbody[i]._update();
 			}
-			this.world.step(this.UPDATE_PERIOD);
-			this.accumulator -= this.UPDATE_PERIOD;
+			Physics._world.step(Time.fixedTimestep);
+			Physics._accumulator -= Time.fixedTimestep;
 		}
-
-		this.alpha = this.accumulator / this.UPDATE_PERIOD;
 
 		// input - resets delta movements
 		Input.MouseX = Input.MouseY = Input.WheelX = Input.WheelY = 0;
@@ -107,40 +88,14 @@ const System = {
 		for (let i = 0, len = this.Object3D.length; i < len; i++) {
 			const obj = this.Object3D[i];
 			const transform = obj.entity.transform;
-			const alpha = this.alpha;
 
-			// physics interpolation
-			if (
-				obj.entity.hasOwnProperty("Rigidbody") &&
-				obj.entity.Rigidbody.interpolate
-			) {
-				const _previousState = obj.entity.Rigidbody._previousState;
-
-				obj.position.copy(
-					transform._position
-						.clone()
-						.lerp(_previousState.position, alpha)
-				);
-
-				obj.rotation.setFromQuaternion(
-					new Quaternion()
-						.setFromEuler(transform._rotation)
-						.slerp(
-							new Quaternion().setFromEuler(
-								_previousState.rotation
-							),
-							alpha
-						)
-				);
-			} else {
-				obj.position.copy(transform._position);
-				obj.rotation.copy(transform._rotation);
-			}
+			obj.position.copy(transform._position);
+			obj.rotation.copy(transform._rotation);
 			obj.scale.copy(transform._scale);
 		}
-		this.renderer.render(this.scene, this.cameras);
+		Render.renderer.render(Render.scene, Render.cameras);
 
-		window.requestAnimationFrame((t) => this.updateLoop(t));
+		window.requestAnimationFrame((t) => this.updateLoop(t / 1000));
 	},
 	// animation: {
 	// 	init() {
