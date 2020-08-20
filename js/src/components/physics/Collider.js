@@ -4,7 +4,7 @@ import { Physics } from "../../Physics.js";
 
 class Collider {
 	init(data) {
-		if (this.entity.hasOwnProperty("_physicsRef")) {
+		if ("_physicsRef" in this.entity) {
 			this._ref = this.entity._physicsRef;
 		} else {
 			Collider._config.type = 1;
@@ -19,7 +19,7 @@ class Collider {
 			);
 			Physics._world.addRigidBody(this._ref);
 		}
-		if (this.entity._components.hasOwnProperty("collider")) {
+		if ("collider" in this.entity._components) {
 			this.entity._components.Collider.push(this);
 		} else {
 			this.entity._components.Collider = [this];
@@ -45,75 +45,73 @@ class Collider {
 		switch (data.type) {
 			case "box":
 				geometry = new OIMO.BoxGeometry(
-					data.hasOwnProperty("halfExtents")
-						? data.halfExtents
-						: Vector3(1, 1, 1)
+					"halfExtents" in data ? data.halfExtents : Vector3(1, 1, 1)
 				);
 				break;
 			case "capsule":
 				geometry = new OIMO.CapsuleGeometry(
-					data.hasOwnProperty("radius") ? data.radius : 0.5,
-					data.hasOwnProperty("halfHeight") ? data.halfHeight : 1
+					"radius" in data ? data.radius : 0.5,
+					"halfHeight" in data ? data.halfHeight : 1
 				);
 				break;
 			case "cone":
 				geometry = new OIMO.ConeGeometry(
-					data.hasOwnProperty("radius") ? data.radius : 0.5,
-					data.hasOwnProperty("halfHeight") ? data.halfHeight : 1
+					"radius" in data ? data.radius : 0.5,
+					"halfHeight" in data ? data.halfHeight : 1
 				);
 				break;
 			case "cylinder":
 				geometry = new OIMO.CylinderGeometry(
-					data.hasOwnProperty("radius") ? data.radius : 0.5,
-					data.hasOwnProperty("halfHeight") ? data.halfHeight : 1
+					"radius" in data ? data.radius : 0.5,
+					"halfHeight" in data ? data.halfHeight : 1
 				);
 				break;
 			case "mesh":
 				// geometry = new OIMO.ConvexHullGeometry(
-				// 	data.hasOwnProperty("radius") ? data.radius : 0.5
+				// 	"radius" in data ? data.radius : 0.5
 				// );
 				break;
 			case "sphere":
 				geometry = new OIMO.SphereGeometry(
-					data.hasOwnProperty("radius") ? data.radius : 0.5
+					"radius" in data ? data.radius : 0.5
 				);
 		}
 
-		const material = data.hasOwnProperty("material") ? data.material : {};
+		const material = "material" in data ? data.material : {};
 
 		Collider._shapeConfig.geometry = geometry;
-		Collider._shapeConfig.collisionGroup = data.hasOwnProperty(
-			"collisionGroup"
-		)
-			? data.collisionGroup
-			: 1;
-		Collider._shapeConfig.collisionMask = data.hasOwnProperty(
-			"collisionMask"
-		)
-			? data.collisionMask
-			: 1;
-		Collider._shapeConfig.contactCallback = data.hasOwnProperty(
-			"contactCallback"
-		)
-			? data.contactCallback
-			: null;
-		Collider._shapeConfig.density = material.hasOwnProperty("density")
-			? material.density
-			: 1;
-		Collider._shapeConfig.friction = material.hasOwnProperty("friction")
-			? material.friction
-			: 0.2;
-		Collider._shapeConfig.position = data.hasOwnProperty("localPosition")
-			? Collider._shapeConfig.position.copyFrom(data.localPosition)
-			: Collider._shapeConfig.position.zero();
-		Collider._shapeConfig.restitution = material.hasOwnProperty(
-			"restitution"
-		)
-			? material.restitution
-			: 0.2;
-		Collider._shapeConfig.rotation = data.hasOwnProperty("localRotation")
-			? Collider._shapeConfig.rotation.fromEulerXyz(data.localRotation)
-			: Collider._shapeConfig.rotation.init(0, 0, 0, 0, 0, 0, 0, 0, 0);
+		Collider._shapeConfig.collisionGroup =
+			"collisionGroup" in data ? data.collisionGroup : 1;
+		Collider._shapeConfig.collisionMask =
+			"collisionMask" in data ? data.collisionMask : 1;
+		Collider._shapeConfig.contactCallback =
+			"contactCallback" in data ? data.contactCallback : null;
+		Collider._shapeConfig.density =
+			"density" in material ? material.density : 1;
+		Collider._shapeConfig.friction =
+			"friction" in material ? material.friction : 0.2;
+		Collider._shapeConfig.position =
+			"localPosition" in data
+				? Collider._shapeConfig.position.copyFrom(data.localPosition)
+				: Collider._shapeConfig.position.zero();
+		Collider._shapeConfig.restitution =
+			"restitution" in material ? material.restitution : 0.2;
+		Collider._shapeConfig.rotation =
+			"localRotation" in data
+				? Collider._shapeConfig.rotation.fromEulerXyz(
+						data.localRotation
+				  )
+				: Collider._shapeConfig.rotation.init(
+						0,
+						0,
+						0,
+						0,
+						0,
+						0,
+						0,
+						0,
+						0
+				  );
 
 		if (this._shapeRef !== undefined) {
 			this._ref.removeShape(this._shapeRef);

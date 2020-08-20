@@ -8,7 +8,7 @@ class Rigidbody {
 		this._position = this.entity.transform._position;
 		this._rotation = this.entity.transform._rotation;
 
-		if (this.entity.hasOwnProperty("_physicsRef")) {
+		if ("_physicsRef" in this.entity) {
 			this._ref = this.entity._physicsRef;
 		} else {
 			Rigidbody._config.position = Rigidbody._config.position.copyFrom(
@@ -24,30 +24,27 @@ class Rigidbody {
 			Physics._world.addRigidBody(this._ref);
 		}
 
-		this.mass = data.hasOwnProperty("mass")
-			? data.mass > 0.0000001
-				? data.mass
-				: 0.0000001
-			: 1;
+		this.mass =
+			"mass" in data
+				? data.mass > 0.0000001
+					? data.mass
+					: 0.0000001
+				: 1;
 
-		this.angularDamping = data.hasOwnProperty("angularDamping")
-			? data.angularDamping
-			: 0.05;
+		this.angularDamping =
+			"angularDamping" in data ? data.angularDamping : 0.05;
 
-		if (data.hasOwnProperty("angularVelocity"))
+		if ("angularVelocity" in data)
 			this.setAngularVelocity(data.angularVelocity);
 
-		if (data.hasOwnProperty("linearVelocity"))
+		if ("linearVelocity" in data)
 			this.setLinearVelocity(data.linearVelocity);
 
-		if (data.hasOwnProperty("linearDamping"))
-			this.linearDamping = data.linearDamping;
+		if ("linearDamping" in data) this.linearDamping = data.linearDamping;
 
-		this.isKinematic = data.hasOwnProperty("isKinematic")
-			? data.isKinematic
-			: false;
+		this.isKinematic = "isKinematic" in data ? data.isKinematic : false;
 
-		if (data.hasOwnProperty("useGravity") && !data.useGravity) {
+		if ("useGravity" in data && !data.useGravity) {
 			this.gravityScale = 0;
 		}
 	}

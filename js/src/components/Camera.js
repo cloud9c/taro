@@ -7,32 +7,31 @@ class Camera {
 		this._position = this.entity.transform._position;
 		this._rotation = this.entity.transform._rotation;
 
-		this.type = data.hasOwnProperty("type") ? data.type : "perspective";
-		if (this.type === "perspective") {
+		this.projection =
+			"projection" in data ? data.projection : "perspective";
+		if (this.projection === "perspective") {
 			this._ref = new PerspectiveCamera(
-				data.hasOwnProperty("fov") ? data.fov : 60,
-				data.hasOwnProperty("aspect")
+				"fov" in data ? data.fov : 60,
+				"aspect" in data
 					? data.aspect
 					: Render.canvas.width / Render.canvas.height,
-				data.hasOwnProperty("near") ? data.near : 0.1,
-				data.hasOwnProperty("far") ? data.far : 1000
+				"near" in data ? data.near : 0.1,
+				"far" in data ? data.far : 1000
 			);
 		} else {
 			this._ref = new OrthographicCamera(
-				data.hasOwnProperty("left") ? data.left : -1,
-				data.hasOwnProperty("right") ? data.right : 1,
-				data.hasOwnProperty("top") ? data.top : 1,
-				data.hasOwnProperty("bottom") ? data.bottom : -1,
-				data.hasOwnProperty("near") ? data.near : 0.1,
-				data.hasOwnProperty("far") ? data.far : 1000
+				"left" in data ? data.left : -1,
+				"right" in data ? data.right : 1,
+				"top" in data ? data.top : 1,
+				"bottom" in data ? data.bottom : -1,
+				"near" in data ? data.near : 0.1,
+				"far" in data ? data.far : 1000
 			);
 		}
 		this.setViewPort(
-			data.hasOwnProperty("viewport")
-				? data.viewport
-				: new Vector4(0, 0, 1, 1)
+			"viewport" in data ? data.viewport : new Vector4(0, 0, 1, 1)
 		);
-		this._enabled = data.hasOwnProperty("enabled") ? data.enabled : true;
+		this._enabled = "enabled" in data ? data.enabled : true;
 		if (this._enabled) {
 			this._index = Render.cameras.cameras.length;
 			Render.cameras.cameras.push(this._ref);

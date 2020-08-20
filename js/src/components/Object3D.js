@@ -3,7 +3,7 @@ import { Render } from "../Render.js";
 
 class Object3D {
 	init(data) {
-		Object.assign(this, data);
+		this._ref = data;
 		Render.scene.add(data);
 	}
 }

@@ -12,17 +12,39 @@ import { SphereCollider } from "../components/physics/SphereCollider.js";
 
 const handler = {
 	defineProperty(target, property, descriptor) {
-		if (Component._events.hasOwnProperty(property)) {
-			Component._events.property.push(target.prototype.type);
+		switch (property) {
+			case "update":
+				Component.update.push(target.type);
+				break;
+			case "fixedUpdate":
+				Component.fixedUpdate.push(target.type);
+				break;
+			case "lateUpdate":
+				Component.lateUpdate.push(target.type);
+				break;
 		}
 		return true;
 	},
 	deleteProperty(target, property) {
-		if (Component._events.hasOwnProperty(property)) {
-			Component._events.property.splice(
-				Component._events.property.indexOf(target.prototype.type),
-				1
-			);
+		switch (property) {
+			case "update":
+				Component.update.splice(
+					Component.update.indexOf(target.type),
+					1
+				);
+				break;
+			case "fixedUpdate":
+				Component.fixedUpdate.splice(
+					Component.fixedUpdate.indexOf(target.type),
+					1
+				);
+				break;
+			case "lateUpdate":
+				Component.lateUpdate.splice(
+					Component.lateUpdate.indexOf(target.type),
+					1
+				);
+				break;
 		}
 		return true;
 	},
@@ -30,14 +52,9 @@ const handler = {
 
 const Component = {
 	// init, onEnable, onDisable isnt in _events
-	_events: {
-		update: [],
-		fixedUpdate: [],
-
-		onCollisionEnter: [],
-		onCollisionStay: [],
-		onCollisionExit: [],
-	},
+	update: [],
+	fixedUpdate: [],
+	lateUpdate: [],
 	_components: {},
 	_containers: {},
 	getContainer(type) {
@@ -47,8 +64,7 @@ const Component = {
 		return this._components[type];
 	},
 	createComponent(type, object) {
-		if (this._components.hasOwnProperty(type))
-			throw "Component type already exists";
+		if (type in this._components) throw "Component type already exists";
 
 		for (const property in this._events) {
 			if (property in object.prototype) {

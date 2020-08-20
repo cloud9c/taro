@@ -86,8 +86,8 @@ const System = {
 
 		// render
 		for (let i = 0, len = this.Object3D.length; i < len; i++) {
-			const obj = this.Object3D[i];
-			const transform = obj.entity.transform;
+			const obj = this.Object3D[i]._ref;
+			const transform = this.Object3D[i].entity.transform;
 
 			obj.position.copy(transform._position);
 			obj.rotation.copy(transform._rotation);

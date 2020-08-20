@@ -5,6 +5,7 @@ class Entity {
 		Entity._entities.push(this);
 		this._components = {};
 		this._tags = [];
+		this._events = {};
 		this.addComponent("Transform");
 
 		Object.defineProperties(this, {
@@ -27,8 +28,8 @@ class Entity {
 		if (!this._tags.includes(name)) {
 			this._tags.push(name);
 
-			if (Entity._tags.hasOwnProperty(name))
-				Entity._tags[name].push(this);
+			const tagArray = Entity._tags[name];
+			if (tagArray) tagArray.push(this);
 			else Entity._tags[name] = [this];
 		}
 	}
@@ -70,19 +71,19 @@ class Entity {
 	}
 
 	addComponent(type, data = {}) {
-		const newComponent = new Component._components[type]();
+		const c = new Component._components[type]();
 
-		Object.defineProperty(newComponent, "entity", {
+		Object.defineProperty(c, "entity", {
 			value: this,
 		});
 
-		Component._containers[type].push(newComponent);
+		Component._containers[type].push(c);
 
-		if ("init" in newComponent) newComponent.init(data);
+		if ("init" in c) c.init(data);
 
-		if (this._components.hasOwnProperty(type))
-			this._components[type].push(newComponent);
-		else this._components[type] = [newComponent];
+		const componentType = this._components[type];
+		if (componentType) componentType.push(c);
+		else this._components[type] = [c];
 
 		return this;
 	}
@@ -96,6 +97,54 @@ class Entity {
 		}
 		Entity._entities.splice(Entity._entities.indexOf(this), 1);
 	}
+
+	// event functions
+
+	on(name, callback, scope) {
+		const events = this._events[name];
+		callback = scope
+			? (...args) => callback.call(scope, ...args)
+			: callback;
+
+		if (events) events.push(callback);
+		else this._events[name] = [callback];
+	}
+
+	once(name, callback, scope) {
+		this.on(
+			name,
+			function g(...args) {
+				this.off(name, g);
+				callback(...args);
+			},
+			scope
+		);
+	}
+
+	off(name, callback) {
+		if (name) {
+			if (callback) {
+				this._events.name = this._events.name.filter(
+					(e) => e !== callback
+				);
+			} else {
+				delete this._events.name;
+			}
+		} else {
+			this._events = {};
+		}
+	}
+
+	fire(name, ...args) {
+		const callbacks = this._events[name];
+		if (callbacks) {
+			for (let i = 0, len = callbacks.length; i < len; i++) {
+				callbacks[i](...args);
+			}
+		}
+	}
+
+	// static functions
 
 	static find(id) {
 		return Entity._ids[id];
