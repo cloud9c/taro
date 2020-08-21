@@ -81,6 +81,8 @@ class Entity {
 
 		if ("init" in c) c.init(data);
 
+		if ("onEnable" in c) c.onEnable(data);
+
 		const componentType = this._components[type];
 		if (componentType) componentType.push(c);
 		else this._components[type] = [c];

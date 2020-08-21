@@ -35,23 +35,6 @@ const System = {
 			Render.renderer.setSize(window.innerWidth, window.innerHeight);
 		});
 
-		document.addEventListener("mousemove", (event) => {
-			Input.MouseX = event.movementX;
-			Input.MouseY = event.movementY;
-		});
-		document.addEventListener("wheel", () => {
-			Input.WheelX = event.wheelDeltaX;
-			Input.WheelY = event.wheelDeltaY;
-		});
-		document.addEventListener("keydown", () => {
-			if (event.repeat) return;
-
-			Input[event.code] = true;
-		});
-		document.addEventListener("keyup", () => {
-			Input[event.code] = false;
-		});
-
 		// physics
 		this.Rigidbody = Component._containers.Rigidbody;
 
@@ -60,24 +43,57 @@ const System = {
 		this.Object3D = Component._containers.Object3D;
 		this.Transform = Component._containers.Transform;
 
+		// updates
+		this._updates = Component._updates;
+		this._fixedUpdates = Component._fixedUpdates;
+		this._lateUpdates = Component._lateUpdates;
+
 		this.lastTimestamp = undefined;
 	},
 	updateLoop(timestamp) {
 		Time.deltaTime = timestamp - this.lastTimestamp || 0;
 		this.lastTimestamp = timestamp;
 
-		// physics
-		Physics._accumulator += Time.deltaTime > 0.25 ? 0.25 : Time.deltaTime;
+		// fixed update - physics
+		Physics._accumulator +=
+			Time.deltaTime > Time.maxTimestep
+				? Time.maxTimestep
+				: Time.deltaTime;
 		while (Physics._accumulator >= Time.fixedTimestep) {
+			for (let i = 0, len = this._fixedUpdates.length; i < len; i++) {
+				const component = this._fixedUpdates[i];
+				for (let j = 0, lenj = component.length; j < lenj; j++) {
+					component[j].fixedUpdate();
+				}
+			}
+
 			for (let i = 0, len = this.Rigidbody.length; i < len; i++) {
-				this.Rigidbody[i]._update();
+				const rigidbody = this.Rigidbody[i];
+				rigidbody._position.copy(rigidbody._ref.getPosition());
+				rigidbody._rotation.setFromVector3(
+					rigidbody._ref.getRotation().toEulerXyz()
+				);
 			}
 			Physics._world.step(Time.fixedTimestep);
 			Physics._accumulator -= Time.fixedTimestep;
 		}
 
+		for (let i = 0, len = this._updates.length; i < len; i++) {
+			const component = this._updates[i];
+			for (let j = 0, lenj = component.length; j < lenj; j++) {
+				component[j].update();
+			}
+		}
+
+		for (let i = 0, len = this._lateUpdates.length; i < len; i++) {
+			const component = this._lateUpdates[i];
+			for (let j = 0, lenj = component.length; j < lenj; j++) {
+				component[j].lateUpdate();
+			}
+		}
+
 		// input - resets delta movements
-		Input.MouseX = Input.MouseY = Input.WheelX = Input.WheelY = 0;
+		Input.mouseDeltaX = Input.mouseDeltaY = Input.wheelDeltaX = Input.wheelDeltaY = 0;
 
 		// camera
 		for (let i = 0, len = this.Camera.length; i < len; i++) {

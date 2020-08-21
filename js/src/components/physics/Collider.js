@@ -7,37 +7,33 @@ class Collider {
 		if ("_physicsRef" in this.entity) {
 			this._ref = this.entity._physicsRef;
 		} else {
-			Collider._config.type = 1;
-			Collider._config.position = Collider._config.position.copyFrom(
+			Collider.config.type = 1;
+			Collider.config.position = Collider.config.position.copyFrom(
 				this.entity.transform._position
 			);
-			Collider._config.rotation = Collider._config.rotation.fromEulerXyz(
+			Collider.config.rotation = Collider.config.rotation.fromEulerXyz(
 				this.entity.transform._rotation
 			);
 			this.entity._physicsRef = this._ref = new OIMO.RigidBody(
-				Collider._config
+				Collider.config
 			);
 			Physics._world.addRigidBody(this._ref);
 		}
-		if ("collider" in this.entity._components) {
-			this.entity._components.Collider.push(this);
+		if ("collider" in this.entity.components) {
+			this.entity.components.Collider.push(this);
 		} else {
-			this.entity._components.Collider = [this];
+			this.entity.components.Collider = [this];
 		}
 
 		this.setShape(data);
 	}
 
 	onEnable() {
-		this._ref.addShape(this._shapeRef);
+		this._ref.addShape(this.shapeRef);
 	}
 
 	onDisable() {
-		this._ref.removeShape(this._shapeRef);
-	}
-
-	onDestroy() {
-		this._ref;
+		this._ref.removeShape(this.shapeRef);
 	}
 
 	setShape(data) {
@@ -79,62 +75,52 @@ class Collider {
 
 		const material = "material" in data ? data.material : {};
 
-		Collider._shapeConfig.geometry = geometry;
-		Collider._shapeConfig.collisionGroup =
+		Collider.shapeConfig.geometry = geometry;
+		Collider.shapeConfig.collisionGroup =
 			"collisionGroup" in data ? data.collisionGroup : 1;
-		Collider._shapeConfig.collisionMask =
+		Collider.shapeConfig.collisionMask =
 			"collisionMask" in data ? data.collisionMask : 1;
-		Collider._shapeConfig.contactCallback =
+		Collider.shapeConfig.contactCallback =
 			"contactCallback" in data ? data.contactCallback : null;
-		Collider._shapeConfig.density =
+		Collider.shapeConfig.density =
 			"density" in material ? material.density : 1;
-		Collider._shapeConfig.friction =
+		Collider.shapeConfig.friction =
 			"friction" in material ? material.friction : 0.2;
-		Collider._shapeConfig.position =
+		Collider.shapeConfig.position =
 			"localPosition" in data
-				? Collider._shapeConfig.position.copyFrom(data.localPosition)
-				: Collider._shapeConfig.position.zero();
-		Collider._shapeConfig.restitution =
+				? Collider.shapeConfig.position.copyFrom(data.localPosition)
+				: Collider.shapeConfig.position.zero();
+		Collider.shapeConfig.restitution =
 			"restitution" in material ? material.restitution : 0.2;
-		Collider._shapeConfig.rotation =
+		Collider.shapeConfig.rotation =
 			"localRotation" in data
-				? Collider._shapeConfig.rotation.fromEulerXyz(
-						data.localRotation
-				  )
-				: Collider._shapeConfig.rotation.init(
-						0,
-						0,
-						0,
-						0,
-						0,
-						0,
-						0,
-						0,
-						0
-				  );
+				? Collider.shapeConfig.rotation.fromEulerXyz(data.localRotation)
+				: Collider.shapeConfig.rotation.init(0, 0, 0, 0, 0, 0, 0, 0, 0);
 
-		if (this._shapeRef !== undefined) {
-			this._ref.removeShape(this._shapeRef);
+		if (this.shapeRef !== undefined) {
+			this._ref.removeShape(this.shapeRef);
+			this.shapeRef = new OIMO.Shape(Collider.shapeConfig);
+			this._ref.addShape(this.shapeRef);
+		} else {
+			this.shapeRef = new OIMO.Shape(Collider.shapeConfig);
 		}
-		this._shapeRef = new OIMO.Shape(Collider._shapeConfig);
-		this._ref.addShape(this._shapeRef);
 	}
 
 	get volume() {
-		return this._shapeRef.getGeometry().getVolume();
+		return this.shapeRef.getGeometry().getVolume();
 	}
 
 	getHalfExtents() {
-		const v = this._shapeRef.getGeometry().getHalfExtents();
+		const v = this.shapeRef.getGeometry().getHalfExtents();
 		return new Vector3(v.x, v.y, v.z);
 	}
 
 	get halfHeight() {
-		return this._shapeRef.getGeometry().getHalfHeight();
+		return this.shapeRef.getGeometry().getHalfHeight();
 	}
 
 	get radius() {
-		return this._shapeRef.getGeometry().getRadius();
+		return this.shapeRef.getGeometry().getRadius();
 	}
 
 	setHalfExtents(v) {
@@ -183,7 +169,7 @@ class Collider {
 	}
 
 	get bounds() {
-		const aabb = this._shapeRef.getAabb();
+		const aabb = this.shapeRef.getAabb();
 		return {
 			min: aabb.getMin(),
 			max: aabb.getMax(),
@@ -191,78 +177,78 @@ class Collider {
 	}
 
 	get collisionGroup() {
-		return this._shapeRef.getCollisionGroup();
+		return this.shapeRef.getCollisionGroup();
 	}
 
 	get collisionMask() {
-		return this._shapeRef.getCollisionMask();
+		return this.shapeRef.getCollisionMask();
 	}
 
 	getContactCallback() {
-		return this._shapeRef.getContactCallback();
+		return this.shapeRef.getContactCallback();
 	}
 
 	get density() {
-		return this._shapeRef.getDensity();
+		return this.shapeRef.getDensity();
 	}
 
 	get friction() {
-		return this._shapeRef.getFriction();
+		return this.shapeRef.getFriction();
 	}
 
 	get restitution() {
-		return this._shapeRef.getRestitution();
+		return this.shapeRef.getRestitution();
 	}
 
 	getPosition() {
-		return this._shapeRef.getLocalTransform().getPosition();
+		return this.shapeRef.getLocalTransform().getPosition();
 	}
 
 	getRotation() {
 		return new Euler().setFromVector3(
-			this._shapeRef.getLocalTransform().getRotation().toEulerXyz()
+			this.shapeRef.getLocalTransform().getRotation().toEulerXyz()
 		);
 	}
 
 	set collisionGroup(v) {
-		this._shapeRef.setCollisionGroup(v);
+		this.shapeRef.setCollisionGroup(v);
 	}
 
 	set collisionMask(v) {
-		this._shapeRef.setCollisionMask(v);
+		this.shapeRef.setCollisionMask(v);
 	}
 
 	setContactCallback(v) {
-		this._shapeRef.setContactCallback(v);
+		this.shapeRef.setContactCallback(v);
 	}
 
 	set density(v) {
-		this._shapeRef.setDensity(v);
+		this.shapeRef.setDensity(v);
 	}
 
 	set friction(v) {
-		this._shapeRef.setFriction(v);
+		this.shapeRef.setFriction(v);
 	}
 
 	setPosition(v) {
-		this._shapeRef.setLocalTransform(
-			this._shapeRef.getTransform().setPosition(v)
+		this.shapeRef.setLocalTransform(
+			this.shapeRef.getTransform().setPosition(v)
 		);
 	}
 
 	setRotation(v) {
-		this._shapeRef.setLocalTransform(
-			this._shapeRef.getTransform().setRotationXyz(v)
+		this.shapeRef.setLocalTransform(
+			this.shapeRef.getTransform().setRotationXyz(v)
 		);
 	}
 
 	setRestitution(v) {
-		this._shapeRef.setRestitution(v);
+		this.shapeRef.setRestitution(v);
 	}
 }
-Collider._shapeConfig = new OIMO.ShapeConfig();
+Collider.shapeConfig = new OIMO.ShapeConfig();
 
-Collider._config = new OIMO.RigidBodyConfig();
-Collider._config.type = 1;
+Collider.config = new OIMO.RigidBodyConfig();
+Collider.config.type = 1;
 
 export { Collider };

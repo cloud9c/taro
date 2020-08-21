@@ -12,16 +12,16 @@ class Transform {
 	}
 	setPosition(x, y, z) {
 		this._position.set(x, y, z);
-		if ("_physicsRef" in this.entity)
-			this.entity._physicsRef.setPosition(this._position);
+		if ("physicsRef" in this.entity)
+			this.entity.physicsRef.setPosition(this._position);
 	}
 	getRotation() {
 		return this._rotation.clone();
 	}
 	setRotation(x, y, z) {
 		this._rotation.set(x, y, z);
-		if ("_physicsRef" in this.entity)
-			this.entity._physicsRef.setRotationXyz(this._rotation);
+		if ("physicsRef" in this.entity)
+			this.entity.physicsRef.setRotationXyz(this._rotation);
 	}
 	getScale() {
 		return this._scale.clone();

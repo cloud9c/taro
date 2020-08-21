@@ -31,27 +31,21 @@ class Camera {
 		this.setViewPort(
 			"viewport" in data ? data.viewport : new Vector4(0, 0, 1, 1)
 		);
-		this._enabled = "enabled" in data ? data.enabled : true;
-		if (this._enabled) {
-			this._index = Render.cameras.cameras.length;
-			Render.cameras.cameras.push(this._ref);
-		}
 	}
 
-	get enabled() {
-		return this._enabled;
+	onEnable() {
+		Render.cameras.cameras.push(this._ref);
 	}
 
-	set enabled(v) {
-		if (v !== this._enabled) {
-			this._enabled = v;
-			if (this._enabled) {
-				this._index = Render.cameras.cameras.length;
-				Render.cameras.cameras.push(this._ref);
-			} else {
-				Render.cameras.cameras.splice(this._index, 1);
-			}
-		}
+	onDisable() {
+		Render.cameras.cameras.splice(
+			Render.cameras.cameras.indexOf(this._ref),
+			1
+		);
+	}
+
+	update() {
+		console.log(this._ref.position);
 	}
 
 	_updateTransform() {

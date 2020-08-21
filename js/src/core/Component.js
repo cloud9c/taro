@@ -10,51 +10,10 @@ import { ConeCollider } from "../components/physics/ConeCollider.js";
 import { CylinderCollider } from "../components/physics/CylinderCollider.js";
 import { SphereCollider } from "../components/physics/SphereCollider.js";
 
-const handler = {
-	defineProperty(target, property, descriptor) {
-		switch (property) {
-			case "update":
-				Component.update.push(target.type);
-				break;
-			case "fixedUpdate":
-				Component.fixedUpdate.push(target.type);
-				break;
-			case "lateUpdate":
-				Component.lateUpdate.push(target.type);
-				break;
-		}
-		return true;
-	},
-	deleteProperty(target, property) {
-		switch (property) {
-			case "update":
-				Component.update.splice(
-					Component.update.indexOf(target.type),
-					1
-				);
-				break;
-			case "fixedUpdate":
-				Component.fixedUpdate.splice(
-					Component.fixedUpdate.indexOf(target.type),
-					1
-				);
-				break;
-			case "lateUpdate":
-				Component.lateUpdate.splice(
-					Component.lateUpdate.indexOf(target.type),
-					1
-				);
-				break;
-		}
-		return true;
-	},
-};
-
 const Component = {
-	// init, onEnable, onDisable isnt in _events
-	update: [],
-	fixedUpdate: [],
-	lateUpdate: [],
+	_updates: [],
+	_fixedUpdates: [],
+	_lateUpdates: [],
 	_components: {},
 	_containers: {},
 	getContainer(type) {
@@ -66,19 +25,15 @@ const Component = {
 	createComponent(type, object) {
 		if (type in this._components) throw "Component type already exists";
 
-		for (const property in this._events) {
-			if (property in object.prototype) {
-				this._events[property].push(type);
-			}
-		}
-
-		object.prototype._enabled = true;
 		Object.defineProperties(object.prototype, {
 			destroy: {
 				value: destroy,
 			},
 			type: {
 				value: type,
+			},
+			_enabled: {
+				value: true,
 			},
 			enabled: {
 				get() {
@@ -87,9 +42,9 @@ const Component = {
 				set(value) {
 					if (value != this._enabled) {
 						this._enabled = value;
-						if (value && "onEnable" in object.prototype) {
+						if (value && "onEnable" in this) {
 							object.prototype.onEnable();
-						} else if ("onDisable" in object.prototype) {
+						} else if ("onDisable" in this) {
 							object.prototype.onDisable();
 						}
 					}
@@ -97,10 +52,18 @@ const Component = {
 			},
 		});
 
-		object = new Proxy(object, handler);
-
 		this._components[type] = object;
 		this._containers[type] = [];
+
+		if ("update" in object.prototype) {
+			Component._updates.push(Component._containers[type]);
+		}
+		if ("fixedUpdate" in object.prototype) {
+			Component._fixedUpdates.push(Component._containers[type]);
+		}
+		if ("lateUpdate" in object.prototype) {
+			Component._lateUpdates.push(Component._containers[type]);
+		}
 	},
 };
 
@@ -135,5 +98,7 @@ const coreComponents = {
 for (const core in coreComponents) {
 	Component.createComponent(core, coreComponents[core]);
 }
+
+console.log(Animation);
 
 export { Component };

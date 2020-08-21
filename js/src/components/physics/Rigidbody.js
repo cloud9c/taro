@@ -11,17 +11,16 @@ class Rigidbody {
 		if ("_physicsRef" in this.entity) {
 			this._ref = this.entity._physicsRef;
 		} else {
-			Rigidbody._config.position = Rigidbody._config.position.copyFrom(
+			Rigidbody.config.position = Rigidbody.config.position.copyFrom(
 				this._position
 			);
-			Rigidbody._config.rotation = Rigidbody._config.rotation.fromEulerXyz(
+			Rigidbody.config.rotation = Rigidbody.config.rotation.fromEulerXyz(
 				this._rotation
 			);
 
 			this.entity._physicsRef = this._ref = new OIMO.RigidBody(
-				Rigidbody._config
+				Rigidbody.config
 			);
-			Physics._world.addRigidBody(this._ref);
 		}
 
 		this.mass =
@@ -64,11 +63,6 @@ class Rigidbody {
 		} else {
 			Physics._world.removeRigidBody(this._ref);
 		}
-	}
-
-	_update() {
-		this._position.copy(this._ref.getPosition());
-		this._rotation.setFromVector3(this._ref.getRotation().toEulerXyz());
 	}
 
 	// https://saharan.github.io/OimoPhysics/oimo/dynamics/rigidbody/RigidBody.html
@@ -134,7 +128,7 @@ class Rigidbody {
 		return this._ref.getSleepTime();
 	}
 	get isKinematic() {
-		return this._isKinematic;
+		return this.isKinematic;
 	}
 	set isKinematic(v) {
 		this._isKinematic = v;
@@ -179,6 +173,6 @@ class Rigidbody {
 	}
 }
 
-Rigidbody._config = new OIMO.RigidBodyConfig();
+Rigidbody.config = new OIMO.RigidBodyConfig();
 
 export { Rigidbody };
