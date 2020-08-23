@@ -65,6 +65,10 @@ async function init() {
 		.addComponent("Object3D", dirLight)
 		.transform.setPosition(-100, 175, 100);
 
+	new Engine.Entity()
+		.addComponent("Camera")
+		.transform.setPosition(100, 100, 100);
+
 	// floor
 	geo = new THREE.PlaneBufferGeometry(200, 200);
 	mat = new THREE.MeshPhongMaterial({

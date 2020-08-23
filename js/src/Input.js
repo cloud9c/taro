@@ -1,28 +1,60 @@
-const Input = {
-	init() {
-		document.addEventListener("mousemove", (event) => {
-			Input.mouseDeltaX = event.movementX;
-			Input.mouseDeltaY = event.movementY;
-		});
-		document.addEventListener("wheel", () => {
-			Input.wheelDeltaX = event.wheelDeltaX;
-			Input.wheelDeltaY = event.wheelDeltaY;
-		});
-		document.addEventListener("keydown", () => {
-			if (event.repeat) return;
+import { Vector2 } from "./math/Vector2.js";
 
-			Input[event.code] = true;
+const Input = {
+	_init() {
+		document.addEventListener("mousemove", (e) => {
+			this.mouseDelta.set(e.movementX, e.movementY);
+			this.mousePosition.set(e.clientX, e.clientY);
+		});
+		document.addEventListener("mousedown", (e) => {
+			this._mouse[e.button] = true;
+			this._mouseDown[e.button] = true;
+		});
+		document.addEventListener("mouseup", (e) => {
+			this._mouse[e.button] = false;
+			this._mouseUp[e.button] = true;
+		});
+
+		document.addEventListener("wheel", (e) => {
+			this.wheelDelta.set(e.deltaX, e.deltaY);
+		});
+
+		document.addEventListener("keydown", () => {
+			this._key[event.code] = true;
+			this._keyDown[event.code] = true;
 		});
 		document.addEventListener("keyup", () => {
-			Input[event.code] = false;
+			this._key[event.code] = false;
+			this._keyUp[event.code] = true;
 		});
 	},
-	mouseX: 0,
-	mouseY: 0,
-	mouseDeltaX: 0,
-	mouseDeltaY: 0,
-	wheelDeltaX: 0,
-	wheelDeltaY: 0,
+	getKey(v) {
+		return Boolean(this._key[v]);
+	},
+	getKeyDown(v) {
+		return v in this._keyDown;
+	},
+	getKeyUp(v) {
+		return v in this._keyUp;
+	},
+	getMouse(v) {
+		return Boolean(this._mouse[v]);
+	},
+	getMouseDown(v) {
+		return Boolean(this._mouseDown[v]);
+	},
+	getMouseUp(v) {
+		return Boolean(this._mouseUp[v]);
+	},
+	mousePosition: new Vector2(),
+	mouseDelta: new Vector2(),
+	wheelDelta: new Vector2(),
+	_mouse: [],
+	_mouseDown: [],
+	_mouseUp: [],
+	_key: {},
+	_keyDown: {},
+	_keyUp: {},
 };
 
 export { Input };

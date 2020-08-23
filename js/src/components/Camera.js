@@ -28,9 +28,8 @@ class Camera {
 				"far" in data ? data.far : 1000
 			);
 		}
-		this.setViewPort(
-			"viewport" in data ? data.viewport : new Vector4(0, 0, 1, 1)
-		);
+		this._ref.viewport = new Vector4();
+		this.setViewport("viewport" in data ? data.viewport : 0, 0, 1, 1);
 	}
 
 	onEnable() {
@@ -42,10 +41,6 @@ class Camera {
 			Render.cameras.cameras.indexOf(this._ref),
 			1
 		);
-	}
-
-	update() {
-		console.log(this._ref.position);
 	}
 
 	_updateTransform() {
@@ -155,12 +150,19 @@ class Camera {
 		return this._ref.viewport;
 	}
 
-	setViewPort(v) {
-		v.x *= Render.canvas.width;
-		v.y *= Render.canvas.height;
-		v.z *= Render.canvas.width;
-		v.w *= Render.canvas.height;
-		this._ref.viewport = v;
+	setViewport(x, y, z, w) {
+		if (y === undefined) {
+			const v = x;
+			x = v.x;
+			y = v.y;
+			z = v.z;
+			w = v.w;
+		}
+		x *= Render.canvas.width;
+		y *= Render.canvas.height;
+		z *= Render.canvas.width;
+		w *= Render.canvas.height;
+		this._ref.viewport.set(x, y, z, w);
 	}
 }
 

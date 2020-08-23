@@ -19,7 +19,7 @@ export function Player() {
 		halfExtents: new Engine.Vector3(0.5, 1, 0.5),
 	});
 
-	entity.addComponent("Camera");
+	// entity.addComponent("Camera");
 
 	// const keyInput = Engine.Input;
 	// const maxSpeed = 20;

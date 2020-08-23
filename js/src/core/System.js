@@ -18,6 +18,8 @@ const System = {
 			document.body.requestFullscreen();
 			document.body.requestPointerLock();
 		});
+		console.log(Render.scene);
+		console.log(Render.cameras);
 
 		window.addEventListener("blur", () => {
 			for (const property in Input) {
@@ -31,9 +33,17 @@ const System = {
 
 		window.addEventListener("resize", () => {
 			Render.cameras.aspect = Render.canvas.width / Render.canvas.height;
+			Component._containers.Camera[0].setViewport(
+				0,
+				0,
+				window.innerWidth,
+				window.innerHeight
+			);
 			Render.cameras.updateProjectionMatrix();
 			Render.renderer.setSize(window.innerWidth, window.innerHeight);
 		});
+
+		Input._init();
 
 		// physics
 		this.Rigidbody = Component._containers.Rigidbody;
@@ -92,9 +102,6 @@ const System = {
 			}
 		}
 
-		// input - resets delta movements
-		Input.mouseDeltaX = Input.mouseDeltaY = Input.wheelDeltaX = Input.wheelDeltaY = 0;
-
 		// camera
 		for (let i = 0, len = this.Camera.length; i < len; i++) {
 			this.Camera[i]._updateTransform();
@@ -102,14 +109,20 @@ const System = {
 
 		// render
 		for (let i = 0, len = this.Object3D.length; i < len; i++) {
-			const obj = this.Object3D[i]._ref;
-			const transform = this.Object3D[i].entity.transform;
+			const obj = this.Object3D[i];
+			const transform = obj.entity.transform;
 
 			obj.position.copy(transform._position);
 			obj.rotation.copy(transform._rotation);
 			obj.scale.copy(transform._scale);
 		}
-		Render.renderer.render(Render.scene, Render.cameras);
+		Render.renderer.render(Render.scene, Render.cameras.cameras[0]);
+
+		// input
+		Input._keyDown = {};
+		Input._keyUp = {};
+		Input._mouseDown = [];
+		Input._mouseUp = [];
 
 		window.requestAnimationFrame((t) => this.updateLoop(t / 1000));
 	},

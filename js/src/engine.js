@@ -14,6 +14,9 @@ export { Component } from "./core/Component.js";
 export { Entity } from "./core/Entity.js";
 export { System } from "./core/System.js";
 
+// lib
+export * as THREE from "./lib/three.module.js";
+
 // math
 export { Color } from "./math/Color.js";
 export { Euler } from "./math/Euler.js";

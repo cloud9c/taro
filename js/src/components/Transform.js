@@ -11,7 +11,9 @@ class Transform {
 		return this._position.clone();
 	}
 	setPosition(x, y, z) {
-		this._position.set(x, y, z);
+		if (y === undefined) this._position.set(x);
+		else this._position.set(x, y, z);
+
 		if ("physicsRef" in this.entity)
 			this.entity.physicsRef.setPosition(this._position);
 	}
@@ -19,7 +21,9 @@ class Transform {
 		return this._rotation.clone();
 	}
 	setRotation(x, y, z) {
-		this._rotation.set(x, y, z);
+		if (y === undefined) this._rotation.set(x);
+		else this._rotation.set(x, y, z);
+
 		if ("physicsRef" in this.entity)
 			this.entity.physicsRef.setRotationXyz(this._rotation);
 	}

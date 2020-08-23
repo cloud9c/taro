@@ -29,7 +29,7 @@ const Component = {
 			destroy: {
 				value: destroy,
 			},
-			type: {
+			cType: {
 				value: type,
 			},
 			_enabled: {
@@ -68,7 +68,7 @@ const Component = {
 };
 
 function destroy() {
-	const type = this.type;
+	const type = this.cType;
 	Component._containers[type].splice(
 		Component._containers[type].indexOf(this),
 		1
@@ -98,7 +98,5 @@ const coreComponents = {
 for (const core in coreComponents) {
 	Component.createComponent(core, coreComponents[core]);
 }
-
-console.log(Animation);
 
 export { Component };
