@@ -7,7 +7,7 @@ const Render = {
 		});
 	},
 	scene: new THREE.Scene(),
-	cameras: new THREE.ArrayCamera(),
+	arrayCamera: new THREE.ArrayCamera(),
 };
 
 export { Render };

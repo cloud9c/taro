@@ -8,12 +8,10 @@ class Collider {
 			this._ref = this.entity._physicsRef;
 		} else {
 			Collider.config.type = 1;
-			Collider.config.position = Collider.config.position.copyFrom(
-				this.entity.transform._position
-			);
-			Collider.config.rotation = Collider.config.rotation.fromEulerXyz(
-				this.entity.transform._rotation
-			);
+			if ("position" in data)
+				Collider.config.position.copyFrom(data.position);
+			if ("rotation" in data)
+				Collider.config.rotation.fromEulerXyz(data.rotation);
 			this.entity._physicsRef = this._ref = new OIMO.RigidBody(
 				Collider.config
 			);

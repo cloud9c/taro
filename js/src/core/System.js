@@ -5,6 +5,8 @@ import { Physics } from "../Physics.js";
 import { Time } from "../Time.js";
 import { Render } from "../Render.js";
 
+import { THREE } from "../Engine.js";
+
 const System = {
 	init() {
 		// behavior
@@ -19,7 +21,7 @@ const System = {
 			document.body.requestPointerLock();
 		});
 		console.log(Render.scene);
-		console.log(Render.cameras);
+		console.log(Render.arrayCamera);
 
 		window.addEventListener("blur", () => {
 			for (const property in Input) {
@@ -32,14 +34,16 @@ const System = {
 		});
 
 		window.addEventListener("resize", () => {
-			Render.cameras.aspect = Render.canvas.width / Render.canvas.height;
-			Component._containers.Camera[0].setViewport(
+			Render.arrayCamera.cameras[0].aspect =
+				Render.canvas.width / Render.canvas.height;
+			Render.arrayCamera.cameras[0].viewport.set(
 				0,
 				0,
 				window.innerWidth,
 				window.innerHeight
 			);
-			Render.cameras.updateProjectionMatrix();
+			Render.arrayCamera.cameras[0].updateProjectionMatrix();
+
 			Render.renderer.setSize(window.innerWidth, window.innerHeight);
 		});
 
@@ -59,6 +63,12 @@ const System = {
 		this._lateUpdates = Component._lateUpdates;
 
 		this.lastTimestamp = undefined;
+		Render.scene.add(
+			new THREE.Mesh(
+				new THREE.BoxGeometry(0.2, 0.2, 0.2),
+				new THREE.MeshNormalMaterial()
+			)
+		);
 	},
 	updateLoop(timestamp) {
 		Time.deltaTime = timestamp - this.lastTimestamp || 0;
@@ -102,21 +112,8 @@ const System = {
 			}
 		}
 
-		// camera
-		for (let i = 0, len = this.Camera.length; i < len; i++) {
-			this.Camera[i]._updateTransform();
-		}
-
 		// render
-		for (let i = 0, len = this.Object3D.length; i < len; i++) {
-			const obj = this.Object3D[i];
-			const transform = obj.entity.transform;
-
-			obj.position.copy(transform._position);
-			obj.rotation.copy(transform._rotation);
-			obj.scale.copy(transform._scale);
-		}
-		Render.renderer.render(Render.scene, Render.cameras.cameras[0]);
+		Render.renderer.render(Render.scene, Render.arrayCamera.cameras[0]);
 
 		// input
 		Input._keyDown = {};

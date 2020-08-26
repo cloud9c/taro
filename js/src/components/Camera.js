@@ -4,48 +4,57 @@ import { PerspectiveCamera, OrthographicCamera } from "../lib/three.module.js";
 
 class Camera {
 	init(data) {
-		this._position = this.entity.transform._position;
-		this._rotation = this.entity.transform._rotation;
-
 		this.projection =
 			"projection" in data ? data.projection : "perspective";
-		if (this.projection === "perspective") {
-			this._ref = new PerspectiveCamera(
-				"fov" in data ? data.fov : 60,
-				"aspect" in data
-					? data.aspect
-					: Render.canvas.width / Render.canvas.height,
-				"near" in data ? data.near : 0.1,
-				"far" in data ? data.far : 1000
-			);
-		} else {
-			this._ref = new OrthographicCamera(
-				"left" in data ? data.left : -1,
-				"right" in data ? data.right : 1,
-				"top" in data ? data.top : 1,
-				"bottom" in data ? data.bottom : -1,
-				"near" in data ? data.near : 0.1,
-				"far" in data ? data.far : 1000
-			);
-		}
-		this._ref.viewport = new Vector4();
-		this.setViewport("viewport" in data ? data.viewport : 0, 0, 1, 1);
-	}
 
-	onEnable() {
-		Render.cameras.cameras.push(this._ref);
-	}
+		this._ref =
+			this.projection === "perspective"
+				? (this._ref = new PerspectiveCamera(
+						"fov" in data ? data.fov : 60,
+						"aspect" in data
+							? data.aspect
+							: Render.canvas.width / Render.canvas.height,
+						"near" in data ? data.near : 0.1,
+						"far" in data ? data.far : 1000
+				  ))
+				: new OrthographicCamera(
+						"left" in data ? data.left : -1,
+						"right" in data ? data.right : 1,
+						"top" in data ? data.top : 1,
+						"bottom" in data ? data.bottom : -1,
+						"near" in data ? data.near : 0.1,
+						"far" in data ? data.far : 1000
+				  );
 
-	onDisable() {
-		Render.cameras.cameras.splice(
-			Render.cameras.cameras.indexOf(this._ref),
-			1
+		Object.defineProperties(this._ref, {
+			position: {
+				value: this.entity.transform.position,
+			},
+			rotation: {
+				value: this.entity.transform.rotation,
+			},
+			scale: {
+				value: this.entity.transform.scale,
+			},
+		});
+
+		this.viewport = this._ref.viewport = new Vector4(
+			0,
+			0,
+			window.innerWidth,
+			window.innerHeight
 		);
 	}
 
-	_updateTransform() {
-		this._ref.position.copy(this._position);
-		this._ref.rotation.copy(this._rotation);
+	onEnable() {
+		Render.arrayCamera.cameras.push(this._ref);
+	}
+
+	onDisable() {
+		Render.arrayCamera.cameras.splice(
+			Render.arrayCamera.cameras.indexOf(this._ref),
+			1
+		);
 	}
 
 	get aspect() {
@@ -144,25 +153,6 @@ class Camera {
 
 	updateProjectionMatrix() {
 		this._ref.updateProjectionMatrix();
-	}
-
-	getViewport() {
-		return this._ref.viewport;
-	}
-
-	setViewport(x, y, z, w) {
-		if (y === undefined) {
-			const v = x;
-			x = v.x;
-			y = v.y;
-			z = v.z;
-			w = v.w;
-		}
-		x *= Render.canvas.width;
-		y *= Render.canvas.height;
-		z *= Render.canvas.width;
-		w *= Render.canvas.height;
-		this._ref.viewport.set(x, y, z, w);
 	}
 }
 

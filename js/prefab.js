@@ -5,7 +5,7 @@ export function Player() {
 	const obj = Engine.Asset.getObject3D("player.glb");
 	const entity = new Engine.Entity();
 
-	entity.transform.setPosition(0, 100, 0);
+	entity.transform.position.set(0, 100, 0);
 
 	entity.addComponent("Object3D", obj);
 	entity.addComponent(
@@ -44,7 +44,7 @@ export function Ball() {
 	const obj = Engine.Asset.getObject3D("player.glb");
 	const entity = new Engine.Entity();
 
-	entity.transform.setPosition(5, 10, 0);
+	entity.transform.position.set(5, 10, 0);
 
 	const geo = new THREE.SphereBufferGeometry(1, 32, 32);
 	const mat = new THREE.MeshBasicMaterial({ color: 0xffff00 });
@@ -60,7 +60,7 @@ export function Cube() {
 	const obj = Engine.Asset.getObject3D("player.glb");
 	const entity = new Engine.Entity();
 
-	entity.transform.setPosition(5, 10, 0);
+	entity.transform.position.set(5, 10, 0);
 
 	const geo = new THREE.BoxBufferGeometry(2, 2, 2);
 	const mat = new THREE.MeshBasicMaterial({ color: 0xff0000 });

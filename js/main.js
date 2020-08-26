@@ -41,7 +41,7 @@ async function init() {
 	hemiLight.groundColor.setHSL(0.095, 1, 0.75);
 	new Engine.Entity()
 		.addComponent("Object3D", hemiLight)
-		.transform.setPosition(0, 100, 0);
+		.transform.position.set(0, 100, 0);
 
 	const dirLight = new THREE.DirectionalLight(0xffffff, 1);
 	dirLight.color.setHSL(0.1, 1, 0.95);
@@ -63,11 +63,11 @@ async function init() {
 
 	new Engine.Entity()
 		.addComponent("Object3D", dirLight)
-		.transform.setPosition(-100, 175, 100);
+		.transform.position.set(-100, 175, 100);
 
 	new Engine.Entity()
 		.addComponent("Camera")
-		.transform.setPosition(100, 100, 100);
+		.transform.position.set(0, 10, 50);
 
 	// floor
 	geo = new THREE.PlaneBufferGeometry(200, 200);
@@ -82,7 +82,7 @@ async function init() {
 		.addComponent("BoxCollider", {
 			halfExtents: new Engine.Vector3(100, 1, 100),
 		})
-		.transform.setRotation(-Math.PI / 2, 0, 0);
+		.transform.rotation.set(-Math.PI / 2, 0, 0);
 
 	// wall
 	geo = new THREE.PlaneBufferGeometry(200, 200);
@@ -97,7 +97,7 @@ async function init() {
 		.addComponent("BoxCollider", {
 			halfExtents: new Engine.Vector3(100, 100, 1),
 		})
-		.transform.setPosition(0, 0, -10);
+		.transform.position.set(0, 0, -10);
 
 	new Engine.Entity().addComponent(
 		"Object3D",

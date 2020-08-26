@@ -5,18 +5,14 @@ import { Vector3 } from "../../math/Vector3.js";
 
 class Rigidbody {
 	init(data) {
-		this._position = this.entity.transform._position;
-		this._rotation = this.entity.transform._rotation;
+		this._position = this.entity.transform.position;
+		this._rotation = this.entity.transform.rotation;
 
 		if ("_physicsRef" in this.entity) {
 			this._ref = this.entity._physicsRef;
 		} else {
-			Rigidbody.config.position = Rigidbody.config.position.copyFrom(
-				this._position
-			);
-			Rigidbody.config.rotation = Rigidbody.config.rotation.fromEulerXyz(
-				this._rotation
-			);
+			Rigidbody.config.position.copyFrom(this._position);
+			Rigidbody.config.rotation.fromEulerXyz(this._rotation);
 
 			this.entity._physicsRef = this._ref = new OIMO.RigidBody(
 				Rigidbody.config
