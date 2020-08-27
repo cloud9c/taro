@@ -113,7 +113,7 @@ const System = {
 		}
 
 		// render
-		Render.renderer.render(Render.scene, Render.arrayCamera.cameras[0]);
+		Render.renderer.render(Render.scene, Render.arrayCamera);
 
 		// input
 		Input._keyDown = {};
