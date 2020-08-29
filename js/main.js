@@ -65,44 +65,63 @@ async function init() {
 		.addComponent("Object3D", dirLight)
 		.transform.position.set(-100, 175, 100);
 
-	new Engine.Entity()
+	new Engine.Entity("camera")
 		.addComponent("Camera")
-		.transform.position.set(0, 10, 50);
+		.transform.position.set(0, 0, 0);
 
-	// floor
-	geo = new THREE.PlaneBufferGeometry(200, 200);
-	mat = new THREE.MeshPhongMaterial({
-		color: 0x718e3e,
-	});
-	mesh = new THREE.Mesh(geo, mat);
-	mesh.receiveShadow = true;
+	const loader = new THREE.CubeTextureLoader();
+	const texture = loader.load([
+		"https://threejsfundamentals.org/threejs/resources/images/cubemaps/computer-history-museum/pos-x.jpg",
+		"https://threejsfundamentals.org/threejs/resources/images/cubemaps/computer-history-museum/neg-x.jpg",
+		"https://threejsfundamentals.org/threejs/resources/images/cubemaps/computer-history-museum/pos-y.jpg",
+		"https://threejsfundamentals.org/threejs/resources/images/cubemaps/computer-history-museum/neg-y.jpg",
+		"https://threejsfundamentals.org/threejs/resources/images/cubemaps/computer-history-museum/pos-z.jpg",
+		"https://threejsfundamentals.org/threejs/resources/images/cubemaps/computer-history-museum/neg-z.jpg",
+	]);
+	Engine.Render.scene.background = texture;
 
-	new Engine.Entity()
-		.addComponent("Object3D", mesh)
-		.addComponent("BoxCollider", {
-			halfExtents: new Engine.Vector3(100, 1, 100),
-		})
-		.transform.rotation.set(-Math.PI / 2, 0, 0);
-
-	// wall
-	geo = new THREE.PlaneBufferGeometry(200, 200);
-	mat = new THREE.MeshPhongMaterial({
-		color: 0x718e3e,
-	});
-	mesh = new THREE.Mesh(geo, mat);
-	mesh.receiveShadow = true;
+	var geometry = new THREE.BoxGeometry(1, 1, 1);
+	var material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+	var cube = new THREE.Mesh(geometry, material);
 
 	new Engine.Entity()
-		.addComponent("Object3D", mesh)
-		.addComponent("BoxCollider", {
-			halfExtents: new Engine.Vector3(100, 100, 1),
-		})
+		.addComponent("Object3D", cube)
 		.transform.position.set(0, 0, -10);
 
-	new Engine.Entity().addComponent(
-		"Object3D",
-		new THREE.GridHelper(1000, 1000, 0x0000ff, 0x808080)
-	);
+	// // floor
+	// geo = new THREE.PlaneBufferGeometry(200, 200);
+	// mat = new THREE.MeshPhongMaterial({
+	// 	color: 0x718e3e,
+	// });
+	// mesh = new THREE.Mesh(geo, mat);
+	// mesh.receiveShadow = true;
+
+	// new Engine.Entity()
+	// 	.addComponent("Object3D", mesh)
+	// 	.addComponent("BoxCollider", {
+	// 		halfExtents: new Engine.Vector3(100, 1, 100),
+	// 	})
+	// 	.transform.rotation.set(-Math.PI / 2, 0, 0);
+
+	// // wall
+	// geo = new THREE.PlaneBufferGeometry(200, 200);
+	// mat = new THREE.MeshPhongMaterial({
+	// 	color: 0x718e3e,
+	// });
+	// mesh = new THREE.Mesh(geo, mat);
+	// mesh.receiveShadow = true;
+
+	// new Engine.Entity()
+	// 	.addComponent("Object3D", mesh)
+	// 	.addComponent("BoxCollider", {
+	// 		halfExtents: new Engine.Vector3(100, 100, 1),
+	// 	})
+	// 	.transform.position.set(0, 0, -10);
+
+	// new Engine.Entity().addComponent(
+	// 	"Object3D",
+	// 	new THREE.GridHelper(1000, 1000, 0x0000ff, 0x808080)
+	// );
 
 	// Prefab.Cube();
 	Prefab.Player();
@@ -110,109 +129,3 @@ async function init() {
 
 	window.requestAnimationFrame((t) => Engine.System.updateLoop(t / 1000));
 }
-
-// function addNewConnection(conn) {
-// 	const id = conn.peer;
-
-// 	if (id === peerID || connections.hasOwnProperty(id)) return;
-
-// 	conn.on("open", () => {
-// 		if (connections.hasOwnProperty(id)) return;
-// 		if (id === serverID) {
-// 			init();
-// 		}
-// 		connections[id] = [conn];
-// 		Prefabs[id] = new Prefab.OtherPlayer(id);
-// 		conn.send({
-// 			type: "overhead",
-// 			id: peerID,
-// 			nickname: nickname,
-// 		});
-// 	});
-
-// 	conn.on("data", (data) => {
-// 		if (Prefabs.hasOwnProperty(data.id)) {
-// 			const object = Prefabs[id];
-// 			switch (data.type) {
-// 				case "update":
-// 					const pos = data.pos;
-// 					object.pos.set(pos.x, pos.y, pos.z);
-// 					object.rotationY = data.rotationY;
-// 					object.animationName = data.animationName;
-// 					object.animationDir = data.animationDir;
-// 					break;
-// 				case "overhead":
-// 					object.addOverhead(data.nickname);
-// 					break;
-// 			}
-// 		} else {
-// 			switch (data.type) {
-// 				case "playerList":
-// 					const playerList = data.playerList;
-// 					for (const player of playerList)
-// 						addNewConnection(peer.connect(player));
-// 					break;
-// 			}
-// 		}
-// 	});
-
-// 	conn.on("error", (err) => {
-// 		const conn = peer.connect(id);
-// 		addNewConnection(conn);
-// 	});
-
-// 	conn.on("close", () => {
-// 		const id = conn.peer;
-// 		if (Prefabs[id]) {
-// 			Prefabs[id].delete();
-// 			delete Prefabs[id];
-// 		}
-// 		delete connections[id];
-// 	});
-// }
-
-// async function newPeer() {
-// 	const options = {
-// 		secure: true,
-// 		host: "peerjs-cloud9c.herokuapp.com",
-// 	};
-
-// 	if (isHosting) {
-// 		let id = "";
-// 		const response = await fetch("./js/words.json");
-// 		const data = await response.json();
-// 		for (let i = 0; i < 3; i++)
-// 			id += data
-// 				.splice(Math.floor(Math.random() * data.length), 1)
-// 				.toString();
-// 		peer = new Peer(id, options);
-// 	} else {
-// 		peer = new Peer(options);
-// 	}
-
-// 	peer.on("open", (id) => {
-// 		peerID = id;
-// 		if (isHosting) {
-// 			serverID = id;
-// 			init();
-// 		} else {
-// 			const conn = peer.connect(serverID);
-// 			addNewConnection(conn);
-// 		}
-// 	});
-
-// 	peer.on("connection", addNewConnection);
-
-// 	peer.on("error", (err) => {
-// 		//TODO, add all errors
-// 		if (err.type === "unavailable-id") newPeer();
-// 	});
-
-// 	peer.on("disconnected", () => {
-// 		peer.reconnect();
-// 	});
-
-// 	window.addEventListener("unload", () => {
-// 		peer.destroy();
-// 	});
-// }

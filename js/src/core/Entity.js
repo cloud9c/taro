@@ -8,14 +8,10 @@ class Entity {
 		this._events = {};
 		this.addComponent("Transform");
 
-		Object.defineProperties(this, {
-			id: {
-				value: id,
-				writable: true,
-			},
-			transform: {
-				value: this._components["Transform"][0],
-			},
+		this.id = id;
+
+		Object.defineProperty(this, "transform", {
+			value: this._components["Transform"][0],
 		});
 		console.log(this);
 	}
@@ -25,7 +21,7 @@ class Entity {
 	}
 
 	addTag(name) {
-		if (!this._tags.includes(name)) {
+		if (!this._tags.includes(name) && typeof name === "string") {
 			this._tags.push(name);
 
 			const tagArray = Entity._tags[name];
@@ -50,8 +46,10 @@ class Entity {
 	}
 
 	set id(id) {
-		this._id = id;
-		Entity._ids[id] = this;
+		if (typeof id === "string") {
+			this._id = id;
+			Entity._ids[id] = this;
+		}
 	}
 
 	get components() {

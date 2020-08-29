@@ -5,7 +5,9 @@ import { Physics } from "../Physics.js";
 import { Time } from "../Time.js";
 import { Render } from "../Render.js";
 
-import { THREE } from "../Engine.js";
+import * as THREE from "../lib/three.module.js";
+
+import { Entity } from "./Entity.js";
 
 const System = {
 	init() {
@@ -63,12 +65,6 @@ const System = {
 		this._lateUpdates = Component._lateUpdates;
 
 		this.lastTimestamp = undefined;
-		Render.scene.add(
-			new THREE.Mesh(
-				new THREE.BoxGeometry(0.2, 0.2, 0.2),
-				new THREE.MeshNormalMaterial()
-			)
-		);
 	},
 	updateLoop(timestamp) {
 		Time.deltaTime = timestamp - this.lastTimestamp || 0;
@@ -111,6 +107,9 @@ const System = {
 				component[j].lateUpdate();
 			}
 		}
+
+		Entity.find("camera").transform.position.y += 1;
+		console.log(Entity.find("camera").transform.position);
 
 		// render
 		Render.renderer.render(Render.scene, Render.arrayCamera);
