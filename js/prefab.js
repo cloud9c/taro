@@ -1,47 +1,35 @@
 import * as THREE from "./src/lib/three.module.js";
 import * as Engine from "./src/engine.js";
+import { GLTFLoader } from "https://threejs.org/examples/jsm/loaders/GLTFLoader.js";
+
+const loader = new GLTFLoader();
 
 export function Player() {
-	const obj = Engine.Asset.getObject3D("player.glb");
-	const entity = new Engine.Entity();
+	const entity = new Engine.Entity("player");
+	entity.transform.position.set(0, 0, 0);
 
-	entity.transform.position.set(0, 100, 0);
+	loader.load("assets/models/player.glb", (gltf) => {
+		var geometry = new THREE.BoxGeometry();
+		var material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+		var cube = new THREE.Mesh(geometry, material);
+		entity.addComponent("Object3D", cube);
 
-	entity.addComponent("Object3D", obj);
-	entity.addComponent(
-		"Animation",
-		Engine.Asset.getAnimation(obj, "player.glb", "Idle")
-	);
-	entity.addComponent("Rigidbody", {
-		mass: 60,
-	});
-	entity.addComponent("BoxCollider", {
-		halfExtents: new Engine.Vector3(0.5, 1, 0.5),
+		// entity.addComponent("Object3D", gltf.scene);
 	});
 
-	// entity.addComponent("Camera");
-
-	// const keyInput = Engine.Input;
-	// const maxSpeed = 20;
-	// entity.addComponent(Engine.Behavior, () => {
-	// 	if (keyInput.KeyW) {
-	// 		console.log("here");
-	// 	}
-	// 	if (keyInput.KeyS) {
-	// 	}
-	// 	if (keyInput.KeyA) {
-	// 	}
-	// 	if (keyInput.KeyD) {
-	// 	}
-	// 	if (keyInput.Space) {
-	// 	}
-	// 	if (keyInput.Shift) {
-	// 	}
+	// entity.addComponent(
+	// 	"Animation",
+	// 	Engine.Asset.getAnimation(obj, "player.glb", "Idle")
+	// );
+	// entity.addComponent("Rigidbody", {
+	// 	mass: 60,
+	// });
+	// entity.addComponent("BoxCollider", {
+	// 	halfExtents: new Engine.Vector3(0.5, 1, 0.5),
 	// });
 }
 
 export function Ball() {
-	const obj = Engine.Asset.getObject3D("player.glb");
 	const entity = new Engine.Entity();
 
 	entity.transform.position.set(5, 10, 0);
@@ -57,7 +45,6 @@ export function Ball() {
 }
 
 export function Cube() {
-	const obj = Engine.Asset.getObject3D("player.glb");
 	const entity = new Engine.Entity();
 
 	entity.transform.position.set(5, 10, 0);

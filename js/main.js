@@ -2,38 +2,12 @@ import * as THREE from "./src/lib/three.module.js";
 import * as Engine from "./src/engine.js";
 import * as Prefab from "./prefab.js";
 
-let peer,
-	connections = [],
-	serverID,
-	peerID,
-	isHosting,
-	nickname;
-
-window.addEventListener("load", () => {
-	const oldNickname = localStorage.getItem("nickname");
-	if (oldNickname !== null) {
-		document.getElementsByClassName("nickname")[0].value = oldNickname;
-		document.getElementsByClassName("nickname")[1].value = oldNickname;
-	}
-
-	document.getElementById("join-submit").addEventListener("submit", init);
-	document.getElementById("host-submit").addEventListener("submit", init);
-	document.getElementById("next-button").addEventListener("click", () => {
-		document.getElementById("splash-page").style.display = "none";
-		document.getElementById("host-submit").style.display = "block";
-	});
-});
+init();
 
 async function init() {
 	let geo, mat, mesh;
 
 	await Engine.init("c");
-
-	//html stuff
-	// document.getElementById("log").textContent = "Server Code: " + serverID;
-	document.getElementById("launcher").remove();
-	document.getElementById("loading").remove();
-	document.getElementById("game").style.display = "";
 
 	// lighting
 	const hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 0.6);
@@ -65,63 +39,36 @@ async function init() {
 		.addComponent("Object3D", dirLight)
 		.transform.position.set(-100, 175, 100);
 
+	// camera
 	new Engine.Entity("camera")
-		.addComponent("Camera")
-		.transform.position.set(0, 0, 0);
+		.addComponent("PerspectiveCamera")
+		.transform.position.set(0, 10, 40);
 
-	const loader = new THREE.CubeTextureLoader();
-	const texture = loader.load([
-		"https://threejsfundamentals.org/threejs/resources/images/cubemaps/computer-history-museum/pos-x.jpg",
-		"https://threejsfundamentals.org/threejs/resources/images/cubemaps/computer-history-museum/neg-x.jpg",
-		"https://threejsfundamentals.org/threejs/resources/images/cubemaps/computer-history-museum/pos-y.jpg",
-		"https://threejsfundamentals.org/threejs/resources/images/cubemaps/computer-history-museum/neg-y.jpg",
-		"https://threejsfundamentals.org/threejs/resources/images/cubemaps/computer-history-museum/pos-z.jpg",
-		"https://threejsfundamentals.org/threejs/resources/images/cubemaps/computer-history-museum/neg-z.jpg",
-	]);
-	Engine.Render.scene.background = texture;
+	// floor
+	geo = new THREE.PlaneBufferGeometry(200, 200);
+	mat = new THREE.MeshPhongMaterial({
+		color: 0x718e3e,
+	});
+	mesh = new THREE.Mesh(geo, mat);
+	mesh.receiveShadow = true;
 
-	var geometry = new THREE.BoxGeometry(1, 1, 1);
+	new Engine.Entity("floor")
+		.addComponent("Object3D", mesh)
+		.addComponent("BoxCollider", {
+			halfExtents: new Engine.Vector3(100, 1, 100),
+		})
+		.transform.rotation.set(-Math.PI / 2, 0, 0);
+
+	new Engine.Entity().addComponent(
+		"Object3D",
+		new THREE.GridHelper(1000, 1000, 0x0000ff, 0x808080)
+	);
+
+	var geometry = new THREE.BoxGeometry();
 	var material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
 	var cube = new THREE.Mesh(geometry, material);
-
-	new Engine.Entity()
-		.addComponent("Object3D", cube)
-		.transform.position.set(0, 0, -10);
-
-	// // floor
-	// geo = new THREE.PlaneBufferGeometry(200, 200);
-	// mat = new THREE.MeshPhongMaterial({
-	// 	color: 0x718e3e,
-	// });
-	// mesh = new THREE.Mesh(geo, mat);
-	// mesh.receiveShadow = true;
-
-	// new Engine.Entity()
-	// 	.addComponent("Object3D", mesh)
-	// 	.addComponent("BoxCollider", {
-	// 		halfExtents: new Engine.Vector3(100, 1, 100),
-	// 	})
-	// 	.transform.rotation.set(-Math.PI / 2, 0, 0);
-
-	// // wall
-	// geo = new THREE.PlaneBufferGeometry(200, 200);
-	// mat = new THREE.MeshPhongMaterial({
-	// 	color: 0x718e3e,
-	// });
-	// mesh = new THREE.Mesh(geo, mat);
-	// mesh.receiveShadow = true;
-
-	// new Engine.Entity()
-	// 	.addComponent("Object3D", mesh)
-	// 	.addComponent("BoxCollider", {
-	// 		halfExtents: new Engine.Vector3(100, 100, 1),
-	// 	})
-	// 	.transform.position.set(0, 0, -10);
-
-	// new Engine.Entity().addComponent(
-	// 	"Object3D",
-	// 	new THREE.GridHelper(1000, 1000, 0x0000ff, 0x808080)
-	// );
+	cube.position.set(0, 10, 0);
+	Engine.Render.scene.add(cube);
 
 	// Prefab.Cube();
 	Prefab.Player();

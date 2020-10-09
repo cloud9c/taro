@@ -1,17 +1,16 @@
-import { Object3D as O3D } from "../lib/three.module.js";
 import { Render } from "../Render.js";
 
 class Object3D {
 	init(data) {
-		Object.defineProperties(data, {
+		Object.defineProperties(this.entity.transform, {
 			position: {
-				value: this.entity.transform.position,
+				value: data.position.copy(this.entity.transform.position),
 			},
 			rotation: {
-				value: this.entity.transform.rotation,
+				value: data.rotation.copy(this.entity.transform.rotation),
 			},
 			scale: {
-				value: this.entity.transform.scale,
+				value: data.scale.copy(this.entity.transform.scale),
 			},
 		});
 		Object.assign(this, data);

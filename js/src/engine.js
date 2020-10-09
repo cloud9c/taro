@@ -1,5 +1,4 @@
 // global properties
-export { Asset } from "./Asset.js";
 export { Input } from "./Input.js";
 export { Physics } from "./Physics.js";
 export { Time } from "./Time.js";
@@ -25,12 +24,10 @@ export { Vector2 } from "./math/Vector2.js";
 export { Vector3 } from "./math/Vector3.js";
 export { Vector4 } from "./math/Vector4.js";
 
-import { Asset } from "./Asset.js";
 import { System } from "./core/System.js";
 import { Render } from "./Render.js";
 
 export async function init(canvas) {
-	await Asset.init();
 	Render.init(canvas);
 	System.init();
 }

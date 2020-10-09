@@ -12,67 +12,7 @@
 		<link rel="stylesheet" href="style.css" type="text/css" />
 	</head>
 	<body>
-		<div id="launcher">
-			<h1 id="title">Newton's Box</h1>
-			<div class="card">
-				<div id="splash-page">
-					<form id="join-submit" onsubmit="return false">
-						<h2 class="label">JOIN SERVER</h2>
-						<input
-							type="text"
-							class="text-input nickname"
-							placeholder="Player name"
-							autocomplete="off"
-							required
-						/>
-						<input
-							type="text"
-							class="text-input"
-							id="join"
-							placeholder="Server code"
-							autocomplete="off"
-							required
-						/>
-						<input
-							type="submit"
-							class="launcher-button"
-							value="Join"
-						/>
-					</form>
-					<hr />
-					<h2 class="label">HOST SERVER</h2>
-					<button id="next-button" class="launcher-button">
-						Host
-					</button>
-				</div>
-				<form
-					id="host-submit"
-					onsubmit="return false"
-					style="display: none;"
-				>
-					<h2 class="label">HOST SETTINGS</h2>
-					<input
-						type="text"
-						class="text-input nickname"
-						placeholder="Player name"
-						autocomplete="off"
-						required
-					/>
-					<input
-						type="submit"
-						class="launcher-button"
-						value="Start Game!"
-					/>
-				</form>
-			</div>
-		</div>
-		<div id="loading" style="display: none;">
-			<div id="loading-info">Loading: Player.glb</div>
-			<div id="progress-bar">
-				<div id="bar-percentage"></div>
-			</div>
-		</div>
-		<div id="game" style="display: none;">
+		<div id="game">
 			<div id="menu" style="display: none;">
 				<div id="menu-sidebar">
 					<button

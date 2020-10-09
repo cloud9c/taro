@@ -1,8 +1,10 @@
 import { Animation } from "../components/Animation.js";
-import { Camera } from "../components/Camera.js";
 import { Object3D } from "../components/Object3D.js";
 import { Rigidbody } from "../components/physics/Rigidbody.js";
 import { Transform } from "../components/Transform.js";
+
+import { OrthographicCamera } from "../components/camera/OrthographicCamera.js";
+import { PerspectiveCamera } from "../components/camera/PerspectiveCamera.js";
 
 import { BoxCollider } from "../components/physics/BoxCollider.js";
 import { CapsuleCollider } from "../components/physics/CapsuleCollider.js";
@@ -43,9 +45,9 @@ const Component = {
 					if (value != this._enabled) {
 						this._enabled = value;
 						if (value && "onEnable" in this) {
-							object.prototype.onEnable();
+							this.onEnable();
 						} else if ("onDisable" in this) {
-							object.prototype.onDisable();
+							this.onDisable();
 						}
 					}
 				},
@@ -83,10 +85,12 @@ function destroy() {
 
 const coreComponents = {
 	Animation: Animation,
-	Camera: Camera,
 	Object3D: Object3D,
 	Rigidbody: Rigidbody,
 	Transform: Transform,
+
+	OrthographicCamera: OrthographicCamera,
+	PerspectiveCamera: PerspectiveCamera,
 
 	BoxCollider: BoxCollider,
 	CapsuleCollider: CapsuleCollider,
