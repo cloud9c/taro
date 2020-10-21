@@ -23,7 +23,6 @@ const System = {
 			document.body.requestPointerLock();
 		});
 		console.log(Render.scene);
-		console.log(Render.arrayCamera);
 
 		window.addEventListener("blur", () => {
 			for (const property in Input) {
@@ -36,17 +35,14 @@ const System = {
 		});
 
 		window.addEventListener("resize", () => {
-			Render.arrayCamera.cameras[0].aspect =
-				Render.canvas.width / Render.canvas.height;
-			Render.arrayCamera.cameras[0].viewport.set(
-				0,
-				0,
-				window.innerWidth,
-				window.innerHeight
-			);
-			Render.arrayCamera.cameras[0].updateProjectionMatrix();
-
 			Render.renderer.setSize(window.innerWidth, window.innerHeight);
+
+			for (let i = 0, len = Render.cameras.length; i < len; i++) {
+				Render.cameras[i].aspect =
+					(Render.canvas.width * Render.cameras[i].viewport.z) /
+					(Render.canvas.height * Render.cameras[i].viewport.w);
+				Render.cameras[i].updateProjectionMatrix();
+			}
 		});
 
 		Input._init();
@@ -109,10 +105,7 @@ const System = {
 		}
 
 		// render
-		Render.renderer.render(Render.scene, Render.arrayCamera);
-		if (Entity.find("player").transform.position.x > 5)
-			Entity.find("player").transform.position.x = -1;
-		else Entity.find("player").transform.position.x += 0.1;
+		Render.render();
 
 		// input
 		Input._keyDown = {};

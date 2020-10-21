@@ -6,27 +6,22 @@ const loader = new GLTFLoader();
 
 export function Player() {
 	const entity = new Engine.Entity("player");
-	entity.transform.position.set(0, 0, 0);
+	entity.transform.position.set(0, 5, 0);
 
 	loader.load("assets/models/player.glb", (gltf) => {
-		var geometry = new THREE.BoxGeometry();
-		var material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-		var cube = new THREE.Mesh(geometry, material);
-		entity.addComponent("Object3D", cube);
-
-		// entity.addComponent("Object3D", gltf.scene);
+		entity.addComponent("Object3D", gltf.scene);
 	});
 
 	// entity.addComponent(
 	// 	"Animation",
 	// 	Engine.Asset.getAnimation(obj, "player.glb", "Idle")
 	// );
-	// entity.addComponent("Rigidbody", {
-	// 	mass: 60,
-	// });
-	// entity.addComponent("BoxCollider", {
-	// 	halfExtents: new Engine.Vector3(0.5, 1, 0.5),
-	// });
+	entity.addComponent("Rigidbody", {
+		mass: 60,
+	});
+	entity.addComponent("BoxCollider", {
+		halfExtents: new Engine.Vector3(0.5, 1, 0.5),
+	});
 }
 
 export function Ball() {

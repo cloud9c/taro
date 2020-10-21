@@ -64,12 +64,6 @@ async function init() {
 		new THREE.GridHelper(1000, 1000, 0x0000ff, 0x808080)
 	);
 
-	var geometry = new THREE.BoxGeometry();
-	var material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-	var cube = new THREE.Mesh(geometry, material);
-	cube.position.set(0, 10, 0);
-	Engine.Render.scene.add(cube);
-
 	// Prefab.Cube();
 	Prefab.Player();
 	// Prefab.Ball();

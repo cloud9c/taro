@@ -5,7 +5,7 @@ import { PerspectiveCamera as PC } from "../../lib/three.module.js";
 class PerspectiveCamera extends PC {
 	init(data) {
 		if ("fov" in data) this.fov = data.fov;
-		"aspect" in data
+		this.aspect = "aspect" in data
 			? data.aspect
 			: Render.canvas.width / Render.canvas.height;
 		if ("near" in data) this.near = data.near;
@@ -27,17 +27,17 @@ class PerspectiveCamera extends PC {
 		this.viewport =
 			"viewport" in data
 				? data.viewport
-				: new Vector4(0, 0, window.innerWidth, window.innerHeight);
+				: new Vector4(0, 0, 1, 1);
 	}
 
 	onEnable() {
-		Render.arrayCamera.cameras.push(this);
+		Render.cameras.push(this);
 		Render.scene.add(this);
 	}
 
 	onDisable() {
-		Render.arrayCamera.cameras.splice(
-			Render.arrayCamera.cameras.indexOf(this),
+		Render.cameras.splice(
+			Render.cameras.indexOf(this),
 			1
 		);
 		Render.scene.remove(this);
