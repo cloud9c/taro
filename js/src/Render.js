@@ -5,6 +5,7 @@ const Render = {
 		this.renderer = new THREE.WebGLRenderer({
 			canvas: this.canvas,
 		});
+		this.renderer.setPixelRatio(window.devicePixelRatio);
 	},
 	render: function () {
 		for (let i = 0, len = this.cameras.length; i < len; i++) {

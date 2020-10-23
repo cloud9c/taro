@@ -81,8 +81,8 @@ const System = {
 
 			for (let i = 0, len = this.Rigidbody.length; i < len; i++) {
 				const rigidbody = this.Rigidbody[i];
-				rigidbody._position.copy(rigidbody._ref.getPosition());
-				rigidbody._rotation.setFromVector3(
+				rigidbody.transform.position.copy(rigidbody._ref.getPosition());
+				rigidbody.transform.rotation.setFromVector3(
 					rigidbody._ref.getRotation().toEulerXyz()
 				);
 			}

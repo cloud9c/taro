@@ -3,7 +3,7 @@ import { Physics } from "../../Physics.js";
 import { Euler } from "../../math/Euler.js";
 import { Vector3 } from "../../math/Vector3.js";
 
-class Rigidbody {
+class UniversalJoint {
 	init(data) {
 		this._position = this.transform.position;
 		this._rotation = this.transform.rotation;

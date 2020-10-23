@@ -61,18 +61,23 @@ class Entity {
 	}
 
 	getComponent(type) {
-		return this._components[type][0];
+		return this._components[type] ? this._components[type][0] : null;
 	}
 
 	getComponents(type) {
-		return this._components[type].slice(0);
+		return this._components[type] ? this._components[type].slice(0) : null;
 	}
 
 	addComponent(type, data = {}) {
 		const c = new Component._components[type]();
 
-		Object.defineProperty(c, "entity", {
-			value: this,
+		Object.defineProperties(c, {
+			entity: {
+				value: this,
+			},
+			transform: {
+				value: this.transform,
+			},
 		});
 
 		Component._containers[type].push(c);

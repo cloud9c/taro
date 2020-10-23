@@ -2,15 +2,15 @@ import { Render } from "../Render.js";
 
 class Object3D {
 	init(data) {
-		Object.defineProperties(this.entity.transform, {
+		Object.defineProperties(this.transform, {
 			position: {
-				value: data.position.copy(this.entity.transform.position),
+				value: data.position.copy(this.transform.position),
 			},
 			rotation: {
-				value: data.rotation.copy(this.entity.transform.rotation),
+				value: data.rotation.copy(this.transform.rotation),
 			},
 			scale: {
-				value: data.scale.copy(this.entity.transform.scale),
+				value: data.scale.copy(this.transform.scale),
 			},
 		});
 		Object.assign(this, data);
