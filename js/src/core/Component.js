@@ -50,7 +50,6 @@ const Component = {
 		if (type in this._components) throw "Component type already exists";
 
 		cProto.cType.value = type;
-		console.log(obj, cProto);
 		Object.defineProperties(obj.prototype, cProto);
 
 		this._components[type] = obj;
