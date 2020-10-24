@@ -1,4 +1,5 @@
 import { Render } from "../Render.js";
+import { Component } from "../core/Component.js";
 
 class Object3D {
 	init(data) {
@@ -18,4 +19,4 @@ class Object3D {
 	}
 }
 
-export { Object3D };
+Component.createComponent("Object3D", Object3D);

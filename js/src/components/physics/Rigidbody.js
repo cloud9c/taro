@@ -2,6 +2,7 @@ import { OIMO } from "../../lib/oimoPhysics.js";
 import { Physics } from "../../Physics.js";
 import { Euler } from "../../math/Euler.js";
 import { Vector3 } from "../../math/Vector3.js";
+import { Component } from "../../core/Component.js";
 
 class Rigidbody {
 	init(data) {
@@ -161,4 +162,4 @@ class Rigidbody {
 
 Rigidbody.config = new OIMO.RigidBodyConfig();
 
-export { Rigidbody };
+Component.createComponent("Rigidbody", Rigidbody);

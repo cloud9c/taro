@@ -1,5 +1,6 @@
 import { Euler } from "../math/Euler.js";
 import { Vector3 } from "../math/Vector3.js";
+import { Component } from "../core/Component.js";
 
 class Transform {
 	init(data) {
@@ -20,4 +21,4 @@ class Transform {
 	}
 }
 
-export { Transform };
+Component.createComponent("Transform", Transform);

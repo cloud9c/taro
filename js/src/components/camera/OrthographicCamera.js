@@ -1,6 +1,7 @@
 import { Render } from "../../Render.js";
 import { Vector4 } from "../../math/Vector4.js";
 import { OrthographicCamera as OC } from "../../lib/three.module.js";
+import { Component } from "../../core/Component.js";
 
 class OrthographicCamera extends OC {
 	init(data) {
@@ -44,4 +45,4 @@ class OrthographicCamera extends OC {
 	}
 }
 
-export { OrthographicCamera };
+Component.createComponent("OrthographicCamera", OrthographicCamera);

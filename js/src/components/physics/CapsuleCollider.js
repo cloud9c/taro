@@ -1,4 +1,5 @@
 import { Collider } from "./Collider.js";
+import { Component } from "../../core/Component.js";
 
 class CapsuleCollider extends Collider {
 	init(data) {
@@ -7,4 +8,4 @@ class CapsuleCollider extends Collider {
 	}
 }
 
-export { CapsuleCollider };
+Component.createComponent("CapsuleCollider", CapsuleCollider);

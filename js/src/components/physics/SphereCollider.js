@@ -1,4 +1,5 @@
 import { Collider } from "./Collider.js";
+import { Component } from "../../core/Component.js";
 
 class SphereCollider extends Collider {
 	init(data) {
@@ -7,4 +8,4 @@ class SphereCollider extends Collider {
 	}
 }
 
-export { SphereCollider };
+Component.createComponent("SphereCollider", SphereCollider);

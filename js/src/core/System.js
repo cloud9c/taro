@@ -11,12 +11,6 @@ import { Entity } from "./Entity.js";
 
 const System = {
 	init() {
-		// behavior
-		this.Behavior = Component._containers.Behavior;
-
-		// camera
-		this.Camera = Component._containers.Camera;
-
 		// input
 		Render.canvas.addEventListener("click", () => {
 			document.body.requestFullscreen();
@@ -52,13 +46,6 @@ const System = {
 
 		// render
 		Render.renderer.setSize(window.innerWidth, window.innerHeight);
-		this.Object3D = Component._containers.Object3D;
-		this.Transform = Component._containers.Transform;
-
-		// updates
-		this._updates = Component._updates;
-		this._fixedUpdates = Component._fixedUpdates;
-		this._lateUpdates = Component._lateUpdates;
 
 		this.lastTimestamp = undefined;
 	},
@@ -72,13 +59,6 @@ const System = {
 				? Time.maxTimestep
 				: Time.deltaTime;
 		while (Physics._accumulator >= Time.fixedTimestep) {
-			for (let i = 0, len = this._fixedUpdates.length; i < len; i++) {
-				const component = this._fixedUpdates[i];
-				for (let j = 0, lenj = component.length; j < lenj; j++) {
-					component[j].fixedUpdate();
-				}
-			}
-
 			for (let i = 0, len = this.Rigidbody.length; i < len; i++) {
 				const rigidbody = this.Rigidbody[i];
 				rigidbody.transform.position.copy(rigidbody._ref.getPosition());
@@ -90,17 +70,13 @@ const System = {
 			Physics._accumulator -= Time.fixedTimestep;
 		}
 
-		for (let i = 0, len = this._updates.length; i < len; i++) {
-			const component = this._updates[i];
-			for (let j = 0, lenj = component.length; j < lenj; j++) {
-				component[j].update();
-			}
-		}
-
-		for (let i = 0, len = this._lateUpdates.length; i < len; i++) {
-			const component = this._lateUpdates[i];
-			for (let j = 0, lenj = component.length; j < lenj; j++) {
-				component[j].lateUpdate();
+		// update loop
+		for (let i = 0, len = Component._containers.length; i < len; i++) {
+			const container = Component._containers[i];
+			if ("update" in container[0]) {
+				for (let j = 0, lenj = component.length; j < lenj; j++) {
+					component[j].update();
+				}
 			}
 		}
 

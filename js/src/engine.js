@@ -24,8 +24,24 @@ export { Vector2 } from "./math/Vector2.js";
 export { Vector3 } from "./math/Vector3.js";
 export { Vector4 } from "./math/Vector4.js";
 
+// imports
 import { System } from "./core/System.js";
 import { Render } from "./Render.js";
+
+// core components
+import "./components/Animation.js";
+import "./components/Object3D.js";
+import "./components/physics/Rigidbody.js";
+import "./components/Transform.js";
+
+import "./components/camera/OrthographicCamera.js";
+import "./components/camera/PerspectiveCamera.js";
+
+import "./components/physics/BoxCollider.js";
+import "./components/physics/CapsuleCollider.js";
+import "./components/physics/ConeCollider.js";
+import "./components/physics/CylinderCollider.js";
+import "./components/physics/SphereCollider.js";
 
 export async function init(canvas) {
 	Render.init(canvas);
