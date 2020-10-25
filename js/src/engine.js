@@ -30,7 +30,7 @@ import { Render } from "./Render.js";
 
 // core components
 import "./components/Animation.js";
-import "./components/Object3D.js";
+import "./components/Mesh.js";
 import "./components/physics/Rigidbody.js";
 import "./components/Transform.js";
 

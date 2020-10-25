@@ -12,36 +12,18 @@ class OrthographicCamera extends OC {
 		if ("near" in data) this.near = data.near;
 		if ("far" in data) this.far = data.far;
 		this.updateProjectionMatrix();
-
-		Object.defineProperties(this, {
-			position: {
-				value: this.entity.transform.position,
-			},
-			rotation: {
-				value: this.entity.transform.rotation,
-			},
-			scale: {
-				value: this.entity.transform.scale,
-			},
-		});
-
 		this.viewport =
-			"viewport" in data
-				? data.viewport
-				: new Vector4(0, 0, window.innerWidth, window.innerHeight);
+			"viewport" in data ? data.viewport : new Vector4(0, 0, 1, 1);
 	}
 
 	onEnable() {
-		Render.arrayCamera.cameras.push(this);
-		Render.scene.add(this);
+		Render.cameras.push(this);
+		this.transform.add(this);
 	}
 
 	onDisable() {
-		Render.arrayCamera.cameras.splice(
-			Render.arrayCamera.cameras.indexOf(this),
-			1
-		);
-		Render.scene.remove(this);
+		Render.cameras.splice(Render.cameras.indexOf(this), 1);
+		this.transform.remove(this);
 	}
 }
 

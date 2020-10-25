@@ -9,7 +9,7 @@ export function Player() {
 	entity.transform.position.set(0, 5, 0);
 
 	loader.load("assets/models/player.glb", (gltf) => {
-		entity.addComponent("Object3D", gltf.scene);
+		entity.addComponent("Mesh", gltf.scene);
 	});
 
 	// entity.addComponent(
@@ -32,7 +32,7 @@ export function Ball() {
 	const geo = new THREE.SphereBufferGeometry(1, 32, 32);
 	const mat = new THREE.MeshBasicMaterial({ color: 0xffff00 });
 
-	entity.addComponent("Object3D", new THREE.Mesh(geo, mat));
+	entity.addComponent("Mesh", new THREE.Mesh(geo, mat));
 	entity.addComponent("Rigidbody", {
 		mass: 10,
 	});
@@ -47,7 +47,7 @@ export function Cube() {
 	const geo = new THREE.BoxBufferGeometry(2, 2, 2);
 	const mat = new THREE.MeshBasicMaterial({ color: 0xff0000 });
 
-	entity.addComponent("Object3D", new THREE.Mesh(geo, mat));
+	entity.addComponent("Mesh", new THREE.Mesh(geo, mat));
 	entity.addComponent("Rigidbody", {
 		mass: 10,
 	});

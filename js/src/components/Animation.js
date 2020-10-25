@@ -1,7 +1,5 @@
 import { Component } from "../core/Component.js";
 
-console.log("here");
-
 class Animation {
 	init(data) {
 		return data;

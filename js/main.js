@@ -14,7 +14,7 @@ async function init() {
 	hemiLight.color.setHSL(0.6, 1, 0.6);
 	hemiLight.groundColor.setHSL(0.095, 1, 0.75);
 	new Engine.Entity()
-		.addComponent("Object3D", hemiLight)
+		.addComponent("Mesh", hemiLight)
 		.transform.position.set(0, 100, 0);
 
 	const dirLight = new THREE.DirectionalLight(0xffffff, 1);
@@ -36,7 +36,7 @@ async function init() {
 	dirLight.shadow.bias = -0.0001;
 
 	new Engine.Entity()
-		.addComponent("Object3D", dirLight)
+		.addComponent("Mesh", dirLight)
 		.transform.position.set(-100, 175, 100);
 
 	// camera
@@ -53,14 +53,14 @@ async function init() {
 	mesh.receiveShadow = true;
 
 	new Engine.Entity("floor")
-		.addComponent("Object3D", mesh)
+		.addComponent("Mesh", mesh)
 		.addComponent("BoxCollider", {
 			halfExtents: new Engine.Vector3(100, 1, 100),
 		})
 		.transform.rotation.set(-Math.PI / 2, 0, 0);
 
 	new Engine.Entity().addComponent(
-		"Object3D",
+		"Mesh",
 		new THREE.GridHelper(1000, 1000, 0x0000ff, 0x808080)
 	);
 

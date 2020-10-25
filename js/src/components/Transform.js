@@ -1,23 +1,14 @@
-import { Euler } from "../math/Euler.js";
-import { Vector3 } from "../math/Vector3.js";
+import { Render } from "../Render.js";
 import { Component } from "../core/Component.js";
+import { Group } from "../lib/three.module.js";
 
-class Transform {
+class Transform extends Group {
 	init(data) {
-		Object.defineProperties(this, {
-			position: {
-				value: "position" in data ? data.position : new Vector3(),
-				configurable: true,
-			},
-			rotation: {
-				value: "rotation" in data ? data.rotation : new Euler(),
-				configurable: true,
-			},
-			scale: {
-				value: "scale" in data ? data.scale : new Vector3(1, 1, 1),
-				configurable: true,
-			},
-		});
+		if ("position" in data) this.position.copy(data.position);
+		if ("rotation" in data) this.rotation.copy(data.rotation);
+		if ("scale" in data) this.scale.copy(data.scale);
+
+		Render.scene.add(this);
 	}
 }
 
