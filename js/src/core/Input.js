@@ -1,7 +1,25 @@
-import { Vector2 } from "./math/Vector2.js";
+export class Input {
+	constructor() {
+		this.mousePosition = new ENGINE.Vector2();
+		this.mouseDelta = new ENGINE.Vector2();
+		this.wheelDelta = new ENGINE.Vector2();
+		this._mouse = [];
+		this._mouseDown = [];
+		this._mouseUp = [];
+		this._key = {};
+		this._keyDown = {};
+		this._keyUp = {};
 
-const Input = {
-	_init() {
+		window.addEventListener("blur", () => {
+			for (const property in Input) {
+				if (typeof Input[property] === "boolean")
+					Input[property] = false;
+				else if (typeof Input[property] === "number")
+					Input[property] = 0;
+			}
+			this.lastTimestamp = undefined;
+		});
+
 		document.addEventListener("mousemove", (e) => {
 			this.mouseDelta.set(e.movementX, e.movementY);
 			this.mousePosition.set(e.clientX, e.clientY);
@@ -27,34 +45,33 @@ const Input = {
 			this._key[event.code] = false;
 			this._keyUp[event.code] = true;
 		});
-	},
+	}
+	_reset() {
+		for (const prop in this._keyDown) {
+			delete this._keyDown[prop];
+		}
+		for (const prop in this._keyUp) {
+			delete this._keyUp[prop];
+		}
+		this._mouseDown.length = 0;
+		this._mouseUp.length = 0;
+	}
 	getKey(v) {
 		return Boolean(this._key[v]);
-	},
+	}
 	getKeyDown(v) {
 		return v in this._keyDown;
-	},
+	}
 	getKeyUp(v) {
 		return v in this._keyUp;
-	},
+	}
 	getMouse(v) {
 		return Boolean(this._mouse[v]);
-	},
+	}
 	getMouseDown(v) {
 		return Boolean(this._mouseDown[v]);
-	},
+	}
 	getMouseUp(v) {
 		return Boolean(this._mouseUp[v]);
-	},
-	mousePosition: new Vector2(),
-	mouseDelta: new Vector2(),
-	wheelDelta: new Vector2(),
-	_mouse: [],
-	_mouseDown: [],
-	_mouseUp: [],
-	_key: {},
-	_keyDown: {},
-	_keyUp: {},
-};
-
-export { Input };
+	}
+}

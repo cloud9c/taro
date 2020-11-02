@@ -1,55 +1,13 @@
-import { Component } from "./Component.js";
+import { Group } from "../lib/three.module.js";
 
-class Entity {
+export class Entity extends Group {
 	constructor(id) {
-		Entity._entities.push(this);
+		super();
+
 		this._components = {};
-		this._tags = [];
 		this._events = {};
-		this.addComponent("Transform");
 
-		this.id = id;
-
-		Object.defineProperty(this, "transform", {
-			value: this._components["Transform"][0],
-		});
 		console.log(this);
-	}
-
-	get tags() {
-		return this._tags.slice(0);
-	}
-
-	addTag(name) {
-		if (!this._tags.includes(name) && typeof name === "string") {
-			this._tags.push(name);
-
-			const tagArray = Entity._tags[name];
-			if (tagArray) tagArray.push(this);
-			else Entity._tags[name] = [this];
-		}
-	}
-
-	removeTag(name) {
-		if (this._tags.includes(name)) {
-			this._tags.splice(index, 1);
-			if (Entity._tags[name].length > 1) {
-				Entity._tags[name].splice(Entity._tags[name].indexOf(this), 1);
-			} else {
-				delete Entity._tags[name];
-			}
-		}
-	}
-
-	get id() {
-		return this._id;
-	}
-
-	set id(id) {
-		if (typeof id === "string") {
-			this._id = id;
-			Entity._ids[id] = this;
-		}
 	}
 
 	get components() {
@@ -69,22 +27,17 @@ class Entity {
 	}
 
 	addComponent(type, data = {}) {
-		const c = new Component._components[type]();
+		const c = new ENGINE._components[type](data);
 
-		Object.defineProperties(c, {
-			entity: {
-				value: this,
-			},
-			transform: {
-				value: this.transform,
-			},
+		Object.defineProperty(c, "entity", {
+			value: this,
 		});
 
-		Component._containers[type].push(c);
+		if ("scene" in this) {
+			this.scene._containers[type].push(c);
+		}
 
 		if ("init" in c) c.init(data);
-
-		if ("onEnable" in c) c.onEnable();
 
 		const componentType = this._components[type];
 		if (componentType) componentType.push(c);
@@ -94,10 +47,10 @@ class Entity {
 	}
 
 	destroy() {
-		for (const component in this._components) {
-			if (Array.isArray(component)) {
-			} else {
-				component.destroy();
+		for (const c in this._components) {
+			const component = this._components[c];
+			for (let i = 0, len = component.length; i < len; i++) {
+				component[i].destroy();
 			}
 		}
 		Entity._entities.splice(Entity._entities.indexOf(this), 1);
@@ -148,36 +101,4 @@ class Entity {
 			}
 		}
 	}
-
-	// static functions
-
-	static find(id) {
-		return Entity._ids[id];
-	}
-
-	static findByTag(tag) {
-		return Entity._tags[tag];
-	}
-
-	static get entities() {
-		return Entity._entities.slice(0);
-	}
-
-	static get tags() {
-		const tags = Object.assign({}, Entity._tags);
-		for (const tag in tags) {
-			tags[tag] = tag.slice(0);
-		}
-		return tags;
-	}
-
-	static get ids() {
-		return Object.assign({}, Entity._ids);
-	}
 }
-
-Entity._entities = [];
-Entity._ids = {};
-Entity._tags = {};
-
-export { Entity };

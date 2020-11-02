@@ -1,6 +1,5 @@
 import { OIMO } from "../../lib/oimoPhysics.js";
-import { Vector3 } from "../../math/Vector3.js";
-import { Physics } from "../../Physics.js";
+import { Physics } from "../../core/Physics.js";
 
 class Collider {
 	init(data) {
@@ -39,7 +38,9 @@ class Collider {
 		switch (data.type) {
 			case "box":
 				geometry = new OIMO.BoxGeometry(
-					"halfExtents" in data ? data.halfExtents : Vector3(1, 1, 1)
+					"halfExtents" in data
+						? data.halfExtents
+						: ENGINE.Vector3(1, 1, 1)
 				);
 				break;
 			case "capsule":
@@ -110,7 +111,7 @@ class Collider {
 
 	getHalfExtents() {
 		const v = this.shapeRef.getGeometry().getHalfExtents();
-		return new Vector3(v.x, v.y, v.z);
+		return new ENGINE.Vector3(v.x, v.y, v.z);
 	}
 
 	get halfHeight() {

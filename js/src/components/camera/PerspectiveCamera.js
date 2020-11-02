@@ -1,9 +1,6 @@
-import { Render } from "../../Render.js";
-import { Vector4 } from "../../math/Vector4.js";
-import { PerspectiveCamera as PC } from "../../lib/three.module.js";
-import { Component } from "../../core/Component.js";
+import { Render } from "../../core/Render.js";
 
-class PerspectiveCamera extends PC {
+class PerspectiveCamera extends THREE.PerspectiveCamera {
 	init(data) {
 		if ("fov" in data) this.fov = data.fov;
 		this.aspect =
@@ -14,18 +11,18 @@ class PerspectiveCamera extends PC {
 		if ("far" in data) this.far = data.far;
 		this.updateProjectionMatrix();
 		this.viewport =
-			"viewport" in data ? data.viewport : new Vector4(0, 0, 1, 1);
+			"viewport" in data ? data.viewport : new ENGINE.Vector4(0, 0, 1, 1);
 	}
 
 	onEnable() {
 		Render.cameras.push(this);
-		this.transform.add(this);
+		this.entity.add(this);
 	}
 
 	onDisable() {
 		Render.cameras.splice(Render.cameras.indexOf(this), 1);
-		this.transform.remove(this);
+		this.entity.remove(this);
 	}
 }
 
-Component.createComponent("PerspectiveCamera", PerspectiveCamera);
+ENGINE.createComponent("PerspectiveCamera", PerspectiveCamera);

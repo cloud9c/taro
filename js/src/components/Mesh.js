@@ -1,18 +1,16 @@
-import { Component } from "../core/Component.js";
-import { Object3D } from "../lib/three.module.js";
-
-class Mesh extends Object3D {
+class Mesh {
 	init(data) {
-		Object.assign(this, data);
+		this.ref = data;
 	}
 
 	onEnable() {
-		this.transform.add(this);
+		console.log(this.ref, this.entity);
+		this.entity.add(this.ref);
 	}
 
 	onDisable() {
-		this.transform.remove(this);
+		this.entity.remove(this.ref);
 	}
 }
 
-Component.createComponent("Mesh", Mesh);
+ENGINE.createComponent("Mesh", Mesh);

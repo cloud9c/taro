@@ -1,5 +1,4 @@
 import { Collider } from "./Collider.js";
-import { Component } from "../../core/Component.js";
 
 class CylinderCollider extends Collider {
 	init(data) {
@@ -8,4 +7,4 @@ class CylinderCollider extends Collider {
 	}
 }
 
-Component.createComponent("CylinderCollider", CylinderCollider);
+ENGINE.createComponent("CylinderCollider", CylinderCollider);

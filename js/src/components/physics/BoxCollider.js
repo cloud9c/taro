@@ -1,5 +1,4 @@
 import { Collider } from "./Collider.js";
-import { Component } from "../../core/Component.js";
 
 class BoxCollider extends Collider {
 	init(data) {
@@ -8,4 +7,4 @@ class BoxCollider extends Collider {
 	}
 }
 
-Component.createComponent("BoxCollider", BoxCollider);
+ENGINE.createComponent("BoxCollider", BoxCollider);

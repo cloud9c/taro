@@ -1,49 +1,115 @@
-// global properties
-export { Input } from "./Input.js";
-export { Physics } from "./Physics.js";
-export { Time } from "./Time.js";
-export { Render } from "./Render.js";
+import * as THREE from "./lib/three.module.js";
+import {
+	Color,
+	Euler,
+	Matrix3,
+	Matrix4,
+	Plane,
+	Quaternion,
+	Ray,
+	Vector2,
+	Vector3,
+	Vector4,
+} from "./lib/three.module.js";
+import { Entity } from "./core/Entity.js";
+import { Scene } from "./core/Scene.js";
+import { Application } from "./core/Application.js";
 
-// core
-export { Component } from "./core/Component.js";
-export { Entity } from "./core/Entity.js";
-export { System } from "./core/System.js";
+const cProto = {
+	destroy: {
+		value: function () {
+			const type = this.cType;
+			if ("scene" in this.entity && this._enabled) {
+				const container = this.entity.scene._containers[type];
+				container.splice(container.indexOf(this), 1);
 
-// lib
-export * as THREE from "./lib/three.module.js";
+				if ("onDisable" in this) this.onDisable();
+			}
 
-// math
-export { Color } from "./math/Color.js";
-export { Euler } from "./math/Euler.js";
-export { Matrix3 } from "./math/Matrix3.js";
-export { Matrix4 } from "./math/Matrix4.js";
-export { Plane } from "./math/Plane.js";
-export { Quaternion } from "./math/Quaternion.js";
-export { Ray } from "./math/Ray.js";
-export { Vector2 } from "./math/Vector2.js";
-export { Vector3 } from "./math/Vector3.js";
-export { Vector4 } from "./math/Vector4.js";
+			const c = this.entity._components;
+			if (c[type].length > 1) c[type].splice(c[type].indexOf(this), 1);
+			else delete c[type];
 
-// imports
-import { System } from "./core/System.js";
-import { Render } from "./Render.js";
+			if ("onDestroy" in this) this.onDestroy();
+		},
+	},
+	cType: {
+		value: null,
+	},
+	_enabled: {
+		value: true,
+	},
+	enabled: {
+		get() {
+			return this._enabled;
+		},
+		set(value) {
+			if (value != this._enabled) {
+				this._enabled = value;
+				if (value) {
+					if ("scene" in this.entity) {
+						const container = this.entity.scene._containers[
+							this.cType
+						];
+						container.splice(container.indexOf(this), 1);
+					}
+					if ("onEnable" in this) this.onEnable();
+				} else {
+					if ("scene" in this.entity) {
+						const container = this.entity.scene._containers[
+							this.cType
+						];
+						container.splice(container.indexOf(this), 1);
+					}
+					if ("onDisable" in this) this.onDisable();
+				}
+			}
+		},
+	},
+};
 
-// core components
-import "./components/Animation.js";
-import "./components/Mesh.js";
-import "./components/physics/Rigidbody.js";
-import "./components/Transform.js";
+window.THREE = THREE;
+window.ENGINE = {
+	_components: {},
+	getComponent(type) {
+		return this._components[type];
+	},
+	createComponent(type, obj) {
+		if (type in this._components) throw "Component type already exists";
 
-import "./components/camera/OrthographicCamera.js";
-import "./components/camera/PerspectiveCamera.js";
+		cProto.cType.value = type;
+		Object.defineProperties(obj.prototype, cProto);
 
-import "./components/physics/BoxCollider.js";
-import "./components/physics/CapsuleCollider.js";
-import "./components/physics/ConeCollider.js";
-import "./components/physics/CylinderCollider.js";
-import "./components/physics/SphereCollider.js";
+		this._components[type] = obj;
+	},
+	Color,
+	Euler,
+	Matrix3,
+	Matrix4,
+	Plane,
+	Quaternion,
+	Ray,
+	Vector2,
+	Vector3,
+	Vector4,
+	Application,
+	Entity,
+	Scene,
+};
 
-export async function init(canvas) {
-	Render.init(canvas);
-	System.init();
+const scripts = [
+	"./components/Animation.js",
+	"./components/Mesh.js",
+	"./components/camera/OrthographicCamera.js",
+	"./components/camera/PerspectiveCamera.js",
+	"./components/physics/Rigidbody.js",
+	"./components/physics/BoxCollider.js",
+	"./components/physics/CapsuleCollider.js",
+	"./components/physics/ConeCollider.js",
+	"./components/physics/CylinderCollider.js",
+	"./components/physics/SphereCollider.js",
+];
+
+for (let i = 0, len = scripts.length; i < len; i++) {
+	import(scripts[i]);
 }

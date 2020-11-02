@@ -1,13 +1,10 @@
 import { OIMO } from "../../lib/oimoPhysics.js";
-import { Physics } from "../../Physics.js";
-import { Euler } from "../../math/Euler.js";
-import { Vector3 } from "../../math/Vector3.js";
-import { Component } from "../../core/Component.js";
+import { Physics } from "../../core/Physics.js";
 
 class Rigidbody {
 	init(data) {
-		this._position = this.transform.position;
-		this._rotation = this.transform.rotation;
+		this._position = this.entity.position;
+		this._rotation = this.entity.rotation;
 
 		if ("_physicsRef" in this.entity) {
 			this._ref = this.entity._physicsRef;
@@ -162,4 +159,4 @@ class Rigidbody {
 
 Rigidbody.config = new OIMO.RigidBodyConfig();
 
-Component.createComponent("Rigidbody", Rigidbody);
+ENGINE.createComponent("Rigidbody", Rigidbody);

@@ -1,13 +1,25 @@
-import * as THREE from "./lib/three.module.js";
-const Render = {
-	init: function (canvas) {
+export class Render {
+	constructor(app, canvas) {
 		this.canvas = document.getElementById(canvas);
 		this.renderer = new THREE.WebGLRenderer({
 			canvas: this.canvas,
 		});
+
 		this.renderer.setPixelRatio(window.devicePixelRatio);
-	},
-	render: function () {
+		this.renderer.setSize(window.innerWidth, window.innerHeight);
+
+		window.addEventListener("resize", () => {
+			this.renderer.setSize(window.innerWidth, window.innerHeight);
+
+			for (let i = 0, len = this.cameras.length; i < len; i++) {
+				this.cameras[i].aspect =
+					(this.canvas.width * this.cameras[i].viewport.z) /
+					(this.canvas.height * this.cameras[i].viewport.w);
+				this.cameras[i].updateProjectionMatrix();
+			}
+		});
+	}
+	_update() {
 		for (let i = 0, len = this.cameras.length; i < len; i++) {
 			const view = this.cameras[i].viewport;
 
@@ -22,9 +34,5 @@ const Render = {
 
 			this.renderer.render(this.scene, this.cameras[i]);
 		}
-	},
-	scene: new THREE.Scene(),
-	cameras: [],
-};
-
-export { Render };
+	}
+}

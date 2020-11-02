@@ -23,5 +23,3 @@ class UniversalJoint {
 
 	// https://saharan.github.io/OimoPhysics/oimo/dynamics/constraint/joint/UniversalJoint.html
 }
-
-export { UniversalJoint };
