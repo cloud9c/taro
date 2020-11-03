@@ -14,6 +14,7 @@ import {
 import { Entity } from "./core/Entity.js";
 import { Scene } from "./core/Scene.js";
 import { Application } from "./core/Application.js";
+import { Input } from "./core/Input.js";
 
 const cProto = {
 	destroy: {
@@ -95,6 +96,7 @@ window.ENGINE = {
 	Application,
 	Entity,
 	Scene,
+	Input: new Input(),
 };
 
 const scripts = [

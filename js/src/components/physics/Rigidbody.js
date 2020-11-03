@@ -37,7 +37,7 @@ class Rigidbody {
 			if (this._isKinematic) this._ref.setType(2);
 			else this._ref.setType(0);
 		} else {
-			Physics._world.addRigidBody(this._ref);
+			this.entity.scene._physicsWorld.addRigidBody(this._ref);
 		}
 	}
 
@@ -45,7 +45,7 @@ class Rigidbody {
 		if (this._ref.getNumShapes() > 0) {
 			this._ref.setType(1);
 		} else {
-			Physics._world.removeRigidBody(this._ref);
+			this.entity.scene._physicsWorld.removeRigidBody(this._ref);
 		}
 	}
 

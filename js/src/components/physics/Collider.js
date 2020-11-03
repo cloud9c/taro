@@ -1,36 +1,29 @@
 import { OIMO } from "../../lib/oimoPhysics.js";
-import { Physics } from "../../core/Physics.js";
 
 class Collider {
 	init(data) {
-		if ("_physicsRef" in this.entity) {
-			this._ref = this.entity._physicsRef;
-		} else {
-			Collider.config.type = 1;
-			if ("position" in data)
-				Collider.config.position.copyFrom(data.position);
-			if ("rotation" in data)
-				Collider.config.rotation.fromEulerXyz(data.rotation);
-			this.entity._physicsRef = this._ref = new OIMO.RigidBody(
-				Collider.config
-			);
-			Physics._world.addRigidBody(this._ref);
-		}
-		if ("collider" in this.entity.components) {
-			this.entity.components.Collider.push(this);
-		} else {
-			this.entity.components.Collider = [this];
-		}
-
 		this.setShape(data);
 	}
 
 	onEnable() {
+		if ("_physicsRef" in this.entity) {
+			this._ref = this.entity._physicsRef;
+		} else {
+			Collider.config.type = 1;
+			this.entity._physicsRef = this._ref = new OIMO.RigidBody(
+				Collider.config
+			);
+			this.entity.scene._physicsWorld.addRigidBody(this._ref);
+		}
 		this._ref.addShape(this.shapeRef);
 	}
 
 	onDisable() {
 		this._ref.removeShape(this.shapeRef);
+		if (this._ref.getNumShapes() === 0 && this._ref.getType() === 1) {
+			delete this._ref;
+			delete this.entity._physicsRef;
+		}
 	}
 
 	setShape(data) {

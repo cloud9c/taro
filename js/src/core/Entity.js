@@ -46,16 +46,6 @@ export class Entity extends Group {
 		return this;
 	}
 
-	destroy() {
-		for (const c in this._components) {
-			const component = this._components[c];
-			for (let i = 0, len = component.length; i < len; i++) {
-				component[i].destroy();
-			}
-		}
-		Entity._entities.splice(Entity._entities.indexOf(this), 1);
-	}
-
 	// event functions
 
 	on(name, callback, scope) {

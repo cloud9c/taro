@@ -7,26 +7,47 @@ import { Scene } from "./Scene.js";
 
 export class Application {
 	constructor(canvas) {
-		this.input = new Input();
 		this.physics = new Physics();
 		this.render = new Render(this, canvas);
 		this.time = new Time();
-		this.scenes = {};
+
+		this._scenes = {};
+
 		this._system = new System(this);
 
-		this.scene = new Scene();
+		this.addScene("Untitled Scene", new Scene());
+		this.setScene("Untitled Scene");
 	}
 	start() {
 		window.requestAnimationFrame((t) => this._system.updateLoop(t / 1000));
 	}
-	get scene() {
-		return this._scene;
+	addScene(name, scene) {
+		scene.app = this;
+		this._scenes[name] = scene;
+		return scene;
 	}
-	set scene(scene) {
+	getScene(name) {
+		return _scenes[name];
+	}
+	removeScene(name) {
+		delete this._scenes[name].app;
+		delete this._scenes[name];
+	}
+	setScene(name) {
+		const scene = this._scenes[name];
+
 		this._scene = scene;
 		this._system._containers = scene._containers;
 		this.physics._rigidbody = scene._containers.Rigidbody;
+		this.physics._world = scene._physicsWorld;
 		this.render.scene = scene;
 		this.render.cameras = scene.cameras;
+		return scene;
+	}
+	get scene() {
+		return this._scene;
+	}
+	get scenes() {
+		return Object.assign({}, this._scenes);
 	}
 }

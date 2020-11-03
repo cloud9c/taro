@@ -1,13 +1,9 @@
 export class System {
 	constructor(app) {
-		console.log(app.scene);
-		this.input = app.input;
 		this.physics = app.physics;
 		this.render = app.render;
 		this.time = app.time;
-
 		this.physics.time = this.time;
-
 		this.lastTimestamp = undefined;
 	}
 	updateLoop(timestamp) {

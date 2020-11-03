@@ -1,8 +1,6 @@
-import { OIMO } from "../lib/oimoPhysics.js";
 export class Physics {
 	constructor() {
 		this._accumulator = 0;
-		this._world = new OIMO.World(2);
 	}
 	_update() {
 		this._accumulator +=

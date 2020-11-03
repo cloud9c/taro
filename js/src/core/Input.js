@@ -1,8 +1,10 @@
+import { Vector2 } from "../lib/three.module.js";
+
 export class Input {
 	constructor() {
-		this.mousePosition = new ENGINE.Vector2();
-		this.mouseDelta = new ENGINE.Vector2();
-		this.wheelDelta = new ENGINE.Vector2();
+		this.mousePosition = new Vector2();
+		this.mouseDelta = new Vector2();
+		this.wheelDelta = new Vector2();
 		this._mouse = [];
 		this._mouseDown = [];
 		this._mouseUp = [];

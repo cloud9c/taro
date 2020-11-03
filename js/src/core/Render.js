@@ -9,13 +9,16 @@ export class Render {
 		this.renderer.setSize(window.innerWidth, window.innerHeight);
 
 		window.addEventListener("resize", () => {
+			// TODO below
 			this.renderer.setSize(window.innerWidth, window.innerHeight);
 
 			for (let i = 0, len = this.cameras.length; i < len; i++) {
-				this.cameras[i].aspect =
-					(this.canvas.width * this.cameras[i].viewport.z) /
-					(this.canvas.height * this.cameras[i].viewport.w);
-				this.cameras[i].updateProjectionMatrix();
+				if (this.cameras[i].autoAspect) {
+					this.cameras[i].aspect =
+						(this.canvas.width * this.cameras[i].viewport.z) /
+						(this.canvas.height * this.cameras[i].viewport.w);
+					this.cameras[i].updateProjectionMatrix();
+				}
 			}
 		});
 	}
