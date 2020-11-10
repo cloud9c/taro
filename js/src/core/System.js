@@ -1,5 +1,6 @@
 export class System {
 	constructor(app) {
+		this.input = ENGINE.Input;
 		this.physics = app.physics;
 		this.render = app.render;
 		this.time = app.time;

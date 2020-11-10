@@ -82,3 +82,5 @@ entity.addComponent("Rigidbody", {
 entity.addComponent("BoxCollider", {
 	halfExtents: new ENGINE.Vector3(0.5, 1, 0.5),
 });
+
+app.start();

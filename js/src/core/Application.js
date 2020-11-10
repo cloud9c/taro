@@ -40,7 +40,7 @@ export class Application {
 		this._system._containers = scene._containers;
 		this.physics._rigidbody = scene._containers.Rigidbody;
 		this.physics._world = scene._physicsWorld;
-		this.render.scene = scene;
+		this.render.scene = scene._scene;
 		this.render.cameras = scene.cameras;
 		return scene;
 	}

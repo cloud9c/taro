@@ -10,8 +10,8 @@ export class Physics {
 		while (this._accumulator >= this.time.fixedTimestep) {
 			for (let i = 0, len = this._rigidbody.length; i < len; i++) {
 				const rigidbody = this._rigidbody[i];
-				rigidbody.transform.position.copy(rigidbody._ref.getPosition());
-				rigidbody.transform.rotation.setFromVector3(
+				rigidbody.entity.position.copy(rigidbody._ref.getPosition());
+				rigidbody.entity.rotation.setFromVector3(
 					rigidbody._ref.getRotation().toEulerXyz()
 				);
 			}
