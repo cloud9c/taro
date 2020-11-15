@@ -33,7 +33,6 @@ dirLight.shadow.bias = -0.0001;
 new ENGINE.Entity().addComponent("Mesh", dirLight).position.set(-100, 175, 100);
 
 // camera
-
 new ENGINE.Entity("camera")
 	.addComponent("PerspectiveCamera")
 	.position.set(0, 5, 10);
