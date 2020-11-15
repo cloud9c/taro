@@ -15,7 +15,10 @@
 		<canvas id="c"></canvas>
 		<div id="crosshair"></div>
 		<script type="module">
-			import("./js/src/engine.js").then(() => import("./js/main.js"));
+			import("./js/src/engine.js").then((ENGINE) => {
+				window.ENGINE = ENGINE;
+				import("./js/main.js");
+			});
 		</script>
 	</body>
 </html>

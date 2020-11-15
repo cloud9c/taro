@@ -1,47 +1,57 @@
 import { Group } from "../lib/three.module.js";
+import { Scene } from "./Scene.js";
 
 export class Entity extends Group {
-	constructor(id) {
+	constructor(name, scene) {
 		super();
 
-		this._components = {};
-		this._events = {};
-
-		console.log(this);
-	}
-
-	get components() {
-		const clone = Object.assign({}, this._components);
-		for (const type in clone) {
-			clone[type] = clone[type].slice(0);
+		if (name !== undefined) {
+			if (name instanceof Scene) {
+				name.add(this);
+			} else {
+				this.name = name;
+			}
 		}
-		return clone;
+
+		if (scene instanceof Scene) {
+			scene.add(this);
+		} else {
+			Scene.getScene().add(this);
+		}
+
+		this._events = {};
 	}
 
 	getComponent(type) {
-		return this._components[type] ? this._components[type][0] : null;
+		const container = this.scene._containers[type];
+		for (let i = 0, len = container.length; i < len; i++) {
+			if (container[i].entity === this) {
+				return this;
+			}
+		}
 	}
 
 	getComponents(type) {
-		return this._components[type] ? this._components[type].slice(0) : null;
+		const list = [];
+		const container = this.scene._containers[type];
+		for (let i = 0, len = container.length; i < len; i++) {
+			if (container[i].entity === this) {
+				list.push(this);
+			}
+		}
+		return list;
 	}
 
 	addComponent(type, data = {}) {
-		const c = new ENGINE._components[type](data);
+		const c = new ENGINE._components[type]();
 
 		Object.defineProperty(c, "entity", {
 			value: this,
 		});
 
-		if ("scene" in this) {
-			this.scene._containers[type].push(c);
-		}
-
+		this.scene._containers[type].push(c);
 		if ("init" in c) c.init(data);
-
-		const componentType = this._components[type];
-		if (componentType) componentType.push(c);
-		else this._components[type] = [c];
+		if ("onEnable" in c) c.onEnable();
 
 		return this;
 	}

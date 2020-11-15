@@ -1,53 +1,6 @@
 import { Vector2 } from "../lib/three.module.js";
 
-export class Input {
-	constructor() {
-		this.mousePosition = new Vector2();
-		this.mouseDelta = new Vector2();
-		this.wheelDelta = new Vector2();
-		this._mouse = [];
-		this._mouseDown = [];
-		this._mouseUp = [];
-		this._key = {};
-		this._keyDown = {};
-		this._keyUp = {};
-
-		window.addEventListener("blur", () => {
-			for (const property in Input) {
-				if (typeof Input[property] === "boolean")
-					Input[property] = false;
-				else if (typeof Input[property] === "number")
-					Input[property] = 0;
-			}
-			this.lastTimestamp = undefined;
-		});
-
-		document.addEventListener("mousemove", (e) => {
-			this.mouseDelta.set(e.movementX, e.movementY);
-			this.mousePosition.set(e.clientX, e.clientY);
-		});
-		document.addEventListener("mousedown", (e) => {
-			this._mouse[e.button] = true;
-			this._mouseDown[e.button] = true;
-		});
-		document.addEventListener("mouseup", (e) => {
-			this._mouse[e.button] = false;
-			this._mouseUp[e.button] = true;
-		});
-
-		document.addEventListener("wheel", (e) => {
-			this.wheelDelta.set(e.deltaX, e.deltaY);
-		});
-
-		document.addEventListener("keydown", () => {
-			this._key[event.code] = true;
-			this._keyDown[event.code] = true;
-		});
-		document.addEventListener("keyup", () => {
-			this._key[event.code] = false;
-			this._keyUp[event.code] = true;
-		});
-	}
+export const Input = {
 	_reset() {
 		for (const prop in this._keyDown) {
 			delete this._keyDown[prop];
@@ -57,23 +10,62 @@ export class Input {
 		}
 		this._mouseDown.length = 0;
 		this._mouseUp.length = 0;
-	}
+	},
 	getKey(v) {
 		return Boolean(this._key[v]);
-	}
+	},
 	getKeyDown(v) {
 		return v in this._keyDown;
-	}
+	},
 	getKeyUp(v) {
 		return v in this._keyUp;
-	}
+	},
 	getMouse(v) {
 		return Boolean(this._mouse[v]);
-	}
+	},
 	getMouseDown(v) {
 		return Boolean(this._mouseDown[v]);
-	}
+	},
 	getMouseUp(v) {
 		return Boolean(this._mouseUp[v]);
-	}
-}
+	},
+	mousePosition: new Vector2(),
+	mouseDelta: new Vector2(),
+	wheelDelta: new Vector2(),
+	_mouse: [],
+	_mouseDown: [],
+	_mouseUp: [],
+	_key: {},
+	_keyDown: {},
+	_keyUp: {},
+};
+
+window.addEventListener("blur", () => {
+	Input._reset();
+});
+
+document.addEventListener("mousemove", (e) => {
+	Input.mouseDelta.set(e.movementX, e.movementY);
+	Input.mousePosition.set(e.clientX, e.clientY);
+});
+document.addEventListener("mousedown", (e) => {
+	Input._mouse[e.button] = true;
+	Input._mouseDown[e.button] = true;
+});
+document.addEventListener("mouseup", (e) => {
+	Input._mouse[e.button] = false;
+	Input._mouseUp[e.button] = true;
+});
+
+document.addEventListener("wheel", (e) => {
+	Input.wheelDelta.set(e.deltaX, e.deltaY);
+});
+
+document.addEventListener("keydown", () => {
+	Input._key[event.code] = true;
+	Input._keyDown[event.code] = true;
+});
+document.addEventListener("keyup", () => {
+	Input._key[event.code] = false;
+	Input._keyUp[event.code] = true;
+});

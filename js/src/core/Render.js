@@ -1,6 +1,6 @@
 export class Render {
 	constructor(app, canvas) {
-		this.canvas = document.getElementById(canvas);
+		this.canvas = app.canvas;
 		this.renderer = new THREE.WebGLRenderer({
 			canvas: this.canvas,
 		});
@@ -9,12 +9,12 @@ export class Render {
 		this.renderer.setSize(window.innerWidth, window.innerHeight);
 
 		window.addEventListener("resize", () => {
-			// TODO below
 			this.renderer.setSize(window.innerWidth, window.innerHeight);
 
 			for (let i = 0, len = this.cameras.length; i < len; i++) {
 				if (this.cameras[i].autoAspect) {
-					this.cameras[i].aspect =
+					console.log(this.cameras[i]._aspect);
+					this.cameras[i]._aspect =
 						(this.canvas.width * this.cameras[i].viewport.z) /
 						(this.canvas.height * this.cameras[i].viewport.w);
 					this.cameras[i].updateProjectionMatrix();

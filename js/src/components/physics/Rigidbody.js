@@ -1,7 +1,7 @@
 import { OIMO } from "../../lib/oimoPhysics.js";
 import { Physics } from "../../core/Physics.js";
 
-class Rigidbody {
+export class Rigidbody {
 	init(data) {
 		this._position = this.entity.position;
 		this._rotation = this.entity.rotation;
@@ -9,7 +9,7 @@ class Rigidbody {
 		if ("_physicsRef" in this.entity) {
 			this._ref = this.entity._physicsRef;
 		} else {
-			Rigidbody.config.position.copyFrom(this._position);
+			Rigidbody.config.position = this._position;
 			Rigidbody.config.rotation.fromEulerXyz(this._rotation);
 
 			this.entity._physicsRef = this._ref = new OIMO.RigidBody(
@@ -158,5 +158,3 @@ class Rigidbody {
 }
 
 Rigidbody.config = new OIMO.RigidBodyConfig();
-
-ENGINE.createComponent("Rigidbody", Rigidbody);

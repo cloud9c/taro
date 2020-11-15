@@ -4,14 +4,13 @@ let geo, mat, mesh;
 
 const loader = new GLTFLoader();
 const app = new ENGINE.Application("c");
+const scene = app.scene;
 
 // lighting
 const hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 0.6);
 hemiLight.color.setHSL(0.6, 1, 0.6);
 hemiLight.groundColor.setHSL(0.095, 1, 0.75);
-app.scene
-	.add(new ENGINE.Entity().addComponent("Mesh", hemiLight))
-	.position.set(0, 100, 0);
+new ENGINE.Entity().addComponent("Mesh", hemiLight).position.set(0, 100, 0);
 
 const dirLight = new THREE.DirectionalLight(0xffffff, 1);
 dirLight.color.setHSL(0.1, 1, 0.95);
@@ -31,14 +30,13 @@ dirLight.shadow.camera.bottom = -d;
 dirLight.shadow.camera.far = 3500;
 dirLight.shadow.bias = -0.0001;
 
-app.scene
-	.add(new ENGINE.Entity().addComponent("Mesh", dirLight))
-	.position.set(-100, 175, 100);
+new ENGINE.Entity().addComponent("Mesh", dirLight).position.set(-100, 175, 100);
 
 // camera
-app.scene
-	.add(new ENGINE.Entity("camera").addComponent("PerspectiveCamera"))
-	.position.set(0, 10, 40);
+
+new ENGINE.Entity("camera")
+	.addComponent("PerspectiveCamera")
+	.position.set(0, 5, 10);
 
 // floor
 geo = new THREE.PlaneBufferGeometry(200, 200);
@@ -48,39 +46,30 @@ mat = new THREE.MeshPhongMaterial({
 mesh = new THREE.Mesh(geo, mat);
 mesh.receiveShadow = true;
 
-app.scene
-	.add(
-		new ENGINE.Entity("floor")
-			.addComponent("Mesh", mesh)
-			.addComponent("BoxCollider", {
-				halfExtents: new ENGINE.Vector3(100, 1, 100),
-			})
-	)
+new ENGINE.Entity("floor")
+	.addComponent("Mesh", mesh)
+	.addComponent("BoxCollider", {
+		halfExtents: new ENGINE.Vector3(100, 1, 100),
+	})
 	.rotation.set(-Math.PI / 2, 0, 0);
 
-app.scene.add(
-	new ENGINE.Entity().addComponent(
-		"Mesh",
-		new THREE.GridHelper(1000, 1000, 0x0000ff, 0x808080)
-	)
+new ENGINE.Entity().addComponent(
+	"Mesh",
+	new THREE.GridHelper(1000, 1000, 0x0000ff, 0x808080)
 );
 
-const entity = app.scene.add(new ENGINE.Entity("player"));
+const entity = new ENGINE.Entity("player")
+	.addComponent("Rigidbody", {
+		mass: 60,
+	})
+	.addComponent("BoxCollider", {
+		halfExtents: new ENGINE.Vector3(0.5, 1, 0.5),
+	});
+
 entity.position.set(0, 5, 0);
 
 loader.load("assets/models/player.glb", (gltf) => {
 	entity.addComponent("Mesh", gltf.scene);
-});
-
-// entity.addComponent(
-// 	"Animation",
-// 	ENGINE.Asset.getAnimation(obj, "player.glb", "Idle")
-// );
-entity.addComponent("Rigidbody", {
-	mass: 60,
-});
-entity.addComponent("BoxCollider", {
-	halfExtents: new ENGINE.Vector3(0.5, 1, 0.5),
 });
 
 app.start();

@@ -7,6 +7,7 @@ import { Scene } from "./Scene.js";
 
 export class Application {
 	constructor(canvas) {
+		this.canvas = document.getElementById(canvas);
 		this.physics = new Physics();
 		this.render = new Render(this, canvas);
 		this.time = new Time();
@@ -15,13 +16,14 @@ export class Application {
 
 		this._system = new System(this);
 
-		this.addScene("Untitled Scene", new Scene());
+		this.createScene("Untitled Scene");
 		this.setScene("Untitled Scene");
 	}
 	start() {
 		window.requestAnimationFrame((t) => this._system.updateLoop(t / 1000));
 	}
-	addScene(name, scene) {
+	createScene(name) {
+		const scene = new Scene();
 		scene.app = this;
 		this._scenes[name] = scene;
 		return scene;

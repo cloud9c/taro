@@ -1,4 +1,7 @@
-class OrthographicCamera extends THREE.OrthographicCamera {
+import { OrthographicCamera as TOC } from "../../lib/three.module.js";
+import { Vector4 } from "../../engine.js";
+
+export class OrthographicCamera extends TOC {
 	init(data) {
 		if ("left" in data) this.left = data.left;
 		if ("right" in data) this.right = data.right;
@@ -8,7 +11,7 @@ class OrthographicCamera extends THREE.OrthographicCamera {
 		if ("far" in data) this.far = data.far;
 		this.updateProjectionMatrix();
 		this.viewport =
-			"viewport" in data ? data.viewport : new ENGINE.Vector4(0, 0, 1, 1);
+			"viewport" in data ? data.viewport : new Vector4(0, 0, 1, 1);
 	}
 
 	onEnable() {
@@ -18,11 +21,9 @@ class OrthographicCamera extends THREE.OrthographicCamera {
 
 	onDisable() {
 		this.entity.scene.cameras.splice(
-			ENGINE.Render.cameras.indexOf(this),
+			this.entity.scene.cameras.indexOf(this),
 			1
 		);
 		this.entity.remove(this);
 	}
 }
-
-ENGINE.createComponent("OrthographicCamera", OrthographicCamera);
