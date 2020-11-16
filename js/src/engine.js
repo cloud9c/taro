@@ -1,6 +1,3 @@
-import * as THREE from "./lib/three.module.js";
-window.THREE = THREE;
-
 export {
 	Color,
 	Euler,
@@ -16,7 +13,6 @@ export {
 export { Entity } from "./core/Entity.js";
 export { Scene } from "./core/Scene.js";
 export { Application } from "./core/Application.js";
-export { Input } from "./core/Input.js";
 export {
 	_components,
 	getComponent,

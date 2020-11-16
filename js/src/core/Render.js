@@ -1,7 +1,9 @@
+import { WebGLRenderer } from "../lib/three.module.js";
+
 export class Render {
 	constructor(app, canvas) {
 		this.canvas = app.canvas;
-		this.renderer = new THREE.WebGLRenderer({
+		this.renderer = new WebGLRenderer({
 			canvas: this.canvas,
 		});
 
@@ -13,7 +15,6 @@ export class Render {
 
 			for (let i = 0, len = this.cameras.length; i < len; i++) {
 				if (this.cameras[i].autoAspect) {
-					console.log(this.cameras[i]._aspect);
 					this.cameras[i]._aspect =
 						(this.canvas.width * this.cameras[i].viewport.z) /
 						(this.canvas.height * this.cameras[i].viewport.w);

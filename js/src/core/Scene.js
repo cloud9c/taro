@@ -1,6 +1,7 @@
 import { Scene as TS } from "../lib/three.module.js";
 import { OIMO } from "../lib/oimoPhysics.js";
 import { PerspectiveCamera } from "../components/camera/PerspectiveCamera.js";
+import { _components } from "../engine.js";
 
 export class Scene {
 	constructor() {
@@ -8,7 +9,7 @@ export class Scene {
 		this.cameras = [];
 
 		this._containers = {};
-		for (const type in ENGINE._components) {
+		for (const type in _components) {
 			this._containers[type] = [];
 		}
 		this._physicsWorld = new OIMO.World(2);

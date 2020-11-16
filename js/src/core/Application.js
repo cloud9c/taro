@@ -1,26 +1,26 @@
-import { System } from "./System.js";
-import { Input } from "./Input.js";
 import { Physics } from "./Physics.js";
 import { Render } from "./Render.js";
 import { Time } from "./Time.js";
 import { Scene } from "./Scene.js";
+import { Input } from "./Input.js";
 
 export class Application {
 	constructor(canvas) {
 		this.canvas = document.getElementById(canvas);
-		this.physics = new Physics();
-		this.render = new Render(this, canvas);
 		this.time = new Time();
+		this.physics = new Physics();
+		this.physics.time = this.time;
+		this.render = new Render(this, canvas);
+		this.input = new Input();
+		this.lastTimestamp = undefined;
 
 		this._scenes = {};
-
-		this._system = new System(this);
 
 		this.createScene("Untitled Scene");
 		this.setScene("Untitled Scene");
 	}
 	start() {
-		window.requestAnimationFrame((t) => this._system.updateLoop(t / 1000));
+		window.requestAnimationFrame((t) => this._updateLoop(t / 1000));
 	}
 	createScene(name) {
 		const scene = new Scene();
@@ -39,7 +39,7 @@ export class Application {
 		const scene = this._scenes[name];
 
 		this._scene = scene;
-		this._system._containers = scene._containers;
+		this._containers = scene._containers;
 		this.physics._rigidbody = scene._containers.Rigidbody;
 		this.physics._world = scene._physicsWorld;
 		this.render.scene = scene._scene;
@@ -51,5 +51,26 @@ export class Application {
 	}
 	get scenes() {
 		return Object.assign({}, this._scenes);
+	}
+	_updateLoop(timestamp) {
+		this.time.deltaTime = timestamp - this.lastTimestamp || 0;
+		this.lastTimestamp = timestamp;
+
+		this.physics._update();
+
+		// update loop
+		for (const type in this._containers) {
+			const container = this._containers[type];
+			if (container[0] && "update" in container[0]) {
+				for (let j = 0, lenj = container.length; j < lenj; j++) {
+					container[j].update();
+				}
+			}
+		}
+
+		this.render._update();
+		this.input._reset();
+
+		window.requestAnimationFrame((t) => this._updateLoop(t / 1000));
 	}
 }

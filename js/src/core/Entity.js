@@ -1,5 +1,6 @@
 import { Group } from "../lib/three.module.js";
 import { Scene } from "./Scene.js";
+import { _components } from "../engine.js";
 
 export class Entity extends Group {
 	constructor(name, scene) {
@@ -43,7 +44,7 @@ export class Entity extends Group {
 	}
 
 	addComponent(type, data = {}) {
-		const c = new ENGINE._components[type]();
+		const c = new _components[type]();
 
 		Object.defineProperty(c, "entity", {
 			value: this,
@@ -53,7 +54,7 @@ export class Entity extends Group {
 		if ("init" in c) c.init(data);
 		if ("onEnable" in c) c.onEnable();
 
-		return this;
+		return c;
 	}
 
 	// event functions
