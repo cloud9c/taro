@@ -1,27 +1,25 @@
-import { Scene as TS } from "../lib/three.module.js";
+import { Scene as TS } from "../lib/three.js";
 import { OIMO } from "../lib/oimoPhysics.js";
 import { PerspectiveCamera } from "../components/camera/PerspectiveCamera.js";
 import { _components } from "../engine.js";
 
-export class Scene {
+export class Scene extends TS {
 	constructor() {
-		this._scene = new TS();
-		this.cameras = [];
+		super();
+		this._cameras = [];
 
 		this._containers = {};
 		for (const type in _components) {
 			this._containers[type] = [];
 		}
 		this._physicsWorld = new OIMO.World(2);
-
-		Scene._currentScene = this;
 	}
 	add(entity) {
 		if ("scene" in entity) {
 			this.remove(entity);
 		}
 		entity.scene = this;
-		this._scene.add(entity);
+		super.add(entity);
 		for (const c in entity._components) {
 			const type = entity._components[c];
 			for (let i = 0, len = type.length; i < len; i++) {
@@ -41,11 +39,12 @@ export class Scene {
 			}
 		}
 		delete entity.scene;
-		this._scene.remove(entity);
+		super.remove(entity);
 		return entity;
 	}
-	static getScene() {
-		return Scene._currentScene;
+	find(v) {
+		if (typeof v === "string") return super.getObjectByName(v);
+		else return super.getObjectById(v);
 	}
 }
 

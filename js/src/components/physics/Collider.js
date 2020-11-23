@@ -1,8 +1,12 @@
 import { OIMO } from "../../lib/oimoPhysics.js";
+import { Vector3, Euler } from "../../engine.js";
 
 class Collider {
-	init(data) {
+	start(data) {
 		this.setShape(data);
+
+		this.addEventListener("enable", this.onEnable);
+		this.addEventListener("disable", this.onDisable);
 	}
 
 	onEnable() {
@@ -13,17 +17,31 @@ class Collider {
 			this.entity._physicsRef = this._ref = new OIMO.RigidBody(
 				Collider.config
 			);
+			this._ref.entity = this.entity;
 			this.entity.scene._physicsWorld.addRigidBody(this._ref);
 		}
 		this._ref.addShape(this.shapeRef);
+		if (this._ref.getType() === 0) {
+			const w = this._ref.getMassData();
+			w.mass = this._ref._mass;
+			this._ref.setMassData(w);
+		}
 	}
 
 	onDisable() {
 		this._ref.removeShape(this.shapeRef);
-		if (this._ref.getNumShapes() === 0 && this._ref.getType() === 1) {
-			delete this._ref;
+		if (this._ref.getType() === 0) {
+			const w = this._ref.getMassData();
+			w.mass = this._ref._mass;
+			this._ref.setMassData(w);
+		} else if (
+			this._ref.getType() === 1 &&
+			this._ref.getNumShapes() === 0
+		) {
+			this.entity.scene._physicsWorld.removeRigidBody(this._ref);
 			delete this.entity._physicsRef;
 		}
+		delete this._ref;
 	}
 
 	setShape(data) {
@@ -31,10 +49,9 @@ class Collider {
 		switch (data.type) {
 			case "box":
 				geometry = new OIMO.BoxGeometry(
-					"halfExtents" in data
-						? data.halfExtents
-						: ENGINE.Vector3(1, 1, 1)
+					"halfExtents" in data ? data.halfExtents : Vector3(1, 1, 1)
 				);
+				console.log(geometry);
 				break;
 			case "capsule":
 				geometry = new OIMO.CapsuleGeometry(
@@ -63,6 +80,9 @@ class Collider {
 				geometry = new OIMO.SphereGeometry(
 					"radius" in data ? data.radius : 0.5
 				);
+				break;
+			default:
+				throw Error("invalid shape type");
 		}
 
 		const material = "material" in data ? data.material : {};
@@ -78,16 +98,8 @@ class Collider {
 			"density" in material ? material.density : 1;
 		Collider.shapeConfig.friction =
 			"friction" in material ? material.friction : 0.2;
-		Collider.shapeConfig.position =
-			"localPosition" in data
-				? Collider.shapeConfig.position.copyFrom(data.localPosition)
-				: Collider.shapeConfig.position.zero();
 		Collider.shapeConfig.restitution =
 			"restitution" in material ? material.restitution : 0.2;
-		Collider.shapeConfig.rotation =
-			"localRotation" in data
-				? Collider.shapeConfig.rotation.fromEulerXyz(data.localRotation)
-				: Collider.shapeConfig.rotation.init(0, 0, 0, 0, 0, 0, 0, 0, 0);
 
 		if (this.shapeRef !== undefined) {
 			this._ref.removeShape(this.shapeRef);
@@ -104,7 +116,7 @@ class Collider {
 
 	getHalfExtents() {
 		const v = this.shapeRef.getGeometry().getHalfExtents();
-		return new ENGINE.Vector3(v.x, v.y, v.z);
+		return new Vector3(v.x, v.y, v.z);
 	}
 
 	get halfHeight() {
@@ -115,7 +127,7 @@ class Collider {
 		return this.shapeRef.getGeometry().getRadius();
 	}
 
-	setHalfExtents(v) {
+	set halfExtents(v) {
 		this.setShape({
 			type: this.type,
 			halfExtents: v,
@@ -176,7 +188,7 @@ class Collider {
 		return this.shapeRef.getCollisionMask();
 	}
 
-	getContactCallback() {
+	get contactCallback() {
 		return this.shapeRef.getContactCallback();
 	}
 
@@ -192,16 +204,6 @@ class Collider {
 		return this.shapeRef.getRestitution();
 	}
 
-	getPosition() {
-		return this.shapeRef.getLocalTransform().getPosition();
-	}
-
-	getRotation() {
-		return new Euler().setFromVector3(
-			this.shapeRef.getLocalTransform().getRotation().toEulerXyz()
-		);
-	}
-
 	set collisionGroup(v) {
 		this.shapeRef.setCollisionGroup(v);
 	}
@@ -210,7 +212,7 @@ class Collider {
 		this.shapeRef.setCollisionMask(v);
 	}
 
-	setContactCallback(v) {
+	set contactCallback(v) {
 		this.shapeRef.setContactCallback(v);
 	}
 
@@ -220,18 +222,6 @@ class Collider {
 
 	set friction(v) {
 		this.shapeRef.setFriction(v);
-	}
-
-	setPosition(v) {
-		this.shapeRef.setLocalTransform(
-			this.shapeRef.getTransform().setPosition(v)
-		);
-	}
-
-	setRotation(v) {
-		this.shapeRef.setLocalTransform(
-			this.shapeRef.getTransform().setRotationXyz(v)
-		);
 	}
 
 	setRestitution(v) {

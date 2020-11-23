@@ -9,7 +9,7 @@ export {
 	Vector2,
 	Vector3,
 	Vector4,
-} from "./lib/three.module.js";
+} from "./lib/three.js";
 export { Entity } from "./core/Entity.js";
 export { Scene } from "./core/Scene.js";
 export { Application } from "./core/Application.js";

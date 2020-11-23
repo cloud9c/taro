@@ -2,7 +2,7 @@ import { OIMO } from "../../lib/oimoPhysics.js";
 import { Physics } from "../../core/Physics.js";
 
 export class Rigidbody {
-	init(data) {
+	start(data) {
 		this._position = this.entity.position;
 		this._rotation = this.entity.rotation;
 
@@ -15,6 +15,7 @@ export class Rigidbody {
 			this.entity._physicsRef = this._ref = new OIMO.RigidBody(
 				Rigidbody.config
 			);
+			this._ref.entity = this.entity;
 		}
 
 		if ("angularVelocity" in data)
@@ -25,11 +26,16 @@ export class Rigidbody {
 
 		if ("linearDamping" in data) this.linearDamping = data.linearDamping;
 
+		this.mass = "mass" in data ? data.mass : 1;
+
 		this.isKinematic = "isKinematic" in data ? data.isKinematic : false;
 
 		if ("useGravity" in data && !data.useGravity) {
 			this.gravityScale = 0;
 		}
+
+		this.addEventListener("enable", this.onEnable);
+		this.addEventListener("disable", this.onDisable);
 	}
 
 	onEnable() {
@@ -49,7 +55,6 @@ export class Rigidbody {
 		}
 	}
 
-	// https://saharan.github.io/OimoPhysics/oimo/dynamics/rigidbody/RigidBody.html
 	addAngularVelocity(v) {
 		this._ref.addAngularVelocity(v);
 	}
@@ -106,7 +111,7 @@ export class Rigidbody {
 		);
 	}
 	get mass() {
-		return this._ref.getMass();
+		return this._ref._mass;
 	}
 	get sleepTime() {
 		return this._ref.getSleepTime();
@@ -117,7 +122,10 @@ export class Rigidbody {
 	set isKinematic(v) {
 		this._isKinematic = v;
 		if (v) this._ref.setType(2);
-		else this._ref.setType(0);
+		else {
+			this._ref.setType(0);
+			this.mass = this._ref._mass;
+		}
 	}
 	isSleeping() {
 		return this._ref.isSleeping();
@@ -144,6 +152,7 @@ export class Rigidbody {
 		this._ref.setLinearVelocity(v);
 	}
 	set mass(v) {
+		this._ref._mass = v;
 		const w = this._ref.getMassData();
 		w.mass = v;
 		this._ref.setMassData(w);

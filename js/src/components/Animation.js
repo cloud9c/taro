@@ -1,5 +1,5 @@
 export class Animation {
-	init(data) {
+	start(data) {
 		return data;
 	}
 }

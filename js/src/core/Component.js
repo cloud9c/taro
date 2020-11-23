@@ -3,15 +3,12 @@ import { Mesh } from "../components/Mesh.js";
 import { OrthographicCamera } from "../components/camera/OrthographicCamera.js";
 import { PerspectiveCamera } from "../components/camera/PerspectiveCamera.js";
 import { Rigidbody } from "../components/physics/Rigidbody.js";
-import { BoxCollider } from "../components/physics/BoxCollider.js";
-import { CapsuleCollider } from "../components/physics/CapsuleCollider.js";
-import { ConeCollider } from "../components/physics/ConeCollider.js";
-import { CylinderCollider } from "../components/physics/CylinderCollider.js";
-import { SphereCollider } from "../components/physics/SphereCollider.js";
+import { Collider } from "../components/physics/Collider.js";
+import { EventDispatcher } from "../lib/three.js";
 
-const cProto = {
-	destroy: {
-		value: function () {
+const cProto = Object.assign(
+	{
+		destroy() {
 			if (this.enabled) {
 				const type = this.cType;
 				const container = this.entity.scene._containers[type];
@@ -22,33 +19,28 @@ const cProto = {
 
 			if ("onDestroy" in this) this.onDestroy();
 		},
-	},
-	cType: {
-		value: null,
-	},
-	_enabled: {
-		value: true,
-	},
-	enabled: {
-		get() {
+		cType: null,
+		_enabled: true,
+		get enabled() {
 			return this._enabled;
 		},
-		set(value) {
+		set enabled(value) {
 			if (value != this._enabled) {
 				this._enabled = value;
 				if (value) {
 					const container = this.entity.scene._containers[this.cType];
 					container.push(c);
-					if ("onEnable" in this) this.onEnable();
+					this.dispatchEvent({ type: "enable" });
 				} else {
 					const container = this.entity.scene._containers[this.cType];
 					container.splice(container.indexOf(this), 1);
-					if ("onDisable" in this) this.onDisable();
+					this.dispatchEvent({ type: "disable" });
 				}
 			}
 		},
 	},
-};
+	EventDispatcher.prototype
+);
 
 const _components = {};
 
@@ -58,8 +50,8 @@ function getComponent(type) {
 function createComponent(type, obj) {
 	if (type in _components) throw "Component type already exists";
 
-	cProto.cType.value = type;
-	Object.defineProperties(obj.prototype, cProto);
+	cProto.cType = type;
+	Object.assign(obj.prototype, cProto);
 
 	_components[type] = obj;
 }
@@ -69,10 +61,6 @@ createComponent("Mesh", Mesh);
 createComponent("OrthographicCamera", OrthographicCamera);
 createComponent("PerspectiveCamera", PerspectiveCamera);
 createComponent("Rigidbody", Rigidbody);
-createComponent("BoxCollider", BoxCollider);
-createComponent("CapsuleCollider", CapsuleCollider);
-createComponent("ConeCollider", ConeCollider);
-createComponent("CylinderCollider", CylinderCollider);
-createComponent("SphereCollider", SphereCollider);
+createComponent("Collider", Collider);
 
 export { _components, getComponent, createComponent };

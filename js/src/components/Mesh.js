@@ -1,6 +1,9 @@
 export class Mesh {
-	init(data) {
+	start(data) {
 		this.ref = data;
+
+		this.addEventListener("enable", this.onEnable);
+		this.addEventListener("disable", this.onDisable);
 	}
 
 	onEnable() {

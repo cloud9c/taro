@@ -1,11 +1,11 @@
 import { GLTFLoader } from "https://threejs.org/examples/jsm/loaders/GLTFLoader.js";
 import * as ENGINE from "./src/engine.js";
-import * as THREE from "./src/lib/three.module.js";
+import * as THREE from "./src/lib/three.js";
 
 ENGINE.createComponent(
 	"CameraController",
 	class {
-		init() {
+		start() {
 			this.direction = new ENGINE.Vector3();
 			this.input = this.entity.scene.app.input;
 			this.entity.rotation.order = "YXZ";
@@ -15,16 +15,39 @@ ENGINE.createComponent(
 			});
 		}
 		update() {
-			if (this.input.getKey("KeyW") || this.input.getKey("ArrowUp")) {
+			const ball = this.entity.scene.find("ball");
+
+			if (this.input.getKeyDown("ArrowUp")) {
+				ball.getComponent("Rigidbody").applyForceToCenter(
+					new ENGINE.Vector3(0, 0, -200)
+				);
+			}
+			if (this.input.getKeyDown("ArrowDown")) {
+				ball.getComponent("Rigidbody").applyForceToCenter(
+					new ENGINE.Vector3(0, 0, 200)
+				);
+			}
+			if (this.input.getKeyDown("ArrowLeft")) {
+				ball.getComponent("Rigidbody").applyForceToCenter(
+					new ENGINE.Vector3(-200, 0, 0)
+				);
+			}
+			if (this.input.getKeyDown("ArrowRight")) {
+				ball.getComponent("Rigidbody").applyForceToCenter(
+					new ENGINE.Vector3(200, 0, 0)
+				);
+			}
+
+			if (this.input.getKey("KeyW")) {
 				this.entity.translateZ(-0.1);
 			}
-			if (this.input.getKey("KeyS") || this.input.getKey("ArrowDown")) {
+			if (this.input.getKey("KeyS")) {
 				this.entity.translateZ(0.1);
 			}
-			if (this.input.getKey("KeyA") || this.input.getKey("ArrowLeft")) {
+			if (this.input.getKey("KeyA")) {
 				this.entity.translateX(-0.1);
 			}
-			if (this.input.getKey("KeyD") || this.input.getKey("ArrowRight")) {
+			if (this.input.getKey("KeyD")) {
 				this.entity.translateX(0.1);
 			}
 			if (this.input.getKey("Space")) {
@@ -33,8 +56,8 @@ ENGINE.createComponent(
 			if (this.input.getKey("ShiftLeft")) {
 				this.entity.translateY(-0.1);
 			}
-			this.entity.rotation.x -= this.input.mouseDelta.y * 0.002;
-			this.entity.rotation.y -= this.input.mouseDelta.x * 0.002;
+			this.entity.rotation.x -= this.input.mouseDelta.y * 0.001;
+			this.entity.rotation.y -= this.input.mouseDelta.x * 0.001;
 		}
 	}
 );
@@ -43,7 +66,9 @@ let entity, geo, mat, mesh;
 
 const loader = new GLTFLoader();
 const app = new ENGINE.Application("c");
-const scene = app.scene;
+
+app.scene.background = new ENGINE.Color("skyblue");
+console.log(app.scene);
 
 console.log(app.scene._containers);
 
@@ -94,8 +119,9 @@ mesh.receiveShadow = true;
 
 entity = new ENGINE.Entity("floor");
 entity.addComponent("Mesh", mesh);
-entity.addComponent("BoxCollider", {
-	halfExtents: new ENGINE.Vector3(100, 1, 100),
+entity.addComponent("Collider", {
+	type: "box",
+	halfExtents: new ENGINE.Vector3(100, 100, 0.1),
 });
 entity.rotation.set(-Math.PI / 2, 0, 0);
 
@@ -104,17 +130,43 @@ new ENGINE.Entity().addComponent(
 	new THREE.GridHelper(1000, 1000, 0x0000ff, 0x808080)
 );
 
-entity = new ENGINE.Entity("player");
-entity.addComponent("Rigidbody", {
-	mass: 60,
+// ball
+geo = new THREE.SphereGeometry(1, 32, 32);
+mat = new THREE.MeshPhongMaterial({ color: 0xffff00 });
+mesh = new THREE.Mesh(geo, mat);
+entity = new ENGINE.Entity("ball");
+entity.addComponent("Mesh", mesh);
+entity.position.set(0, 5, 2);
+entity.addComponent("Rigidbody");
+entity.addComponent("Collider", {
+	type: "sphere",
+	radius: 1,
 });
-entity.addComponent("BoxCollider", {
-	halfExtents: new ENGINE.Vector3(0.5, 1, 0.5),
-});
-entity.position.set(0, 5, 0);
 
-loader.load("assets/models/player.glb", (gltf) => {
-	entity.addComponent("Mesh", gltf.scene);
-});
+// blocks
+const position = new ENGINE.Vector3(-10, 1, -5);
+for (let k = 0; k < 4; k++) {
+	for (let i = 0; i < 4; i++) {
+		for (let j = 0; j < 20; j++) {
+			entity = new ENGINE.Entity();
+			mesh = new THREE.Mesh(
+				new THREE.BoxBufferGeometry(1, 1, 1),
+				new THREE.MeshPhongMaterial({ color: 0x2194ce })
+			);
+			entity.addComponent("Mesh", mesh);
+			entity.position.copy(position);
+			entity.addComponent("Rigidbody", { mass: 0.1 });
+			entity.addComponent("Collider", {
+				type: "box",
+				halfExtents: new ENGINE.Vector3(0.5, 0.5, 0.5),
+			});
+			position.x += 1;
+		}
+		position.y += 1;
+		position.x = -10;
+	}
+	position.y = 1;
+	position.z += 1;
+}
 
 app.start();

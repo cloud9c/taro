@@ -1,4 +1,4 @@
-import { WebGLRenderer } from "../lib/three.module.js";
+import { WebGLRenderer } from "../lib/three.js";
 
 export class Render {
 	constructor(app, canvas) {

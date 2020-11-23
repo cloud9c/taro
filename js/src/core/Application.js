@@ -18,6 +18,7 @@ export class Application {
 
 		this.createScene("Untitled Scene");
 		this.setScene("Untitled Scene");
+		Application._currentApp = this;
 	}
 	start() {
 		window.requestAnimationFrame((t) => this._updateLoop(t / 1000));
@@ -31,6 +32,9 @@ export class Application {
 	getScene(name) {
 		return _scenes[name];
 	}
+	getActiveScene() {
+		return this._scene;
+	}
 	removeScene(name) {
 		delete this._scenes[name].app;
 		delete this._scenes[name];
@@ -38,12 +42,11 @@ export class Application {
 	setScene(name) {
 		const scene = this._scenes[name];
 
-		this._scene = scene;
+		this.render.scene = this._scene = scene;
 		this._containers = scene._containers;
-		this.physics._rigidbody = scene._containers.Rigidbody;
 		this.physics._world = scene._physicsWorld;
-		this.render.scene = scene._scene;
-		this.render.cameras = scene.cameras;
+		this.physics.rigidbodies = scene._containers["Rigidbody"];
+		this.render.cameras = scene._cameras;
 		return scene;
 	}
 	get scene() {
@@ -73,4 +76,9 @@ export class Application {
 
 		window.requestAnimationFrame((t) => this._updateLoop(t / 1000));
 	}
+	static getApplication(id) {
+		return id ? Application._apps[id] : Application._currentApp;
+	}
 }
+
+Application.apps = {};

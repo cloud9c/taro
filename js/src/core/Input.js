@@ -1,4 +1,4 @@
-import { Vector2 } from "../lib/three.module.js";
+import { Vector2 } from "../lib/three.js";
 
 export class Input {
 	constructor() {
@@ -35,7 +35,7 @@ export class Input {
 
 		document.addEventListener("keydown", () => {
 			this._key[event.code] = true;
-			this._keyDown[event.code] = true;
+			if (!event.repeat) this._keyDown[event.code] = true;
 		});
 		document.addEventListener("keyup", () => {
 			this._key[event.code] = false;
