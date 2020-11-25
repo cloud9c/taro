@@ -1,6 +1,5 @@
 import { GLTFLoader } from "https://threejs.org/examples/jsm/loaders/GLTFLoader.js";
 import * as ENGINE from "./src/engine.js";
-import * as THREE from "./src/lib/three.js";
 
 ENGINE.createComponent(
 	"CameraController",
@@ -9,13 +8,20 @@ ENGINE.createComponent(
 			this.direction = new ENGINE.Vector3();
 			this.input = this.entity.scene.app.input;
 			this.entity.rotation.order = "YXZ";
+			this.ball = this.entity.scene.find("ball");
 
 			window.addEventListener("mousedown", () => {
 				this.entity.scene.app.canvas.requestPointerLock();
 			});
+			this.ball.addEventListener("collisionenter", function (c) {
+				console.log(c);
+			});
 		}
 		update() {
-			const ball = this.entity.scene.find("ball");
+			const ball = this.ball;
+			if (this.input.getKeyDown("KeyG")) {
+				ball.scene.app.time.timeScale = 0.5;
+			}
 
 			if (this.input.getKeyDown("ArrowUp")) {
 				ball.getComponent("Rigidbody").applyForceToCenter(
@@ -70,18 +76,26 @@ const app = new ENGINE.Application("c");
 app.scene.background = new ENGINE.Color("skyblue");
 console.log(app.scene);
 
-console.log(app.scene._containers);
-
 // lighting
-const hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 0.6);
+
+entity = new ENGINE.Entity();
+const hemiLight = entity.addComponent("HemisphereLight", {
+	color: 0xffffff,
+	groundColor: 0xffffff,
+	intensity: 0.6,
+});
+
 hemiLight.color.setHSL(0.6, 1, 0.6);
 hemiLight.groundColor.setHSL(0.095, 1, 0.75);
 
-entity = new ENGINE.Entity();
-entity.addComponent("Mesh", hemiLight);
 entity.position.set(0, 100, 0);
 
-const dirLight = new THREE.DirectionalLight(0xffffff, 1);
+entity = new ENGINE.Entity();
+const dirLight = entity.addComponent("DirectionalLight", {
+	color: 0xffffff,
+	intensity: 1,
+});
+
 dirLight.color.setHSL(0.1, 1, 0.95);
 
 dirLight.castShadow = true;
@@ -99,26 +113,18 @@ dirLight.shadow.camera.bottom = -d;
 dirLight.shadow.camera.far = 3500;
 dirLight.shadow.bias = -0.0001;
 
-entity = new ENGINE.Entity();
-entity.addComponent("Mesh", dirLight);
 entity.position.set(-100, 175, 100);
 
-// camera
-entity = new ENGINE.Entity("camera");
-entity.addComponent("PerspectiveCamera");
-entity.addComponent("CameraController");
-entity.position.set(0, 5, 10);
-
 // floor
-geo = new THREE.PlaneBufferGeometry(200, 200);
-mat = new THREE.MeshPhongMaterial({
+geo = new ENGINE.PlaneBufferGeometry(200, 200);
+mat = new ENGINE.MeshPhongMaterial({
 	color: 0x718e3e,
 });
-mesh = new THREE.Mesh(geo, mat);
+mesh = new ENGINE.Mesh(geo, mat);
 mesh.receiveShadow = true;
 
 entity = new ENGINE.Entity("floor");
-entity.addComponent("Mesh", mesh);
+entity.addComponent("Renderable", mesh);
 entity.addComponent("Collider", {
 	type: "box",
 	halfExtents: new ENGINE.Vector3(100, 100, 0.1),
@@ -126,16 +132,16 @@ entity.addComponent("Collider", {
 entity.rotation.set(-Math.PI / 2, 0, 0);
 
 new ENGINE.Entity().addComponent(
-	"Mesh",
-	new THREE.GridHelper(1000, 1000, 0x0000ff, 0x808080)
+	"Renderable",
+	new ENGINE.GridHelper(200, 200, 0x0000ff, 0x808080)
 );
 
 // ball
-geo = new THREE.SphereGeometry(1, 32, 32);
-mat = new THREE.MeshPhongMaterial({ color: 0xffff00 });
-mesh = new THREE.Mesh(geo, mat);
+geo = new ENGINE.SphereGeometry(1, 32, 32);
+mat = new ENGINE.MeshPhongMaterial({ color: 0xffff00 });
+mesh = new ENGINE.Mesh(geo, mat);
 entity = new ENGINE.Entity("ball");
-entity.addComponent("Mesh", mesh);
+entity.addComponent("Renderable", mesh);
 entity.position.set(0, 5, 2);
 entity.addComponent("Rigidbody");
 entity.addComponent("Collider", {
@@ -145,21 +151,21 @@ entity.addComponent("Collider", {
 
 // blocks
 const position = new ENGINE.Vector3(-10, 1, -5);
+geo = new ENGINE.BoxBufferGeometry(1, 1, 1);
+mat = new ENGINE.MeshPhongMaterial({ color: 0x2194ce });
+const pmat = new ENGINE.PhysicMaterial(0.2, 0.2);
 for (let k = 0; k < 4; k++) {
 	for (let i = 0; i < 4; i++) {
 		for (let j = 0; j < 20; j++) {
 			entity = new ENGINE.Entity();
-			mesh = new THREE.Mesh(
-				new THREE.BoxBufferGeometry(1, 1, 1),
-				new THREE.MeshPhongMaterial({ color: 0x2194ce })
-			);
-			entity.addComponent("Mesh", mesh);
+			mesh = new ENGINE.Mesh(geo, mat);
+			entity.addComponent("Renderable", mesh);
 			entity.position.copy(position);
 			entity.addComponent("Rigidbody", { mass: 0.1 });
 			entity.addComponent("Collider", {
 				type: "box",
 				halfExtents: new ENGINE.Vector3(0.5, 0.5, 0.5),
-			});
+			}).material = pmat;
 			position.x += 1;
 		}
 		position.y += 1;
@@ -168,5 +174,11 @@ for (let k = 0; k < 4; k++) {
 	position.y = 1;
 	position.z += 1;
 }
+
+// camera
+entity = new ENGINE.Entity("camera");
+entity.addComponent("PerspectiveCamera");
+entity.addComponent("CameraController");
+entity.position.set(0, 5, 10);
 
 app.start();

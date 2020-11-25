@@ -1,7 +1,7 @@
-import { OrthographicCamera as TOC } from "../../lib/three.js";
+import { OrthographicCamera as OC } from "../../lib/three.js";
 import { Vector4 } from "../../engine.js";
 
-export class OrthographicCamera extends TOC {
+export class OrthographicCamera extends OC {
 	start(data) {
 		if ("left" in data) this.left = data.left;
 		if ("right" in data) this.right = data.right;

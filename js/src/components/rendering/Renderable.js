@@ -1,4 +1,4 @@
-export class Mesh {
+export class Renderable {
 	start(data) {
 		this.ref = data;
 

@@ -1,20 +1,20 @@
 import { OIMO } from "../../lib/oimoPhysics.js";
 import { Physics } from "../../core/Physics.js";
+import { Vector3, Matrix3, Quaternion } from "../../engine.js";
+
+const quat = new Quaternion();
+const vector = new Vector3();
+const config = new OIMO.RigidBodyConfig();
 
 export class Rigidbody {
 	start(data) {
-		this._position = this.entity.position;
-		this._rotation = this.entity.rotation;
-
 		if ("_physicsRef" in this.entity) {
 			this._ref = this.entity._physicsRef;
 		} else {
-			Rigidbody.config.position = this._position;
-			Rigidbody.config.rotation.fromEulerXyz(this._rotation);
+			config.position = this.entity.getWorldPosition(vector);
+			config.rotation.fromQuat(this.entity.getWorldQuaternion(quat));
 
-			this.entity._physicsRef = this._ref = new OIMO.RigidBody(
-				Rigidbody.config
-			);
+			this.entity._physicsRef = this._ref = new OIMO.RigidBody(config);
 			this._ref.entity = this.entity;
 		}
 
@@ -83,8 +83,9 @@ export class Rigidbody {
 		return this._ref.getAngularDamping();
 	}
 	getAngularVelocity() {
-		const v = this._ref.getAngularVelocity();
-		return new Vector3(v.x, v.y, v.z);
+		const vector = new Vector3();
+		this._ref.getAngularVelocityTo(vector);
+		return vector;
 	}
 	get gravityScale() {
 		return this._ref.getGravityScale();
@@ -93,8 +94,9 @@ export class Rigidbody {
 		return this._ref.getLinearDamping();
 	}
 	getLinearVelocity() {
-		const v = this._ref.getLinearVelocity();
-		return new Vector3(v.x, v.y, v.z);
+		const vector = new Vector3();
+		this._ref.getLinearVelocityTo(vector);
+		return vector;
 	}
 	getLocalInertia() {
 		const v = this._ref.getLocalInertia();
@@ -165,5 +167,3 @@ export class Rigidbody {
 		this._ref.wakeUp();
 	}
 }
-
-Rigidbody.config = new OIMO.RigidBodyConfig();

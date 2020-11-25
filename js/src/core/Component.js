@@ -1,16 +1,21 @@
-import { Animation } from "../components/Animation.js";
-import { Mesh } from "../components/Mesh.js";
+import { Animation } from "../components/rendering/Animation.js";
+import { Renderable } from "../components/rendering/Renderable.js";
 import { OrthographicCamera } from "../components/camera/OrthographicCamera.js";
 import { PerspectiveCamera } from "../components/camera/PerspectiveCamera.js";
+import { AmbientLight } from "../components/light/AmbientLight.js";
+import { DirectionalLight } from "../components/light/DirectionalLight.js";
+import { HemisphereLight } from "../components/light/HemisphereLight.js";
+import { PointLight } from "../components/light/PointLight.js";
+import { SpotLight } from "../components/light/SpotLight.js";
 import { Rigidbody } from "../components/physics/Rigidbody.js";
 import { Collider } from "../components/physics/Collider.js";
 import { EventDispatcher } from "../lib/three.js";
 
-const cProto = Object.assign(
-	{
-		destroy() {
+const cProto = {
+	destroy: {
+		value: function () {
 			if (this.enabled) {
-				const type = this.cType;
+				const type = this.componentType;
 				const container = this.entity.scene._containers[type];
 				container.splice(container.indexOf(this), 1);
 			} else {
@@ -19,28 +24,34 @@ const cProto = Object.assign(
 
 			if ("onDestroy" in this) this.onDestroy();
 		},
-		cType: null,
-		_enabled: true,
-		get enabled() {
+	},
+	componentType: { value: null },
+	_enabled: { value: true, writable: true },
+	enabled: {
+		get() {
 			return this._enabled;
 		},
-		set enabled(value) {
+		set(value) {
 			if (value != this._enabled) {
 				this._enabled = value;
 				if (value) {
-					const container = this.entity.scene._containers[this.cType];
-					container.push(c);
+					const container = this.entity.scene._containers[
+						this.componentType
+					];
+					container.push(this);
 					this.dispatchEvent({ type: "enable" });
 				} else {
-					const container = this.entity.scene._containers[this.cType];
+					const container = this.entity.scene._containers[
+						this.componentType
+					];
 					container.splice(container.indexOf(this), 1);
+					this.entity._disabled.push(this);
 					this.dispatchEvent({ type: "disable" });
 				}
 			}
 		},
 	},
-	EventDispatcher.prototype
-);
+};
 
 const _components = {};
 
@@ -50,16 +61,22 @@ function getComponent(type) {
 function createComponent(type, obj) {
 	if (type in _components) throw "Component type already exists";
 
-	cProto.cType = type;
-	Object.assign(obj.prototype, cProto);
+	cProto.componentType.value = type;
+	Object.defineProperties(obj.prototype, cProto);
+	Object.assign(obj.prototype, EventDispatcher.prototype);
 
 	_components[type] = obj;
 }
 
 createComponent("Animation", Animation);
-createComponent("Mesh", Mesh);
+createComponent("Renderable", Renderable);
 createComponent("OrthographicCamera", OrthographicCamera);
 createComponent("PerspectiveCamera", PerspectiveCamera);
+createComponent("AmbientLight", AmbientLight);
+createComponent("DirectionalLight", DirectionalLight);
+createComponent("HemisphereLight", HemisphereLight);
+createComponent("PointLight", PointLight);
+createComponent("SpotLight", SpotLight);
 createComponent("Rigidbody", Rigidbody);
 createComponent("Collider", Collider);
 

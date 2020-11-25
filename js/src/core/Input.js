@@ -16,6 +16,11 @@ export class Input {
 			this._reset();
 		});
 
+		document.addEventListener("fullscreenchange", () => {
+			console.log("here");
+			this._reset();
+		});
+
 		document.addEventListener("mousemove", (e) => {
 			this.mouseDelta.set(e.movementX, e.movementY);
 			this.mousePosition.set(e.clientX, e.clientY);

@@ -12,7 +12,6 @@ export class Application {
 		this.physics.time = this.time;
 		this.render = new Render(this, canvas);
 		this.input = new Input();
-		this.lastTimestamp = undefined;
 
 		this._scenes = {};
 
@@ -56,8 +55,7 @@ export class Application {
 		return Object.assign({}, this._scenes);
 	}
 	_updateLoop(timestamp) {
-		this.time.deltaTime = timestamp - this.lastTimestamp || 0;
-		this.lastTimestamp = timestamp;
+		this.time._update(timestamp);
 
 		this.physics._update();
 

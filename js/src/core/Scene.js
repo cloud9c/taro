@@ -1,6 +1,6 @@
 import { Scene as TS } from "../lib/three.js";
 import { OIMO } from "../lib/oimoPhysics.js";
-import { PerspectiveCamera } from "../components/camera/PerspectiveCamera.js";
+import { Entity } from "./entity.js";
 import { _components } from "../engine.js";
 
 export class Scene extends TS {
@@ -14,37 +14,44 @@ export class Scene extends TS {
 		}
 		this._physicsWorld = new OIMO.World(2);
 	}
+
 	add(entity) {
-		if ("scene" in entity) {
-			this.remove(entity);
+		if (!("scene" in entity)) {
+		} else if (entity.scene !== this) {
+			const containers = entity.scene._containers;
+			for (const type in containers) {
+				const container = containers[type];
+				for (let i = 0, len = container.length; i < len; i++) {
+					if (container[i].entity === entity) {
+						container.splice(i, 1);
+						if (!(type in this._containers))
+							this._containers[type] = [];
+						this._containers[type].push(container[i]);
+					}
+				}
+			}
 		}
 		entity.scene = this;
 		super.add(entity);
-		for (const c in entity._components) {
-			const type = entity._components[c];
-			for (let i = 0, len = type.length; i < len; i++) {
-				this._containers[c].push(type[i]);
-			}
-		}
 		return entity;
 	}
-	remove(entity) {
-		for (const c in entity._components) {
-			const type = entity._components[c];
-			for (let i = 0, len = type.length; i < len; i++) {
-				this._containers[c].splice(
-					this._containers[c].indexOf(type[i]),
-					1
-				);
-			}
-		}
-		delete entity.scene;
-		super.remove(entity);
-		return entity;
+
+	find(name) {
+		return this.getObjectByName(name);
 	}
-	find(v) {
-		if (typeof v === "string") return super.getObjectByName(v);
-		else return super.getObjectById(v);
+
+	findByTag(tag) {
+		const matches = [];
+		this.traverse((child) => {
+			if (child instanceof Entity && child.tags.includes(tag)) {
+				matches.push(child);
+			}
+		});
+		return matches;
+	}
+
+	findById(id) {
+		return this.getObjectById(id);
 	}
 }
 

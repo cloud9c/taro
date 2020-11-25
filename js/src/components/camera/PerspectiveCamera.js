@@ -1,7 +1,7 @@
-import { PerspectiveCamera as TPC } from "../../lib/three.js";
+import { PerspectiveCamera as PC } from "../../lib/three.js";
 import { Vector4 } from "../../engine.js";
 
-export class PerspectiveCamera extends TPC {
+export class PerspectiveCamera extends PC {
 	start(data) {
 		if ("fov" in data) this.fov = data.fov;
 		if ("near" in data) this.near = data.near;
