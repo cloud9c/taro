@@ -1,6 +1,6 @@
 import { Scene as TS } from "../lib/three.js";
 import { OIMO } from "../lib/oimoPhysics.js";
-import { Entity } from "./entity.js";
+import { Entity } from "./Entity.js";
 import { _components } from "../engine.js";
 
 export class Scene extends TS {
