@@ -19,15 +19,15 @@ export class Physics {
 			if (!worldQuat.equals(quat2.copy(rigidbody.getOrientation())))
 				rigidbody.setOrientation(worldQuat);
 
-			let collider = rigidbody.getShapeList();
-			while (collider !== undefined) {
-				const worldScale = rigidbody.entity.getWorldScale(vector);
-				if (!worldScale.equals(collider._scale)) {
-					// console.log(worldScale, collider._scale);
-				}
+			// let collider = rigidbody.getShapeList();
+			// while (collider !== undefined) {
+			// 	const worldScale = rigidbody.entity.getWorldScale(vector);
+			// 	if (!worldScale.equals(collider._scale)) {
+			// 		// console.log(worldScale, collider._scale);
+			// 	}
 
-				collider = collider.getNext();
-			}
+			// 	collider = collider.getNext();
+			// }
 
 			rigidbody = rigidbody.getNext();
 		}
