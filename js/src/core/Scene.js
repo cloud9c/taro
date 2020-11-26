@@ -15,19 +15,19 @@ export class Scene extends TS {
 		this._physicsWorld = new OIMO.World(2);
 	}
 
+	// used internally
 	add(entity) {
-		if (!("scene" in entity)) {
-		} else if (entity.scene !== this) {
-			const containers = entity.scene._containers;
-			for (const type in containers) {
-				const container = containers[type];
-				for (let i = 0, len = container.length; i < len; i++) {
-					if (container[i].entity === entity) {
-						container.splice(i, 1);
-						if (!(type in this._containers))
-							this._containers[type] = [];
-						this._containers[type].push(container[i]);
-					}
+		if ("scene" in entity && entity.scene !== this) {
+			const components = entity._components;
+			for (let i = 0, len = components.length; i < len; i++) {
+				const component = components[i];
+				if (component._enabled) {
+					const type = component.componentType;
+					const container = entity.scene._containers[type];
+					container.splice(container.indexOf(component), 1);
+					if (!(type in this._containers))
+						this._containers[type] = [];
+					this._containers[type].push(component);
 				}
 			}
 		}

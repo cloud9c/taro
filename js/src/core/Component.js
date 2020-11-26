@@ -19,10 +19,12 @@ const cProto = {
 				const container = this.entity.scene._containers[type];
 				container.splice(container.indexOf(this), 1);
 			} else {
-				if ("onDisable" in this) this.onDisable();
+				this.dispatchEvent({ type: "disable" });
 			}
+			const components = this.entity._components;
+			components.splice(components.indexOf(this), 1);
 
-			if ("onDestroy" in this) this.onDestroy();
+			this.dispatchEvent({ type: "destroy" });
 		},
 	},
 	componentType: { value: null },
@@ -33,19 +35,17 @@ const cProto = {
 		},
 		set(value) {
 			if (value != this._enabled) {
+				if (value && !this.entity._enabled) return;
 				this._enabled = value;
+
+				const container = this.entity.scene._containers[
+					this.componentType
+				];
 				if (value) {
-					const container = this.entity.scene._containers[
-						this.componentType
-					];
 					container.push(this);
 					this.dispatchEvent({ type: "enable" });
 				} else {
-					const container = this.entity.scene._containers[
-						this.componentType
-					];
 					container.splice(container.indexOf(this), 1);
-					this.entity._disabled.push(this);
 					this.dispatchEvent({ type: "disable" });
 				}
 			}

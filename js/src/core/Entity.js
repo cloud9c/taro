@@ -8,7 +8,8 @@ export class Entity extends Group {
 		super();
 
 		this.tags = [];
-		this._disabled = [];
+		this._components = [];
+		this._enabled = true;
 
 		if (name !== undefined) {
 			if (name instanceof Scene) {
@@ -26,29 +27,17 @@ export class Entity extends Group {
 	}
 
 	getComponent(type) {
-		const container = this.scene._containers[type];
-		for (let i = 0, len = container.length; i < len; i++) {
-			if (container[i].entity === this) {
-				return container[i];
-			}
-		}
-		for (let i = 0, len = this._disabled.length; i < len; i++) {
-			if (this._disabled[i].componentType === type)
-				return this._disabled[i];
+		const components = this._components;
+		for (let i = 0, len = components.length; i < len; i++) {
+			if (components[i].componentType === type) return components[i];
 		}
 	}
 
 	getComponents(type) {
 		const list = [];
-		const container = this.scene._containers[type];
-		for (let i = 0, len = container.length; i < len; i++) {
-			if (container[i].entity === this) {
-				list.push(container[i]);
-			}
-		}
-		for (let i = 0, len = this._disabled.length; i < len; i++) {
-			if (this._disabled[i].componentType === type)
-				list.push(this._disabled[i]);
+		const components = this._components;
+		for (let i = 0, len = components.length; i < len; i++) {
+			if (components[i].componentType === type) list.push(components[i]);
 		}
 		return list;
 	}
@@ -67,9 +56,12 @@ export class Entity extends Group {
 		if ("start" in component) component.start(data);
 		component.dispatchEvent({ type: "enable" });
 
+		this._components.push(component);
+
 		return component;
 	}
 
+	// used internally
 	add(obj) {
 		if (obj instanceof Entity && obj.scene !== this.scene) {
 			this.scene.add(obj);
@@ -77,11 +69,38 @@ export class Entity extends Group {
 		super.add(obj);
 	}
 
+	// used internally
 	remove(obj) {
 		if (obj instanceof Entity) {
 			this.scene.add(obj);
 		} else {
 			super.remove(obj);
+		}
+	}
+
+	destroy() {
+		// blah
+	}
+
+	get enabled() {
+		return this._enabled;
+	}
+
+	set enabled(value) {
+		if (value != this._enabled) {
+			if (value && !this.parent._enabled) return;
+			this._enabled = value;
+
+			const components = this._components;
+			for (let i = 0, len = components.length; i < len; i++) {
+				components[i].enabled = value;
+			}
+
+			const children = this.getChildren();
+			for (let i = 0, len = children.length; i < len; i++)
+				children[i].enabled = value;
+
+			this.dispatchEvent({ type: value ? "enable" : "disable" });
 		}
 	}
 
@@ -111,5 +130,9 @@ export class Entity extends Group {
 
 	findById(id) {
 		return this.getObjectById(id);
+	}
+
+	get app() {
+		return this.scene.app;
 	}
 }

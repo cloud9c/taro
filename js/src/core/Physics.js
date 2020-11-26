@@ -7,9 +7,8 @@ export class Physics {
 	constructor() {
 		this._accumulator = 0;
 	}
-	_update() {
+	_update(fixedTimestep, deltaTime) {
 		let rigidbody = this._world.getRigidBodyList();
-		const fixedTimestep = this.time.fixedTimestep;
 
 		while (rigidbody !== null) {
 			const worldPos = rigidbody.entity.getWorldPosition(vector);
@@ -24,7 +23,7 @@ export class Physics {
 			while (collider !== undefined) {
 				const worldScale = rigidbody.entity.getWorldScale(vector);
 				if (!worldScale.equals(collider._scale)) {
-					console.log(worldScale, collider._scale);
+					// console.log(worldScale, collider._scale);
 				}
 
 				collider = collider.getNext();
@@ -33,7 +32,7 @@ export class Physics {
 			rigidbody = rigidbody.getNext();
 		}
 
-		this._accumulator += this.time.deltaTime;
+		this._accumulator += deltaTime;
 
 		while (this._accumulator >= fixedTimestep) {
 			this._world.step(fixedTimestep);

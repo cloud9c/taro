@@ -55,6 +55,7 @@ class Collider {
 
 	setShape(data) {
 		let geometry;
+		if (!("type" in data)) data.type = box;
 		switch (data.type) {
 			case "box":
 				geometry = new OIMO.BoxGeometry(

@@ -20,7 +20,9 @@ ENGINE.createComponent(
 		update() {
 			const ball = this.ball;
 			if (this.input.getKeyDown("KeyG")) {
-				ball.scene.app.time.timeScale = 0.5;
+				ball.getComponent("Rigidbody").enabled = false;
+				ball.getComponent("Collider").enabled = false;
+				ball.enabled = false;
 			}
 
 			if (this.input.getKeyDown("ArrowUp")) {
@@ -153,7 +155,6 @@ entity.addComponent("Collider", {
 const position = new ENGINE.Vector3(-10, 1, -5);
 geo = new ENGINE.BoxBufferGeometry(1, 1, 1);
 mat = new ENGINE.MeshPhongMaterial({ color: 0x2194ce });
-const pmat = new ENGINE.PhysicMaterial(0.2, 0.2);
 for (let k = 0; k < 4; k++) {
 	for (let i = 0; i < 4; i++) {
 		for (let j = 0; j < 20; j++) {
@@ -165,7 +166,7 @@ for (let k = 0; k < 4; k++) {
 			entity.addComponent("Collider", {
 				type: "box",
 				halfExtents: new ENGINE.Vector3(0.5, 0.5, 0.5),
-			}).material = pmat;
+			});
 			position.x += 1;
 		}
 		position.y += 1;

@@ -9,7 +9,6 @@ export class Application {
 		this.canvas = document.getElementById(canvas);
 		this.time = new Time();
 		this.physics = new Physics();
-		this.physics.time = this.time;
 		this.render = new Render(this, canvas);
 		this.input = new Input();
 
@@ -30,9 +29,6 @@ export class Application {
 	}
 	getScene(name) {
 		return _scenes[name];
-	}
-	getActiveScene() {
-		return this._scene;
 	}
 	removeScene(name) {
 		delete this._scenes[name].app;
@@ -55,16 +51,19 @@ export class Application {
 		return Object.assign({}, this._scenes);
 	}
 	_updateLoop(timestamp) {
-		this.time._update(timestamp);
+		const deltaTime = this.time._update(timestamp);
 
-		this.physics._update();
+		this.physics._update(
+			deltaTime,
+			this.time.fixedTimestep * this.time.timeScale
+		);
 
 		// update loop
 		for (const type in this._containers) {
 			const container = this._containers[type];
 			if (container[0] && "update" in container[0]) {
 				for (let j = 0, lenj = container.length; j < lenj; j++) {
-					container[j].update();
+					container[j].update(deltaTime);
 				}
 			}
 		}
