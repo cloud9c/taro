@@ -20,9 +20,6 @@ ENGINE.createComponent(
 		update() {
 			const ball = this.ball;
 			if (this.input.getKeyDown("KeyG")) {
-				ball.getComponent("Rigidbody").enabled = false;
-				ball.getComponent("Collider").enabled = false;
-				ball.enabled = false;
 			}
 
 			if (this.input.getKeyDown("ArrowUp")) {

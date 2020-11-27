@@ -22,14 +22,20 @@ class Collider {
 
 	onEnable() {
 		if ("_physicsRef" in this.entity) {
-			this._ref = this.entity._physicsRef;
+			const ref = this.entity._physicsRef;
+			this._ref = ref;
+			if (!ref.component._enabled) {
+				this.entity.scene._physicsWorld.addRigidBody(this._ref);
+			}
 		} else {
-			config.type = 1;
+			config.position = this.entity.getWorldPosition(vector);
+			config.rotation.fromQuat(this.entity.getWorldQuaternion(quat));
 			this.entity._physicsRef = this._ref = new OIMO.RigidBody(config);
-			this._ref.entity = this.entity;
 			this.entity.scene._physicsWorld.addRigidBody(this._ref);
+			this._ref.component = this;
+			this._ref.entity = this.entity;
 		}
-		this._ref.addShape(this.shapeRef);
+		this._ref.addShape(this._shapeRef);
 		if (this._ref.getType() === 0) {
 			const w = this._ref.getMassData();
 			w.mass = this._ref._mass;
@@ -38,17 +44,14 @@ class Collider {
 	}
 
 	onDisable() {
-		this._ref.removeShape(this.shapeRef);
+		this._ref.removeShape(this._shapeRef);
 		if (this._ref.getType() === 0) {
 			const w = this._ref.getMassData();
 			w.mass = this._ref._mass;
 			this._ref.setMassData(w);
-		} else if (
-			this._ref.getType() === 1 &&
-			this._ref.getNumShapes() === 0
-		) {
+		}
+		if (this._ref.getNumShapes() === 0) {
 			this.entity.scene._physicsWorld.removeRigidBody(this._ref);
-			delete this.entity._physicsRef;
 		}
 		delete this._ref;
 	}
@@ -102,16 +105,15 @@ class Collider {
 		shapeConfig.collisionMask =
 			"collisionMask" in data ? data.collisionMask : 1;
 
-		if (this.shapeRef !== undefined) {
-			this._ref.removeShape(this.shapeRef);
-			this.shapeRef = new OIMO.Shape(shapeConfig);
-			this._ref.addShape(this.shapeRef);
+		if (this._shapeRef !== undefined) {
+			this._ref.removeShape(this._shapeRef);
+			this._shapeRef = new OIMO.Shape(shapeConfig);
+			this._ref.addShape(this._shapeRef);
 		} else {
-			this.shapeRef = new OIMO.Shape(shapeConfig);
+			this._shapeRef = new OIMO.Shape(shapeConfig);
 		}
-		this.shapeRef.entity = this.entity;
-		this.shapeRef.collider = this;
-		this.shapeRef._scale = this.entity.getWorldScale(new Vector3());
+		this._shapeRef.entity = this.entity;
+		this._shapeRef.collider = this;
 
 		if ("material" in data) this.material = data.material;
 	}
@@ -122,35 +124,35 @@ class Collider {
 
 	set material(material) {
 		if (material === null) {
-			this.shapeRef.setFriction(0.2);
-			this.shapeRef.setRestitution(0.2);
+			this._shapeRef.setFriction(0.2);
+			this._shapeRef.setRestitution(0.2);
 		}
 
 		if ("_material" in this) {
 			const colliders = this._material._colliders;
-			colliders.splice(colliders.indexOf(this.shapeRef), 1);
+			colliders.splice(colliders.indexOf(this._shapeRef), 1);
 		}
-		material._colliders.push(this.shapeRef);
-		this.shapeRef.setFriction(material._friction);
-		this.shapeRef.setRestitution(material._restitution);
+		material._colliders.push(this._shapeRef);
+		this._shapeRef.setFriction(material._friction);
+		this._shapeRef.setRestitution(material._restitution);
 		this._material = material;
 	}
 
 	get volume() {
-		return this.shapeRef.getGeometry().getVolume();
+		return this._shapeRef.getGeometry().getVolume();
 	}
 
 	get halfExtents() {
-		const v = this.shapeRef.getGeometry().getHalfExtents();
+		const v = this._shapeRef.getGeometry().getHalfExtents();
 		return new Vector3(v.x, v.y, v.z);
 	}
 
 	get halfHeight() {
-		return this.shapeRef.getGeometry().getHalfHeight();
+		return this._shapeRef.getGeometry().getHalfHeight();
 	}
 
 	get radius() {
-		return this.shapeRef.getGeometry().getRadius();
+		return this._shapeRef.getGeometry().getRadius();
 	}
 
 	set halfExtents(v) {
@@ -184,7 +186,7 @@ class Collider {
 	}
 
 	get bounds() {
-		const aabb = this.shapeRef.getAabb();
+		const aabb = this._shapeRef.getAabb();
 		return {
 			min: aabb.getMin(),
 			max: aabb.getMax(),
@@ -192,19 +194,19 @@ class Collider {
 	}
 
 	get collisionGroup() {
-		return this.shapeRef.getCollisionGroup();
+		return this._shapeRef.getCollisionGroup();
 	}
 
 	get collisionMask() {
-		return this.shapeRef.getCollisionMask();
+		return this._shapeRef.getCollisionMask();
 	}
 
 	set collisionGroup(v) {
-		this.shapeRef.setCollisionGroup(v);
+		this._shapeRef.setCollisionGroup(v);
 	}
 
 	set collisionMask(v) {
-		this.shapeRef.setCollisionMask(v);
+		this._shapeRef.setCollisionMask(v);
 	}
 }
 

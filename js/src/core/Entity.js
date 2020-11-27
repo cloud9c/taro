@@ -93,6 +93,7 @@ export class Entity extends Group {
 
 			const components = this._components;
 			for (let i = 0, len = components.length; i < len; i++) {
+				console.log(components[i]);
 				components[i].enabled = value;
 			}
 

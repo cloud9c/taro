@@ -15,6 +15,7 @@ export class Rigidbody {
 			config.rotation.fromQuat(this.entity.getWorldQuaternion(quat));
 
 			this.entity._physicsRef = this._ref = new OIMO.RigidBody(config);
+			this._ref.component = this;
 			this._ref.entity = this.entity;
 		}
 
@@ -39,19 +40,17 @@ export class Rigidbody {
 	}
 
 	onEnable() {
-		if (this._ref.getNumShapes() > 0) {
-			if (this._isKinematic) this._ref.setType(2);
-			else this._ref.setType(0);
-		} else {
+		if (this._ref.getNumShapes() === 0) {
 			this.entity.scene._physicsWorld.addRigidBody(this._ref);
+			console.log(this._ref.getType());
 		}
+		if (this._isKinematic) this._ref.setType(2);
+		else this._ref.setType(0);
 	}
 
 	onDisable() {
 		if (this._ref.getNumShapes() > 0) {
-			this._ref.setType(1);
-		} else {
-			this.entity.scene._physicsWorld.removeRigidBody(this._ref);
+			this._ref.setType(2);
 		}
 	}
 
