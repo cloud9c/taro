@@ -9,6 +9,7 @@ import { PointLight } from "../components/light/PointLight.js";
 import { SpotLight } from "../components/light/SpotLight.js";
 import { Rigidbody } from "../components/physics/Rigidbody.js";
 import { Collider } from "../components/physics/Collider.js";
+import { Joint } from "../components/physics/Joint.js";
 import { EventDispatcher } from "../lib/three.js";
 
 const cProto = {
@@ -55,17 +56,15 @@ const cProto = {
 
 const _components = {};
 
-function getComponent(type) {
-	return _components[type];
-}
-function createComponent(type, obj) {
+function createComponent(type, obj, options = {}) {
 	if (type in _components) throw "Component type already exists";
 
 	cProto.componentType.value = type;
 	Object.defineProperties(obj.prototype, cProto);
 	Object.assign(obj.prototype, EventDispatcher.prototype);
 
-	_components[type] = obj;
+	_components[type] = [obj, options];
+	return obj;
 }
 
 createComponent("Animation", Animation);
@@ -79,5 +78,6 @@ createComponent("PointLight", PointLight);
 createComponent("SpotLight", SpotLight);
 createComponent("Rigidbody", Rigidbody);
 createComponent("Collider", Collider);
+createComponent("Joint", Joint);
 
-export { _components, getComponent, createComponent };
+export { _components, createComponent };

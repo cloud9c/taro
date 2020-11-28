@@ -147,6 +147,9 @@ entity.addComponent("Collider", {
 	type: "sphere",
 	radius: 1,
 });
+entity.addComponent("Joint", {
+	type: "universal",
+});
 
 // blocks
 const position = new ENGINE.Vector3(-10, 1, -5);
@@ -159,11 +162,11 @@ for (let k = 0; k < 4; k++) {
 			mesh = new ENGINE.Mesh(geo, mat);
 			entity.addComponent("Renderable", mesh);
 			entity.position.copy(position);
-			entity.addComponent("Rigidbody", { mass: 0.1 });
 			entity.addComponent("Collider", {
 				type: "box",
 				halfExtents: new ENGINE.Vector3(0.5, 0.5, 0.5),
 			});
+			entity.addComponent("Rigidbody", { mass: 0.1 });
 			position.x += 1;
 		}
 		position.y += 1;

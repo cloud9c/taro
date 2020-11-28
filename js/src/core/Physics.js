@@ -1,24 +1,45 @@
-import { Quaternion, Vector3 } from "../engine.js";
+import { Quaternion, Vector3, Matrix4 } from "../engine.js";
 
 const vector = new Vector3();
+const vector2 = new Vector3();
 const quat = new Quaternion();
-const quat2 = new Quaternion();
+const matrix = new Matrix4();
+
 export class Physics {
 	constructor() {
 		this._accumulator = 0;
+		this._gravity = new Vector3(0, -9.80665, 0);
+
+		this._world = null;
+		this.rigidbodies = null;
+	}
+	get gravity() {
+		return this._gravity;
+	}
+	set gravity(gravity) {
+		this._world.setGravity(gravity);
+		this._gravity = gravity;
+	}
+	raycast(begin, end, callback) {
+		// callback parameters: collider, fraction, normal, position
+		this._world.rayCast(begin, end, {
+			process(shape, hit) {
+				callback(
+					shape.collider,
+					hit.fraction,
+					new Vector3().copy(hit.normal),
+					new Vector3().copy(hit.position)
+				);
+			},
+		});
 	}
 	_update(fixedTimestep, deltaTime) {
 		let rigidbody = this._world.getRigidBodyList();
 
 		while (rigidbody !== null) {
-			const worldPos = rigidbody.entity.getWorldPosition(vector);
-			if (!worldPos.equals(rigidbody.getPosition()))
-				rigidbody.setPosition(worldPos);
-
-			const worldQuat = rigidbody.entity.getWorldQuaternion(quat);
-			if (!worldQuat.equals(quat2.copy(rigidbody.getOrientation())))
-				rigidbody.setOrientation(worldQuat);
-
+			rigidbody.entity.matrixWorld.decompose(vector, quat, vector2);
+			rigidbody.setPosition(vector);
+			rigidbody.setOrientation(quat);
 			rigidbody = rigidbody.getNext();
 		}
 
@@ -31,13 +52,12 @@ export class Physics {
 				if (!rigidbody._ref.isSleeping()) {
 					const entity = rigidbody.entity;
 					entity.position.copy(rigidbody._ref.getPosition());
-					const totalQuat = quat.copy(
-						rigidbody._ref.getOrientation()
+					entity.position.applyMatrix4(
+						matrix.getInverse(entity.parent.matrixWorld)
 					);
-					entity.quaternion.copy(
-						totalQuat.premultiply(
-							entity.parent.getWorldQuaternion(quat2).inverse()
-						)
+					entity.quaternion.copy(rigidbody._ref.getOrientation());
+					entity.quaternion.premultiply(
+						entity.parent.getWorldQuaternion(quat).inverse()
 					);
 				}
 			}

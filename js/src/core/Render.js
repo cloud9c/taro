@@ -1,17 +1,15 @@
 import { WebGLRenderer } from "../lib/three.js";
 
-export class Render {
-	constructor(app, canvas) {
+export class Render extends WebGLRenderer {
+	constructor(app, parameters) {
+		super(parameters);
 		this.canvas = app.canvas;
-		this.renderer = new WebGLRenderer({
-			canvas: this.canvas,
-		});
 
-		this.renderer.setPixelRatio(window.devicePixelRatio);
-		this.renderer.setSize(window.innerWidth, window.innerHeight);
+		this.setPixelRatio(window.devicePixelRatio);
+		this.setSize(window.innerWidth, window.innerHeight);
 
 		window.addEventListener("resize", () => {
-			this.renderer.setSize(window.innerWidth, window.innerHeight);
+			this.setSize(window.innerWidth, window.innerHeight);
 
 			for (let i = 0, len = this.cameras.length; i < len; i++) {
 				if (this.cameras[i].autoAspect) {
@@ -32,11 +30,11 @@ export class Render {
 			const width = this.canvas.width * view.z;
 			const height = this.canvas.height * view.w;
 
-			this.renderer.setViewport(left, bottom, width, height);
-			this.renderer.setScissor(left, bottom, width, height);
-			this.renderer.setScissorTest(true);
+			this.setViewport(left, bottom, width, height);
+			this.setScissor(left, bottom, width, height);
+			this.setScissorTest(true);
 
-			this.renderer.render(this.scene, this.cameras[i]);
+			this.render(this.scene, this.cameras[i]);
 		}
 	}
 }

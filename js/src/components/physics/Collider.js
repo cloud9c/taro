@@ -1,6 +1,11 @@
-import { OIMO } from "../../lib/oimoPhysics.js";
-import { Vector3, Euler } from "../../engine.js";
+import { OIMO } from "../../physics/oimoPhysics.js";
+import { Vector3, Quaternion } from "../../engine.js";
+import { ConvexHull } from "../../physics/ConvexHull.js";
 
+const vector = new Vector3();
+const vector2 = new Vector3();
+const quat = new Quaternion();
+const convexHull = new ConvexHull();
 const shapeConfig = new OIMO.ShapeConfig();
 shapeConfig.contactCallback = {
 	beginContact: (c) => contactCallback(c, "collisionenter"),
@@ -12,9 +17,48 @@ shapeConfig.contactCallback = {
 const config = new OIMO.RigidBodyConfig();
 config.type = 1;
 
+const proxyHandler = {
+	set: function (target, prop, value, receiver) {
+		target[prop] = value;
+		const colliders = target.colliders;
+		for (let i = 0, len = colliders.length; i < len; i++) {
+			colliders[i]._setShape();
+		}
+		return true;
+	},
+};
+
 class Collider {
 	start(data) {
-		this.setShape(data);
+		this.type = "type" in data ? data.type : "box";
+		this._collisionGroup =
+			"collisionGroup" in data ? data.collisionGroup : 1;
+		this._collisionMask = "collisionMask" in data ? data.collisionMask : 1;
+		switch (this.type) {
+			case "box":
+				// box
+				this._halfExtents =
+					"halfExtents" in data
+						? data.halfExtents
+						: new Vector(1, 1, 1);
+			case "sphere":
+				this._radius = "radius" in data ? data.radius : 0.5;
+				break;
+			case "capsule":
+			case "cone":
+			case "cylinder":
+				this._radius = "radius" in data ? data.radius : 0.5;
+				this._halfHeight = "halfHeight" in data ? data.halfHeight : 1;
+
+				break;
+			case "mesh":
+				this._mesh = "mesh" in data ? data.mesh : null;
+				break;
+			default:
+				throw new Error("Collider: invalid type " + this.type);
+		}
+		if ("material" in data) this._material = data.material;
+		this._setShape();
 
 		this.addEventListener("enable", this.onEnable);
 		this.addEventListener("disable", this.onDisable);
@@ -28,9 +72,11 @@ class Collider {
 				this.entity.scene._physicsWorld.addRigidBody(this._ref);
 			}
 		} else {
-			config.position = this.entity.getWorldPosition(vector);
-			config.rotation.fromQuat(this.entity.getWorldQuaternion(quat));
+			this.entity.matrixWorld.decompose(vector, quat, vector2);
+			config.position = vector;
+			config.rotation.fromQuat(quat);
 			this.entity._physicsRef = this._ref = new OIMO.RigidBody(config);
+
 			this.entity.scene._physicsWorld.addRigidBody(this._ref);
 			this._ref.component = this;
 			this._ref.entity = this.entity;
@@ -41,6 +87,16 @@ class Collider {
 			w.mass = this._ref._mass;
 			this._ref.setMassData(w);
 		}
+
+		const scale = this.entity.scale;
+		if ("colliders" in scale) {
+			scale.colliders.push(this);
+		} else {
+			scale.colliders = [this];
+			Object.defineProperty(this.entity, "scale", {
+				value: new Proxy(scale, proxyHandler),
+			});
+		}
 	}
 
 	onDisable() {
@@ -50,60 +106,66 @@ class Collider {
 			w.mass = this._ref._mass;
 			this._ref.setMassData(w);
 		}
-		if (this._ref.getNumShapes() === 0) {
+		if (this._ref.getNumShapes() === 0 && this._ref.getType() === 1) {
 			this.entity.scene._physicsWorld.removeRigidBody(this._ref);
 		}
 		delete this._ref;
+		const scale = this.entity.scale;
+		if (scale.colliders.length === 1) {
+			Object.defineProperty(this.entity, "scale", {
+				value: new Vector3().copy(scale),
+			});
+		} else {
+			scale.colliders.splice(scale.colliders.indexOf(this), 1);
+		}
 	}
 
-	setShape(data) {
+	_setShape() {
 		let geometry;
-		if (!("type" in data)) data.type = box;
-		switch (data.type) {
+		const scale = this.entity.scale;
+		const max = Math.max(scale.x, scale.y, scale.z);
+		switch (this.type) {
 			case "box":
 				geometry = new OIMO.BoxGeometry(
-					"halfExtents" in data
-						? data.halfExtents
-						: new Vector3(1, 1, 1)
+					vector.copy(this._halfExtents).multiply(scale)
 				);
+				break;
+			case "sphere":
+				geometry = new OIMO.SphereGeometry(this._radius * max);
 				break;
 			case "capsule":
 				geometry = new OIMO.CapsuleGeometry(
-					"radius" in data ? data.radius : 0.5,
-					"halfHeight" in data ? data.halfHeight : 1
+					this._radius * max,
+					this._halfHeight * max
 				);
 				break;
 			case "cone":
 				geometry = new OIMO.ConeGeometry(
-					"radius" in data ? data.radius : 0.5,
-					"halfHeight" in data ? data.halfHeight : 1
+					this._radius * max,
+					this._halfHeight * max
 				);
 				break;
 			case "cylinder":
 				geometry = new OIMO.CylinderGeometry(
-					"radius" in data ? data.radius : 0.5,
-					"halfHeight" in data ? data.halfHeight : 1
+					this._radius * max,
+					this._halfHeight * max
 				);
 				break;
 			case "mesh":
-				// geometry = new OIMO.ConvexHullGeometry(
-				// 	"radius" in data ? data.radius : 0.5
-				// );
+				let vertices = [];
+				if (this._mesh !== null) {
+					vertices = convexHull.setFromObject(this._mesh).vertices;
+					for (let i = 0, len = vertices.length; i < len; i++) {
+						vertices[i] = vertices[i].point.multiply(scale);
+					}
+				}
+				geometry = new OIMO.ConvexHullGeometry(vertices);
 				break;
-			case "sphere":
-				geometry = new OIMO.SphereGeometry(
-					"radius" in data ? data.radius : 0.5
-				);
-				break;
-			default:
-				throw Error("invalid shape type");
 		}
 
 		shapeConfig.geometry = geometry;
-		shapeConfig.collisionGroup =
-			"collisionGroup" in data ? data.collisionGroup : 1;
-		shapeConfig.collisionMask =
-			"collisionMask" in data ? data.collisionMask : 1;
+		shapeConfig.collisionGroup = this._collisionGroup;
+		shapeConfig.collisionMask = this._collisionMask;
 
 		if (this._shapeRef !== undefined) {
 			this._ref.removeShape(this._shapeRef);
@@ -115,7 +177,7 @@ class Collider {
 		this._shapeRef.entity = this.entity;
 		this._shapeRef.collider = this;
 
-		if ("material" in data) this.material = data.material;
+		if ("_material" in this) this.material = this._material;
 	}
 
 	get material() {
@@ -142,37 +204,35 @@ class Collider {
 		return this._shapeRef.getGeometry().getVolume();
 	}
 
+	get mesh() {
+		return this._mesh;
+	}
+
+	set mesh(v) {
+		this._mesh = v;
+		this._setShape();
+	}
+
 	get halfExtents() {
-		const v = this._shapeRef.getGeometry().getHalfExtents();
-		return new Vector3(v.x, v.y, v.z);
+		return this._halfHeight;
 	}
 
 	get halfHeight() {
-		return this._shapeRef.getGeometry().getHalfHeight();
+		return this._halfHeight;
 	}
 
 	get radius() {
-		return this._shapeRef.getGeometry().getRadius();
+		return this._radius;
 	}
 
 	set halfExtents(v) {
-		this.setShape({
-			type: this.type,
-			halfExtents: v,
-			collisionGroup: this.collisionGroup,
-			collisionMask: this.collisionMask,
-			material: this.material,
-		});
+		this._halfExtents = v;
+		this._setShape();
 	}
 
 	set halfHeight(v) {
-		this.setShape({
-			type: this.type,
-			halfHeight: v,
-			collisionGroup: this.collisionGroup,
-			collisionMask: this.collisionMask,
-			material: this.material,
-		});
+		this._halfHeight = v;
+		this._setShape();
 	}
 
 	set radius(v) {
@@ -194,18 +254,20 @@ class Collider {
 	}
 
 	get collisionGroup() {
-		return this._shapeRef.getCollisionGroup();
+		return this._collisionGroup;
 	}
 
 	get collisionMask() {
-		return this._shapeRef.getCollisionMask();
+		return this._collisionMask;
 	}
 
 	set collisionGroup(v) {
+		this._collisionGroup = v;
 		this._shapeRef.setCollisionGroup(v);
 	}
 
 	set collisionMask(v) {
+		this._collisionMask = v;
 		this._shapeRef.setCollisionMask(v);
 	}
 }

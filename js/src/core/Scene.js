@@ -9,7 +9,7 @@ export class Scene extends TS {
 		this._cameras = [];
 
 		this._containers = {};
-		this._enabled = true
+		this._enabled = true;
 		for (const type in _components) {
 			this._containers[type] = [];
 		}
@@ -32,6 +32,11 @@ export class Scene extends TS {
 				}
 			}
 		}
+		entity.dispatchEvent({
+			type: "scenechange",
+			oldScene: entity.scene,
+			newScene: this,
+		});
 		entity.scene = this;
 		super.add(entity);
 		return entity;

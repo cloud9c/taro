@@ -1,9 +1,10 @@
-import { OIMO } from "../../lib/oimoPhysics.js";
+import { OIMO } from "../../physics/oimoPhysics.js";
 import { Physics } from "../../core/Physics.js";
 import { Vector3, Matrix3, Quaternion } from "../../engine.js";
 
 const quat = new Quaternion();
 const vector = new Vector3();
+const vector2 = new Vector3();
 const config = new OIMO.RigidBodyConfig();
 
 export class Rigidbody {
@@ -11,10 +12,11 @@ export class Rigidbody {
 		if ("_physicsRef" in this.entity) {
 			this._ref = this.entity._physicsRef;
 		} else {
-			config.position = this.entity.getWorldPosition(vector);
-			config.rotation.fromQuat(this.entity.getWorldQuaternion(quat));
-
+			this.entity.matrixWorld.decompose(vector, quat, vector2);
+			config.position = vector;
+			config.rotation.fromQuat(quat);
 			this.entity._physicsRef = this._ref = new OIMO.RigidBody(config);
+
 			this._ref.component = this;
 			this._ref.entity = this.entity;
 		}
@@ -22,14 +24,23 @@ export class Rigidbody {
 		if ("angularVelocity" in data)
 			this.setAngularVelocity(data.angularVelocity);
 
+		if ("angularDamping" in data)
+			this._ref.setAngularDamping(data.angularDamping);
+
 		if ("linearVelocity" in data)
 			this.setLinearVelocity(data.linearVelocity);
 
-		if ("linearDamping" in data) this.linearDamping = data.linearDamping;
+		if ("linearDamping" in data)
+			this._ref.setLinearDamping(data.linearDamping);
 
+		this.autoSleep = "autoSleep" in data ? data.autoSleep : true;
 		this.mass = "mass" in data ? data.mass : 1;
-
 		this.isKinematic = "isKinematic" in data ? data.isKinematic : false;
+		this.setRotationFactor(
+			"rotationFactor" in data
+				? data.rotationFactor
+				: new Vector3(1, 1, 1)
+		);
 
 		if ("useGravity" in data && !data.useGravity) {
 			this.gravityScale = 0;
@@ -37,20 +48,31 @@ export class Rigidbody {
 
 		this.addEventListener("enable", this.onEnable);
 		this.addEventListener("disable", this.onDisable);
+		this.entity.addEventListener("scenechange", this.onSceneChange);
 	}
 
 	onEnable() {
 		if (this._ref.getNumShapes() === 0) {
 			this.entity.scene._physicsWorld.addRigidBody(this._ref);
-			console.log(this._ref.getType());
+		} else {
+			if (this._isKinematic) this._ref.setType(2);
+			else this._ref.setType(0);
 		}
-		if (this._isKinematic) this._ref.setType(2);
-		else this._ref.setType(0);
 	}
 
 	onDisable() {
 		if (this._ref.getNumShapes() > 0) {
-			this._ref.setType(2);
+			this._ref.setType(1);
+		} else {
+			this.entity.scene._physicsWorld.removeRigidBody(this._ref);
+		}
+	}
+
+	onSceneChange(event) {
+		// need to test
+		if (this.entity.enabled) {
+			event.oldScene._physicsWorld.removeRigidBody(this._ref);
+			event.newScene._physicsWorld.addRigidBody(this._ref);
 		}
 	}
 
@@ -97,7 +119,7 @@ export class Rigidbody {
 		this._ref.getLinearVelocityTo(vector);
 		return vector;
 	}
-	getLocalInertia() {
+	get localInertia() {
 		const v = this._ref.getLocalInertia();
 		return new Matrix3().set(
 			v.e00,
@@ -128,8 +150,15 @@ export class Rigidbody {
 			this.mass = this._ref._mass;
 		}
 	}
-	isSleeping() {
+	get isSleeping() {
 		return this._ref.isSleeping();
+	}
+	set isSleeping(sleep) {
+		if (sleep) {
+			this._ref.sleep();
+		} else {
+			this._ref.wakeUp();
+		}
 	}
 	rotate(v) {
 		this._ref.rotateXyz(v);
@@ -140,7 +169,11 @@ export class Rigidbody {
 	setAngularVelocity(v) {
 		this._ref.setAngularVelocity(v);
 	}
-	setAutoSleep(v) {
+	get autoSleep() {
+		return this._autoSleep;
+	}
+	set autoSleep(v) {
+		this._autoSleep = v;
 		this._ref.setAutoSleep(v);
 	}
 	set gravityScale(v) {
@@ -158,11 +191,11 @@ export class Rigidbody {
 		w.mass = v;
 		this._ref.setMassData(w);
 	}
-	sleep() {
-		this._ref.sleep();
+	getRotationFactor() {
+		return this._rotationFactor;
 	}
-
-	wakeUp() {
-		this._ref.wakeUp();
+	setRotationFactor(vector) {
+		this._rotationFactor = vector;
+		this._ref.setRotationFactor(vector);
 	}
 }

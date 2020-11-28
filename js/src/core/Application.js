@@ -9,7 +9,9 @@ export class Application {
 		this.canvas = document.getElementById(canvas);
 		this.time = new Time();
 		this.physics = new Physics();
-		this.render = new Render(this, canvas);
+		this.render = new Render(this, {
+			canvas: this.canvas,
+		});
 		this.input = new Input();
 
 		this._scenes = {};
@@ -28,7 +30,7 @@ export class Application {
 		return scene;
 	}
 	getScene(name) {
-		return _scenes[name];
+		return this._scenes[name];
 	}
 	removeScene(name) {
 		delete this._scenes[name].app;
@@ -39,10 +41,18 @@ export class Application {
 
 		this.render.scene = this._scene = scene;
 		this._containers = scene._containers;
+
+		scene._physicsWorld.setGravity(this.physics._gravity);
 		this.physics._world = scene._physicsWorld;
 		this.physics.rigidbodies = scene._containers["Rigidbody"];
+
 		this.render.cameras = scene._cameras;
 		return scene;
+	}
+	renameScene(oldName, newName) {
+		const scene = this._scene[oldName];
+		delete this._scene[oldName];
+		this._scene[newName] = scene;
 	}
 	get scene() {
 		return this._scene;

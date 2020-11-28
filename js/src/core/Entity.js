@@ -43,7 +43,22 @@ export class Entity extends Group {
 	}
 
 	addComponent(type, data = {}) {
-		const component = new _components[type]();
+		const options = _components[type][1];
+		if (
+			options.allowMultiple === false &&
+			this.getComponent(type) !== undefined
+		) {
+			return console.warn("allowMultiple Attribute is false");
+		}
+
+		if ("requireComponents" in options) {
+			required = options.requireComponents;
+			for (let i = 0, len = required.length; i < len; i++)
+				if (this.getComponent(required[i]) === undefined)
+					this.addComponent(required[i]);
+		}
+
+		const component = new _components[type][0]();
 
 		Object.defineProperty(component, "entity", {
 			value: this,
@@ -61,25 +76,28 @@ export class Entity extends Group {
 		return component;
 	}
 
-	// used internally
 	add(obj) {
 		if (obj instanceof Entity && obj.scene !== this.scene) {
 			this.scene.add(obj);
 		}
-		super.add(obj);
+		return super.add(obj);
 	}
 
-	// used internally
 	remove(obj) {
 		if (obj instanceof Entity) {
 			this.scene.add(obj);
 		} else {
 			super.remove(obj);
 		}
+		return obj;
 	}
 
 	destroy() {
-		// blah
+		this.enabled = false;
+		const children = this.getChildren();
+		for (let i = 0, len = children.length; i < len; i++)
+			children[i].destroy();
+		this.scene.remove(this);
 	}
 
 	get enabled() {
@@ -92,10 +110,8 @@ export class Entity extends Group {
 			this._enabled = value;
 
 			const components = this._components;
-			for (let i = 0, len = components.length; i < len; i++) {
-				console.log(components[i]);
+			for (let i = 0, len = components.length; i < len; i++)
 				components[i].enabled = value;
-			}
 
 			const children = this.getChildren();
 			for (let i = 0, len = children.length; i < len; i++)
