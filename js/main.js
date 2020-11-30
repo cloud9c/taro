@@ -147,9 +147,6 @@ entity.addComponent("Collider", {
 	type: "sphere",
 	radius: 1,
 });
-entity.addComponent("Joint", {
-	type: "universal",
-});
 
 // blocks
 const position = new ENGINE.Vector3(-10, 1, -5);
