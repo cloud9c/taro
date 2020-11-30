@@ -33,7 +33,7 @@ export class Physics {
 			},
 		});
 	}
-	_update(fixedTimestep, deltaTime) {
+	_update(deltaTime, fixedTimestep) {
 		let rigidbody = this._world.getRigidBodyList();
 
 		while (rigidbody !== null) {

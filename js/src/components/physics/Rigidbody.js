@@ -34,8 +34,8 @@ export class Rigidbody {
 			this._ref.setLinearDamping(data.linearDamping);
 
 		this.autoSleep = "autoSleep" in data ? data.autoSleep : true;
-		this.mass = "mass" in data ? data.mass : 1;
-		this.isKinematic = "isKinematic" in data ? data.isKinematic : false;
+		this._ref.mass = "mass" in data ? data.mass : 1;
+		this._isKinematic = "isKinematic" in data ? data.isKinematic : false;
 		this.setRotationFactor(
 			"rotationFactor" in data
 				? data.rotationFactor
@@ -52,11 +52,14 @@ export class Rigidbody {
 	}
 
 	onEnable() {
+		this.mass = this._ref.mass;
+		if (this._isKinematic) this._ref.setType(2);
+		else {
+			this._ref.setType(0);
+			this.mass = this._ref._mass;
+		}
 		if (this._ref.getNumShapes() === 0) {
 			this.entity.scene._physicsWorld.addRigidBody(this._ref);
-		} else {
-			if (this._isKinematic) this._ref.setType(2);
-			else this._ref.setType(0);
 		}
 	}
 

@@ -21,6 +21,7 @@ export class Application {
 		Application._currentApp = this;
 	}
 	start() {
+		this.time.lastTimestamp = performance.now() / 1000;
 		window.requestAnimationFrame((t) => this._updateLoop(t / 1000));
 	}
 	createScene(name) {
