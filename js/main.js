@@ -143,6 +143,7 @@ entity = new ENGINE.Entity("ball");
 entity.addComponent("Renderable", mesh);
 entity.position.set(0, 5, 2);
 entity.addComponent("Rigidbody");
+entity.addComponent("Joint");
 entity.addComponent("Collider", {
 	type: "sphere",
 	radius: 1,

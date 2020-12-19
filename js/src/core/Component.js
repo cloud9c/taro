@@ -10,6 +10,7 @@ import { SpotLight } from "../components/light/SpotLight.js";
 import { Rigidbody } from "../components/physics/Rigidbody.js";
 import { Collider } from "../components/physics/Collider.js";
 import { Joint } from "../components/physics/Joint.js";
+
 import { EventDispatcher } from "../lib/three.js";
 
 const cProto = {

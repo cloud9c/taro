@@ -1,16 +1,18 @@
 import { OIMO } from "../../physics/oimoPhysics.js";
 import { Physics } from "../../core/Physics.js";
 
-const cylindricalConfig = new OIMO.CylindricalJointConfig();
-const prismaticConfig = new OIMO.PrismaticJointConfig();
-const ragdollConfig = new OIMO.RagdollJointConfig();
-const revoluteConfig = new OIMO.RevoluteJointConfig();
-const sphericalConfig = new OIMO.SphericalJointConfig();
-const universalConfig = new OIMO.UniversalJointConfig();
+const configs = {
+	cylindrical: new OIMO.CylindricalJointConfig(),
+	prismatic: new OIMO.PrismaticJointConfig(),
+	ragdoll: new OIMO.RagdollJointConfig(),
+	revolute: new OIMO.RevoluteJointConfig(),
+	spherical: new OIMO.SphericalJointConfig(),
+	universal: new OIMO.UniversalJointConfig(),
+};
 
-const config = new OIMO.RigidBodyConfig();
-config.type = 1;
-const worldBody = new OIMO.RigidBody(config);
+const rigidbodyConfig = new OIMO.RigidBodyConfig();
+rigidbodyConfig.type = 1;
+const worldBody = new OIMO.RigidBody(rigidbodyConfig);
 
 export class Joint {
 	start(data) {
@@ -27,17 +29,21 @@ export class Joint {
 			this._bodyRef2 = worldBody;
 		}
 
+		this._allowCollision = data.allowCollision === true;
+
+		this._breakForce =
+			"breakForce" in data && data.breakForce !== 0 ? data.breakForce : 0;
+
+		this._breakTorque =
+			"breakTorque" in data && data.breakTorque !== 0
+				? data.breakTorque
+				: 0;
+
+		this._anchor = "anchor" in data ? data.anchor : new Vector3();
+		this._connectedAnchor =
+			"connectedAnchor" in data ? data.connectedAnchor : new Vector3();
+
 		this.setJoint(data);
-
-		if (data.allowCollision === true) {
-			this._ref.setAllowCollision(true);
-		}
-
-		if ("breakForce" in data && data.breakForce !== 0)
-			this._ref.setBreakForce(data.breakForce);
-
-		if ("breakTorque" in data && data.breakTorque !== 0)
-			this._ref.setBreakTorque(data.breakTorque);
 
 		this.addEventListener("enable", this.onEnable);
 		this.addEventListener("disable", this.onDisable);
@@ -56,26 +62,34 @@ export class Joint {
 		}*/
 	}
 
-	setJoint(data) {
+	setJoint() {
+		const config = configs[this.type];
+		config.allowCollision = this._allowCollision;
+		config.breakForce = this._breakForce;
+		config.breakTorque = this._breakTorque;
+		config.localAnchor1 = this._anchor;
+		config.localAnchor2 = this._connectedAnchor;
+		config.rigidBody1 = this._bodyRef;
+		config.rigidBody2 = this._bodyRef2;
 		switch (this.type) {
 			case "universal":
 				universalConfig;
-				this._ref = new OIMO.UniversalJoint(universalConfig);
+				this._ref = new OIMO.UniversalJoint(config);
 				break;
 			case "cylindrical":
-				this._ref = new OIMO.CylindricalJoint(cylindricalConfig);
+				this._ref = new OIMO.CylindricalJoint(config);
 				break;
 			case "prismatic":
-				this._ref = new OIMO.PrismaticJoint(prismaticConfig);
+				this._ref = new OIMO.PrismaticJoint(config);
 				break;
 			case "ragdoll":
-				this._ref = new OIMO.RagdollJoint(ragdollConfig);
+				this._ref = new OIMO.RagdollJoint(config);
 				break;
 			case "revolute":
-				this._ref = new OIMO.RevoluteJoint(revoluteConfig);
+				this._ref = new OIMO.RevoluteJoint(config);
 				break;
 			case "spherical":
-				this._ref = new OIMO.SphericalJoint(sphericalConfig);
+				this._ref = new OIMO.SphericalJoint(config);
 				break;
 			default:
 				throw new Error("Joint: invalid type" + this.type);
@@ -85,32 +99,31 @@ export class Joint {
 
 	// joint
 	get allowCollision() {
-		return this._ref.getAllowCollision();
+		return this._allowCollision;
 	}
 
 	set allowCollision(allowCollision) {
-		return this._ref.setAllowCollision(allowCollision);
+		this._allowCollision = allowCollision;
+		this._ref.setAllowCollision(allowCollision);
 	}
 
 	// local anchor
 	get anchor() {
-		const vector = new Vector3();
-		this._ref.getLocalAnchor1To(vector);
-		return vector;
+		return this._anchor;
 	}
 
 	set anchor(anchor) {
-		// TODO
+		this._anchor = anchor;
+		this.setJoint();
 	}
 
 	get connectedAnchor() {
-		const vector = new Vector3();
-		this._ref.getLocalAnchor2To(vector);
-		return vector;
+		return this._connectedAnchor;
 	}
 
 	set connectedAnchor(anchor) {
-		// TODO
+		this._connectedAnchor = anchor;
+		this.setJoint();
 	}
 
 	get appliedForce() {
@@ -126,10 +139,11 @@ export class Joint {
 	}
 
 	get breakForce() {
-		this._ref.getBreakForce();
+		this._breakForce;
 	}
 
 	set breakForce(force) {
+		this._breakForce = force;
 		this._ref.setBreakForce(force);
 	}
 
@@ -148,47 +162,50 @@ export class Joint {
 	}
 
 	set connectedBody(body) {
-		// TODO
+		this._bodyRef2 = body === null ? worldBody : body;
+		this.setJoint();
 	}
 
 	// prismatic joint
 
 	// local axis
 	get axis() {
-		const vector = new Vector3();
-		this._ref.getAxis1To(vector);
-		return vector;
+		return this._axis;
 	}
 
 	set axis(axis) {
-		// TODO
+		this._axis = axis;
+		this.setJoint();
 	}
 
 	get connectedAxis() {
-		const vector = new Vector3();
-		this._ref.getAxis2To(vector);
-		return vector;
+		return this._connectedAxis;
 	}
 
 	set connectedAxis(axis) {
-		// TODO
+		this._connectedAxis = axis;
+		this.setJoint();
 	}
 
 	// prismatic and revolute and universal
 	get limitMotor() {
-		return this._ref.getLimitMotor();
+		return this._limitMotor;
 	}
 
 	// spring damper (and getSpringDamper1 in UniversalJoint)
 	get springDamper() {
-		return this._ref.getSpringDamper();
+		return this._springDamper;
 	}
 
 	// ragdoll joint
 
 	get swingAngle() {
-		return this._ref.getSwingAngle();
+		return this._swingAngle;
 	}
+
+	set maxSwingAngle(angle) {}
+
+	set connectedMaxSwingAngle(angle) {}
 
 	get swingAxis() {
 		const vector = new Vector3();
