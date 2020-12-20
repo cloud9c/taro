@@ -1,4 +1,4 @@
-import { OIMO } from "../../physics/oimoPhysics.js";
+import { OIMO } from "../../lib/oimoPhysics.js";
 import { Physics } from "../../core/Physics.js";
 import { Vector3, Matrix3, Quaternion } from "../../engine.js";
 

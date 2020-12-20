@@ -1,5 +1,9 @@
-import { OIMO } from "../../physics/oimoPhysics.js";
+import { OIMO } from "../../lib/oimoPhysics.js";
 import { Physics } from "../../core/Physics.js";
+import { AngularLimit } from "../../physics/AngularLimit.js";
+import { LinearLimit } from "../../physics/LinearLimit.js";
+import { SpringDamper } from "../../physics/SpringDamper.js";
+import { Vector3 } from "../../engine.js";
 
 const configs = {
 	cylindrical: new OIMO.CylindricalJointConfig(),
@@ -17,84 +21,244 @@ const worldBody = new OIMO.RigidBody(rigidbodyConfig);
 export class Joint {
 	start(data) {
 		this.type = "type" in data ? data.type : "universal";
-		this._bodyRef = this.entity.getComponent("RigidBody");
-		if ("connectedBody" in data) {
-			if (data.connectedBody.component.componentType === "RigidBody")
-				this._bodyRef2 = data.connectedBody._ref;
-			else
-				throw new Error(
-					"Joint: connectedBody must be a Rigidbody component"
-				);
-		} else {
-			this._bodyRef2 = worldBody;
-		}
+		const type = this.type;
 
+		configs[type].rigidBody1 = this.entity._physicsRef;
+		this._bodyRef2 =
+			"linkedEntity" in data && data.linkedEntity !== null
+				? data.linkedEntity._physicsRef
+				: worldBody;
 		this._allowCollision = data.allowCollision === true;
-
 		this._breakForce =
 			"breakForce" in data && data.breakForce !== 0 ? data.breakForce : 0;
-
 		this._breakTorque =
 			"breakTorque" in data && data.breakTorque !== 0
 				? data.breakTorque
 				: 0;
-
 		this._anchor = "anchor" in data ? data.anchor : new Vector3();
-		this._connectedAnchor =
-			"connectedAnchor" in data ? data.connectedAnchor : new Vector3();
+		this._linkedAnchor =
+			"linkedAnchor" in data ? data.linkedAnchor : new Vector3();
 
-		this.setJoint(data);
+		switch (type) {
+			case "universal":
+			case "cylindrical":
+			case "prismatic":
+			case "revolute":
+				this._axis = "axis" in data ? data.axis : new Vector3(1, 0, 0);
+				this._linkedAxis =
+					"axis" in data ? data.linkedAxis : new Vector3(1, 0, 0);
+		}
+		switch (type) {
+			case "universal":
+			case "prismatic":
+			case "revolute":
+			case "spherical":
+				Object.defineProperty(this, "springDamper", {
+					value:
+						"springDamper" in data
+							? data.springDamper
+							: new SpringDamper(),
+				});
+		}
+		switch (type) {
+			case "universal":
+				Object.defineProperties(this, {
+					linkedSpringDamper: {
+						value:
+							"linkedSpringDamper" in data
+								? data.linkedSpringDamper
+								: new SpringDamper(),
+					},
+					angularLimit: {
+						value:
+							"angularLimit" in data
+								? data.angularLimit
+								: new AngularLimit(),
+					},
+					linkedAngularLimit: {
+						value:
+							"linkedAngularLimit" in data
+								? data.linkedAngularLimit
+								: new AngularLimit(),
+					},
+				});
+				break;
+			case "cylindrical":
+				Object.defineProperties(this, {
+					linearLimit: {
+						value:
+							"linearLimit" in data
+								? data.linearLimit
+								: new LinearLimit(),
+					},
+					linearSpringDamper: {
+						value:
+							"linearSpringDamper" in data
+								? data.linearSpringDamper
+								: new SpringDamper(),
+					},
+					angularLimit: {
+						value:
+							"angularLimit" in data
+								? data.angularLimit
+								: new AngularLimit(),
+					},
+					angularSpringDamper: {
+						value:
+							"angularSpringDamper" in data
+								? data.angularSpringDamper
+								: new SpringDamper(),
+					},
+				});
+				break;
+			case "prismatic":
+				Object.defineProperty(this, "linearLimit", {
+					value:
+						"linearLimit" in data
+							? data.linearLimit
+							: new LinearLimit(),
+				});
+				break;
+			case "ragdoll":
+				this._twistAxis =
+					"twistAxis" in data ? data.twistAxis : new Vector3(1, 0, 0);
+				this._linkedTwistAxis =
+					"linkedTwistAxis" in data
+						? data.linkedTwistAxis
+						: new Vector3(1, 0, 0);
+				this._swingAxis =
+					"swingAxis" in data ? data.swingAxis : new Vector3(0, 1, 0);
+				this._maxSwing = "maxSwing" in data ? data.maxSwing : Math.PI;
+				this._linkedMaxSwing =
+					"linkedMaxSwing" in data ? data.linkedMaxSwing : Math.PI;
+				Object.defineProperties(this, {
+					twistSpringDamper: {
+						value:
+							"twistSpringDamper" in data
+								? data.twistSpringDamper
+								: new SpringDamper(),
+					},
+					swingSpringDamper: {
+						value:
+							"swingSpringDamper" in data
+								? data.swingSpringDamper
+								: new SpringDamper(),
+					},
+					twistLimit: {
+						value:
+							"twistLimit" in data
+								? data.twistLimit
+								: new AngularLimit(),
+					},
+				});
+				break;
+			case "revolute":
+				Object.defineProperty(this, "angularLimit", {
+					value:
+						"angularLimit" in data
+							? data.angularLimit
+							: new AngularLimit(),
+				});
+				break;
+			default:
+				throw new Error("Joint: invalid type " + type);
+		}
+
+		this._setJoint();
 
 		this.addEventListener("enable", this.onEnable);
 		this.addEventListener("disable", this.onDisable);
 		this.entity.addEventListener("scenechange", this.onSceneChange);
 	}
 
-	onEnable() {}
+	onEnable() {
+		this.entity.scene._physicsWorld.addJoint(this._ref);
+	}
 
-	onDisable() {}
+	onDisable() {
+		this.entity.scene._physicsWorld.removeJoint(this._ref);
+	}
 
 	onSceneChange(event) {
 		// need to test
-		/*		if (this.entity.enabled) {
-			event.oldScene._physicsWorld.removeRigidBody(this._ref);
-			event.newScene._physicsWorld.addRigidBody(this._ref);
-		}*/
+		if (this.entity.enabled) {
+			event.oldScene._physicsWorld.removeJoint(this._ref);
+			event.newScene._physicsWorld.addJoint(this._ref);
+		}
 	}
 
-	setJoint() {
-		const config = configs[this.type];
+	_setJoint() {
+		let enable = false;
+		const type = this.type;
+		const config = configs[type];
 		config.allowCollision = this._allowCollision;
 		config.breakForce = this._breakForce;
 		config.breakTorque = this._breakTorque;
 		config.localAnchor1 = this._anchor;
-		config.localAnchor2 = this._connectedAnchor;
-		config.rigidBody1 = this._bodyRef;
+		config.localAnchor2 = this._linkedAnchor;
 		config.rigidBody2 = this._bodyRef2;
-		switch (this.type) {
+		if (this._ref !== undefined && this._enabled) {
+			this.entity.scene._physicsWorld.removeJoint(this._ref);
+			enable = true;
+		}
+		switch (type) {
 			case "universal":
-				universalConfig;
+			case "cylindrical":
+			case "prismatic":
+			case "revolute":
+				config.localAxis1 = this._axis;
+				config.localAxis2 = this._linkedAxis;
+				break;
+		}
+		switch (type) {
+			case "prismatic":
+			case "revolute":
+			case "spherical":
+				config.springDamper = this.springDamper;
+		}
+		switch (type) {
+			case "universal":
+				config.springDamper1 = this.springDamper;
+				config.springDamper2 = this.linkedSpringDamper;
+				config.limitMotor1 = this.angularLimit;
+				config.limitMotor2 = this.linkedAngularLimit;
 				this._ref = new OIMO.UniversalJoint(config);
 				break;
 			case "cylindrical":
+				config.translationalLimitMotor = this.linearLimit;
+				config.translationalSpringDamper = this.linearSpringDamper;
+				config.rotationalLimitMotor = this.angularLimit;
+				config.rotationalSpringDamper = this.angularSpringDamper;
 				this._ref = new OIMO.CylindricalJoint(config);
 				break;
 			case "prismatic":
+				config.limitMotor = this.linearLimit;
 				this._ref = new OIMO.PrismaticJoint(config);
 				break;
 			case "ragdoll":
+				config.localTwistAxis1 = this._twistAxis;
+				config.localTwistAxis2 = this._linkedTwistAxis;
+				config.localSwingAxis1 = this._swingAxis;
+				config.maxSwingAngle1 = this._maxSwing;
+				config.maxSwingAngle2 = this._linkedMaxSwing;
+				config.twistSpringDamper = this.twistSpringDamper;
+				config.swingSpringDamper = this.swingSpringDamper;
+				config.twistLimitMotor = this.twistLimit;
 				this._ref = new OIMO.RagdollJoint(config);
 				break;
 			case "revolute":
+				config.limitMotor = this.angularLimit;
 				this._ref = new OIMO.RevoluteJoint(config);
 				break;
 			case "spherical":
 				this._ref = new OIMO.SphericalJoint(config);
 				break;
 			default:
-				throw new Error("Joint: invalid type" + this.type);
+				throw new Error("Joint: invalid type " + this.type);
 		}
-		this.scene._physicsWorld.addJoint(this._ref);
+		this._ref.component = this;
+		if (enable) this.entity.scene._physicsWorld.addJoint(this._ref);
+		console.log(this._ref);
 	}
 
 	// joint
@@ -114,16 +278,16 @@ export class Joint {
 
 	set anchor(anchor) {
 		this._anchor = anchor;
-		this.setJoint();
+		this._setJoint();
 	}
 
-	get connectedAnchor() {
-		return this._connectedAnchor;
+	get linkedAnchor() {
+		return this._linkedAnchor;
 	}
 
-	set connectedAnchor(anchor) {
-		this._connectedAnchor = anchor;
-		this.setJoint();
+	set linkedAnchor(anchor) {
+		this._linkedAnchor = anchor;
+		this._setJoint();
 	}
 
 	get appliedForce() {
@@ -155,15 +319,15 @@ export class Joint {
 		this._ref.setBreakTorque(torque);
 	}
 
-	get connectedBody() {
+	get linkedEntity() {
 		const body = this._bodyRef2;
 		if (body === worldBody) return null;
-		return body.component;
+		return body.entity;
 	}
 
-	set connectedBody(body) {
-		this._bodyRef2 = body === null ? worldBody : body;
-		this.setJoint();
+	set linkedEntity(entity) {
+		this._bodyRef2 = entity === null ? worldBody : entity._physicsRef;
+		this._setJoint();
 	}
 
 	// prismatic joint
@@ -175,58 +339,63 @@ export class Joint {
 
 	set axis(axis) {
 		this._axis = axis;
-		this.setJoint();
+		this._setJoint();
 	}
 
-	get connectedAxis() {
-		return this._connectedAxis;
+	get linkedAxis() {
+		return this._linkedAxis;
 	}
 
-	set connectedAxis(axis) {
-		this._connectedAxis = axis;
-		this.setJoint();
-	}
-
-	// prismatic and revolute and universal
-	get limitMotor() {
-		return this._limitMotor;
-	}
-
-	// spring damper (and getSpringDamper1 in UniversalJoint)
-	get springDamper() {
-		return this._springDamper;
+	set linkedAxis(axis) {
+		this._linkedAxis = axis;
+		this._setJoint();
 	}
 
 	// ragdoll joint
 
-	get swingAngle() {
-		return this._swingAngle;
-	}
-
-	set maxSwingAngle(angle) {}
-
-	set connectedMaxSwingAngle(angle) {}
-
 	get swingAxis() {
-		const vector = new Vector3();
-		this._ref.getSwingAxisTo(vector);
-		return vector;
+		return this._swingAxis;
 	}
 
-	get swingSpringDamper() {
-		return this._ref.getSwingSpringDamper();
+	set swingAxis(axis) {
+		this._swingAxis = axis;
+		this._setJoint();
 	}
 
-	get twistAngle() {
-		return this._ref.getTwistAngle();
+	get twistAxis() {
+		return this._twistAxis;
 	}
 
-	get twistLimitMotor() {
-		return this._ref.getTwistLimitMotor();
+	set twistAxis(axis) {
+		this._twistAxis = axis;
+		this._setJoint();
 	}
 
-	get twistSpringDamper() {
-		return this._ref.getTwistSpringDamper();
+	get linkedTwistAxis() {
+		return this._linkedTwistAxis;
+	}
+
+	set linkedTwistAxis(axis) {
+		this._linkedTwistAxis = axis;
+		this._setJoint();
+	}
+
+	get maxSwing() {
+		return this._maxSwing;
+	}
+
+	set maxSwing(angle) {
+		this._maxSwing = angle;
+		this._setJoint();
+	}
+
+	get linkedMaxSwing() {
+		return this._linkedMaxSwing;
+	}
+
+	set linkedMaxSwing(angle) {
+		this._linkedMaxSwing = angle;
+		this._setJoint();
 	}
 
 	// revolute joint and universal
@@ -238,33 +407,9 @@ export class Joint {
 	// SphericalJoint
 
 	// UniversalJoint
-	get connectedAngle() {
+	get linkedAngle() {
 		return this._ref.getAngle2();
 	}
 
-	get connectedLimitMotor() {
-		return this._ref.getLimitMotor2();
-	}
-
-	get connectedSpringDamper() {
-		return this._ref.getSpringDamper2();
-	}
-
 	// cylindrical
-
-	get rotationalLimitMotor() {
-		return this._ref.getRotationalLimitMotor();
-	}
-
-	get rotationalSpringDamper() {
-		return this._ref.getRotationalSpringDamper();
-	}
-
-	get translationalLimitMotor() {
-		return this._ref.getTranslationalLimitMotor();
-	}
-
-	get translationalSpringDamper() {
-		return this._ref.getTranslationalSpringDamper();
-	}
 }

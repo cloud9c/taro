@@ -1,7 +1,7 @@
 export class SpringDamper {
-	constructor(damping = 0, frequency = 0) {
-		this.dampingRatio = damping;
+	constructor(frequency = 0, damping = 0) {
 		this.frequency = frequency;
+		this.dampingRatio = damping;
 		this.useSymplecticEuler = false;
 	}
 
@@ -11,5 +11,14 @@ export class SpringDamper {
 
 	set damping(damping) {
 		this.dampingRatio = damping;
+	}
+
+	set(frequency = 0, damping = 0) {
+		this.frequency = frequency;
+		this.dampingRatio = damping;
+	}
+
+	clone() {
+		return this;
 	}
 }

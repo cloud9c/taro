@@ -20,6 +20,12 @@ ENGINE.createComponent(
 		update() {
 			const ball = this.ball;
 			if (this.input.getKeyDown("KeyG")) {
+				console.log(ball.getComponent("Joint")._ref.getLocalAxis1());
+				ball.getComponent("Joint").anchor = new ENGINE.Vector3(
+					0,
+					0,
+					-10
+				);
 			}
 
 			if (this.input.getKeyDown("ArrowUp")) {
@@ -143,7 +149,11 @@ entity = new ENGINE.Entity("ball");
 entity.addComponent("Renderable", mesh);
 entity.position.set(0, 5, 2);
 entity.addComponent("Rigidbody");
-entity.addComponent("Joint");
+entity.addComponent("Joint", {
+	type: "prismatic",
+	linkedEntity: app.scene.find("floor"),
+	anchor: new ENGINE.Vector3(0, 10, 0),
+});
 entity.addComponent("Collider", {
 	type: "sphere",
 	radius: 1,

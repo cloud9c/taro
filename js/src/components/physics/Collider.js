@@ -1,5 +1,5 @@
-import { OIMO } from "../../physics/oimoPhysics.js";
-import { Vector3, Quaternion } from "../../engine.js";
+import { OIMO } from "../../lib/oimoPhysics.js";
+import { Vector3, Euler, Quaternion } from "../../engine.js";
 import { ConvexHull } from "../../physics/ConvexHull.js";
 
 const vector = new Vector3();
@@ -34,6 +34,8 @@ class Collider {
 		this._collisionGroup =
 			"collisionGroup" in data ? data.collisionGroup : 1;
 		this._collisionMask = "collisionMask" in data ? data.collisionMask : 1;
+		this._center = "center" in data ? data.center : new Vector3(0, 0, 0);
+		this._rotation = "rotation" in data ? data.center : new Euler(0, 0, 0);
 		switch (this.type) {
 			case "box":
 				// box
@@ -166,8 +168,10 @@ class Collider {
 		shapeConfig.geometry = geometry;
 		shapeConfig.collisionGroup = this._collisionGroup;
 		shapeConfig.collisionMask = this._collisionMask;
+		shapeConfig.position = this._center;
+		shapeConfig.rotation.fromEulerXyz(this._rotation);
 
-		if (this._shapeRef !== undefined) {
+		if (this._shapeRef !== undefined && this._enabled) {
 			this._ref.removeShape(this._shapeRef);
 			this._shapeRef = new OIMO.Shape(shapeConfig);
 			this._ref.addShape(this._shapeRef);
@@ -178,6 +182,24 @@ class Collider {
 		this._shapeRef.collider = this;
 
 		if ("_material" in this) this.material = this._material;
+	}
+
+	get center() {
+		return this._center;
+	}
+
+	set center(center) {
+		this._center = center;
+		this._setShape();
+	}
+
+	get rotation() {
+		return this._rotation;
+	}
+
+	set rotation(rotation) {
+		this._rotation = rotation;
+		this._setShape();
 	}
 
 	get material() {

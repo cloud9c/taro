@@ -17,4 +17,15 @@ export class LinearLimit {
 	set maxForce(maxForce) {
 		this.motorForce = maxForce;
 	}
+
+	set(lowerLimit = 0, upperLimit = 0, targetSpeed, maxForce = 0) {
+		this.lowerLimit = lowerLimit;
+		this.upperLimit = upperLimit;
+		this.motorSpeed = targetSpeed;
+		this.motorForce = maxForce;
+	}
+
+	clone() {
+		return this;
+	}
 }
