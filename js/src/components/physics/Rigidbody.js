@@ -73,7 +73,7 @@ export class Rigidbody {
 
 	onSceneChange(event) {
 		// need to test
-		if (this.entity.enabled) {
+		if (this._enabled) {
 			event.oldScene._physicsWorld.removeRigidBody(this._ref);
 			event.newScene._physicsWorld.addRigidBody(this._ref);
 		}

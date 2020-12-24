@@ -4,10 +4,11 @@ export class Time {
 		this.maxDeltaTime = 0.2;
 		this.timeScale = 1;
 		this.deltaTime = 0;
-		this.lastTimestamp = 0;
+		this.lastTimestamp = false;
 	}
 	_update(timestamp) {
-		this.deltaTime = (timestamp - this.lastTimestamp) * this.timeScale;
+		this.deltaTime =
+			(timestamp - (this.lastTimestamp || timestamp)) * this.timeScale;
 		const maxDeltaTime = this.maxDeltaTime * this.timeScale;
 		if (this.deltaTime > maxDeltaTime) this.deltaTime = maxDeltaTime;
 		this.lastTimestamp = timestamp;

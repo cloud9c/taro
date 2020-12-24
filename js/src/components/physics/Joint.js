@@ -9,8 +9,8 @@ const configs = {
 	cylindrical: new OIMO.CylindricalJointConfig(),
 	prismatic: new OIMO.PrismaticJointConfig(),
 	ragdoll: new OIMO.RagdollJointConfig(),
-	revolute: new OIMO.RevoluteJointConfig(),
-	spherical: new OIMO.SphericalJointConfig(),
+	hinge: new OIMO.RevoluteJointConfig(),
+	ball: new OIMO.SphericalJointConfig(),
 	universal: new OIMO.UniversalJointConfig(),
 };
 
@@ -20,7 +20,6 @@ const worldBody = new OIMO.RigidBody(rigidbodyConfig);
 
 export class Joint {
 	start(data) {
-		this.type = "type" in data ? data.type : "universal";
 		const type = this.type;
 
 		configs[type].rigidBody1 = this.entity._physicsRef;
@@ -43,7 +42,7 @@ export class Joint {
 			case "universal":
 			case "cylindrical":
 			case "prismatic":
-			case "revolute":
+			case "hinge":
 				this._axis = "axis" in data ? data.axis : new Vector3(1, 0, 0);
 				this._linkedAxis =
 					"axis" in data ? data.linkedAxis : new Vector3(1, 0, 0);
@@ -51,8 +50,8 @@ export class Joint {
 		switch (type) {
 			case "universal":
 			case "prismatic":
-			case "revolute":
-			case "spherical":
+			case "hinge":
+			case "ball":
 				Object.defineProperty(this, "springDamper", {
 					value:
 						"springDamper" in data
@@ -152,7 +151,7 @@ export class Joint {
 					},
 				});
 				break;
-			case "revolute":
+			case "hinge":
 				Object.defineProperty(this, "angularLimit", {
 					value:
 						"angularLimit" in data
@@ -160,8 +159,6 @@ export class Joint {
 							: new AngularLimit(),
 				});
 				break;
-			default:
-				throw new Error("Joint: invalid type " + type);
 		}
 
 		this._setJoint();
@@ -181,7 +178,7 @@ export class Joint {
 
 	onSceneChange(event) {
 		// need to test
-		if (this.entity.enabled) {
+		if (this._enabled) {
 			event.oldScene._physicsWorld.removeJoint(this._ref);
 			event.newScene._physicsWorld.addJoint(this._ref);
 		}
@@ -205,15 +202,15 @@ export class Joint {
 			case "universal":
 			case "cylindrical":
 			case "prismatic":
-			case "revolute":
+			case "hinge":
 				config.localAxis1 = this._axis;
 				config.localAxis2 = this._linkedAxis;
 				break;
 		}
 		switch (type) {
 			case "prismatic":
-			case "revolute":
-			case "spherical":
+			case "hinge":
+			case "ball":
 				config.springDamper = this.springDamper;
 		}
 		switch (type) {
@@ -246,19 +243,16 @@ export class Joint {
 				config.twistLimitMotor = this.twistLimit;
 				this._ref = new OIMO.RagdollJoint(config);
 				break;
-			case "revolute":
+			case "hinge":
 				config.limitMotor = this.angularLimit;
 				this._ref = new OIMO.RevoluteJoint(config);
 				break;
-			case "spherical":
+			case "ball":
 				this._ref = new OIMO.SphericalJoint(config);
 				break;
-			default:
-				throw new Error("Joint: invalid type " + this.type);
 		}
 		this._ref.component = this;
 		if (enable) this.entity.scene._physicsWorld.addJoint(this._ref);
-		console.log(this._ref);
 	}
 
 	// joint

@@ -28,9 +28,9 @@ const proxyHandler = {
 	},
 };
 
-class Collider {
+export class Collider {
 	start(data) {
-		this.type = "type" in data ? data.type : "box";
+		this._isTrigger = "isTrigger" in data ? data.isTrigger : false;
 		this._collisionGroup =
 			"collisionGroup" in data ? data.collisionGroup : 1;
 		this._collisionMask = "collisionMask" in data ? data.collisionMask : 1;
@@ -55,39 +55,42 @@ class Collider {
 				break;
 			case "mesh":
 				this._mesh = "mesh" in data ? data.mesh : null;
-				break;
-			default:
-				throw new Error("Collider: invalid type " + this.type);
 		}
 		if ("material" in data) this._material = data.material;
 		this._setShape();
 
 		this.addEventListener("enable", this.onEnable);
 		this.addEventListener("disable", this.onDisable);
+		this.entity.addEventListener("scenechange", this.onSceneChange);
 	}
 
 	onEnable() {
-		if ("_physicsRef" in this.entity) {
-			const ref = this.entity._physicsRef;
-			this._ref = ref;
-			if (!ref.component._enabled) {
-				this.entity.scene._physicsWorld.addRigidBody(this._ref);
-			}
+		if (this._isTrigger) {
 		} else {
-			this.entity.matrixWorld.decompose(vector, quat, vector2);
-			config.position = vector;
-			config.rotation.fromQuat(quat);
-			this.entity._physicsRef = this._ref = new OIMO.RigidBody(config);
+			if ("_physicsRef" in this.entity) {
+				const ref = this.entity._physicsRef;
+				this._ref = ref;
+				if (!ref.component._enabled) {
+					this.entity.scene._physicsWorld.addRigidBody(this._ref);
+				}
+			} else {
+				this.entity.matrixWorld.decompose(vector, quat, vector2);
+				config.position = vector;
+				config.rotation.fromQuat(quat);
+				this.entity._physicsRef = this._ref = new OIMO.RigidBody(
+					config
+				);
 
-			this.entity.scene._physicsWorld.addRigidBody(this._ref);
-			this._ref.component = this;
-			this._ref.entity = this.entity;
-		}
-		this._ref.addShape(this._shapeRef);
-		if (this._ref.getType() === 0) {
-			const w = this._ref.getMassData();
-			w.mass = this._ref._mass;
-			this._ref.setMassData(w);
+				this.entity.scene._physicsWorld.addRigidBody(this._ref);
+				this._ref.component = this;
+				this._ref.entity = this.entity;
+			}
+			this._ref.addShape(this._shapeRef);
+			if (this._ref.getType() === 0) {
+				const w = this._ref.getMassData();
+				w.mass = this._ref._mass;
+				this._ref.setMassData(w);
+			}
 		}
 
 		const scale = this.entity.scale;
@@ -119,6 +122,16 @@ class Collider {
 			});
 		} else {
 			scale.colliders.splice(scale.colliders.indexOf(this), 1);
+		}
+	}
+
+	onSceneChange(event) {
+		// need to test
+		if (this._enabled) {
+			const oldTriggers = event.oldScene.physics._triggers;
+			oldTriggers.splice(oldTriggers.indexOf(this._shapeRef), 1);
+			this._shapeRef = new OIMO.Shape(shapeConfig);
+			event.newScene.physics._triggers.push(this._shapeRef);
 		}
 	}
 
@@ -162,7 +175,6 @@ class Collider {
 					}
 				}
 				geometry = new OIMO.ConvexHullGeometry(vertices);
-				break;
 		}
 
 		shapeConfig.geometry = geometry;
@@ -172,16 +184,37 @@ class Collider {
 		shapeConfig.rotation.fromEulerXyz(this._rotation);
 
 		if (this._shapeRef !== undefined && this._enabled) {
-			this._ref.removeShape(this._shapeRef);
-			this._shapeRef = new OIMO.Shape(shapeConfig);
-			this._ref.addShape(this._shapeRef);
+			if (this._isTrigger) {
+				const triggers = this.entity.scene.physics._triggers;
+				triggers.splice(triggers.indexOf(this._shapeRef), 1);
+				this._shapeRef = new OIMO.Shape(shapeConfig);
+				triggers.push(this._shapeRef);
+			} else {
+				this._ref.removeShape(this._shapeRef);
+				this._shapeRef = new OIMO.Shape(shapeConfig);
+				this._ref.addShape(this._shapeRef);
+			}
 		} else {
 			this._shapeRef = new OIMO.Shape(shapeConfig);
 		}
+
 		this._shapeRef.entity = this.entity;
 		this._shapeRef.collider = this;
 
 		if ("_material" in this) this.material = this._material;
+	}
+
+	get isTrigger() {
+		return this._isTrigger;
+	}
+
+	set isTrigger(isTrigger) {
+		if (isTrigger !== this._isTrigger) {
+			if (isTrigger) {
+			} else {
+			}
+			this._isTrigger = isTrigger;
+		}
 	}
 
 	get center() {
@@ -353,5 +386,3 @@ function contactCallback(contact, type) {
 		}
 	}
 }
-
-export { Collider };

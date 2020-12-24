@@ -106,7 +106,10 @@ export class Entity extends Group {
 
 	set enabled(value) {
 		if (value != this._enabled) {
-			if (value && !this.parent._enabled) return;
+			if (value && !this.parent._enabled)
+				return console.warn(
+					"Entity: Can't enable if an ancestor is disabled"
+				);
 			this._enabled = value;
 
 			const components = this._components;

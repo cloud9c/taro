@@ -1,4 +1,5 @@
 import { GLTFLoader } from "https://threejs.org/examples/jsm/loaders/GLTFLoader.js";
+import { OIMO } from "./src/lib/oimoPhysics.js";
 import * as ENGINE from "./src/engine.js";
 
 ENGINE.createComponent(
@@ -20,8 +21,10 @@ ENGINE.createComponent(
 		update() {
 			const ball = this.ball;
 			if (this.input.getKeyDown("KeyG")) {
-				console.log(ball.getComponent("Joint")._ref.getLocalAxis1());
-				ball.getComponent("Joint").anchor = new ENGINE.Vector3(
+				console.log(
+					ball.getComponent("HingeJoint")._ref.getLocalAxis1()
+				);
+				ball.getComponent("HingeJoint").anchor = new ENGINE.Vector3(
 					0,
 					0,
 					-10
@@ -82,6 +85,10 @@ app.scene.background = new ENGINE.Color("skyblue");
 console.log(app.scene);
 
 // lighting
+const config = new OIMO.ShapeConfig();
+config.geometry = new OIMO.SphereGeometry(1);
+const shape = new OIMO.Shape(config);
+console.log(OIMO);
 
 entity = new ENGINE.Entity();
 const hemiLight = entity.addComponent("HemisphereLight", {
@@ -130,8 +137,7 @@ mesh.receiveShadow = true;
 
 entity = new ENGINE.Entity("floor");
 entity.addComponent("Renderable", mesh);
-entity.addComponent("Collider", {
-	type: "box",
+entity.addComponent("BoxCollider", {
 	halfExtents: new ENGINE.Vector3(100, 100, 0.1),
 });
 entity.rotation.set(-Math.PI / 2, 0, 0);
@@ -149,13 +155,11 @@ entity = new ENGINE.Entity("ball");
 entity.addComponent("Renderable", mesh);
 entity.position.set(0, 5, 2);
 entity.addComponent("Rigidbody");
-entity.addComponent("Joint", {
-	type: "prismatic",
+entity.addComponent("HingeJoint", {
 	linkedEntity: app.scene.find("floor"),
 	anchor: new ENGINE.Vector3(0, 10, 0),
 });
-entity.addComponent("Collider", {
-	type: "sphere",
+entity.addComponent("SphereCollider", {
 	radius: 1,
 });
 
@@ -170,8 +174,7 @@ for (let k = 0; k < 4; k++) {
 			mesh = new ENGINE.Mesh(geo, mat);
 			entity.addComponent("Renderable", mesh);
 			entity.position.copy(position);
-			entity.addComponent("Collider", {
-				type: "box",
+			entity.addComponent("BoxCollider", {
 				halfExtents: new ENGINE.Vector3(0.5, 0.5, 0.5),
 			});
 			entity.addComponent("Rigidbody", { mass: 0.1 });

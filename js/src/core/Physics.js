@@ -1,4 +1,5 @@
 import { Quaternion, Vector3, Matrix4 } from "../engine.js";
+import { OIMO } from "../lib/oimoPhysics.js";
 
 const vector = new Vector3();
 const vector2 = new Vector3();
@@ -9,6 +10,7 @@ export class Physics {
 	constructor() {
 		this._accumulator = 0;
 		this._gravity = new Vector3(0, -9.80665, 0);
+		this._triggers = [];
 
 		this._world = null;
 		this.rigidbodies = null;
@@ -35,7 +37,6 @@ export class Physics {
 	}
 	_update(deltaTime, fixedTimestep) {
 		let rigidbody = this._world.getRigidBodyList();
-
 		while (rigidbody !== null) {
 			rigidbody.entity.matrixWorld.decompose(vector, quat, vector2);
 			rigidbody.setPosition(vector);

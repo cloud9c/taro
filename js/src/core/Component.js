@@ -1,15 +1,27 @@
 import { Animation } from "../components/rendering/Animation.js";
 import { Renderable } from "../components/rendering/Renderable.js";
-import { OrthographicCamera } from "../components/camera/OrthographicCamera.js";
-import { PerspectiveCamera } from "../components/camera/PerspectiveCamera.js";
+import { OrthographicCamera } from "../components/cameras/OrthographicCamera.js";
+import { PerspectiveCamera } from "../components/cameras/PerspectiveCamera.js";
 import { AmbientLight } from "../components/light/AmbientLight.js";
 import { DirectionalLight } from "../components/light/DirectionalLight.js";
 import { HemisphereLight } from "../components/light/HemisphereLight.js";
 import { PointLight } from "../components/light/PointLight.js";
 import { SpotLight } from "../components/light/SpotLight.js";
 import { Rigidbody } from "../components/physics/Rigidbody.js";
-import { Collider } from "../components/physics/Collider.js";
-import { Joint } from "../components/physics/Joint.js";
+
+import { BoxCollider } from "../components/physics/BoxCollider.js";
+import { CapsuleCollider } from "../components/physics/CapsuleCollider.js";
+import { ConeCollider } from "../components/physics/ConeCollider.js";
+import { CylinderCollider } from "../components/physics/CylinderCollider.js";
+import { MeshCollider } from "../components/physics/MeshCollider.js";
+import { SphereCollider } from "../components/physics/SphereCollider.js";
+
+import { BallJoint } from "../components/physics/BallJoint.js";
+import { CylindricalJoint } from "../components/physics/CylindricalJoint.js";
+import { PrismaticJoint } from "../components/physics/PrismaticJoint.js";
+import { RagdollJoint } from "../components/physics/RagdollJoint.js";
+import { HingeJoint } from "../components/physics/HingeJoint.js";
+import { UniversalJoint } from "../components/physics/UniversalJoint.js";
 
 import { EventDispatcher } from "../lib/three.js";
 
@@ -37,7 +49,10 @@ const cProto = {
 		},
 		set(value) {
 			if (value != this._enabled) {
-				if (value && !this.entity._enabled) return;
+				if (value && !this.entity._enabled)
+					return console.warn(
+						"Component: Can't enable if the entity is disabled"
+					);
 				this._enabled = value;
 
 				const container = this.entity.scene._containers[
@@ -78,7 +93,27 @@ createComponent("HemisphereLight", HemisphereLight);
 createComponent("PointLight", PointLight);
 createComponent("SpotLight", SpotLight);
 createComponent("Rigidbody", Rigidbody);
-createComponent("Collider", Collider);
-createComponent("Joint", Joint);
+
+createComponent("BoxCollider", BoxCollider);
+createComponent("CapsuleCollider", CapsuleCollider);
+createComponent("ConeCollider", ConeCollider);
+createComponent("CylinderCollider", CylinderCollider);
+createComponent("MeshCollider", MeshCollider);
+createComponent("SphereCollider", SphereCollider);
+
+createComponent("BallJoint", BallJoint, { requiredComponent: "Rigidbody" });
+createComponent("CylindricalJoint", CylindricalJoint, {
+	requiredComponent: "Rigidbody",
+});
+createComponent("PrismaticJoint", PrismaticJoint, {
+	requiredComponent: "Rigidbody",
+});
+createComponent("RagdollJoint", RagdollJoint, {
+	requiredComponent: "Rigidbody",
+});
+createComponent("HingeJoint", HingeJoint, { requiredComponent: "Rigidbody" });
+createComponent("UniversalJoint", UniversalJoint, {
+	requiredComponent: "Rigidbody",
+});
 
 export { _components, createComponent };
