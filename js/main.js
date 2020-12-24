@@ -21,14 +21,6 @@ ENGINE.createComponent(
 		update() {
 			const ball = this.ball;
 			if (this.input.getKeyDown("KeyG")) {
-				console.log(
-					ball.getComponent("HingeJoint")._ref.getLocalAxis1()
-				);
-				ball.getComponent("HingeJoint").anchor = new ENGINE.Vector3(
-					0,
-					0,
-					-10
-				);
 			}
 
 			if (this.input.getKeyDown("ArrowUp")) {
@@ -138,7 +130,7 @@ mesh.receiveShadow = true;
 entity = new ENGINE.Entity("floor");
 entity.addComponent("Renderable", mesh);
 entity.addComponent("BoxCollider", {
-	halfExtents: new ENGINE.Vector3(100, 100, 0.1),
+	halfExtents: new ENGINE.Vector3(100, 100, 0.01),
 });
 entity.rotation.set(-Math.PI / 2, 0, 0);
 
@@ -155,10 +147,6 @@ entity = new ENGINE.Entity("ball");
 entity.addComponent("Renderable", mesh);
 entity.position.set(0, 5, 2);
 entity.addComponent("Rigidbody");
-entity.addComponent("HingeJoint", {
-	linkedEntity: app.scene.find("floor"),
-	anchor: new ENGINE.Vector3(0, 10, 0),
-});
 entity.addComponent("SphereCollider", {
 	radius: 1,
 });

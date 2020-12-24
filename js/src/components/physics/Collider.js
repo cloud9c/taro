@@ -105,23 +105,30 @@ export class Collider {
 	}
 
 	onDisable() {
-		this._ref.removeShape(this._shapeRef);
-		if (this._ref.getType() === 0) {
-			const w = this._ref.getMassData();
-			w.mass = this._ref._mass;
-			this._ref.setMassData(w);
-		}
-		if (this._ref.getNumShapes() === 0 && this._ref.getType() === 1) {
-			this.entity.scene._physicsWorld.removeRigidBody(this._ref);
-		}
-		delete this._ref;
-		const scale = this.entity.scale;
-		if (scale.colliders.length === 1) {
-			Object.defineProperty(this.entity, "scale", {
-				value: new Vector3().copy(scale),
-			});
+		if (this._isTrigger) {
+			const triggers = this.entity.scene.physics._triggers;
+			triggers.splice(triggers.indexOf(this._shapeRef), 1);
+			this._shapeRef = new OIMO.Shape(shapeConfig);
+			triggers.push(this._shapeRef);
 		} else {
-			scale.colliders.splice(scale.colliders.indexOf(this), 1);
+			this._ref.removeShape(this._shapeRef);
+			if (this._ref.getType() === 0) {
+				const w = this._ref.getMassData();
+				w.mass = this._ref._mass;
+				this._ref.setMassData(w);
+			}
+			if (this._ref.getNumShapes() === 0 && this._ref.getType() === 1) {
+				this.entity.scene._physicsWorld.removeRigidBody(this._ref);
+			}
+			delete this._ref;
+			const scale = this.entity.scale;
+			if (scale.colliders.length === 1) {
+				Object.defineProperty(this.entity, "scale", {
+					value: new Vector3().copy(scale),
+				});
+			} else {
+				scale.colliders.splice(scale.colliders.indexOf(this), 1);
+			}
 		}
 	}
 
@@ -209,12 +216,9 @@ export class Collider {
 	}
 
 	set isTrigger(isTrigger) {
-		if (isTrigger !== this._isTrigger) {
-			if (isTrigger) {
-			} else {
-			}
-			this._isTrigger = isTrigger;
-		}
+		this.onDisable();
+		this._isTrigger = isTrigger;
+		this.onEnable();
 	}
 
 	get center() {
