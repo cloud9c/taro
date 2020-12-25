@@ -1,4 +1,4 @@
-import { OIMO } from "../../lib/oimoPhysics.js";
+import { OIMO } from "../../lib/oimo.js";
 import { Physics } from "../../core/Physics.js";
 import { AngularLimit } from "../../physics/AngularLimit.js";
 import { LinearLimit } from "../../physics/LinearLimit.js";

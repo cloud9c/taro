@@ -1,4 +1,4 @@
-import { OIMO } from "../../lib/oimoPhysics.js";
+import { OIMO } from "../../lib/oimo.js";
 import { Vector3, Euler, Quaternion } from "../../engine.js";
 import { ConvexHull } from "../../physics/ConvexHull.js";
 
@@ -6,6 +6,8 @@ const vector = new Vector3();
 const vector2 = new Vector3();
 const quat = new Quaternion();
 const convexHull = new ConvexHull();
+const massData = new OIMO.MassData();
+const transform = new OIMO.Transform();
 const shapeConfig = new OIMO.ShapeConfig();
 shapeConfig.contactCallback = {
 	beginContact: (c) => contactCallback(c, "collisionenter"),
@@ -66,6 +68,7 @@ export class Collider {
 
 	onEnable() {
 		if (this._isTrigger) {
+			this.entity.scene.app.physics._triggers.push(this._shapeRef);
 		} else {
 			if ("_physicsRef" in this.entity) {
 				const ref = this.entity._physicsRef;
@@ -87,9 +90,9 @@ export class Collider {
 			}
 			this._ref.addShape(this._shapeRef);
 			if (this._ref.getType() === 0) {
-				const w = this._ref.getMassData();
-				w.mass = this._ref._mass;
-				this._ref.setMassData(w);
+				this._ref.getMassDataTo(massData);
+				massData.mass = this._ref.mass;
+				this._ref.setMassData(massData);
 			}
 		}
 
@@ -108,14 +111,12 @@ export class Collider {
 		if (this._isTrigger) {
 			const triggers = this.entity.scene.physics._triggers;
 			triggers.splice(triggers.indexOf(this._shapeRef), 1);
-			this._shapeRef = new OIMO.Shape(shapeConfig);
-			triggers.push(this._shapeRef);
 		} else {
 			this._ref.removeShape(this._shapeRef);
 			if (this._ref.getType() === 0) {
-				const w = this._ref.getMassData();
-				w.mass = this._ref._mass;
-				this._ref.setMassData(w);
+				this._ref.getMassDataTo(massData);
+				massData.mass = this._ref.mass;
+				this._ref.setMassData(massData);
 			}
 			if (this._ref.getNumShapes() === 0 && this._ref.getType() === 1) {
 				this.entity.scene._physicsWorld.removeRigidBody(this._ref);
@@ -135,10 +136,20 @@ export class Collider {
 	onSceneChange(event) {
 		// need to test
 		if (this._enabled) {
-			const oldTriggers = event.oldScene.physics._triggers;
-			oldTriggers.splice(oldTriggers.indexOf(this._shapeRef), 1);
-			this._shapeRef = new OIMO.Shape(shapeConfig);
-			event.newScene.physics._triggers.push(this._shapeRef);
+			if (this._isTrigger) {
+				const oldTriggers = event.oldScene.physics._triggers;
+				oldTriggers.splice(oldTriggers.indexOf(this._shapeRef), 1);
+				event.newScene.physics._triggers.push(this._shapeRef);
+			} else {
+				this._ref.removeShape(this._shapeRef);
+				if (
+					this._ref.getNumShapes() === 0 &&
+					this._ref.getType() === 1
+				) {
+					event.oldScene._physicsWorld.removeRigidBody(this._ref);
+					event.newScene._physicsWorld.addRigidBody(this._ref);
+				}
+			}
 		}
 	}
 
@@ -190,7 +201,7 @@ export class Collider {
 		shapeConfig.position = this._center;
 		shapeConfig.rotation.fromEulerXyz(this._rotation);
 
-		if (this._shapeRef !== undefined && this._enabled) {
+		if ("_shapeRef" in this && this._enabled) {
 			if (this._isTrigger) {
 				const triggers = this.entity.scene.physics._triggers;
 				triggers.splice(triggers.indexOf(this._shapeRef), 1);
@@ -227,7 +238,9 @@ export class Collider {
 
 	set center(center) {
 		this._center = center;
-		this._setShape();
+		this._shapeRef.getLocalTransformTo(transform);
+		transform.setPosition(center);
+		this._shapeRef.setLocalTransform(transform);
 	}
 
 	get rotation() {
@@ -236,7 +249,9 @@ export class Collider {
 
 	set rotation(rotation) {
 		this._rotation = rotation;
-		this._setShape();
+		this._shapeRef.getLocalTransformTo(transform);
+		transform.setRotationXyz(rotation);
+		this._shapeRef.setLocalTransform(transform);
 	}
 
 	get material() {

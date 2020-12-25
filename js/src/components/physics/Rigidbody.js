@@ -1,10 +1,11 @@
-import { OIMO } from "../../lib/oimoPhysics.js";
+import { OIMO } from "../../lib/oimo.js";
 import { Physics } from "../../core/Physics.js";
 import { Vector3, Matrix3, Quaternion } from "../../engine.js";
 
 const quat = new Quaternion();
 const vector = new Vector3();
 const vector2 = new Vector3();
+const massData = new OIMO.MassData();
 const config = new OIMO.RigidBodyConfig();
 
 export class Rigidbody {
@@ -56,7 +57,7 @@ export class Rigidbody {
 		if (this._isKinematic) this._ref.setType(2);
 		else {
 			this._ref.setType(0);
-			this.mass = this._ref._mass;
+			this.mass = this._ref.mass;
 		}
 		if (this._ref.getNumShapes() === 0) {
 			this.entity.scene._physicsWorld.addRigidBody(this._ref);
@@ -137,7 +138,7 @@ export class Rigidbody {
 		);
 	}
 	get mass() {
-		return this._ref._mass;
+		return this._ref.mass;
 	}
 	get sleepTime() {
 		return this._ref.getSleepTime();
@@ -150,7 +151,7 @@ export class Rigidbody {
 		if (v) this._ref.setType(2);
 		else {
 			this._ref.setType(0);
-			this.mass = this._ref._mass;
+			this.mass = this._ref.mass;
 		}
 	}
 	get isSleeping() {
@@ -188,11 +189,11 @@ export class Rigidbody {
 	setLinearVelocity(v) {
 		this._ref.setLinearVelocity(v);
 	}
-	set mass(v) {
-		this._ref._mass = v;
-		const w = this._ref.getMassData();
-		w.mass = v;
-		this._ref.setMassData(w);
+	set mass(mass) {
+		this._ref.mass = mass;
+		this._ref.getMassDataTo(massData);
+		massData.mass = mass;
+		this._ref.setMassData(massData);
 	}
 	getRotationFactor() {
 		return this._rotationFactor;

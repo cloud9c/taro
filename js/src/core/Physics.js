@@ -1,19 +1,25 @@
 import { Quaternion, Vector3, Matrix4 } from "../engine.js";
-import { OIMO } from "../lib/oimoPhysics.js";
+import { OIMO } from "../lib/oimo.js";
 
 const vector = new Vector3();
 const vector2 = new Vector3();
 const quat = new Quaternion();
 const matrix = new Matrix4();
+const broadphaseCallback = {
+	process: function (shape) {
+		console.log(shape.getLocalTransform().getPosition());
+	},
+};
 
 export class Physics {
 	constructor() {
 		this._accumulator = 0;
 		this._gravity = new Vector3(0, -9.80665, 0);
+
 		this._triggers = [];
 
-		this._world = null;
-		this.rigidbodies = null;
+		this._world;
+		this.rigidbodies;
 	}
 	get gravity() {
 		return this._gravity;
@@ -36,33 +42,49 @@ export class Physics {
 		});
 	}
 	_update(deltaTime, fixedTimestep) {
-		let rigidbody = this._world.getRigidBodyList();
-		while (rigidbody !== null) {
-			rigidbody.entity.matrixWorld.decompose(vector, quat, vector2);
-			rigidbody.setPosition(vector);
-			rigidbody.setOrientation(quat);
-			rigidbody = rigidbody.getNext();
-		}
-
 		this._accumulator += deltaTime;
 
-		while (this._accumulator >= fixedTimestep) {
-			this._world.step(fixedTimestep);
-			for (let i = 0, len = this.rigidbodies.length; i < len; i++) {
-				let rigidbody = this.rigidbodies[i];
-				if (!rigidbody._ref.isSleeping()) {
-					const entity = rigidbody.entity;
-					entity.position.copy(rigidbody._ref.getPosition());
-					entity.position.applyMatrix4(
-						matrix.getInverse(entity.parent.matrixWorld)
-					);
-					entity.quaternion.copy(rigidbody._ref.getOrientation());
-					entity.quaternion.premultiply(
-						entity.parent.getWorldQuaternion(quat).inverse()
-					);
-				}
+		if (this._accumulator >= fixedTimestep) {
+			// sync entity and rigidbody
+			let rigidbody = this._world.getRigidBodyList();
+			while (rigidbody !== null) {
+				rigidbody.entity.matrixWorld.decompose(vector, quat, vector2);
+				rigidbody.setPosition(vector);
+				rigidbody.setOrientation(quat);
+				rigidbody = rigidbody.getNext();
 			}
-			this._accumulator -= fixedTimestep;
+
+			// trigger collision
+			const triggers = this._triggers;
+			for (let i = 0, len = triggers.length; i < len; i++) {
+				const transform = triggers[i].getTransform();
+				transform.setPosition(triggers[i].entity.position);
+				transform.setOrientation(triggers[i].entity.quaternion);
+				triggers[i].setLocalTransform(transform);
+				this._world.aabbTest(triggers[i].getAabb(), broadphaseCallback);
+			}
+
+			// time step
+			while (this._accumulator >= fixedTimestep) {
+				this._world.step(fixedTimestep);
+				for (let i = 0, len = this.rigidbodies.length; i < len; i++) {
+					rigidbody = this.rigidbodies[i];
+					if (!rigidbody._ref.isSleeping()) {
+						const entity = rigidbody.entity;
+						entity.position.copy(rigidbody._ref.getPosition());
+						entity.quaternion.copy(rigidbody._ref.getOrientation());
+						if (entity.parent !== entity.scene) {
+							entity.position.applyMatrix4(
+								matrix.copy(entity.parent.matrixWorld).invert()
+							);
+							entity.quaternion.premultiply(
+								entity.parent.getWorldQuaternion(quat).invert()
+							);
+						}
+					}
+				}
+				this._accumulator -= fixedTimestep;
+			}
 		}
 	}
 }

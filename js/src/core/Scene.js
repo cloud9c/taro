@@ -1,5 +1,5 @@
 import { Scene as TS } from "../lib/three.js";
-import { OIMO } from "../lib/oimoPhysics.js";
+import { OIMO } from "../lib/oimo.js";
 import { Entity } from "./Entity.js";
 import { _components } from "../engine.js";
 
@@ -31,12 +31,12 @@ export class Scene extends TS {
 					this._containers[type].push(component);
 				}
 			}
+			entity.dispatchEvent({
+				type: "scenechange",
+				oldScene: entity.scene,
+				newScene: this,
+			});
 		}
-		entity.dispatchEvent({
-			type: "scenechange",
-			oldScene: entity.scene,
-			newScene: this,
-		});
 		entity.scene = this;
 		super.add(entity);
 		return entity;

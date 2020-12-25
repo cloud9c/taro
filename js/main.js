@@ -1,5 +1,4 @@
 import { GLTFLoader } from "https://threejs.org/examples/jsm/loaders/GLTFLoader.js";
-import { OIMO } from "./src/lib/oimoPhysics.js";
 import * as ENGINE from "./src/engine.js";
 
 ENGINE.createComponent(
@@ -77,11 +76,6 @@ app.scene.background = new ENGINE.Color("skyblue");
 console.log(app.scene);
 
 // lighting
-const config = new OIMO.ShapeConfig();
-config.geometry = new OIMO.SphereGeometry(1);
-const shape = new OIMO.Shape(config);
-console.log(OIMO);
-
 entity = new ENGINE.Entity();
 const hemiLight = entity.addComponent("HemisphereLight", {
 	color: 0xffffff,
@@ -149,6 +143,10 @@ entity.position.set(0, 5, 2);
 entity.addComponent("Rigidbody");
 entity.addComponent("SphereCollider", {
 	radius: 1,
+});
+entity.addComponent("SphereCollider", {
+	isTrigger: true,
+	radius: 2,
 });
 
 // blocks
