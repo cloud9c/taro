@@ -204,7 +204,6 @@ const posProps = {
 			return this._x;
 		},
 		set(value) {
-			console.log("here");
 			this._x = value;
 			this._entity.getWorldPosition(vector);
 			this._entity._physicsRef.setPosition(vector);
@@ -232,20 +231,42 @@ const posProps = {
 	},
 };
 
+function onQuaternionChange() {
+	this._rotation.setFromQuaternion(this, undefined, false);
+	this._entity.getWorldQuaternion(quat);
+	this._entity._physicsRef.setOrientation(quat);
+}
+
+function onRotationChange() {
+	this._quaternion.setFromEuler(this, false);
+	this._entity.getWorldQuaternion(quat);
+	this._entity._physicsRef.setOrientation(quat);
+}
+
 export function createRigidbody(self, type) {
-	self.entity.updateWorldMatrix();
-	self.entity.matrixWorld.decompose(vector, quat, vector2);
+	const entity = self.entity;
+	entity.updateWorldMatrix();
+	entity.matrixWorld.decompose(vector, quat, vector2);
 	config.position = vector;
 	config.rotation.fromQuat(quat);
 	config.type = type;
-	self.entity._physicsRef = self._ref = new OIMO.RigidBody(config);
+	entity._physicsRef = self._ref = new OIMO.RigidBody(config);
 	self._ref.component = self;
-	self._ref.entity = self.entity;
+	self._ref.entity = entity;
 
-	const position = self.entity.position;
-	position._entity = self.entity;
+	const position = entity.position;
+	position._entity = entity;
 	posProps._x.value = position.x;
 	posProps._y.value = position.y;
 	posProps._z.value = position.z;
-	Object.defineProperties(self.entity.position, posProps);
+	Object.defineProperties(position, posProps);
+
+	const quaternion = entity.quaternion;
+	const rotation = entity.rotation;
+
+	quaternion._rotation = rotation;
+	rotation._quaternion = quaternion;
+	rotation._entity = quaternion._entity = entity;
+	quaternion._onChange(onQuaternionChange);
+	rotation._onChange(onRotationChange);
 }
