@@ -1,10 +1,9 @@
 import { OIMO } from "../../lib/oimo.js";
-import { Vector3, Euler, Quaternion } from "../../engine.js";
+import { Vector3, Euler } from "../../engine.js";
 import { ConvexHull } from "../../physics/ConvexHull.js";
+import { createRigidbody } from "./RigidBody.js";
 
 const vector = new Vector3();
-const vector2 = new Vector3();
-const quat = new Quaternion();
 const convexHull = new ConvexHull();
 const massData = new OIMO.MassData();
 const transform = new OIMO.Transform();
@@ -15,18 +14,48 @@ shapeConfig.contactCallback = {
 	postSolve: (c) => contactCallback(c, "collisionpostsolve"),
 	endContact: (c) => contactCallback(c, "collisionend"),
 };
-
 const config = new OIMO.RigidBodyConfig();
 config.type = 1;
 
-const proxyHandler = {
-	set: function (target, prop, value, receiver) {
-		target[prop] = value;
-		const colliders = target.colliders;
-		for (let i = 0, len = colliders.length; i < len; i++) {
-			colliders[i]._setShape();
-		}
-		return true;
+const props = {
+	_x: { value: 0, writable: true },
+	_y: { value: 0, writable: true },
+	_z: { value: 0, writable: true },
+	x: {
+		get() {
+			return this._x;
+		},
+		set(value) {
+			this._x = value;
+			const colliders = this._colliders;
+			for (let i = 0, len = colliders.length; i < len; i++) {
+				colliders[i]._setShape();
+			}
+		},
+	},
+	y: {
+		get() {
+			return this._y;
+		},
+		set(value) {
+			this._y = value;
+			const colliders = this._colliders;
+			for (let i = 0, len = colliders.length; i < len; i++) {
+				colliders[i]._setShape();
+			}
+		},
+	},
+	z: {
+		get() {
+			return this._z;
+		},
+		set(value) {
+			this._z = value;
+			const colliders = this._colliders;
+			for (let i = 0, len = colliders.length; i < len; i++) {
+				colliders[i]._setShape();
+			}
+		},
 	},
 };
 
@@ -77,16 +106,8 @@ export class Collider {
 					this.entity.scene._physicsWorld.addRigidBody(this._ref);
 				}
 			} else {
-				this.entity.matrixWorld.decompose(vector, quat, vector2);
-				config.position = vector;
-				config.rotation.fromQuat(quat);
-				this.entity._physicsRef = this._ref = new OIMO.RigidBody(
-					config
-				);
-
+				createRigidbody(this, 1);
 				this.entity.scene._physicsWorld.addRigidBody(this._ref);
-				this._ref.component = this;
-				this._ref.entity = this.entity;
 			}
 			this._ref.addShape(this._shapeRef);
 			if (this._ref.getType() === 0) {
@@ -97,19 +118,20 @@ export class Collider {
 		}
 
 		const scale = this.entity.scale;
-		if ("colliders" in scale) {
-			scale.colliders.push(this);
+		if ("_colliders" in scale) {
+			scale._colliders.push(this);
 		} else {
-			scale.colliders = [this];
-			Object.defineProperty(this.entity, "scale", {
-				value: new Proxy(scale, proxyHandler),
-			});
+			scale._colliders = [this];
+			props._x.value = scale.x;
+			props._y.value = scale.y;
+			props._z.value = scale.z;
+			Object.defineProperties(this.entity.scale, props);
 		}
 	}
 
 	onDisable() {
 		if (this._isTrigger) {
-			const triggers = this.entity.scene.physics._triggers;
+			const triggers = this.entity.scene.app.physics._triggers;
 			triggers.splice(triggers.indexOf(this._shapeRef), 1);
 		} else {
 			this._ref.removeShape(this._shapeRef);
@@ -137,9 +159,9 @@ export class Collider {
 		// need to test
 		if (this._enabled) {
 			if (this._isTrigger) {
-				const oldTriggers = event.oldScene.physics._triggers;
+				const oldTriggers = event.oldScene.app.physics._triggers;
 				oldTriggers.splice(oldTriggers.indexOf(this._shapeRef), 1);
-				event.newScene.physics._triggers.push(this._shapeRef);
+				event.newScene.app.physics._triggers.push(this._shapeRef);
 			} else {
 				this._ref.removeShape(this._shapeRef);
 				if (
@@ -203,7 +225,7 @@ export class Collider {
 
 		if ("_shapeRef" in this && this._enabled) {
 			if (this._isTrigger) {
-				const triggers = this.entity.scene.physics._triggers;
+				const triggers = this.entity.scene.app.physics._triggers;
 				triggers.splice(triggers.indexOf(this._shapeRef), 1);
 				this._shapeRef = new OIMO.Shape(shapeConfig);
 				triggers.push(this._shapeRef);

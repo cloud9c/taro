@@ -1,7 +1,7 @@
 export class Time {
 	constructor() {
 		this.fixedTimestep = 0.02;
-		this.maxDeltaTime = 0.2;
+		this.maxDeltaTime = 0.1;
 		this.timeScale = 1;
 		this.deltaTime = 0;
 		this.lastTimestamp = false;

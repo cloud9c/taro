@@ -10,17 +10,8 @@ const config = new OIMO.RigidBodyConfig();
 
 export class Rigidbody {
 	start(data) {
-		if ("_physicsRef" in this.entity) {
-			this._ref = this.entity._physicsRef;
-		} else {
-			this.entity.matrixWorld.decompose(vector, quat, vector2);
-			config.position = vector;
-			config.rotation.fromQuat(quat);
-			this.entity._physicsRef = this._ref = new OIMO.RigidBody(config);
-
-			this._ref.component = this;
-			this._ref.entity = this.entity;
-		}
+		if ("_physicsRef" in this.entity) this._ref = this.entity._physicsRef;
+		else createRigidbody(this, 0);
 
 		if ("angularVelocity" in data)
 			this.setAngularVelocity(data.angularVelocity);
@@ -202,4 +193,59 @@ export class Rigidbody {
 		this._rotationFactor = vector;
 		this._ref.setRotationFactor(vector);
 	}
+}
+
+const posProps = {
+	_x: { value: 0, writable: true },
+	_y: { value: 0, writable: true },
+	_z: { value: 0, writable: true },
+	x: {
+		get() {
+			return this._x;
+		},
+		set(value) {
+			console.log("here");
+			this._x = value;
+			this._entity.getWorldPosition(vector);
+			this._entity._physicsRef.setPosition(vector);
+		},
+	},
+	y: {
+		get() {
+			return this._y;
+		},
+		set(value) {
+			this._y = value;
+			this._entity.getWorldPosition(vector);
+			this._entity._physicsRef.setPosition(vector);
+		},
+	},
+	z: {
+		get() {
+			return this._z;
+		},
+		set(value) {
+			this._z = value;
+			this._entity.getWorldPosition(vector);
+			this._entity._physicsRef.setPosition(vector);
+		},
+	},
+};
+
+export function createRigidbody(self, type) {
+	self.entity.updateWorldMatrix();
+	self.entity.matrixWorld.decompose(vector, quat, vector2);
+	config.position = vector;
+	config.rotation.fromQuat(quat);
+	config.type = type;
+	self.entity._physicsRef = self._ref = new OIMO.RigidBody(config);
+	self._ref.component = self;
+	self._ref.entity = self.entity;
+
+	const position = self.entity.position;
+	position._entity = self.entity;
+	posProps._x.value = position.x;
+	posProps._y.value = position.y;
+	posProps._z.value = position.z;
+	Object.defineProperties(self.entity.position, posProps);
 }

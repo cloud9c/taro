@@ -7,7 +7,7 @@ const quat = new Quaternion();
 const matrix = new Matrix4();
 const broadphaseCallback = {
 	process: function (shape) {
-		console.log(shape.getLocalTransform().getPosition());
+		// console.log(shape.getLocalTransform().getPosition());
 	},
 };
 
@@ -48,8 +48,8 @@ export class Physics {
 			// sync entity and rigidbody
 			let rigidbody = this._world.getRigidBodyList();
 			while (rigidbody !== null) {
+				rigidbody.entity.updateWorldMatrix();
 				rigidbody.entity.matrixWorld.decompose(vector, quat, vector2);
-				rigidbody.setPosition(vector);
 				rigidbody.setOrientation(quat);
 				rigidbody = rigidbody.getNext();
 			}
@@ -66,12 +66,19 @@ export class Physics {
 
 			// time step
 			while (this._accumulator >= fixedTimestep) {
+				// console.log(this._accumulator);
 				this._world.step(fixedTimestep);
 				for (let i = 0, len = this.rigidbodies.length; i < len; i++) {
-					rigidbody = this.rigidbodies[i];
+					let rigidbody = this.rigidbodies[i];
 					if (!rigidbody._ref.isSleeping()) {
 						const entity = rigidbody.entity;
-						entity.position.copy(rigidbody._ref.getPosition());
+
+						const ePos = entity.position;
+						const pos = rigidbody._ref.getPosition();
+						ePos._x = pos.x;
+						ePos._y = pos.y;
+						ePos._z = pos.z;
+
 						entity.quaternion.copy(rigidbody._ref.getOrientation());
 						if (entity.parent !== entity.scene) {
 							entity.position.applyMatrix4(
@@ -85,6 +92,7 @@ export class Physics {
 				}
 				this._accumulator -= fixedTimestep;
 			}
+			// console.log("finish");
 		}
 	}
 }

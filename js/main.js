@@ -20,6 +20,7 @@ ENGINE.createComponent(
 		update() {
 			const ball = this.ball;
 			if (this.input.getKeyDown("KeyG")) {
+				ball.position.set(0, 100, 0);
 			}
 
 			if (this.input.getKeyDown("ArrowUp")) {
