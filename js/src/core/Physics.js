@@ -55,14 +55,14 @@ export class Physics {
 			}
 
 			// trigger collision
-			const triggers = this._triggers;
-			for (let i = 0, len = triggers.length; i < len; i++) {
-				const transform = triggers[i].getTransform();
-				transform.setPosition(triggers[i].entity.position);
-				transform.setOrientation(triggers[i].entity.quaternion);
-				triggers[i].setLocalTransform(transform);
-				this._world.aabbTest(triggers[i].getAabb(), broadphaseCallback);
-			}
+			// const triggers = this._triggers;
+			// for (let i = 0, len = triggers.length; i < len; i++) {
+			// 	const transform = triggers[i].getTransform();
+			// 	transform.setPosition(triggers[i].entity.position);
+			// 	transform.setOrientation(triggers[i].entity.quaternion);
+			// 	triggers[i].setLocalTransform(transform);
+			// 	this._world.aabbTest(triggers[i].getAabb(), broadphaseCallback);
+			// }
 
 			// time step
 			while (this._accumulator >= fixedTimestep) {

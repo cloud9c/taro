@@ -1,7 +1,7 @@
 import { OIMO } from "../../lib/oimo.js";
 import { Vector3, Euler } from "../../engine.js";
 import { ConvexHull } from "../../physics/ConvexHull.js";
-import { createRigidbody } from "./RigidBody.js";
+import { createRigidbody } from "./Rigidbody.js";
 
 const vector = new Vector3();
 const convexHull = new ConvexHull();
