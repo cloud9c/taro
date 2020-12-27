@@ -11,11 +11,17 @@
 	</head>
 	<body>
 		<div id="app">Please wait...</div>
+		<script src="//cdn.jsdelivr.net/npm/docsify-edit-on-github"></script>
 		<script>
 			window.$docsify = {
-				//...
+				// your config
+				// ...
+				plugins: [
+					EditOnGithubPlugin.create("https://github.com/Cloud9c/taro/tree/master/docs/docs/", null, "Edit on github"),
+				],
 			};
 		</script>
-		<script src="//cdn.jsdelivr.net/npm/docsify@4"></script>
+		<script src="//cdn.jsdelivr.net/npm/docsify/lib/docsify.min.js"></script>
+		<script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/search.min.js"></script>
 	</body>
 </html>
