@@ -3,21 +3,47 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width,initial-scale=1" />
-		<title>Example</title>
+		<title>Taro</title>
+		<link rel="preconnect" href="https://fonts.gstatic.com" />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Roboto&family=Roboto+Slab&display=swap"
+			rel="stylesheet"
+		/>
 		<style>
 			html,
 			body {
-				margin: 0;
 				height: 100%;
 			}
-
-			#c {
-				width: 100%;
+			body {
+				margin: 0;
+				font-family: "Roboto", serif;
+			}
+			#flex {
+				display: flex;
 				height: 100%;
+				align-items: center;
+				justify-content: center;
+			}
+			#row {
+				text-align: center;
+			}
+			h1 {
+				font-family: "Roboto Slab", serif;
+				font-weight: normal;
+				font-size: 5em;
+				margin: 0 0 0.2em;
+			}
+			p {
+				font-size: 1.2em;
 			}
 		</style>
 	</head>
 	<body>
-		Blah
+		<div id="flex">
+			<div id="row">
+				<h1>Taro</h1>
+				<p>A lightweight game engine</p>
+			</div>
+		</div>
 	</body>
 </html>
