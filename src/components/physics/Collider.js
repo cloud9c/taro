@@ -97,7 +97,9 @@ export class Collider {
 
 	onEnable() {
 		if (this._isTrigger) {
-			this.entity.scene.app.physics._triggers.push(this._shapeRef);
+			this.entity.scene.app.physics._triggers.push(
+				this._shapeRef.getGeometry()
+			);
 		} else {
 			if ("_physicsRef" in this.entity) {
 				const ref = this.entity._physicsRef;
@@ -132,7 +134,7 @@ export class Collider {
 	onDisable() {
 		if (this._isTrigger) {
 			const triggers = this.entity.scene.app.physics._triggers;
-			triggers.splice(triggers.indexOf(this._shapeRef), 1);
+			triggers.splice(triggers.indexOf(this._shapeRef.getGeometry()), 1);
 		} else {
 			this._ref.removeShape(this._shapeRef);
 			if (this._ref.getType() === 0) {
@@ -160,8 +162,13 @@ export class Collider {
 		if (this._enabled) {
 			if (this._isTrigger) {
 				const oldTriggers = event.oldScene.app.physics._triggers;
-				oldTriggers.splice(oldTriggers.indexOf(this._shapeRef), 1);
-				event.newScene.app.physics._triggers.push(this._shapeRef);
+				oldTriggers.splice(
+					oldTriggers.indexOf(this._shapeRef.getGeometry()),
+					1
+				);
+				event.newScene.app.physics._triggers.push(
+					this._shapeRef.getGeometry()
+				);
 			} else {
 				this._ref.removeShape(this._shapeRef);
 				if (
@@ -226,9 +233,12 @@ export class Collider {
 		if ("_shapeRef" in this && this._enabled) {
 			if (this._isTrigger) {
 				const triggers = this.entity.scene.app.physics._triggers;
-				triggers.splice(triggers.indexOf(this._shapeRef), 1);
+				triggers.splice(
+					triggers.indexOf(this._shapeRef.getGeometry()),
+					1
+				);
 				this._shapeRef = new OIMO.Shape(shapeConfig);
-				triggers.push(this._shapeRef);
+				triggers.push(this._shapeRef.getGeometry());
 			} else {
 				this._ref.removeShape(this._shapeRef);
 				this._shapeRef = new OIMO.Shape(shapeConfig);

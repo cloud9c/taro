@@ -6,11 +6,6 @@ const vector2 = new Vector3();
 const quat = new Quaternion();
 const quat2 = new Quaternion();
 const matrix = new Matrix4();
-const broadphaseCallback = {
-	process: function (shape) {
-		console.log(shape.getLocalTransform().getPosition());
-	},
-};
 
 export class Physics {
 	constructor() {
@@ -47,14 +42,10 @@ export class Physics {
 
 		if (this._accumulator >= fixedTimestep) {
 			// trigger collision
-			const triggers = this._triggers;
-			for (let i = 0, len = triggers.length; i < len; i++) {
-				const transform = triggers[i].getTransform();
-				transform.setPosition(triggers[i].entity.position);
-				transform.setOrientation(triggers[i].entity.quaternion);
-				triggers[i].setLocalTransform(transform);
-				this._world.aabbTest(triggers[i].getAabb(), broadphaseCallback);
-			}
+			// const triggers = this._triggers;
+			// for (let i = 0, len = triggers.length; i < len; i++) {
+			// 	const trigger = triggers[i];
+			// }
 
 			// time step
 			while (this._accumulator >= fixedTimestep) {
