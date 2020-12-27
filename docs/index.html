@@ -9,15 +9,8 @@
 			href="https://fonts.googleapis.com/css2?family=Roboto&family=Roboto+Slab&display=swap"
 			rel="stylesheet"
 		/>
+		<link rel="stylesheet" href="style.css" />
 		<style>
-			html,
-			body {
-				height: 100%;
-			}
-			body {
-				margin: 0;
-				font-family: "Roboto", serif;
-			}
 			#flex {
 				display: flex;
 				height: 100%;
@@ -31,10 +24,18 @@
 				font-family: "Roboto Slab", serif;
 				font-weight: normal;
 				font-size: 5em;
-				margin: 0 0 0.2em;
+				margin: 0 0 0.4em;
+				color: black;
 			}
 			p {
-				font-size: 1.2em;
+				margin: 0 0 1em;
+			}
+			a {
+				text-decoration: none;
+				color: var(--secondary-text-color);
+			}
+			a:hover {
+				color: var(--color-purple);
 			}
 		</style>
 	</head>
@@ -42,14 +43,16 @@
 		<div id="flex">
 			<div id="row">
 				<h1>Taro</h1>
-				<p>A lightweight game engine for the web</p>
-				<a href="editor">editor</a>
-				<span>-</span>
-				<a href="docs">documentation</a>
-				<span>-</span>
-				<a href="examples">examples</a>
-				<span>-</span>
-				<a href="github">github</a>
+				<p id="subtitle">A lightweight game engine for the web</p>
+				<span>
+					<a href="editor">editor</a>
+					<span>-</span>
+					<a href="docs">documentation</a>
+					<span>-</span>
+					<a href="examples">examples</a>
+					<span>-</span>
+					<a href="https://github.com/Cloud9c/taro">github</a>
+				</span>
 			</div>
 		</div>
 	</body>
