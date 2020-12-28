@@ -1,6 +1,6 @@
-<h1 align="center">Erik's Mod</h1>
+#Erik's Mod
 
-<p align="center">
+<p>
   <a href="https://github.com/prettier/prettier/actions?query=workflow%3AProd+branch%3Amaster">
     <img alt="Github Actions Build Status" src="https://img.shields.io/github/workflow/status/prettier/prettier/Prod?label=Prod&style=flat-square"></a>
   <a href="https://github.com/prettier/prettier/actions?query=workflow%3ADev+branch%3Amaster">
