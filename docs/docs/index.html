@@ -8,12 +8,53 @@
 			rel="stylesheet"
 			href="//cdn.jsdelivr.net/npm/docsify@4/themes/vue.css"
 		/>
+		<link rel="stylesheet" href="../style.css" />
+		<style>
+			.input-wrap input {
+				font-family: "Roboto Mono", monospace;
+			}
+			.sidebar {
+				font-size: 16px;
+				font-family: "Roboto Mono", monospace;
+				font-weight: 500;
+			}
+			.sidebar p {
+				color: var(--theme-color);
+				margin-left: 15px;
+			}
+			.sidebar ul li, .sidebar ul li p {
+				color: var(--secondary-text-color);
+				line-height: 26px;
+				margin: 0 0 1px;
+				font-weight: 500;
+			}
+			.sidebar ul li p:empty {
+				margin-top: 40px;
+			}
+			.sidebar ul li a {
+				margin-top: 0;
+				font-size: 16px;
+				color: var(--text-color);
+			}
+			.sidebar ul li a:hover {
+				color: var(--theme-color);
+				text-decoration: none;
+			}
+			.sidebar hr {
+				margin: 0 15px;
+				background-color: #eee;
+				height: 1px;
+				border: 0;
+			}
+		</style>
 	</head>
 	<body>
 		<div id="app">Please wait...</div>
 		<script>
 			window.$docsify = {
-				name: "taro",
+				name: "Taro",
+				nameLink: "../",
+				repo: "cloud9c/taro",
 				loadSidebar: true,
 				auto2top: true,
 				homepage: "./README.md",
@@ -21,7 +62,9 @@
 				search: {
 					paths: "auto",
 					depth: 3,
+					placeholder: "Search",
 				},
+				themeColor: "#7e3ff2",
 			};
 		</script>
 		<script src="//cdn.jsdelivr.net/npm/docsify/lib/docsify.min.js"></script>
