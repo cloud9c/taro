@@ -4,51 +4,70 @@
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width,initial-scale=1" />
 		<title>Taro</title>
-		<link rel="stylesheet" href="style.css" />
+		<link
+			rel="stylesheet"
+			href="//cdn.jsdelivr.net/npm/docsify@4/themes/vue.css"
+		/>
+		<link rel="stylesheet" href="../style.css" />
 		<style>
-			#flex {
-				display: flex;
-				height: 100%;
-				align-items: center;
-				justify-content: center;
-			}
-			#row {
-				text-align: center;
-			}
-			h1 {
+			.input-wrap input {
 				font-family: "Roboto Mono", monospace;
-				font-weight: normal;
-				font-size: 80px;
-				margin: 0 0 40px;
-				color: black;
 			}
-			p {
-				margin: 0 0 16px;
+			.sidebar {
+				font-size: 16px;
+				font-family: "Roboto Mono", monospace;
+				font-weight: 500;
 			}
-			a {
-				text-decoration: none;
-				color: var(--secondary-text-color);
-			}
-			a:hover {
+			.sidebar p {
 				color: var(--theme-color);
+				margin-left: 15px;
+			}
+			.sidebar ul li, .sidebar ul li p {
+				color: var(--secondary-text-color);
+				line-height: 26px;
+				margin: 0 0 1px;
+				font-weight: 500;
+			}
+			.sidebar ul li p:empty {
+				margin-top: 40px;
+			}
+			.sidebar ul li a {
+				margin-top: 0;
+				font-size: 16px;
+				color: var(--text-color);
+			}
+			.sidebar ul li a:hover {
+				color: var(--theme-color);
+				text-decoration: none;
+			}
+			.sidebar hr {
+				margin: 0 15px;
+				background-color: #eee;
+				height: 1px;
+				border: 0;
 			}
 		</style>
 	</head>
 	<body>
-		<div id="flex">
-			<div id="row">
-				<h1>Taro</h1>
-				<p id="subtitle">A lightweight game engine for the web</p>
-				<span>
-					<a href="editor">editor</a>
-					<span>-</span>
-					<a href="docs">documentation</a>
-					<span>-</span>
-					<a href="examples">examples</a>
-					<span>-</span>
-					<a href="https://github.com/Cloud9c/taro">github</a>
-				</span>
-			</div>
-		</div>
+		<div id="app">Please wait...</div>
+		<script>
+			window.$docsify = {
+				name: "Taro",
+				nameLink: "../",
+				repo: "cloud9c/taro",
+				loadSidebar: true,
+				auto2top: true,
+				homepage: "./README.md",
+				relativePath: true,
+				search: {
+					paths: "auto",
+					depth: 3,
+					placeholder: "Search",
+				},
+				themeColor: "#7e3ff2",
+			};
+		</script>
+		<script src="//cdn.jsdelivr.net/npm/docsify/lib/docsify.min.js"></script>
+		<script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/search.min.js"></script>
 	</body>
 </html>
