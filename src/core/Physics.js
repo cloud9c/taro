@@ -1,4 +1,4 @@
-import { Quaternion, Vector3, Matrix4 } from "../engine.js";
+import { Quaternion, Vector3, Matrix4 } from "../lib/three.js";
 import { OIMO } from "../lib/oimo.js";
 
 const vector = new Vector3();

@@ -1,5 +1,5 @@
 import { OIMO } from "../../lib/oimo.js";
-import { Vector3, Euler } from "../../engine.js";
+import { Vector3, Euler } from "../../lib/three.js";
 import { ConvexHull } from "../../physics/ConvexHull.js";
 import { createRigidbody } from "./Rigidbody.js";
 

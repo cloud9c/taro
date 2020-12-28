@@ -3,7 +3,7 @@ import { Physics } from "../../core/Physics.js";
 import { AngularLimit } from "../../physics/AngularLimit.js";
 import { LinearLimit } from "../../physics/LinearLimit.js";
 import { SpringDamper } from "../../physics/SpringDamper.js";
-import { Vector3 } from "../../engine.js";
+import { Vector3 } from "../../lib/three.js";
 
 const configs = {
 	cylindrical: new OIMO.CylindricalJointConfig(),

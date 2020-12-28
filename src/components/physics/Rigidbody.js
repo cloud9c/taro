@@ -1,6 +1,6 @@
 import { OIMO } from "../../lib/oimo.js";
 import { Physics } from "../../core/Physics.js";
-import { Vector3, Matrix3, Quaternion } from "../../engine.js";
+import { Vector3, Matrix3, Quaternion } from "../../lib/three.js";
 
 const quat = new Quaternion();
 const vector = new Vector3();

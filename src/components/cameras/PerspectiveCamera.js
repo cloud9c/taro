@@ -1,5 +1,4 @@
-import { PerspectiveCamera as PC } from "../../lib/three.js";
-import { Vector4 } from "../../engine.js";
+import { PerspectiveCamera as PC, Vector4 } from "../../lib/three.js";
 
 export class PerspectiveCamera extends PC {
 	start(data) {

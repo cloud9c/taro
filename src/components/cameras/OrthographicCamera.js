@@ -1,5 +1,4 @@
-import { OrthographicCamera as OC } from "../../lib/three.js";
-import { Vector4 } from "../../engine.js";
+import { OrthographicCamera as OC, Vector4 } from "../../lib/three.js";
 
 export class OrthographicCamera extends OC {
 	start(data) {
