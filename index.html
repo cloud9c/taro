@@ -4,13 +4,13 @@
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width,initial-scale=1" />
 		<title>Taro</title>
-		<link rel="stylesheet" href="style.css" />
+		<link rel="stylesheet" href="files/style.css" />
 		<style>
 			#flex {
 				display: flex;
 				height: 100%;
-				align-items: center;
 				justify-content: center;
+				align-items: center;
 			}
 			#row {
 				text-align: center;
@@ -18,8 +18,8 @@
 			h1 {
 				font-family: "Roboto Mono", monospace;
 				font-weight: normal;
-				font-size: 80px;
-				margin: 0 0 40px;
+				font-size: 5em;
+				margin: 0 0 0.2em;
 				color: black;
 			}
 			p {
@@ -32,11 +32,15 @@
 			a:hover {
 				color: var(--theme-color);
 			}
+			img {
+				width: 10em;
+			}
 		</style>
 	</head>
 	<body>
 		<div id="flex">
 			<div id="row">
+				<img src="files/logo.svg" />
 				<h1>Taro</h1>
 				<p id="subtitle">A lightweight game engine for the web</p>
 				<span>
