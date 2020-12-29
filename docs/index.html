@@ -3,12 +3,12 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width,initial-scale=1" />
-		<title>Taro</title>
+		<title>Taro docs</title>
 		<link
 			rel="stylesheet"
 			href="//cdn.jsdelivr.net/npm/docsify@4/themes/vue.css"
 		/>
-		<link rel="stylesheet" href="../files/style.css" />
+		<link rel="stylesheet" href="../files/main.css" />
 		<style>
 			.input-wrap input {
 				font-family: "Roboto Mono", monospace;
@@ -17,6 +17,7 @@
 				font-size: 16px;
 				font-family: "Roboto Mono", monospace;
 				font-weight: 500;
+				border-right: 1px solid var(--border-color);
 			}
 			.sidebar p {
 				color: var(--theme-color);
@@ -37,15 +38,14 @@
 				font-size: 16px;
 				color: var(--text-color);
 			}
-			.sidebar ul li a:hover {
-				color: var(--theme-color);
-				text-decoration: none;
-			}
 			.sidebar hr {
 				margin: 0 15px;
-				background-color: #eee;
+				background-color: var(--border-color);
 				height: 1px;
 				border: 0;
+			}
+			.search {
+				border-bottom: 1px solid var(--border-color) !important;
 			}
 		</style>
 	</head>

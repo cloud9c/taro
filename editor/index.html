@@ -3,21 +3,43 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width,initial-scale=1" />
-		<title>Example</title>
-		<style>
-			html,
-			body {
-				margin: 0;
-				height: 100%;
-			}
-
-			#c {
-				width: 100%;
-				height: 100%;
-			}
-		</style>
+		<title>Taro Editor</title>
+		<link rel="stylesheet" href="../files/main.css" />
+		<link rel="stylesheet" href="editor.css" />
 	</head>
 	<body>
-		Blah
+		<nav>
+			<div class="menu">
+				<div class="title">File</div>
+			</div>
+			<div class="menu">
+				<div class="title">Edit</div>
+			</div>
+			<div class="menu">
+				<div class="title">Assets</div>
+			</div>
+			<div class="menu">
+				<div class="title">Entity</div>
+			</div>
+			<div class="menu">
+				<div class="title">Component</div>
+			</div>
+			<div class="menu">
+				<div class="title">Play</div>
+			</div>
+			<div class="menu">
+				<div class="title">Help</div>
+			</div>
+		</nav>
+		<main>
+			<aside id="left-sidebar">
+				<div class="resizer" id="left-resizer"></div>
+			</aside>
+			<canvas id="canvas"></canvas>
+			<aside id="right-sidebar">
+				<div class="resizer" id="right-resizer"></div>
+			</aside>
+		</main>
+		<script type="module" src="./js/editor.js"></script>
 	</body>
 </html>

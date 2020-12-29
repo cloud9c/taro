@@ -1,0 +1,67 @@
+html,
+body {
+	height: 100%;
+	font-size: 14px;
+	overflow: hidden;
+}
+
+nav {
+	height: 32px;
+	width: 100%;
+	background: var(--text-color);
+	display: flex;
+	align-items: center;
+}
+
+.title {
+	color: white;
+	line-height: 16px;
+	padding: 8px 12px;
+}
+
+.menu:hover {
+	cursor: pointer;
+	background: #000;
+}
+
+main {
+	display: flex;
+}
+
+aside {
+	width: 300px;
+	height: 500px;
+	position: relative;
+}
+
+#left-sidebar {
+	border-right: 1px solid var(--border-color);
+}
+
+#right-sidebar {
+	border-left: 1px solid var(--border-color);
+}
+
+.resizer {
+	position: absolute;
+	width: 5px;
+	height: 100%;
+}
+
+.resizer:hover {
+	cursor: e-resize;
+}
+
+#left-resizer {
+	right: -3px;
+}
+
+#right-resizer {
+	left: -3px;
+}
+
+#canvas {
+	flex: 1;
+	min-width: 0;
+	min-height: 0;
+}
