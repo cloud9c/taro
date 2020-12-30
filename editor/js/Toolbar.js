@@ -4,11 +4,7 @@ export function Toolbar() {
 	function onPointerDown(event) {
 		if (event.isPrimary === false) return;
 
-		const element = document.querySelector(".tool[data-selected]");
-		if (element !== null) {
-			delete element.dataset.selected;
-		}
-
+		delete document.querySelector(".tool[data-selected]").dataset.selected;
 		event.target.dataset.selected = "";
 	}
 

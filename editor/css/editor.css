@@ -53,7 +53,7 @@ aside {
 	background: var(--dark-color);
 	z-index: 1;
 	box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
-	border-radius: 0 4px 4px 4px;
+	border-radius: 0 0 4px 4px;
 }
 
 .option {
