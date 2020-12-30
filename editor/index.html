@@ -5,15 +5,21 @@
 		<meta name="viewport" content="width=device-width,initial-scale=1" />
 		<title>Taro Editor</title>
 		<link rel="stylesheet" href="../files/main.css" />
-		<link rel="stylesheet" href="editor.css" />
+		<link rel="stylesheet" href="css/editor.css" />
 	</head>
 	<body>
-		<nav>
+		<nav id="menubar">
 			<div class="menu">
 				<div class="title">File</div>
+				<div class="options">
+					<div class="option">New</div>
+				</div>
 			</div>
 			<div class="menu">
 				<div class="title">Edit</div>
+				<div class="options">
+					<div class="option">New</div>
+				</div>
 			</div>
 			<div class="menu">
 				<div class="title">Assets</div>
@@ -32,14 +38,54 @@
 			</div>
 		</nav>
 		<main>
-			<aside id="left-sidebar">
+			<aside id="left-panel">
 				<div class="resizer" id="left-resizer"></div>
 			</aside>
-			<canvas id="canvas"></canvas>
-			<aside id="right-sidebar">
+			<div id="viewport">
+				<div id="toolbar">
+					<button class="tool">
+						<svg
+							viewBox="-0.5 -1 24 24"
+							width="16"
+							height="16"
+							preserveAspectRatio="xMinYMin"
+						>
+							<path
+								d="M18.799 9.957l-1.121-1.121a1 1 0 1 1 1.414-1.415l2.828 2.829a1 1 0 0 1 0 1.414l-2.828 2.828a1 1 0 0 1-1.414-1.414l1.121-1.121h-6.485v6.485l1.121-1.121a1 1 0 0 1 1.414 1.414l-2.828 2.829a1 1 0 0 1-1.414 0l-2.829-2.829a1 1 0 0 1 1.414-1.414l1.122 1.121v-6.485H3.828l1.122 1.121a1 1 0 0 1-1.414 1.414L.707 11.664a1 1 0 0 1 0-1.414L3.536 7.42A1 1 0 0 1 4.95 8.836l-1.122 1.12h6.486V3.473L9.192 4.593a1 1 0 0 1-1.414-1.414L10.607.35a1 1 0 0 1 1.414 0l2.828 2.829a1 1 0 1 1-1.414 1.414l-1.121-1.121v6.485h6.485z"
+							></path>
+						</svg>
+					</button>
+					<button class="tool">
+						<svg
+							viewBox="-0.5 -2 24 24"
+							width="16"
+							height="16"
+							preserveAspectRatio="xMinYMin"
+						>
+							<path
+								d="M5.308 7.612l1.352-.923a.981.981 0 0 1 1.372.27 1.008 1.008 0 0 1-.266 1.388l-3.277 2.237a.981.981 0 0 1-1.372-.27L.907 6.998a1.007 1.007 0 0 1 .266-1.389.981.981 0 0 1 1.372.27l.839 1.259C4.6 3.01 8.38 0 12.855 0c5.458 0 9.882 4.477 9.882 10s-4.424 10-9.882 10a.994.994 0 0 1-.988-1c0-.552.443-1 .988-1 4.366 0 7.906-3.582 7.906-8s-3.54-8-7.906-8C9.311 2 6.312 4.36 5.308 7.612z"
+							></path>
+						</svg>
+					</button>
+					<button class="tool">
+						<svg
+							viewBox="-2 -2 24 24"
+							width="16"
+							height="16"
+							preserveAspectRatio="xMinYMin"
+						>
+							<path
+								d="M1 0h6a1 1 0 1 1 0 2H3.414L18 16.586V13a1 1 0 0 1 2 0v6a1 1 0 0 1-1 1h-6a1 1 0 0 1 0-2h3.586L2 3.414V7a1 1 0 1 1-2 0V1a1 1 0 0 1 1-1z"
+							></path>
+						</svg>
+					</button>
+				</div>
+				<canvas id="canvas"></canvas>
+			</div>
+			<aside id="right-panel">
 				<div class="resizer" id="right-resizer"></div>
 			</aside>
 		</main>
-		<script type="module" src="./js/editor.js"></script>
+		<script type="module" src="js/editor.js"></script>
 	</body>
 </html>

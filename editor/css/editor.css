@@ -1,0 +1,165 @@
+:root {
+	--white-color: rgba(255, 255, 255, 0.8);
+	--dark-color: #2c2c2c;
+	--darker-color: #111;
+}
+
+html,
+body {
+	font-size: 14px;
+	overflow: hidden;
+}
+
+html,
+body,
+main,
+aside {
+	height: 100%;
+}
+
+#menubar {
+	height: 32px;
+	width: 100%;
+	background: var(--dark-color);
+	display: flex;
+	align-items: center;
+}
+
+.menu {
+	position: relative;
+	color: var(--white-color);
+}
+
+.menu:hover {
+	cursor: pointer;
+	background: var(--darker-color);
+	color: #fff;
+}
+
+.title {
+	line-height: 16px;
+	padding: 8px 12px;
+}
+
+.menu:hover .options {
+	display: block;
+}
+
+.options {
+	display: none;
+	position: absolute;
+	width: 150px;
+	padding: 5px 0;
+	background: var(--dark-color);
+	z-index: 1;
+	box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+	border-radius: 0 4px 4px 4px;
+}
+
+.option {
+	padding: 5px 10px;
+	color: var(--white-color);
+}
+
+.option:hover {
+	background: var(--theme-color);
+	color: #fff;
+}
+
+main {
+	display: flex;
+}
+
+aside,
+#viewport {
+	position: relative;
+}
+
+aside {
+	width: 300px;
+}
+
+#left-panel {
+	border-right: 1px solid var(--border-color);
+}
+
+#right-panel {
+	border-left: 1px solid var(--border-color);
+}
+
+.resizer {
+	position: absolute;
+	width: 5px;
+	height: 100%;
+}
+
+.resizer:hover {
+	cursor: e-resize;
+}
+
+#left-resizer {
+	right: -3px;
+}
+
+#right-resizer {
+	left: -3px;
+}
+
+#viewport {
+	flex: 1;
+}
+
+#canvas {
+	width: 100%;
+	height: 100%;
+}
+
+#toolbar {
+	position: absolute;
+	left: 10px;
+	top: 10px;
+	width: 32px;
+	border-radius: 4px;
+	box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+}
+
+.tool {
+	padding: 5px 8px;
+	border: none;
+	background: var(--dark-color);
+	outline: none;
+	cursor: pointer;
+}
+
+.tool:hover {
+	background: var(--darker-color);
+}
+
+.tool:first-child {
+	border-radius: 4px 4px 0 0;
+}
+
+.tool:last-child {
+	border-radius: 0 0 4px 4px;
+}
+
+.tool[data-selected] {
+	background: var(--theme-color);
+}
+
+.tool svg {
+	fill: var(--white-color);
+	pointer-events: none;
+}
+
+.tool:hover svg {
+	fill: #fff;
+}
+
+.tool[data-selected] svg {
+	fill: #fff;
+}
+
+#toolbar img {
+	width: 16px;
+}

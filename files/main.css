@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Roboto&family=Roboto+Mono:wght@400;500&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans&family=IBM+Plex+Mono:wght@400;500&display=swap");
 
 :root {
 	--text-color: #444;
@@ -9,7 +9,7 @@
 
 body {
 	margin: 0;
-	font-family: "Roboto", sans-serif;
+	font-family: "IBM Plex Sans", sans-serif;
 	color: var(--text-color);
 	font-size: 1.2em;
 }
