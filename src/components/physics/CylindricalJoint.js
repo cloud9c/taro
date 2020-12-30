@@ -1,8 +1,12 @@
 import { Joint } from "./Joint.js";
 
 export class CylindricalJoint extends Joint {
-	start(data) {
+
+	start( data ) {
+
 		this.type = "cylindrical";
-		super.start(data);
+		super.start( data );
+
 	}
+
 }

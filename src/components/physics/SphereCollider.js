@@ -1,8 +1,12 @@
 import { Collider } from "./Collider.js";
 
 export class SphereCollider extends Collider {
-	start(data) {
+
+	start( data ) {
+
 		this.type = "sphere";
-		super.start(data);
+		super.start( data );
+
 	}
+
 }

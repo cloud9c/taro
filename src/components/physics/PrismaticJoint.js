@@ -1,8 +1,12 @@
 import { Joint } from "./Joint.js";
 
 export class PrismaticJoint extends Joint {
-	start(data) {
+
+	start( data ) {
+
 		this.type = "prismatic";
-		super.start(data);
+		super.start( data );
+
 	}
+
 }

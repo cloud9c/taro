@@ -8,39 +8,52 @@ const quat2 = new Quaternion();
 const matrix = new Matrix4();
 
 export class Physics {
+
 	constructor() {
+
 		this._accumulator = 0;
-		this._gravity = new Vector3(0, -9.80665, 0);
+		this._gravity = new Vector3( 0, - 9.80665, 0 );
 
 		this._triggers = [];
 
 		this._world;
 		this.rigidbodies;
+
 	}
 	get gravity() {
+
 		return this._gravity;
+
 	}
-	set gravity(gravity) {
-		this._world.setGravity(gravity);
+	set gravity( gravity ) {
+
+		this._world.setGravity( gravity );
 		this._gravity = gravity;
+
 	}
-	raycast(begin, end, callback) {
+	raycast( begin, end, callback ) {
+
 		// callback parameters: collider, fraction, normal, position
-		this._world.rayCast(begin, end, {
-			process(shape, hit) {
+		this._world.rayCast( begin, end, {
+			process( shape, hit ) {
+
 				callback(
 					shape.collider,
 					hit.fraction,
-					new Vector3().copy(hit.normal),
-					new Vector3().copy(hit.position)
+					new Vector3().copy( hit.normal ),
+					new Vector3().copy( hit.position )
 				);
+
 			},
-		});
+		} );
+
 	}
-	_update(deltaTime, fixedTimestep) {
+	_update( deltaTime, fixedTimestep ) {
+
 		this._accumulator += deltaTime;
 
-		if (this._accumulator >= fixedTimestep) {
+		if ( this._accumulator >= fixedTimestep ) {
+
 			// trigger collision
 			// const triggers = this._triggers;
 			// for (let i = 0, len = triggers.length; i < len; i++) {
@@ -48,11 +61,14 @@ export class Physics {
 			// }
 
 			// time step
-			while (this._accumulator >= fixedTimestep) {
-				this._world.step(fixedTimestep);
-				for (let i = 0, len = this.rigidbodies.length; i < len; i++) {
-					let rigidbody = this.rigidbodies[i];
-					if (!rigidbody._ref.isSleeping()) {
+			while ( this._accumulator >= fixedTimestep ) {
+
+				this._world.step( fixedTimestep );
+				for ( let i = 0, len = this.rigidbodies.length; i < len; i ++ ) {
+
+					let rigidbody = this.rigidbodies[ i ];
+					if ( ! rigidbody._ref.isSleeping() ) {
+
 						const entity = rigidbody.entity;
 
 						const ePos = entity.position;
@@ -68,31 +84,40 @@ export class Physics {
 						eQuat._z = rot.z;
 						eQuat._w = rot.w;
 
-						if (entity.parent !== entity.scene) {
+						if ( entity.parent !== entity.scene ) {
+
 							vector
-								.copy(ePos)
+								.copy( ePos )
 								.applyMatrix4(
 									matrix
-										.copy(entity.parent.matrixWorld)
+										.copy( entity.parent.matrixWorld )
 										.invert()
 								);
 							ePos._x = vector.x;
 							ePos._y = vector.y;
 							ePos._z = vector.z;
 
-							quat.copy(eQuat).premultiply(
-								entity.parent.getWorldQuaternion(quat2).invert()
+							quat.copy( eQuat ).premultiply(
+								entity.parent.getWorldQuaternion( quat2 ).invert()
 							);
 							eQuat._x = quat.x;
 							eQuat._y = quat.y;
 							eQuat._z = quat.z;
 							eQuat._w = quat.w;
+
 						}
+
 					}
+
 				}
+
 				this._accumulator -= fixedTimestep;
+
 			}
 			// console.log("finish");
+
 		}
+
 	}
+
 }

@@ -1,8 +1,12 @@
 import { Joint } from "./Joint.js";
 
 export class HingeJoint extends Joint {
-	start(data) {
+
+	start( data ) {
+
 		this.type = "hinge";
-		super.start(data);
+		super.start( data );
+
 	}
+
 }

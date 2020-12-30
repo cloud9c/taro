@@ -1,8 +1,12 @@
 import { Collider } from "./Collider.js";
 
 export class ConeCollider extends Collider {
-	start(data) {
+
+	start( data ) {
+
 		this.type = "cone";
-		super.start(data);
+		super.start( data );
+
 	}
+
 }

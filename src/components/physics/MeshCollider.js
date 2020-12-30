@@ -1,8 +1,12 @@
 import { Collider } from "./Collider.js";
 
 export class MeshCollider extends Collider {
-	start(data) {
+
+	start( data ) {
+
 		this.type = "mesh";
-		super.start(data);
+		super.start( data );
+
 	}
+
 }

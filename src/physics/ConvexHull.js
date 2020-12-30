@@ -1,1 +1,1322 @@
-import{Line3,Plane,Triangle,Vector3}from"../lib/three.js";var ConvexHull=function(){function a(){this.tolerance=-1,this.faces=[],this.newFaces=[],this.assigned=new g,this.unassigned=new g,this.vertices=[]}function d(){this.normal=new Vector3,this.midpoint=new Vector3,this.area=0,this.constant=0,this.outside=null,this.mark=0,this.edge=null}function e(a,b){this.vertex=a,this.prev=null,this.next=null,this.twin=null,this.face=b}function f(a){this.point=a,this.prev=null,this.next=null,this.face=null}function g(){this.head=null,this.tail=null}var h=new Vector3;return Object.assign(a.prototype,{setFromPoints:function(a){!0!==Array.isArray(a)&&console.error("THREE.ConvexHull: Points parameter is not an array."),4>a.length&&console.error("THREE.ConvexHull: The algorithm needs at least four points."),this.makeEmpty();for(var b=0,c=a.length;b<c;b++)this.vertices.push(new f(a[b]));return this.compute(),this},setFromObject:function(a){var b=[];return a.updateMatrixWorld(!0),a.traverse(function(a){var c,d,e,f=a.geometry;if(void 0!==f)if(f.isGeometry){var g=f.vertices;for(c=0,d=g.length;c<d;c++)e=g[c].clone(),e.applyMatrix4(a.matrixWorld),b.push(e)}else if(f.isBufferGeometry){var h=f.attributes.position;if(void 0!==h)for(c=0,d=h.count;c<d;c++)e=new Vector3,e.fromBufferAttribute(h,c).applyMatrix4(a.matrixWorld),b.push(e)}}),this.setFromPoints(b)},containsPoint:function(a){for(var b,c=this.faces,d=0,e=c.length;d<e;d++)if(b=c[d],b.distanceToPoint(a)>this.tolerance)return!1;return!0},intersectRay:function(a,b){for(var c=this.faces,d=-Infinity,e=1/0,f=0,g=c.length;f<g;f++){var h=c[f],j=h.distanceToPoint(a.origin),k=h.normal.dot(a.direction);if(0<j&&0<=k)return null;var l=0===k?0:-j/k;if(!(0>=l)&&(0<k?e=Math.min(l,e):d=Math.max(l,d),d>e))return null}return d===-Infinity?a.at(e,b):a.at(d,b),b},intersectsRay:function(a){return null!==this.intersectRay(a,h)},makeEmpty:function(){return this.faces=[],this.vertices=[],this},addVertexToFace:function(a,b){return a.face=b,null===b.outside?this.assigned.append(a):this.assigned.insertBefore(b.outside,a),b.outside=a,this},removeVertexFromFace:function(a,b){return a===b.outside&&(null!==a.next&&a.next.face===b?b.outside=a.next:b.outside=null),this.assigned.remove(a),this},removeAllVerticesFromFace:function(a){if(null!==a.outside){for(var b=a.outside,c=a.outside;null!==c.next&&c.next.face===a;)c=c.next;return this.assigned.removeSubList(b,c),b.prev=c.next=null,a.outside=null,b}},deleteFaceVertices:function(a,b){var c=this.removeAllVerticesFromFace(a);if(void 0!==c)if(void 0===b)this.unassigned.appendChain(c);else{var d=c;do{var e=d.next,f=b.distanceToPoint(d.point);f>this.tolerance?this.addVertexToFace(d,b):this.unassigned.append(d),d=e}while(null!==d)}return this},resolveUnassignedPoints:function(a){if(!1===this.unassigned.isEmpty()){var b=this.unassigned.first();do{for(var c,d=b.next,e=this.tolerance,f=null,g=0;g<a.length;g++)if(c=a[g],0===c.mark){var h=c.distanceToPoint(b.point);if(h>e&&(e=h,f=c),e>1e3*this.tolerance)break}null!==f&&this.addVertexToFace(b,f),b=d}while(null!==b)}return this},computeExtremes:function(){var a,b,c,d=new Vector3,e=new Vector3,f=[],g=[];for(a=0;3>a;a++)f[a]=g[a]=this.vertices[0];for(d.copy(this.vertices[0].point),e.copy(this.vertices[0].point),(a=0,b=this.vertices.length);a<b;a++){var h=this.vertices[a],k=h.point;for(c=0;3>c;c++)k.getComponent(c)<d.getComponent(c)&&(d.setComponent(c,k.getComponent(c)),f[c]=h);for(c=0;3>c;c++)k.getComponent(c)>e.getComponent(c)&&(e.setComponent(c,k.getComponent(c)),g[c]=h)}return this.tolerance=3*Number.EPSILON*(Math.max(Math.abs(d.x),Math.abs(e.x))+Math.max(Math.abs(d.y),Math.abs(e.y))+Math.max(Math.abs(d.z),Math.abs(e.z))),{min:f,max:g}},computeInitialHull:function(){var a,b,c;return function(){void 0===a&&(a=new Line3,b=new Plane,c=new Vector3);var e,f,g,h,k,m,n,o,p,q=this.vertices,r=this.computeExtremes(),s=r.min,t=r.max,u=0,v=0;for(m=0;3>m;m++)p=t[m].point.getComponent(m)-s[m].point.getComponent(m),p>u&&(u=p,v=m);for(f=s[v],g=t[v],u=0,a.set(f.point,g.point),(m=0,n=this.vertices.length);m<n;m++)e=q[m],e!==f&&e!==g&&(a.closestPointToPoint(e.point,!0,c),p=c.distanceToSquared(e.point),p>u&&(u=p,h=e));for(u=-1,b.setFromCoplanarPoints(f.point,g.point,h.point),(m=0,n=this.vertices.length);m<n;m++)e=q[m],e!==f&&e!==g&&e!==h&&(p=Math.abs(b.distanceToPoint(e.point)),p>u&&(u=p,k=e));var w=[];if(0>b.distanceToPoint(k.point))for(w.push(d.create(f,g,h),d.create(k,g,f),d.create(k,h,g),d.create(k,f,h)),m=0;3>m;m++)o=(m+1)%3,w[m+1].getEdge(2).setTwin(w[0].getEdge(o)),w[m+1].getEdge(1).setTwin(w[o+1].getEdge(0));else for(w.push(d.create(f,h,g),d.create(k,f,g),d.create(k,g,h),d.create(k,h,f)),m=0;3>m;m++)o=(m+1)%3,w[m+1].getEdge(2).setTwin(w[0].getEdge((3-m)%3)),w[m+1].getEdge(0).setTwin(w[o+1].getEdge(1));for(m=0;4>m;m++)this.faces.push(w[m]);for(m=0,n=q.length;m<n;m++)if(e=q[m],e!==f&&e!==g&&e!==h&&e!==k){u=this.tolerance;var x=null;for(o=0;4>o;o++)p=this.faces[o].distanceToPoint(e.point),p>u&&(u=p,x=this.faces[o]);null!==x&&this.addVertexToFace(e,x)}return this}}(),reindexFaces:function(){for(var a,b=[],c=0;c<this.faces.length;c++)a=this.faces[c],0===a.mark&&b.push(a);return this.faces=b,this},nextVertexToAdd:function(){if(!1===this.assigned.isEmpty()){var a,b=0,c=this.assigned.first().face,d=c.outside;do{var e=c.distanceToPoint(d.point);e>b&&(b=e,a=d),d=d.next}while(null!==d&&d.face===c);return a}},computeHorizon:function(a,b,c,d){this.deleteFaceVertices(c),c.mark=1;var e=null===b?b=c.getEdge(0):b.next;do{var f=e.twin,g=f.face;0===g.mark&&(g.distanceToPoint(a)>this.tolerance?this.computeHorizon(a,f,g,d):d.push(e)),e=e.next}while(e!==b);return this},addAdjoiningFace:function(a,b){var c=d.create(a,b.tail(),b.head());return this.faces.push(c),c.getEdge(-1).setTwin(b.twin),c.getEdge(0)},addNewFaces:function(a,b){this.newFaces=[];for(var c=null,d=null,e=0;e<b.length;e++){var f=b[e],g=this.addAdjoiningFace(a,f);null===c?c=g:g.next.setTwin(d),this.newFaces.push(g.face),d=g}return c.next.setTwin(d),this},addVertexToHull:function(a){var b=[];return this.unassigned.clear(),this.removeVertexFromFace(a,a.face),this.computeHorizon(a.point,null,a.face,b),this.addNewFaces(a,b),this.resolveUnassignedPoints(this.newFaces),this},cleanup:function(){return this.assigned.clear(),this.unassigned.clear(),this.newFaces=[],this},compute:function(){var a;for(this.computeInitialHull();void 0!==(a=this.nextVertexToAdd());)this.addVertexToHull(a);return this.reindexFaces(),this.cleanup(),this}}),Object.assign(d,{create:function(f,a,b){var c=new d,g=new e(f,c),h=new e(a,c),i=new e(b,c);return g.next=i.prev=h,h.next=g.prev=i,i.next=h.prev=g,c.edge=g,c.compute()}}),Object.assign(d.prototype,{getEdge:function(a){for(var b=this.edge;0<a;)b=b.next,a--;for(;0>a;)b=b.prev,a++;return b},compute:function(){var d;return function(){void 0===d&&(d=new Triangle);var e=this.edge.tail(),a=this.edge.head(),b=this.edge.next.head();return d.set(e.point,a.point,b.point),d.getNormal(this.normal),d.getMidpoint(this.midpoint),this.area=d.getArea(),this.constant=this.normal.dot(this.midpoint),this}}(),distanceToPoint:function(a){return this.normal.dot(a)-this.constant}}),Object.assign(e.prototype,{head:function(){return this.vertex},tail:function(){return this.prev?this.prev.vertex:null},length:function(){var a=this.head(),b=this.tail();return null===b?-1:b.point.distanceTo(a.point)},lengthSquared:function(){var a=this.head(),b=this.tail();return null===b?-1:b.point.distanceToSquared(a.point)},setTwin:function(a){return this.twin=a,a.twin=this,this}}),Object.assign(g.prototype,{first:function(){return this.head},last:function(){return this.tail},clear:function(){return this.head=this.tail=null,this},insertBefore:function(a,b){return b.prev=a.prev,b.next=a,null===b.prev?this.head=b:b.prev.next=b,a.prev=b,this},insertAfter:function(a,b){return b.prev=a,b.next=a.next,null===b.next?this.tail=b:b.next.prev=b,a.next=b,this},append:function(a){return null===this.head?this.head=a:this.tail.next=a,a.prev=this.tail,a.next=null,this.tail=a,this},appendChain:function(a){for(null===this.head?this.head=a:this.tail.next=a,a.prev=this.tail;null!==a.next;)a=a.next;return this.tail=a,this},remove:function(a){return null===a.prev?this.head=a.next:a.prev.next=a.next,null===a.next?this.tail=a.prev:a.next.prev=a.prev,this},removeSubList:function(c,a){return null===c.prev?this.head=a.next:c.prev.next=a.next,null===a.next?this.tail=c.prev:a.next.prev=c.prev,this},isEmpty:function(){return null===this.head}}),a}();export{ConvexHull};
+import {
+	Line3,
+	Plane,
+	Triangle,
+	Vector3
+} from '../lib/three.js';
+
+/**
+ * Ported from: https://github.com/maurizzzio/quickhull3d/ by Mauricio Poppe (https://github.com/maurizzzio)
+ */
+
+var ConvexHull = ( function () {
+
+	var Visible = 0;
+	var Deleted = 1;
+
+	var v1 = new Vector3();
+
+	function ConvexHull() {
+
+		this.tolerance = - 1;
+
+		this.faces = []; // the generated faces of the convex hull
+		this.newFaces = []; // this array holds the faces that are generated within a single iteration
+
+		// the vertex lists work as follows:
+		//
+		// let 'a' and 'b' be 'Face' instances
+		// let 'v' be points wrapped as instance of 'Vertex'
+		//
+		//     [v, v, ..., v, v, v, ...]
+		//      ^             ^
+		//      |             |
+		//  a.outside     b.outside
+		//
+		this.assigned = new VertexList();
+		this.unassigned = new VertexList();
+
+		this.vertices = []; 	// vertices of the hull (internal representation of given geometry data)
+
+	}
+
+	Object.assign( ConvexHull.prototype, {
+
+		setFromPoints: function ( points ) {
+
+			if ( Array.isArray( points ) !== true ) {
+
+				console.error( 'THREE.ConvexHull: Points parameter is not an array.' );
+
+			}
+
+			if ( points.length < 4 ) {
+
+				console.error( 'THREE.ConvexHull: The algorithm needs at least four points.' );
+
+			}
+
+			this.makeEmpty();
+
+			for ( var i = 0, l = points.length; i < l; i ++ ) {
+
+				this.vertices.push( new VertexNode( points[ i ] ) );
+
+			}
+
+			this.compute();
+
+			return this;
+
+		},
+
+		setFromObject: function ( object ) {
+
+			var points = [];
+
+			object.updateMatrixWorld( true );
+
+			object.traverse( function ( node ) {
+
+				var i, l, point;
+
+				var geometry = node.geometry;
+
+				if ( geometry !== undefined ) {
+
+					if ( geometry.isGeometry ) {
+
+						var vertices = geometry.vertices;
+
+						for ( i = 0, l = vertices.length; i < l; i ++ ) {
+
+							point = vertices[ i ].clone();
+							point.applyMatrix4( node.matrixWorld );
+
+							points.push( point );
+
+						}
+
+					} else if ( geometry.isBufferGeometry ) {
+
+						var attribute = geometry.attributes.position;
+
+						if ( attribute !== undefined ) {
+
+							for ( i = 0, l = attribute.count; i < l; i ++ ) {
+
+								point = new Vector3();
+
+								point.fromBufferAttribute( attribute, i ).applyMatrix4( node.matrixWorld );
+
+								points.push( point );
+
+							}
+
+						}
+
+					}
+
+				}
+
+			} );
+
+			return this.setFromPoints( points );
+
+		},
+
+		containsPoint: function ( point ) {
+
+			var faces = this.faces;
+
+			for ( var i = 0, l = faces.length; i < l; i ++ ) {
+
+				var face = faces[ i ];
+
+				// compute signed distance and check on what half space the point lies
+
+				if ( face.distanceToPoint( point ) > this.tolerance ) return false;
+
+			}
+
+			return true;
+
+		},
+
+		intersectRay: function ( ray, target ) {
+
+			// based on "Fast Ray-Convex Polyhedron Intersection"  by Eric Haines, GRAPHICS GEMS II
+
+			var faces = this.faces;
+
+			var tNear = - Infinity;
+			var tFar = Infinity;
+
+			for ( var i = 0, l = faces.length; i < l; i ++ ) {
+
+				var face = faces[ i ];
+
+				// interpret faces as planes for the further computation
+
+				var vN = face.distanceToPoint( ray.origin );
+				var vD = face.normal.dot( ray.direction );
+
+				// if the origin is on the positive side of a plane (so the plane can "see" the origin) and
+				// the ray is turned away or parallel to the plane, there is no intersection
+
+				if ( vN > 0 && vD >= 0 ) return null;
+
+				// compute the distance from the ray’s origin to the intersection with the plane
+
+				var t = ( vD !== 0 ) ? ( - vN / vD ) : 0;
+
+				// only proceed if the distance is positive. a negative distance means the intersection point
+				// lies "behind" the origin
+
+				if ( t <= 0 ) continue;
+
+				// now categorized plane as front-facing or back-facing
+
+				if ( vD > 0 ) {
+
+					//  plane faces away from the ray, so this plane is a back-face
+
+					tFar = Math.min( t, tFar );
+
+				} else {
+
+					// front-face
+
+					tNear = Math.max( t, tNear );
+
+				}
+
+				if ( tNear > tFar ) {
+
+					// if tNear ever is greater than tFar, the ray must miss the convex hull
+
+					return null;
+
+				}
+
+			}
+
+			// evaluate intersection point
+
+			// always try tNear first since its the closer intersection point
+
+			if ( tNear !== - Infinity ) {
+
+				ray.at( tNear, target );
+
+			} else {
+
+				ray.at( tFar, target );
+
+			}
+
+			return target;
+
+		},
+
+		intersectsRay: function ( ray ) {
+
+			return this.intersectRay( ray, v1 ) !== null;
+
+		},
+
+		makeEmpty: function () {
+
+			this.faces = [];
+			this.vertices = [];
+
+			return this;
+
+		},
+
+		// Adds a vertex to the 'assigned' list of vertices and assigns it to the given face
+
+		addVertexToFace: function ( vertex, face ) {
+
+			vertex.face = face;
+
+			if ( face.outside === null ) {
+
+				this.assigned.append( vertex );
+
+			} else {
+
+				this.assigned.insertBefore( face.outside, vertex );
+
+			}
+
+			face.outside = vertex;
+
+			return this;
+
+		},
+
+		// Removes a vertex from the 'assigned' list of vertices and from the given face
+
+		removeVertexFromFace: function ( vertex, face ) {
+
+			if ( vertex === face.outside ) {
+
+				// fix face.outside link
+
+				if ( vertex.next !== null && vertex.next.face === face ) {
+
+					// face has at least 2 outside vertices, move the 'outside' reference
+
+					face.outside = vertex.next;
+
+				} else {
+
+					// vertex was the only outside vertex that face had
+
+					face.outside = null;
+
+				}
+
+			}
+
+			this.assigned.remove( vertex );
+
+			return this;
+
+		},
+
+		// Removes all the visible vertices that a given face is able to see which are stored in the 'assigned' vertext list
+
+		removeAllVerticesFromFace: function ( face ) {
+
+			if ( face.outside !== null ) {
+
+				// reference to the first and last vertex of this face
+
+				var start = face.outside;
+				var end = face.outside;
+
+				while ( end.next !== null && end.next.face === face ) {
+
+					end = end.next;
+
+				}
+
+				this.assigned.removeSubList( start, end );
+
+				// fix references
+
+				start.prev = end.next = null;
+				face.outside = null;
+
+				return start;
+
+			}
+
+		},
+
+		// Removes all the visible vertices that 'face' is able to see
+
+		deleteFaceVertices: function ( face, absorbingFace ) {
+
+			var faceVertices = this.removeAllVerticesFromFace( face );
+
+			if ( faceVertices !== undefined ) {
+
+				if ( absorbingFace === undefined ) {
+
+					// mark the vertices to be reassigned to some other face
+
+					this.unassigned.appendChain( faceVertices );
+
+
+				} else {
+
+					// if there's an absorbing face try to assign as many vertices as possible to it
+
+					var vertex = faceVertices;
+
+					do {
+
+						// we need to buffer the subsequent vertex at this point because the 'vertex.next' reference
+						// will be changed by upcoming method calls
+
+						var nextVertex = vertex.next;
+
+						var distance = absorbingFace.distanceToPoint( vertex.point );
+
+						// check if 'vertex' is able to see 'absorbingFace'
+
+						if ( distance > this.tolerance ) {
+
+							this.addVertexToFace( vertex, absorbingFace );
+
+						} else {
+
+							this.unassigned.append( vertex );
+
+						}
+
+						// now assign next vertex
+
+						vertex = nextVertex;
+
+					} while ( vertex !== null );
+
+				}
+
+			}
+
+			return this;
+
+		},
+
+		// Reassigns as many vertices as possible from the unassigned list to the new faces
+
+		resolveUnassignedPoints: function ( newFaces ) {
+
+			if ( this.unassigned.isEmpty() === false ) {
+
+				var vertex = this.unassigned.first();
+
+				do {
+
+					// buffer 'next' reference, see .deleteFaceVertices()
+
+					var nextVertex = vertex.next;
+
+					var maxDistance = this.tolerance;
+
+					var maxFace = null;
+
+					for ( var i = 0; i < newFaces.length; i ++ ) {
+
+						var face = newFaces[ i ];
+
+						if ( face.mark === Visible ) {
+
+							var distance = face.distanceToPoint( vertex.point );
+
+							if ( distance > maxDistance ) {
+
+								maxDistance = distance;
+								maxFace = face;
+
+							}
+
+							if ( maxDistance > 1000 * this.tolerance ) break;
+
+						}
+
+					}
+
+					// 'maxFace' can be null e.g. if there are identical vertices
+
+					if ( maxFace !== null ) {
+
+						this.addVertexToFace( vertex, maxFace );
+
+					}
+
+					vertex = nextVertex;
+
+				} while ( vertex !== null );
+
+			}
+
+			return this;
+
+		},
+
+		// Computes the extremes of a simplex which will be the initial hull
+
+		computeExtremes: function () {
+
+			var min = new Vector3();
+			var max = new Vector3();
+
+			var minVertices = [];
+			var maxVertices = [];
+
+			var i, l, j;
+
+			// initially assume that the first vertex is the min/max
+
+			for ( i = 0; i < 3; i ++ ) {
+
+				minVertices[ i ] = maxVertices[ i ] = this.vertices[ 0 ];
+
+			}
+
+			min.copy( this.vertices[ 0 ].point );
+			max.copy( this.vertices[ 0 ].point );
+
+			// compute the min/max vertex on all six directions
+
+			for ( i = 0, l = this.vertices.length; i < l; i ++ ) {
+
+				var vertex = this.vertices[ i ];
+				var point = vertex.point;
+
+				// update the min coordinates
+
+				for ( j = 0; j < 3; j ++ ) {
+
+					if ( point.getComponent( j ) < min.getComponent( j ) ) {
+
+						min.setComponent( j, point.getComponent( j ) );
+						minVertices[ j ] = vertex;
+
+					}
+
+				}
+
+				// update the max coordinates
+
+				for ( j = 0; j < 3; j ++ ) {
+
+					if ( point.getComponent( j ) > max.getComponent( j ) ) {
+
+						max.setComponent( j, point.getComponent( j ) );
+						maxVertices[ j ] = vertex;
+
+					}
+
+				}
+
+			}
+
+			// use min/max vectors to compute an optimal epsilon
+
+			this.tolerance = 3 * Number.EPSILON * (
+				Math.max( Math.abs( min.x ), Math.abs( max.x ) ) +
+				Math.max( Math.abs( min.y ), Math.abs( max.y ) ) +
+				Math.max( Math.abs( min.z ), Math.abs( max.z ) )
+			);
+
+			return { min: minVertices, max: maxVertices };
+
+		},
+
+		// Computes the initial simplex assigning to its faces all the points
+		// that are candidates to form part of the hull
+
+		computeInitialHull: function () {
+
+			var line3, plane, closestPoint;
+
+			return function computeInitialHull() {
+
+				if ( line3 === undefined ) {
+
+					line3 = new Line3();
+					plane = new Plane();
+					closestPoint = new Vector3();
+
+				}
+
+				var vertex, vertices = this.vertices;
+				var extremes = this.computeExtremes();
+				var min = extremes.min;
+				var max = extremes.max;
+
+				var v0, v1, v2, v3;
+				var i, l, j;
+
+				// 1. Find the two vertices 'v0' and 'v1' with the greatest 1d separation
+				// (max.x - min.x)
+				// (max.y - min.y)
+				// (max.z - min.z)
+
+				var distance, maxDistance = 0;
+				var index = 0;
+
+				for ( i = 0; i < 3; i ++ ) {
+
+					distance = max[ i ].point.getComponent( i ) - min[ i ].point.getComponent( i );
+
+					if ( distance > maxDistance ) {
+
+						maxDistance = distance;
+						index = i;
+
+					}
+
+				}
+
+				v0 = min[ index ];
+				v1 = max[ index ];
+
+				// 2. The next vertex 'v2' is the one farthest to the line formed by 'v0' and 'v1'
+
+				maxDistance = 0;
+				line3.set( v0.point, v1.point );
+
+				for ( i = 0, l = this.vertices.length; i < l; i ++ ) {
+
+					vertex = vertices[ i ];
+
+					if ( vertex !== v0 && vertex !== v1 ) {
+
+						line3.closestPointToPoint( vertex.point, true, closestPoint );
+
+						distance = closestPoint.distanceToSquared( vertex.point );
+
+						if ( distance > maxDistance ) {
+
+							maxDistance = distance;
+							v2 = vertex;
+
+						}
+
+					}
+
+				}
+
+				// 3. The next vertex 'v3' is the one farthest to the plane 'v0', 'v1', 'v2'
+
+				maxDistance = - 1;
+				plane.setFromCoplanarPoints( v0.point, v1.point, v2.point );
+
+				for ( i = 0, l = this.vertices.length; i < l; i ++ ) {
+
+					vertex = vertices[ i ];
+
+					if ( vertex !== v0 && vertex !== v1 && vertex !== v2 ) {
+
+						distance = Math.abs( plane.distanceToPoint( vertex.point ) );
+
+						if ( distance > maxDistance ) {
+
+							maxDistance = distance;
+							v3 = vertex;
+
+						}
+
+					}
+
+				}
+
+				var faces = [];
+
+				if ( plane.distanceToPoint( v3.point ) < 0 ) {
+
+					// the face is not able to see the point so 'plane.normal' is pointing outside the tetrahedron
+
+					faces.push(
+						Face.create( v0, v1, v2 ),
+						Face.create( v3, v1, v0 ),
+						Face.create( v3, v2, v1 ),
+						Face.create( v3, v0, v2 )
+					);
+
+					// set the twin edge
+
+					for ( i = 0; i < 3; i ++ ) {
+
+						j = ( i + 1 ) % 3;
+
+						// join face[ i ] i > 0, with the first face
+
+						faces[ i + 1 ].getEdge( 2 ).setTwin( faces[ 0 ].getEdge( j ) );
+
+						// join face[ i ] with face[ i + 1 ], 1 <= i <= 3
+
+						faces[ i + 1 ].getEdge( 1 ).setTwin( faces[ j + 1 ].getEdge( 0 ) );
+
+					}
+
+				} else {
+
+					// the face is able to see the point so 'plane.normal' is pointing inside the tetrahedron
+
+					faces.push(
+						Face.create( v0, v2, v1 ),
+						Face.create( v3, v0, v1 ),
+						Face.create( v3, v1, v2 ),
+						Face.create( v3, v2, v0 )
+					);
+
+					// set the twin edge
+
+					for ( i = 0; i < 3; i ++ ) {
+
+						j = ( i + 1 ) % 3;
+
+						// join face[ i ] i > 0, with the first face
+
+						faces[ i + 1 ].getEdge( 2 ).setTwin( faces[ 0 ].getEdge( ( 3 - i ) % 3 ) );
+
+						// join face[ i ] with face[ i + 1 ]
+
+						faces[ i + 1 ].getEdge( 0 ).setTwin( faces[ j + 1 ].getEdge( 1 ) );
+
+					}
+
+				}
+
+				// the initial hull is the tetrahedron
+
+				for ( i = 0; i < 4; i ++ ) {
+
+					this.faces.push( faces[ i ] );
+
+				}
+
+				// initial assignment of vertices to the faces of the tetrahedron
+
+				for ( i = 0, l = vertices.length; i < l; i ++ ) {
+
+					vertex = vertices[ i ];
+
+					if ( vertex !== v0 && vertex !== v1 && vertex !== v2 && vertex !== v3 ) {
+
+						maxDistance = this.tolerance;
+						var maxFace = null;
+
+						for ( j = 0; j < 4; j ++ ) {
+
+							distance = this.faces[ j ].distanceToPoint( vertex.point );
+
+							if ( distance > maxDistance ) {
+
+								maxDistance = distance;
+								maxFace = this.faces[ j ];
+
+							}
+
+						}
+
+						if ( maxFace !== null ) {
+
+							this.addVertexToFace( vertex, maxFace );
+
+						}
+
+					}
+
+				}
+
+				return this;
+
+			};
+
+		}(),
+
+		// Removes inactive faces
+
+		reindexFaces: function () {
+
+			var activeFaces = [];
+
+			for ( var i = 0; i < this.faces.length; i ++ ) {
+
+				var face = this.faces[ i ];
+
+				if ( face.mark === Visible ) {
+
+					activeFaces.push( face );
+
+				}
+
+			}
+
+			this.faces = activeFaces;
+
+			return this;
+
+		},
+
+		// Finds the next vertex to create faces with the current hull
+
+		nextVertexToAdd: function () {
+
+			// if the 'assigned' list of vertices is empty, no vertices are left. return with 'undefined'
+
+			if ( this.assigned.isEmpty() === false ) {
+
+				var eyeVertex, maxDistance = 0;
+
+				// grap the first available face and start with the first visible vertex of that face
+
+				var eyeFace = this.assigned.first().face;
+				var vertex = eyeFace.outside;
+
+				// now calculate the farthest vertex that face can see
+
+				do {
+
+					var distance = eyeFace.distanceToPoint( vertex.point );
+
+					if ( distance > maxDistance ) {
+
+						maxDistance = distance;
+						eyeVertex = vertex;
+
+					}
+
+					vertex = vertex.next;
+
+				} while ( vertex !== null && vertex.face === eyeFace );
+
+				return eyeVertex;
+
+			}
+
+		},
+
+		// Computes a chain of half edges in CCW order called the 'horizon'.
+		// For an edge to be part of the horizon it must join a face that can see
+		// 'eyePoint' and a face that cannot see 'eyePoint'.
+
+		computeHorizon: function ( eyePoint, crossEdge, face, horizon ) {
+
+			// moves face's vertices to the 'unassigned' vertex list
+
+			this.deleteFaceVertices( face );
+
+			face.mark = Deleted;
+
+			var edge;
+
+			if ( crossEdge === null ) {
+
+				edge = crossEdge = face.getEdge( 0 );
+
+			} else {
+
+				// start from the next edge since 'crossEdge' was already analyzed
+				// (actually 'crossEdge.twin' was the edge who called this method recursively)
+
+				edge = crossEdge.next;
+
+			}
+
+			do {
+
+				var twinEdge = edge.twin;
+				var oppositeFace = twinEdge.face;
+
+				if ( oppositeFace.mark === Visible ) {
+
+					if ( oppositeFace.distanceToPoint( eyePoint ) > this.tolerance ) {
+
+						// the opposite face can see the vertex, so proceed with next edge
+
+						this.computeHorizon( eyePoint, twinEdge, oppositeFace, horizon );
+
+					} else {
+
+						// the opposite face can't see the vertex, so this edge is part of the horizon
+
+						horizon.push( edge );
+
+					}
+
+				}
+
+				edge = edge.next;
+
+			} while ( edge !== crossEdge );
+
+			return this;
+
+		},
+
+		// Creates a face with the vertices 'eyeVertex.point', 'horizonEdge.tail' and 'horizonEdge.head' in CCW order
+
+		addAdjoiningFace: function ( eyeVertex, horizonEdge ) {
+
+			// all the half edges are created in ccw order thus the face is always pointing outside the hull
+
+			var face = Face.create( eyeVertex, horizonEdge.tail(), horizonEdge.head() );
+
+			this.faces.push( face );
+
+			// join face.getEdge( - 1 ) with the horizon's opposite edge face.getEdge( - 1 ) = face.getEdge( 2 )
+
+			face.getEdge( - 1 ).setTwin( horizonEdge.twin );
+
+			return face.getEdge( 0 ); // the half edge whose vertex is the eyeVertex
+
+
+		},
+
+		//  Adds 'horizon.length' faces to the hull, each face will be linked with the
+		//  horizon opposite face and the face on the left/right
+
+		addNewFaces: function ( eyeVertex, horizon ) {
+
+			this.newFaces = [];
+
+			var firstSideEdge = null;
+			var previousSideEdge = null;
+
+			for ( var i = 0; i < horizon.length; i ++ ) {
+
+				var horizonEdge = horizon[ i ];
+
+				// returns the right side edge
+
+				var sideEdge = this.addAdjoiningFace( eyeVertex, horizonEdge );
+
+				if ( firstSideEdge === null ) {
+
+					firstSideEdge = sideEdge;
+
+				} else {
+
+					// joins face.getEdge( 1 ) with previousFace.getEdge( 0 )
+
+					sideEdge.next.setTwin( previousSideEdge );
+
+				}
+
+				this.newFaces.push( sideEdge.face );
+				previousSideEdge = sideEdge;
+
+			}
+
+			// perform final join of new faces
+
+			firstSideEdge.next.setTwin( previousSideEdge );
+
+			return this;
+
+		},
+
+		// Adds a vertex to the hull
+
+		addVertexToHull: function ( eyeVertex ) {
+
+			var horizon = [];
+
+			this.unassigned.clear();
+
+			// remove 'eyeVertex' from 'eyeVertex.face' so that it can't be added to the 'unassigned' vertex list
+
+			this.removeVertexFromFace( eyeVertex, eyeVertex.face );
+
+			this.computeHorizon( eyeVertex.point, null, eyeVertex.face, horizon );
+
+			this.addNewFaces( eyeVertex, horizon );
+
+			// reassign 'unassigned' vertices to the new faces
+
+			this.resolveUnassignedPoints( this.newFaces );
+
+			return	this;
+
+		},
+
+		cleanup: function () {
+
+			this.assigned.clear();
+			this.unassigned.clear();
+			this.newFaces = [];
+
+			return this;
+
+		},
+
+		compute: function () {
+
+			var vertex;
+
+			this.computeInitialHull();
+
+			// add all available vertices gradually to the hull
+
+			while ( ( vertex = this.nextVertexToAdd() ) !== undefined ) {
+
+				this.addVertexToHull( vertex );
+
+			}
+
+			this.reindexFaces();
+
+			this.cleanup();
+
+			return this;
+
+		}
+
+	} );
+
+	//
+
+	function Face() {
+
+		this.normal = new Vector3();
+		this.midpoint = new Vector3();
+		this.area = 0;
+
+		this.constant = 0; // signed distance from face to the origin
+		this.outside = null; // reference to a vertex in a vertex list this face can see
+		this.mark = Visible;
+		this.edge = null;
+
+	}
+
+	Object.assign( Face, {
+
+		create: function ( a, b, c ) {
+
+			var face = new Face();
+
+			var e0 = new HalfEdge( a, face );
+			var e1 = new HalfEdge( b, face );
+			var e2 = new HalfEdge( c, face );
+
+			// join edges
+
+			e0.next = e2.prev = e1;
+			e1.next = e0.prev = e2;
+			e2.next = e1.prev = e0;
+
+			// main half edge reference
+
+			face.edge = e0;
+
+			return face.compute();
+
+		}
+
+	} );
+
+	Object.assign( Face.prototype, {
+
+		getEdge: function ( i ) {
+
+			var edge = this.edge;
+
+			while ( i > 0 ) {
+
+				edge = edge.next;
+				i --;
+
+			}
+
+			while ( i < 0 ) {
+
+				edge = edge.prev;
+				i ++;
+
+			}
+
+			return edge;
+
+		},
+
+		compute: function () {
+
+			var triangle;
+
+			return function compute() {
+
+				if ( triangle === undefined ) triangle = new Triangle();
+
+				var a = this.edge.tail();
+				var b = this.edge.head();
+				var c = this.edge.next.head();
+
+				triangle.set( a.point, b.point, c.point );
+
+				triangle.getNormal( this.normal );
+				triangle.getMidpoint( this.midpoint );
+				this.area = triangle.getArea();
+
+				this.constant = this.normal.dot( this.midpoint );
+
+				return this;
+
+			};
+
+		}(),
+
+		distanceToPoint: function ( point ) {
+
+			return this.normal.dot( point ) - this.constant;
+
+		}
+
+	} );
+
+	// Entity for a Doubly-Connected Edge List (DCEL).
+
+	function HalfEdge( vertex, face ) {
+
+		this.vertex = vertex;
+		this.prev = null;
+		this.next = null;
+		this.twin = null;
+		this.face = face;
+
+	}
+
+	Object.assign( HalfEdge.prototype, {
+
+		head: function () {
+
+			return this.vertex;
+
+		},
+
+		tail: function () {
+
+			return this.prev ? this.prev.vertex : null;
+
+		},
+
+		length: function () {
+
+			var head = this.head();
+			var tail = this.tail();
+
+			if ( tail !== null ) {
+
+				return tail.point.distanceTo( head.point );
+
+			}
+
+			return - 1;
+
+		},
+
+		lengthSquared: function () {
+
+			var head = this.head();
+			var tail = this.tail();
+
+			if ( tail !== null ) {
+
+				return tail.point.distanceToSquared( head.point );
+
+			}
+
+			return - 1;
+
+		},
+
+		setTwin: function ( edge ) {
+
+			this.twin = edge;
+			edge.twin = this;
+
+			return this;
+
+		}
+
+	} );
+
+	// A vertex as a double linked list node.
+
+	function VertexNode( point ) {
+
+		this.point = point;
+		this.prev = null;
+		this.next = null;
+		this.face = null; // the face that is able to see this vertex
+
+	}
+
+	// A double linked list that contains vertex nodes.
+
+	function VertexList() {
+
+		this.head = null;
+		this.tail = null;
+
+	}
+
+	Object.assign( VertexList.prototype, {
+
+		first: function () {
+
+			return this.head;
+
+		},
+
+		last: function () {
+
+			return this.tail;
+
+		},
+
+		clear: function () {
+
+			this.head = this.tail = null;
+
+			return this;
+
+		},
+
+		// Inserts a vertex before the target vertex
+
+		insertBefore: function ( target, vertex ) {
+
+			vertex.prev = target.prev;
+			vertex.next = target;
+
+			if ( vertex.prev === null ) {
+
+				this.head = vertex;
+
+			} else {
+
+				vertex.prev.next = vertex;
+
+			}
+
+			target.prev = vertex;
+
+			return this;
+
+		},
+
+		// Inserts a vertex after the target vertex
+
+		insertAfter: function ( target, vertex ) {
+
+			vertex.prev = target;
+			vertex.next = target.next;
+
+			if ( vertex.next === null ) {
+
+				this.tail = vertex;
+
+			} else {
+
+				vertex.next.prev = vertex;
+
+			}
+
+			target.next = vertex;
+
+			return this;
+
+		},
+
+		// Appends a vertex to the end of the linked list
+
+		append: function ( vertex ) {
+
+			if ( this.head === null ) {
+
+				this.head = vertex;
+
+			} else {
+
+				this.tail.next = vertex;
+
+			}
+
+			vertex.prev = this.tail;
+			vertex.next = null; // the tail has no subsequent vertex
+
+			this.tail = vertex;
+
+			return this;
+
+		},
+
+		// Appends a chain of vertices where 'vertex' is the head.
+
+		appendChain: function ( vertex ) {
+
+			if ( this.head === null ) {
+
+				this.head = vertex;
+
+			} else {
+
+				this.tail.next = vertex;
+
+			}
+
+			vertex.prev = this.tail;
+
+			// ensure that the 'tail' reference points to the last vertex of the chain
+
+			while ( vertex.next !== null ) {
+
+				vertex = vertex.next;
+
+			}
+
+			this.tail = vertex;
+
+			return this;
+
+		},
+
+		// Removes a vertex from the linked list
+
+		remove: function ( vertex ) {
+
+			if ( vertex.prev === null ) {
+
+				this.head = vertex.next;
+
+			} else {
+
+				vertex.prev.next = vertex.next;
+
+			}
+
+			if ( vertex.next === null ) {
+
+				this.tail = vertex.prev;
+
+			} else {
+
+				vertex.next.prev = vertex.prev;
+
+			}
+
+			return this;
+
+		},
+
+		// Removes a list of vertices whose 'head' is 'a' and whose 'tail' is b
+
+		removeSubList: function ( a, b ) {
+
+			if ( a.prev === null ) {
+
+				this.head = b.next;
+
+			} else {
+
+				a.prev.next = b.next;
+
+			}
+
+			if ( b.next === null ) {
+
+				this.tail = a.prev;
+
+			} else {
+
+				b.next.prev = a.prev;
+
+			}
+
+			return this;
+
+		},
+
+		isEmpty: function () {
+
+			return this.head === null;
+
+		}
+
+	} );
+
+	return ConvexHull;
+
+} )();
+
+export { ConvexHull };

@@ -1,16 +1,24 @@
 export class Renderable {
-	start(data) {
+
+	start( data ) {
+
 		this.ref = data;
 
-		this.addEventListener("enable", this.onEnable);
-		this.addEventListener("disable", this.onDisable);
+		this.addEventListener( "enable", this.onEnable );
+		this.addEventListener( "disable", this.onDisable );
+
 	}
 
 	onEnable() {
-		this.entity.add(this.ref);
+
+		this.entity.add( this.ref );
+
 	}
 
 	onDisable() {
-		this.entity.remove(this.ref);
+
+		this.entity.remove( this.ref );
+
 	}
+
 }

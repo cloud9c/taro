@@ -1,58 +1,75 @@
 import { PerspectiveCamera as PC, Vector4 } from "../../lib/three.js";
 
 export class PerspectiveCamera extends PC {
-	start(data) {
+
+	start( data ) {
+
 		this._region = new Vector4();
 		this.autoAspect = true;
 
-		if ("fov" in data) this.fov = data.fov;
-		if ("near" in data) this.near = data.near;
-		if ("far" in data) this.far = data.far;
+		if ( "fov" in data ) this.fov = data.fov;
+		if ( "near" in data ) this.near = data.near;
+		if ( "far" in data ) this.far = data.far;
 		this.viewport =
-			"viewport" in data ? data.viewport : new Vector4(0, 0, 1, 1);
-		if ("aspect" in data) this.aspect = data.aspect;
+			"viewport" in data ? data.viewport : new Vector4( 0, 0, 1, 1 );
+		if ( "aspect" in data ) this.aspect = data.aspect;
 
-		this._onResize(this.entity.scene.app.canvas);
+		this._onResize( this.entity.scene.app.canvas );
 
-		if (!this.autoAspect) this.updateProjectionMatrix();
+		if ( ! this.autoAspect ) this.updateProjectionMatrix();
 
-		this.addEventListener("enable", this.onEnable);
-		this.addEventListener("disable", this.onDisable);
+		this.addEventListener( "enable", this.onEnable );
+		this.addEventListener( "disable", this.onDisable );
+
 	}
 
 	onEnable() {
-		this.entity.scene._cameras.push(this);
-		this.entity.add(this);
+
+		this.entity.scene._cameras.push( this );
+		this.entity.add( this );
+
 	}
 
 	onDisable() {
+
 		this.entity.scene._cameras.splice(
-			this.entity.scene._cameras.indexOf(this),
+			this.entity.scene._cameras.indexOf( this ),
 			1
 		);
-		this.entity.remove(this);
+		this.entity.remove( this );
+
 	}
 
-	_onResize(canvas) {
+	_onResize( canvas ) {
+
 		const view = this.viewport;
-		if (this.autoAspect) {
-			this._aspect = (canvas.width * view.z) / (canvas.height * view.w);
+		if ( this.autoAspect ) {
+
+			this._aspect = ( canvas.width * view.z ) / ( canvas.height * view.w );
 			this.updateProjectionMatrix();
+
 		}
+
 		this._region.set(
 			canvas.width * view.x,
 			canvas.height * view.y,
 			canvas.width * view.z,
 			canvas.height * view.w
 		);
+
 	}
 
 	get aspect() {
+
 		return this._aspect;
+
 	}
 
-	set aspect(x) {
+	set aspect( x ) {
+
 		this.autoAspect = false;
 		this._aspect = x;
+
 	}
+
 }

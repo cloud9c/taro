@@ -28,28 +28,39 @@ import { EventDispatcher } from "../lib/three.js";
 const cProto = {
 	destroy: {
 		value: function () {
-			if (this.enabled) {
-				const type = this.componentType;
-				const container = this.entity.scene._containers[type];
-				container.splice(container.indexOf(this), 1);
-			} else {
-				this.dispatchEvent({ type: "disable" });
-			}
-			const components = this.entity._components;
-			components.splice(components.indexOf(this), 1);
 
-			this.dispatchEvent({ type: "destroy" });
+			if ( this.enabled ) {
+
+				const type = this.componentType;
+				const container = this.entity.scene._containers[ type ];
+				container.splice( container.indexOf( this ), 1 );
+
+			} else {
+
+				this.dispatchEvent( { type: "disable" } );
+
+			}
+
+			const components = this.entity._components;
+			components.splice( components.indexOf( this ), 1 );
+
+			this.dispatchEvent( { type: "destroy" } );
+
 		},
 	},
 	componentType: { value: null },
 	_enabled: { value: true, writable: true },
 	enabled: {
 		get() {
+
 			return this._enabled;
+
 		},
-		set(value) {
-			if (value != this._enabled) {
-				if (value && !this.entity._enabled)
+		set( value ) {
+
+			if ( value != this._enabled ) {
+
+				if ( value && ! this.entity._enabled )
 					return console.warn(
 						"Component: Can't enable if the entity is disabled"
 					);
@@ -58,62 +69,70 @@ const cProto = {
 				const container = this.entity.scene._containers[
 					this.componentType
 				];
-				if (value) {
-					container.push(this);
-					this.dispatchEvent({ type: "enable" });
+				if ( value ) {
+
+					container.push( this );
+					this.dispatchEvent( { type: "enable" } );
+
 				} else {
-					container.splice(container.indexOf(this), 1);
-					this.dispatchEvent({ type: "disable" });
+
+					container.splice( container.indexOf( this ), 1 );
+					this.dispatchEvent( { type: "disable" } );
+
 				}
+
 			}
+
 		},
 	},
 };
 
 const _components = {};
 
-function createComponent(type, obj, options = {}) {
-	if (type in _components) throw "Component type already exists";
+function createComponent( type, obj, options = {} ) {
+
+	if ( type in _components ) throw "Component type already exists";
 
 	cProto.componentType.value = type;
-	Object.defineProperties(obj.prototype, cProto);
-	Object.assign(obj.prototype, EventDispatcher.prototype);
+	Object.defineProperties( obj.prototype, cProto );
+	Object.assign( obj.prototype, EventDispatcher.prototype );
 
-	_components[type] = [obj, options];
+	_components[ type ] = [ obj, options ];
 	return obj;
+
 }
 
-createComponent("Animation", Animation);
-createComponent("Renderable", Renderable);
-createComponent("OrthographicCamera", OrthographicCamera);
-createComponent("PerspectiveCamera", PerspectiveCamera);
-createComponent("AmbientLight", AmbientLight);
-createComponent("DirectionalLight", DirectionalLight);
-createComponent("HemisphereLight", HemisphereLight);
-createComponent("PointLight", PointLight);
-createComponent("SpotLight", SpotLight);
-createComponent("Rigidbody", Rigidbody);
+createComponent( "Animation", Animation );
+createComponent( "Renderable", Renderable );
+createComponent( "OrthographicCamera", OrthographicCamera );
+createComponent( "PerspectiveCamera", PerspectiveCamera );
+createComponent( "AmbientLight", AmbientLight );
+createComponent( "DirectionalLight", DirectionalLight );
+createComponent( "HemisphereLight", HemisphereLight );
+createComponent( "PointLight", PointLight );
+createComponent( "SpotLight", SpotLight );
+createComponent( "Rigidbody", Rigidbody );
 
-createComponent("BoxCollider", BoxCollider);
-createComponent("CapsuleCollider", CapsuleCollider);
-createComponent("ConeCollider", ConeCollider);
-createComponent("CylinderCollider", CylinderCollider);
-createComponent("MeshCollider", MeshCollider);
-createComponent("SphereCollider", SphereCollider);
+createComponent( "BoxCollider", BoxCollider );
+createComponent( "CapsuleCollider", CapsuleCollider );
+createComponent( "ConeCollider", ConeCollider );
+createComponent( "CylinderCollider", CylinderCollider );
+createComponent( "MeshCollider", MeshCollider );
+createComponent( "SphereCollider", SphereCollider );
 
-createComponent("BallJoint", BallJoint, { requiredComponent: "Rigidbody" });
-createComponent("CylindricalJoint", CylindricalJoint, {
+createComponent( "BallJoint", BallJoint, { requiredComponent: "Rigidbody" } );
+createComponent( "CylindricalJoint", CylindricalJoint, {
 	requiredComponent: "Rigidbody",
-});
-createComponent("PrismaticJoint", PrismaticJoint, {
+} );
+createComponent( "PrismaticJoint", PrismaticJoint, {
 	requiredComponent: "Rigidbody",
-});
-createComponent("RagdollJoint", RagdollJoint, {
+} );
+createComponent( "RagdollJoint", RagdollJoint, {
 	requiredComponent: "Rigidbody",
-});
-createComponent("HingeJoint", HingeJoint, { requiredComponent: "Rigidbody" });
-createComponent("UniversalJoint", UniversalJoint, {
+} );
+createComponent( "HingeJoint", HingeJoint, { requiredComponent: "Rigidbody" } );
+createComponent( "UniversalJoint", UniversalJoint, {
 	requiredComponent: "Rigidbody",
-});
+} );
 
 export { _components, createComponent };

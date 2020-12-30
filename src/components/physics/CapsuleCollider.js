@@ -1,8 +1,12 @@
 import { Collider } from "./Collider.js";
 
 export class CapsuleCollider extends Collider {
-	start(data) {
+
+	start( data ) {
+
 		this.type = "capsule";
-		super.start(data);
+		super.start( data );
+
 	}
+
 }
