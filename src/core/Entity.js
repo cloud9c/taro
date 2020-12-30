@@ -8,6 +8,8 @@ export class Entity extends Group {
 		super();
 
 		this.tags = [];
+
+		this.isEntity = true;
 		this._components = [];
 		this._enabled = true;
 
@@ -154,5 +156,10 @@ export class Entity extends Group {
 
 	get app() {
 		return this.scene.app;
+	}
+
+	toJSON(meta) {
+		const output = super.toJSON(meta);
+		console.log(output);
 	}
 }
