@@ -1,4 +1,3 @@
-import { Animation } from "../components/rendering/Animation.js";
 import { Renderable } from "../components/rendering/Renderable.js";
 import { OrthographicCamera } from "../components/cameras/OrthographicCamera.js";
 import { PerspectiveCamera } from "../components/cameras/PerspectiveCamera.js";
@@ -25,7 +24,7 @@ import { UniversalJoint } from "../components/physics/UniversalJoint.js";
 
 import { EventDispatcher } from "../lib/three.js";
 
-const cProto = {
+const prototype = {
 	destroy: {
 		value: function () {
 
@@ -93,8 +92,8 @@ function createComponent( type, obj, options = {} ) {
 
 	if ( type in _components ) throw "Component type already exists";
 
-	cProto.componentType.value = type;
-	Object.defineProperties( obj.prototype, cProto );
+	prototype.componentType.value = type;
+	Object.defineProperties( obj.prototype, prototype );
 	Object.assign( obj.prototype, EventDispatcher.prototype );
 
 	_components[ type ] = [ obj, options ];
@@ -102,7 +101,6 @@ function createComponent( type, obj, options = {} ) {
 
 }
 
-createComponent( "Animation", Animation );
 createComponent( "Renderable", Renderable );
 createComponent( "OrthographicCamera", OrthographicCamera );
 createComponent( "PerspectiveCamera", PerspectiveCamera );
@@ -120,19 +118,23 @@ createComponent( "CylinderCollider", CylinderCollider );
 createComponent( "MeshCollider", MeshCollider );
 createComponent( "SphereCollider", SphereCollider );
 
-createComponent( "BallJoint", BallJoint, { requiredComponent: "Rigidbody" } );
+createComponent( "BallJoint", BallJoint, {
+	requiredComponents: [ "Rigidbody" ]
+} );
 createComponent( "CylindricalJoint", CylindricalJoint, {
-	requiredComponent: "Rigidbody",
+	requiredComponents: [ "Rigidbody" ],
 } );
 createComponent( "PrismaticJoint", PrismaticJoint, {
-	requiredComponent: "Rigidbody",
+	requiredComponents: [ "Rigidbody" ],
 } );
 createComponent( "RagdollJoint", RagdollJoint, {
-	requiredComponent: "Rigidbody",
+	requiredComponents: [ "Rigidbody" ],
 } );
-createComponent( "HingeJoint", HingeJoint, { requiredComponent: "Rigidbody" } );
+createComponent( "HingeJoint", HingeJoint, { requiredComponents: [ "Rigidbody" ] } );
 createComponent( "UniversalJoint", UniversalJoint, {
-	requiredComponent: "Rigidbody",
+	requiredComponents: [ "Rigidbody" ]
 } );
+
+// options: allowMultiple, requiredComponents,
 
 export { _components, createComponent };
