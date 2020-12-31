@@ -1,7 +1,7 @@
 import { Group } from "../lib/three.js";
 import { Scene } from "./Scene.js";
 import { Application } from "./Application.js";
-import { _components } from "./Component.js";
+import { ComponentManager } from "./ComponentManager.js";
 
 export class Entity extends Group {
 
@@ -68,7 +68,7 @@ export class Entity extends Group {
 
 	addComponent( type, data = {} ) {
 
-		const options = _components[ type ][ 1 ];
+		const options = ComponentManager._components[ type ].options;
 		if (
 			options.allowMultiple === false &&
 			this.getComponent( type ) !== undefined
@@ -87,7 +87,7 @@ export class Entity extends Group {
 
 		}
 
-		const component = new _components[ type ][ 0 ]();
+		const component = new ComponentManager._components[ type ].constructor();
 
 		Object.defineProperty( component, "entity", {
 			value: this,
@@ -237,7 +237,29 @@ export class Entity extends Group {
 
 			for ( let i = 0, len = this._components.length; i < len; i ++ ) {
 
-				object.components.push( this._components[ i ].toJSON() );
+				const component = this._components[ i ];
+
+				if ( component.isObject3D )
+					continue;
+
+				const type = component.componentType;
+				const meta = { type, data: {} };
+
+
+				if ( "toJSON" in component ) {
+
+					meta.data = component.toJSON();
+
+				} else {
+
+					meta.data = Object.assign( {}, component );
+					delete meta.data._listeners;
+
+				}
+
+				meta.enabled = component._enabled;
+
+				object.components.push( meta );
 
 			}
 
@@ -245,7 +267,7 @@ export class Entity extends Group {
 
 		}
 
-		console.log( object );
+		return object;
 
 	}
 

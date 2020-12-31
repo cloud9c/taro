@@ -18,7 +18,7 @@ export class Application {
 
 		this._scenes = {};
 
-		this.createScene( "Untitled Scene" );
+		this.addScene( "Untitled Scene" );
 		this.setScene( "Untitled Scene" );
 		Application._currentApp = this;
 
@@ -28,7 +28,7 @@ export class Application {
 		window.requestAnimationFrame( ( t ) => this._updateLoop( t / 1000 ) );
 
 	}
-	createScene( name ) {
+	addScene( name ) {
 
 		const scene = new Scene();
 		scene.app = this;

@@ -23,7 +23,7 @@
 			import { GLTFLoader } from "https://threejs.org/examples/jsm/loaders/GLTFLoader.js";
 			import * as ENGINE from "../src/taro.js";
 
-			ENGINE.createComponent(
+			ENGINE.ComponentManager.add(
 				"CameraController",
 				class {
 					start() {
@@ -35,16 +35,17 @@
 						window.addEventListener("mousedown", () => {
 							this.entity.scene.app.canvas.requestPointerLock();
 						});
-						this.ball.addEventListener("collisionenter", function (
-							c
-						) {
-							console.log(c);
-						});
+						// this.ball.addEventListener("collisionenter", function (
+						// 	c
+						// ) {
+						// 	console.log(c);
+						// });
 					}
 					update() {
 						const ball = this.ball;
 						if (this.input.getKeyDown("KeyG")) {
-							this.ball.toJSON();
+							console.log(this.ball.toJSON())
+							console.log(this.entity.toJSON())
 						}
 
 						if (this.input.getKeyDown("ArrowUp")) {
@@ -167,7 +168,9 @@
 			entity = new ENGINE.Entity("ball");
 			entity.addComponent("Renderable", mesh);
 			entity.position.set(0, 5, 2);
-			entity.addComponent("Rigidbody");
+			entity.addComponent("Rigidbody", {
+				mass: 10
+			});
 			entity.addComponent("SphereCollider", {
 				radius: 1,
 			});

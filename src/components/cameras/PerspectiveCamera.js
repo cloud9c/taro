@@ -14,7 +14,7 @@ export class PerspectiveCamera extends PC {
 			"viewport" in data ? data.viewport : new Vector4( 0, 0, 1, 1 );
 		if ( "aspect" in data ) this.aspect = data.aspect;
 
-		this._onResize( this.entity.scene.app.canvas );
+		this._onResize( this.scene.app.canvas );
 
 		if ( ! this.autoAspect ) this.updateProjectionMatrix();
 
@@ -25,15 +25,15 @@ export class PerspectiveCamera extends PC {
 
 	onEnable() {
 
-		this.entity.scene._cameras.push( this );
+		this.scene._cameras.push( this );
 		this.entity.add( this );
 
 	}
 
 	onDisable() {
 
-		this.entity.scene._cameras.splice(
-			this.entity.scene._cameras.indexOf( this ),
+		this.scene._cameras.splice(
+			this.scene._cameras.indexOf( this ),
 			1
 		);
 		this.entity.remove( this );

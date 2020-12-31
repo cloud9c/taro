@@ -14,7 +14,7 @@ export class OrthographicCamera extends OC {
 		if ( "far" in data ) this.far = data.far;
 		this.viewport =
 			"viewport" in data ? data.viewport : new Vector4( 0, 0, 1, 1 );
-		this._onResize( this.entity.scene.app.canvas );
+		this._onResize( this.scene.app.canvas );
 		this.updateProjectionMatrix();
 
 		this.addEventListener( "enable", this.onEnable );
@@ -24,15 +24,15 @@ export class OrthographicCamera extends OC {
 
 	onEnable() {
 
-		this.entity.scene._cameras.push( this );
+		this.scene._cameras.push( this );
 		this.entity.add( this );
 
 	}
 
 	onDisable() {
 
-		this.entity.scene._cameras.splice(
-			this.entity.scene._cameras.indexOf( this ),
+		this.scene._cameras.splice(
+			this.scene._cameras.indexOf( this ),
 			1
 		);
 		this.entity.remove( this );

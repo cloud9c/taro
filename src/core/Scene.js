@@ -1,7 +1,7 @@
 import { Scene as TS } from "../lib/three.js";
 import { OIMO } from "../lib/oimo.js";
 import { Entity } from "./Entity.js";
-import { _components } from "./Component.js";
+import { ComponentManager } from "./ComponentManager.js";
 
 export class Scene extends TS {
 
@@ -12,7 +12,7 @@ export class Scene extends TS {
 
 		this._containers = {};
 		this._enabled = true;
-		for ( const type in _components ) {
+		for ( const type in ComponentManager._components ) {
 
 			this._containers[ type ] = [];
 

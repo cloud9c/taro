@@ -1,40 +1,20 @@
 export class LinearLimit {
 
-	constructor( lowerLimit = 0, upperLimit = 0, targetSpeed, maxForce = 0 ) {
+	constructor( lowerLimit = 0, upperLimit = 0, motorSpeed, motorForce = 0 ) {
 
 		this.lowerLimit = lowerLimit;
 		this.upperLimit = upperLimit;
-		this.motorSpeed = targetSpeed;
-		this.motorForce = maxForce;
-
-	}
-	get targetSpeed() {
-
-		return this.motorSpeed;
-
-	}
-	set targetSpeed( targetSpeed ) {
-
-		this.motorSpeed = targetSpeed;
-
-	}
-	get maxForce() {
-
-		return this.motorForce;
-
-	}
-	set maxForce( maxForce ) {
-
-		this.motorForce = maxForce;
+		this.motorSpeed = motorSpeed;
+		this.motorForce = motorForce;
 
 	}
 
-	set( lowerLimit = 0, upperLimit = 0, targetSpeed, maxForce = 0 ) {
+	set( lowerLimit = 0, upperLimit = 0, motorSpeed, motorForce = 0 ) {
 
 		this.lowerLimit = lowerLimit;
 		this.upperLimit = upperLimit;
-		this.motorSpeed = targetSpeed;
-		this.motorForce = maxForce;
+		this.motorSpeed = motorSpeed;
+		this.motorForce = motorForce;
 
 	}
 

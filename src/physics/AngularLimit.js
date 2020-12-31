@@ -1,40 +1,20 @@
 export class AngularLimit {
 
-	constructor( lowerLimit = 1, upperLimit = 0, targetSpeed, maxTorque = 0 ) {
+	constructor( lowerLimit = 1, upperLimit = 0, motorSpeed, motorTorque = 0 ) {
 
 		this.lowerLimit = lowerLimit;
 		this.upperLimit = upperLimit;
-		this.motorSpeed = targetSpeed;
-		this.motorTorque = maxTorque;
-
-	}
-	get targetSpeed() {
-
-		return this.motorSpeed;
-
-	}
-	set targetSpeed( targetSpeed ) {
-
-		this.motorSpeed = targetSpeed;
-
-	}
-	get maxTorque() {
-
-		return this.motorTorque;
-
-	}
-	set maxTorque( maxTorque ) {
-
-		this.motorTorque = maxTorque;
+		this.motorSpeed = motorSpeed;
+		this.motorTorque = motorTorque;
 
 	}
 
-	set( lowerLimit = 1, upperLimit = 0, targetSpeed, maxTorque = 0 ) {
+	set( lowerLimit = 1, upperLimit = 0, motorSpeed, motorTorque = 0 ) {
 
 		this.lowerLimit = lowerLimit;
 		this.upperLimit = upperLimit;
-		this.motorSpeed = targetSpeed;
-		this.motorTorque = maxTorque;
+		this.motorSpeed = motorSpeed;
+		this.motorTorque = motorTorque;
 
 	}
 

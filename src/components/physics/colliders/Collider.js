@@ -1,10 +1,8 @@
-import { OIMO } from "../../lib/oimo.js";
-import { Vector3, Euler } from "../../lib/three.js";
-import { ConvexHull } from "../../physics/ConvexHull.js";
-import { createRigidbody } from "./Rigidbody.js";
+import { OIMO } from "../../../lib/oimo.js";
+import { Vector3, Euler } from "../../../lib/three.js";
+import { Rigidbody } from "../Rigidbody.js";
 
 const vector = new Vector3();
-const convexHull = new ConvexHull();
 const massData = new OIMO.MassData();
 const transform = new OIMO.Transform();
 const shapeConfig = new OIMO.ShapeConfig();
@@ -87,30 +85,11 @@ export class Collider {
 		this._collisionMask = "collisionMask" in data ? data.collisionMask : 1;
 		this._center = "center" in data ? data.center : new Vector3( 0, 0, 0 );
 		this._rotation = "rotation" in data ? data.center : new Euler( 0, 0, 0 );
-		switch ( this.type ) {
 
-			case "box":
-				// box
-				this._halfExtents =
-					"halfExtents" in data
-						? data.halfExtents
-						: new Vector( 1, 1, 1 );
-			case "sphere":
-				this._radius = "radius" in data ? data.radius : 0.5;
-				break;
-			case "capsule":
-			case "cone":
-			case "cylinder":
-				this._radius = "radius" in data ? data.radius : 0.5;
-				this._halfHeight = "halfHeight" in data ? data.halfHeight : 1;
-
-				break;
-			case "mesh":
-				this._mesh = "mesh" in data ? data.mesh : null;
-
-		}
+		this._addDerivedProperties( data );
 
 		if ( "material" in data ) this._material = data.material;
+
 		this._setShape();
 
 		this.addEventListener( "enable", this.onEnable );
@@ -123,7 +102,7 @@ export class Collider {
 
 		if ( this._isTrigger ) {
 
-			this.entity.scene.app.physics._triggers.push(
+			this.app.physics._triggers.push(
 				this._shapeRef.getGeometry()
 			);
 
@@ -135,14 +114,14 @@ export class Collider {
 				this._ref = ref;
 				if ( ! ref.component._enabled ) {
 
-					this.entity.scene._physicsWorld.addRigidBody( this._ref );
+					this.scene._physicsWorld.addRigidBody( this._ref );
 
 				}
 
 			} else {
 
-				createRigidbody( this, 1 );
-				this.entity.scene._physicsWorld.addRigidBody( this._ref );
+				Rigidbody.createRigidbody( this, 1 );
+				this.scene._physicsWorld.addRigidBody( this._ref );
 
 			}
 
@@ -178,7 +157,7 @@ export class Collider {
 
 		if ( this._isTrigger ) {
 
-			const triggers = this.entity.scene.app.physics._triggers;
+			const triggers = this.app.physics._triggers;
 			triggers.splice( triggers.indexOf( this._shapeRef.getGeometry() ), 1 );
 
 		} else {
@@ -194,13 +173,13 @@ export class Collider {
 
 			if ( this._ref.getNumShapes() === 0 && this._ref.getType() === 1 ) {
 
-				this.entity.scene._physicsWorld.removeRigidBody( this._ref );
+				this.scene._physicsWorld.removeRigidBody( this._ref );
 
 			}
 
 			delete this._ref;
 			const scale = this.entity.scale;
-			if ( scale.colliders.length === 1 ) {
+			if ( scale._colliders.length === 1 ) {
 
 				Object.defineProperty( this.entity, "scale", {
 					value: new Vector3().copy( scale ),
@@ -208,7 +187,7 @@ export class Collider {
 
 			} else {
 
-				scale.colliders.splice( scale.colliders.indexOf( this ), 1 );
+				scale._colliders.splice( scale._colliders.indexOf( this ), 1 );
 
 			}
 
@@ -253,55 +232,10 @@ export class Collider {
 
 	_setShape() {
 
-		let geometry;
 		const scale = this.entity.scale;
 		const max = Math.max( scale.x, scale.y, scale.z );
-		switch ( this.type ) {
 
-			case "box":
-				geometry = new OIMO.BoxGeometry(
-					vector.copy( this._halfExtents ).multiply( scale )
-				);
-				break;
-			case "sphere":
-				geometry = new OIMO.SphereGeometry( this._radius * max );
-				break;
-			case "capsule":
-				geometry = new OIMO.CapsuleGeometry(
-					this._radius * max,
-					this._halfHeight * max
-				);
-				break;
-			case "cone":
-				geometry = new OIMO.ConeGeometry(
-					this._radius * max,
-					this._halfHeight * max
-				);
-				break;
-			case "cylinder":
-				geometry = new OIMO.CylinderGeometry(
-					this._radius * max,
-					this._halfHeight * max
-				);
-				break;
-			case "mesh":
-				let vertices = [];
-				if ( this._mesh !== null ) {
-
-					vertices = convexHull.setFromObject( this._mesh ).vertices;
-					for ( let i = 0, len = vertices.length; i < len; i ++ ) {
-
-						vertices[ i ] = vertices[ i ].point.multiply( scale );
-
-					}
-
-				}
-
-				geometry = new OIMO.ConvexHullGeometry( vertices );
-
-		}
-
-		shapeConfig.geometry = geometry;
+		shapeConfig.geometry = this._setGeometry( scale, max );
 		shapeConfig.collisionGroup = this._collisionGroup;
 		shapeConfig.collisionMask = this._collisionMask;
 		shapeConfig.position = this._center;
@@ -311,7 +245,7 @@ export class Collider {
 
 			if ( this._isTrigger ) {
 
-				const triggers = this.entity.scene.app.physics._triggers;
+				const triggers = this.app.physics._triggers;
 				triggers.splice(
 					triggers.indexOf( this._shapeRef.getGeometry() ),
 					1
@@ -425,9 +359,30 @@ export class Collider {
 
 	}
 
-	set mesh( v ) {
+	set mesh( mesh ) {
 
-		this._mesh = v;
+		this._mesh = mesh;
+		this._setShape();
+
+	}
+
+	getPoints() {
+
+		const points = [];
+
+		for ( let i = 0, len = this._points.length; i < len; i ++ ) {
+
+			points[ i ] = this._points.clone();
+
+		}
+
+		return this._points;
+
+	}
+
+	setPoints( points ) {
+
+		this._points = points;
 		this._setShape();
 
 	}
@@ -512,6 +467,27 @@ export class Collider {
 
 	}
 
+	toJSON() {
+
+		return {
+			isTrigger: this._isTrigger,
+			collisionGroup: this._collisionGroup,
+			collisionMask: this._collisionMask,
+			center: this._center.toArray(),
+			rotation: this._rotation.toArray()
+		};
+
+	}
+
+	fromJSON( object ) {
+
+		object.center = new Vector3().fromArray( object.center );
+		object.rotation = new Euler().fromArray( object.rotation );
+
+		return object;
+
+	}
+
 }
 
 function contactCallback( contact, type ) {
@@ -520,8 +496,8 @@ function contactCallback( contact, type ) {
 	const entity1 = constraint.getShape1().entity;
 	const entity2 = constraint.getShape2().entity;
 
-	const has1 = entity1.hasEventListener( type, contactCallback );
-	const has2 = entity2.hasEventListener( type, contactCallback );
+	const has1 = "_listeners" in entity1 && type in entity1._listeners && entity1._listeners[ type ].length !== 0;
+	const has2 = "_listeners" in entity2 && type in entity2._listeners && entity2._listeners[ type ].length !== 0;
 
 	if ( has1 || has2 ) {
 

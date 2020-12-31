@@ -13,34 +13,33 @@ export class Rigidbody {
 	start( data ) {
 
 		if ( "_physicsRef" in this.entity ) this._ref = this.entity._physicsRef;
-		else createRigidbody( this, 0 );
+		else Rigidbody.createRigidbody( this, 0 );
 
 		if ( "angularVelocity" in data )
 			this.setAngularVelocity( data.angularVelocity );
 
 		if ( "angularDamping" in data )
-			this._ref.setAngularDamping( data.angularDamping );
+			this.angularDamping = data.angularDamping;
 
 		if ( "linearVelocity" in data )
 			this.setLinearVelocity( data.linearVelocity );
 
 		if ( "linearDamping" in data )
-			this._ref.setLinearDamping( data.linearDamping );
+			this.linearDamping = data.linearDamping;
 
-		this.autoSleep = "autoSleep" in data ? data.autoSleep : true;
+		if ( "gravityScale" in data )
+			this.gravityScale = data.gravityScale;
+
+		if ( "autoSleep" in data )
+			this.autoSleep = data.autoSleep;
+
+		if ( "isKinematic" in data )
+			this.isKinematic = "isKinematic" in data ? data.isKinematic : false;
+
+		if ( "rotationFactor" in data )
+			this.setRotationFactor( data.rotationFactor );
+
 		this._ref.mass = "mass" in data ? data.mass : 1;
-		this._isKinematic = "isKinematic" in data ? data.isKinematic : false;
-		this.setRotationFactor(
-			"rotationFactor" in data
-				? data.rotationFactor
-				: new Vector3( 1, 1, 1 )
-		);
-
-		if ( "useGravity" in data && ! data.useGravity ) {
-
-			this.gravityScale = 0;
-
-		}
 
 		this.addEventListener( "enable", this.onEnable );
 		this.addEventListener( "disable", this.onDisable );
@@ -50,18 +49,9 @@ export class Rigidbody {
 
 	onEnable() {
 
-		this.mass = this._ref.mass;
-		if ( this._isKinematic ) this._ref.setType( 2 );
-		else {
-
-			this._ref.setType( 0 );
-			this.mass = this._ref.mass;
-
-		}
-
 		if ( this._ref.getNumShapes() === 0 ) {
 
-			this.entity.scene._physicsWorld.addRigidBody( this._ref );
+			this.scene._physicsWorld.addRigidBody( this._ref );
 
 		}
 
@@ -75,7 +65,7 @@ export class Rigidbody {
 
 		} else {
 
-			this.entity.scene._physicsWorld.removeRigidBody( this._ref );
+			this.scene._physicsWorld.removeRigidBody( this._ref );
 
 		}
 
@@ -190,19 +180,12 @@ export class Rigidbody {
 	}
 	get isKinematic() {
 
-		return this.isKinematic;
+		return this._ref.getType() === 2;
 
 	}
 	set isKinematic( v ) {
 
-		this._isKinematic = v;
-		if ( v ) this._ref.setType( 2 );
-		else {
-
-			this._ref.setType( 0 );
-			this.mass = this._ref.mass;
-
-		}
+		this._ref.setType( v ? 2 : 0 );
 
 	}
 	get isSleeping() {
@@ -240,7 +223,7 @@ export class Rigidbody {
 	}
 	get autoSleep() {
 
-		return this._autoSleep;
+		return "_autoSleep" in this ? this._autoSleep : true;
 
 	}
 	set autoSleep( v ) {
@@ -266,7 +249,6 @@ export class Rigidbody {
 	}
 	set mass( mass ) {
 
-		this._ref.mass = mass;
 		this._ref.getMassDataTo( massData );
 		massData.mass = mass;
 		this._ref.setMassData( massData );
@@ -274,13 +256,68 @@ export class Rigidbody {
 	}
 	getRotationFactor() {
 
-		return this._rotationFactor;
+		return new Vector3().copy( this._ref.getRotationFactor() );
 
 	}
 	setRotationFactor( vector ) {
 
-		this._rotationFactor = vector;
 		this._ref.setRotationFactor( vector );
+
+	}
+
+	toJSON() {
+
+		return {
+			angularVelocity: this.getAngularVelocity().toArray(),
+			angularDamping: this.angularDamping,
+			linearVelocity: this.getLinearVelocity().toArray(),
+			linearDamping: this.linearDamping,
+			gravityScale: this.gravityScale,
+			autoSleep: this.autoSleep,
+			isKinematic: this.isKinematic,
+			rotationFactor: this.getRotationFactor().toArray(),
+			mass: this.mass,
+		};
+
+	}
+
+	fromJSON( object ) {
+
+		object.angularVelocity = new Vector3().fromArray( object.angularVelocity );
+		object.linearVelocity = new Vector3().fromArray( object.linearVelocity );
+		object.rotationFactor = new Vector3().fromArray( object.rotationFactor );
+
+		return object;
+
+	}
+
+	static createRigidbody( self, type ) {
+
+		const entity = self.entity;
+		entity.updateWorldMatrix();
+		entity.matrixWorld.decompose( vector, quat, vector2 );
+		config.position = vector;
+		config.rotation.fromQuat( quat );
+		config.type = type;
+		entity._physicsRef = self._ref = new OIMO.RigidBody( config );
+		self._ref.component = self;
+		self._ref.entity = entity;
+
+		const position = entity.position;
+		position._entity = entity;
+		posProps._x.value = position.x;
+		posProps._y.value = position.y;
+		posProps._z.value = position.z;
+		Object.defineProperties( position, posProps );
+
+		const quaternion = entity.quaternion;
+		const rotation = entity.rotation;
+
+		quaternion._rotation = rotation;
+		rotation._quaternion = quaternion;
+		rotation._entity = quaternion._entity = entity;
+		quaternion._onChange( onQuaternionChange );
+		rotation._onChange( onRotationChange );
 
 	}
 
@@ -347,35 +384,5 @@ function onRotationChange() {
 	this._quaternion.setFromEuler( this, false );
 	this._entity.getWorldQuaternion( quat );
 	this._entity._physicsRef.setOrientation( quat );
-
-}
-
-export function createRigidbody( self, type ) {
-
-	const entity = self.entity;
-	entity.updateWorldMatrix();
-	entity.matrixWorld.decompose( vector, quat, vector2 );
-	config.position = vector;
-	config.rotation.fromQuat( quat );
-	config.type = type;
-	entity._physicsRef = self._ref = new OIMO.RigidBody( config );
-	self._ref.component = self;
-	self._ref.entity = entity;
-
-	const position = entity.position;
-	position._entity = entity;
-	posProps._x.value = position.x;
-	posProps._y.value = position.y;
-	posProps._z.value = position.z;
-	Object.defineProperties( position, posProps );
-
-	const quaternion = entity.quaternion;
-	const rotation = entity.rotation;
-
-	quaternion._rotation = rotation;
-	rotation._quaternion = quaternion;
-	rotation._entity = quaternion._entity = entity;
-	quaternion._onChange( onQuaternionChange );
-	rotation._onChange( onRotationChange );
 
 }
