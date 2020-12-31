@@ -100,6 +100,9 @@
 			const loader = new GLTFLoader();
 			const app = new ENGINE.Application("c");
 
+			app.createScene("Example");
+			app.setScene("Example");
+
 			app.scene.background = new ENGINE.Color("skyblue");
 			console.log(app.scene);
 

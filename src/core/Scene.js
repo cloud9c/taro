@@ -86,6 +86,13 @@ export class Scene extends TS {
 
 	}
 
+	destroy() {
+
+		delete this.app._scenes[ name ];
+		delete this.app;
+
+	}
+
 }
 
 Scene._currentScene;

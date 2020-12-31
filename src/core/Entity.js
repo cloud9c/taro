@@ -35,7 +35,7 @@ export class Entity extends Group {
 
 		} else {
 
-			Application._currentApp.scene.add( this );
+			Application.currentApp.scene.add( this );
 
 		}
 
@@ -225,7 +225,9 @@ export class Entity extends Group {
 
 	toJSON( meta ) {
 
-		const object = super.toJSON( meta ).object;
+		const json = super.toJSON( meta );
+
+		const object = json.object;
 
 		object.isEntity = true;
 		if ( this.tags.length !== 0 ) object.tags = this.tags;
@@ -239,8 +241,11 @@ export class Entity extends Group {
 
 				const component = this._components[ i ];
 
-				if ( component.isObject3D )
+				if ( component.isObject3D || component.ref !== undefined && component.ref.isObject3D ) {
+
 					continue;
+
+				}
 
 				const type = component.componentType;
 				const meta = { type, data: {} };
@@ -267,7 +272,7 @@ export class Entity extends Group {
 
 		}
 
-		return object;
+		return json;
 
 	}
 

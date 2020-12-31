@@ -18,9 +18,7 @@ export class Application {
 
 		this._scenes = {};
 
-		this.addScene( "Untitled Scene" );
-		this.setScene( "Untitled Scene" );
-		Application._currentApp = this;
+		Application.currentApp = this;
 
 	}
 	start() {
@@ -28,7 +26,7 @@ export class Application {
 		window.requestAnimationFrame( ( t ) => this._updateLoop( t / 1000 ) );
 
 	}
-	addScene( name ) {
+	createScene( name ) {
 
 		const scene = new Scene();
 		scene.app = this;
@@ -39,12 +37,6 @@ export class Application {
 	getScene( name ) {
 
 		return this._scenes[ name ];
-
-	}
-	removeScene( name ) {
-
-		delete this._scenes[ name ].app;
-		delete this._scenes[ name ];
 
 	}
 	setScene( name ) {
@@ -112,10 +104,11 @@ export class Application {
 	}
 	static getApplication( id ) {
 
-		return id ? Application._apps[ id ] : Application._currentApp;
+		return Application._apps[ id ];
 
 	}
 
 }
 
+Application.currentApp;
 Application.apps = {};
