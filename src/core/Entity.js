@@ -35,7 +35,7 @@ export class Entity extends Group {
 
 		} else {
 
-			Application.currentApp.scene.add( this );
+			Application.currentApp.currentScene.add( this );
 
 		}
 
@@ -68,26 +68,41 @@ export class Entity extends Group {
 
 	addComponent( type, data = {} ) {
 
-		const options = ComponentManager._components[ type ].options;
-		if (
-			options.allowMultiple === false &&
+		const componentData = ComponentManager._components[ type ];
+		let component;
+
+		if ( type === "Renderable" ) {
+
+			ComponentManager.prototype.componentType.value = "Renderable";
+			component = Object.create( data, ComponentManager.prototype );
+			component.addEventListener( "enable", renderableOnEnable );
+			component.addEventListener( "disable", renderableOnDisable );
+
+		} else {
+
+			const options = componentData.options;
+
+			if (
+				options.allowMultiple === false &&
 			this.getComponent( type ) !== undefined
-		) {
+			) {
 
-			return console.warn( "allowMultiple Attribute is false" );
+				return console.warn( "allowMultiple Attribute is false" );
+
+			}
+
+			if ( "requireComponents" in options ) {
+
+				const required = options.requireComponents;
+				for ( let i = 0, len = required.length; i < len; i ++ )
+					if ( this.getComponent( required[ i ] ) === undefined )
+						this.addComponent( required[ i ] );
+
+			}
+
+			component = new componentData.constructor();
 
 		}
-
-		if ( "requireComponents" in options ) {
-
-			const required = options.requireComponents;
-			for ( let i = 0, len = required.length; i < len; i ++ )
-				if ( this.getComponent( required[ i ] ) === undefined )
-					this.addComponent( required[ i ] );
-
-		}
-
-		const component = new ComponentManager._components[ type ].constructor();
 
 		Object.defineProperty( component, "entity", {
 			value: this,
@@ -97,7 +112,10 @@ export class Entity extends Group {
 			this.scene._containers[ type ] = [];
 
 		this.scene._containers[ type ].push( component );
-		if ( "start" in component ) component.start( data );
+
+		if ( component.start !== undefined )
+			component.start( data );
+
 		component.dispatchEvent( { type: "enable" } );
 
 		this._components.push( component );
@@ -217,6 +235,12 @@ export class Entity extends Group {
 
 	}
 
+	get components() {
+
+		return this._components.slice();
+
+	}
+
 	get app() {
 
 		return this.scene.app;
@@ -225,9 +249,9 @@ export class Entity extends Group {
 
 	toJSON( meta ) {
 
-		const json = super.toJSON( meta );
+		const data = super.toJSON( meta );
 
-		const object = json.object;
+		const object = data.object;
 
 		object.isEntity = true;
 		if ( this.tags.length !== 0 ) object.tags = this.tags;
@@ -241,7 +265,7 @@ export class Entity extends Group {
 
 				const component = this._components[ i ];
 
-				if ( component.isObject3D || component.ref !== undefined && component.ref.isObject3D ) {
+				if ( component.isObject3D ) {
 
 					continue;
 
@@ -272,8 +296,20 @@ export class Entity extends Group {
 
 		}
 
-		return json;
+		return data;
 
 	}
+
+}
+
+function renderableOnEnable() {
+
+	this.entity.add( this );
+
+}
+
+function renderableOnDisable() {
+
+	this.entity.remove( this );
 
 }

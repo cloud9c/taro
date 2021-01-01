@@ -5,7 +5,7 @@ export class ConeCollider extends Collider {
 
 	start( data ) {
 
-		this.type = "cone";
+		data.type = "cone";
 		super.start( data );
 
 	}

@@ -18,7 +18,7 @@ export class Joint {
 
 	start( data ) {
 
-		const type = this.type;
+		const type = data.type;
 
 		configs[ type ].rigidBody1 = this.entity._physicsRef;
 		this._bodyRef2 =

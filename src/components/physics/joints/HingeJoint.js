@@ -8,7 +8,7 @@ export class HingeJoint extends Joint {
 
 	start( data ) {
 
-		this.type = "hinge";
+		start.type = "hinge";
 		super.start( data );
 
 	}

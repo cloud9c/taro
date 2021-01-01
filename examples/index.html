@@ -45,7 +45,6 @@
 						const ball = this.ball;
 						if (this.input.getKeyDown("KeyG")) {
 							console.log(this.ball.toJSON())
-							console.log(this.entity.toJSON())
 						}
 
 						if (this.input.getKeyDown("ArrowUp")) {
@@ -100,11 +99,11 @@
 			const loader = new GLTFLoader();
 			const app = new ENGINE.Application("c");
 
-			app.createScene("Example");
-			app.setScene("Example");
+			const scene = new ENGINE.Scene();
+			app.setScene(scene);
 
-			app.scene.background = new ENGINE.Color("skyblue");
-			console.log(app.scene);
+			app.currentScene.background = new ENGINE.Color("skyblue");
+			console.log(app.currentScene);
 
 			// lighting
 			entity = new ENGINE.Entity();
@@ -172,7 +171,7 @@
 			entity.addComponent("Renderable", mesh);
 			entity.position.set(0, 5, 2);
 			entity.addComponent("Rigidbody", {
-				mass: 10
+				mass: 1
 			});
 			entity.addComponent("SphereCollider", {
 				radius: 1,

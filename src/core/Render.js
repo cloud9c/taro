@@ -2,8 +2,9 @@ import { WebGLRenderer } from "../lib/three.js";
 
 export class Render extends WebGLRenderer {
 
-	constructor( app, parameters ) {
+	constructor( app, parameters = {} ) {
 
+		parameters.canvas = app.canvas;
 		super( parameters );
 		this.canvas = app.canvas;
 
@@ -22,7 +23,7 @@ export class Render extends WebGLRenderer {
 			for ( let i = 0, len = this.cameras.length; i < len; i ++ ) {
 
 				const camera = this.cameras[ i ];
-				camera._onResize( canvas );
+				camera._updateRegion( canvas );
 
 			}
 

@@ -7,9 +7,9 @@ import { OIMO } from "../../../lib/oimo.js";
 
 export class CylindricalJoint extends Joint {
 
-	start( data ) {
+	constructor( data ) {
 
-		this.type = "cylindrical";
+		data.type = "cylindrical";
 		super.start( data );
 
 	}

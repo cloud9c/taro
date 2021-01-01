@@ -8,7 +8,7 @@ export class RagdollJoint extends Joint {
 
 	start( data ) {
 
-		this.type = "ragdoll";
+		data.type = "ragdoll";
 		super.start( data );
 
 	}

@@ -1,4 +1,3 @@
-import { Renderable } from "../components/rendering/Renderable.js";
 import { OrthographicCamera } from "../components/cameras/OrthographicCamera.js";
 import { PerspectiveCamera } from "../components/cameras/PerspectiveCamera.js";
 import { AmbientLight } from "../components/light/AmbientLight.js";
@@ -24,90 +23,14 @@ import { UniversalJoint } from "../components/physics/joints/UniversalJoint.js";
 
 import { EventDispatcher } from "../lib/three.js";
 
-const prototype = {
-	destroy: {
-		value: function () {
-
-			if ( this.enabled ) {
-
-				const type = this.componentType;
-				const container = this.entity.scene._containers[ type ];
-				container.splice( container.indexOf( this ), 1 );
-
-			} else {
-
-				this.dispatchEvent( { type: "disable" } );
-
-			}
-
-			const components = this.entity._components;
-			components.splice( components.indexOf( this ), 1 );
-
-			this.dispatchEvent( { type: "destroy" } );
-
-		},
-	},
-	componentType: { value: null },
-	_enabled: { value: true, writable: true },
-	enabled: {
-		get() {
-
-			return this._enabled;
-
-		},
-		set( value ) {
-
-			if ( value != this._enabled ) {
-
-				if ( value && ! this.entity._enabled )
-					return console.warn(
-						"Component: Can't enable if the entity is disabled"
-					);
-				this._enabled = value;
-
-				const container = this.entity.scene._containers[
-					this.componentType
-				];
-				if ( value ) {
-
-					container.push( this );
-					this.dispatchEvent( { type: "enable" } );
-
-				} else {
-
-					container.splice( container.indexOf( this ), 1 );
-					this.dispatchEvent( { type: "disable" } );
-
-				}
-
-			}
-
-		},
-	},
-	scene: {
-		get() {
-
-			return this.entity.scene;
-
-		}
-	},
-	app: {
-		get() {
-
-			return this.entity.scene.app;
-
-		}
-	}
-};
-
 export const ComponentManager = {
 	_components: {},
 	add( type, constructor, options = {} ) {
 
 		if ( type in this._components ) throw "component " + type + " already exists";
 
-		prototype.componentType.value = type;
-		Object.defineProperties( constructor.prototype, prototype );
+		this.prototype.componentType.value = type;
+		Object.defineProperties( constructor.prototype, this.prototype );
 		Object.assign( constructor.prototype, EventDispatcher.prototype );
 
 		this._components[ type ] = {
@@ -121,7 +44,7 @@ export const ComponentManager = {
 		if ( type in this._components )
 			delete this._components[ type ];
 		else
-			throw "component " + type + " does not exists";
+			console.warn( "component " + type + " does not exists" );
 
 	},
 
@@ -129,12 +52,85 @@ export const ComponentManager = {
 
 		return this._components[ type ];
 
+	},
+
+	prototype: {
+		destroy: {
+			value: function () {
+
+				if ( this.enabled ) {
+
+					const type = this.componentType;
+					const container = this.entity.scene._containers[ type ];
+					container.splice( container.indexOf( this ), 1 );
+
+				} else {
+
+					this.dispatchEvent( { type: "disable" } );
+
+				}
+
+				const components = this.entity._components;
+				components.splice( components.indexOf( this ), 1 );
+
+				this.dispatchEvent( { type: "destroy" } );
+
+			},
+		},
+		componentType: { value: null },
+		_enabled: { value: true, writable: true },
+		enabled: {
+			get() {
+
+				return this._enabled;
+
+			},
+			set( value ) {
+
+				if ( value != this._enabled ) {
+
+					if ( value && ! this.entity._enabled )
+						return console.warn(
+							"Component: Can't enable if the entity is disabled"
+						);
+					this._enabled = value;
+
+					const container = this.entity.scene._containers[
+						this.componentType
+					];
+					if ( value ) {
+
+						container.push( this );
+						this.dispatchEvent( { type: "enable" } );
+
+					} else {
+
+						container.splice( container.indexOf( this ), 1 );
+						this.dispatchEvent( { type: "disable" } );
+
+					}
+
+				}
+
+			},
+		},
+		scene: {
+			get() {
+
+				return this.entity.scene;
+
+			}
+		},
+		app: {
+			get() {
+
+				return this.entity.scene.app;
+
+			}
+		}
 	}
 };
 
-
-
-ComponentManager.add( "Renderable", Renderable );
 ComponentManager.add( "OrthographicCamera", OrthographicCamera );
 ComponentManager.add( "PerspectiveCamera", PerspectiveCamera );
 ComponentManager.add( "AmbientLight", AmbientLight );

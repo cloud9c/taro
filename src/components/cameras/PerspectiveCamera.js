@@ -14,9 +14,7 @@ export class PerspectiveCamera extends PC {
 			"viewport" in data ? data.viewport : new Vector4( 0, 0, 1, 1 );
 		if ( "aspect" in data ) this.aspect = data.aspect;
 
-		this._onResize( this.scene.app.canvas );
-
-		if ( ! this.autoAspect ) this.updateProjectionMatrix();
+		this.updateProjectionMatrix();
 
 		this.addEventListener( "enable", this.onEnable );
 		this.addEventListener( "disable", this.onDisable );
@@ -40,13 +38,21 @@ export class PerspectiveCamera extends PC {
 
 	}
 
-	_onResize( canvas ) {
+	updateProjectionMatrix() {
+
+		super.updateProjectionMatrix();
+		if ( this.entity !== undefined )
+			this._updateRegion( this.app.canvas );
+
+	}
+
+	_updateRegion( canvas ) {
 
 		const view = this.viewport;
 		if ( this.autoAspect ) {
 
 			this._aspect = ( canvas.width * view.z ) / ( canvas.height * view.w );
-			this.updateProjectionMatrix();
+			super.updateProjectionMatrix();
 
 		}
 
@@ -69,6 +75,15 @@ export class PerspectiveCamera extends PC {
 
 		this.autoAspect = false;
 		this._aspect = x;
+
+	}
+
+	toJSON( meta ) {
+
+		const data = super.toJSON( meta );
+		data.object.viewport = this.viewport.toArray();
+
+		return data;
 
 	}
 

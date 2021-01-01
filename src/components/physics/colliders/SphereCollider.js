@@ -5,7 +5,7 @@ export class SphereCollider extends Collider {
 
 	start( data ) {
 
-		this.type = "sphere";
+		data.type = "sphere";
 		super.start( data );
 
 	}

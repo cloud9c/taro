@@ -4,9 +4,9 @@ import { OIMO } from "../../../lib/oimo.js";
 
 export class BallJoint extends Joint {
 
-	start( data ) {
+	constructor( data ) {
 
-		this.type = "ball";
+		data.type = "ball";
 		super.start( data );
 
 	}

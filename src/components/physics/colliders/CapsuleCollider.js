@@ -5,7 +5,7 @@ export class CapsuleCollider extends Collider {
 
 	start( data ) {
 
-		this.type = "capsule";
+		data.type = "capsule";
 		super.start( data );
 
 	}

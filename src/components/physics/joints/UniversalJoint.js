@@ -8,7 +8,7 @@ export class UniversalJoint extends Joint {
 
 	start( data ) {
 
-		this.type = "universal";
+		data.type = "universal";
 		super.start( data );
 
 	}

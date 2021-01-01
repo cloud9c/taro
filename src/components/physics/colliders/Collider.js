@@ -421,13 +421,8 @@ export class Collider {
 
 	set radius( v ) {
 
-		this.setShape( {
-			type: this.type,
-			radius: v,
-			collisionGroup: this.collisionGroup,
-			collisionMask: this.collisionMask,
-			material: this.material,
-		} );
+		this._radius = v;
+		this._setShape();
 
 	}
 

@@ -8,7 +8,7 @@ export class BoxCollider extends Collider {
 
 	start( data ) {
 
-		this.type = "box";
+		data.type = "box";
 		super.start( data );
 
 	}

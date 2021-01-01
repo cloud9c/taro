@@ -8,7 +8,7 @@ export class MeshCollider extends Collider {
 
 	start( data ) {
 
-		this.type = "mesh";
+		data.type = "mesh";
 		super.start( data );
 
 	}

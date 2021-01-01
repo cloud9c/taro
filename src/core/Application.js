@@ -6,42 +6,50 @@ import { Input } from "./Input.js";
 
 export class Application {
 
-	constructor( canvas ) {
+	constructor( canvas, parameters ) {
 
 		this.canvas = document.getElementById( canvas );
 		this.time = new Time();
 		this.physics = new Physics();
-		this.render = new Render( this, {
-			canvas: this.canvas,
-		} );
+		this.render = new Render( this, parameters );
 		this.input = new Input();
-
-		this._scenes = {};
+		this.scenes = [];
 
 		Application.currentApp = this;
 
 	}
+
 	start() {
 
 		window.requestAnimationFrame( ( t ) => this._updateLoop( t / 1000 ) );
 
 	}
-	createScene( name ) {
 
-		const scene = new Scene();
+	addScene( scene ) {
+
 		scene.app = this;
-		this._scenes[ name ] = scene;
+		this.scenes.push( scene );
 		return scene;
 
 	}
-	getScene( name ) {
 
-		return this._scenes[ name ];
+	removeScene( scene ) {
+
+		const index = this.scenes.indexOf( scene );
+
+		if ( index !== - 1 ) {
+
+			this.scenes.splice( index, 1 );
+			delete scene.app;
+
+		}
 
 	}
-	setScene( name ) {
 
-		const scene = this._scenes[ name ];
+	setScene( scene ) {
+
+		if ( this.scenes.indexOf( scene ) === - 1 )
+			this.addScene( scene );
 
 		this.render.scene = this._scene = scene;
 		this._containers = scene._containers;
@@ -54,23 +62,36 @@ export class Application {
 		return scene;
 
 	}
-	renameScene( oldName, newName ) {
 
-		const scene = this._scene[ oldName ];
-		delete this._scene[ oldName ];
-		this._scene[ newName ] = scene;
+	findScene( name ) {
+
+		for ( let i = 0, len = this._scenes.length; i < len; i ++ ) {
+
+			if ( this._scenes[ i ].name === name )
+				return this._scenes[ i ];
+
+		}
 
 	}
-	get scene() {
+
+	findSceneById( id ) {
+
+		for ( let i = 0, len = this._scenes.length; i < len; i ++ ) {
+
+			if ( this._scenes[ i ].id === id )
+				return this._scenes[ i ];
+
+		}
+
+
+	}
+
+	get currentScene() {
 
 		return this._scene;
 
 	}
-	get scenes() {
 
-		return Object.assign( {}, this._scenes );
-
-	}
 	_updateLoop( timestamp ) {
 
 		const deltaTime = this.time._update( timestamp );

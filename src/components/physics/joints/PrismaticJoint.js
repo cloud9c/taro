@@ -8,7 +8,7 @@ export class PrismaticJoint extends Joint {
 
 	start( data ) {
 
-		this.type = "prismatic";
+		data.type = "prismatic";
 		super.start( data );
 
 	}

@@ -33,8 +33,7 @@ export class Rigidbody {
 		if ( "autoSleep" in data )
 			this.autoSleep = data.autoSleep;
 
-		if ( "isKinematic" in data )
-			this.isKinematic = "isKinematic" in data ? data.isKinematic : false;
+		this.isKinematic = "isKinematic" in data ? data.isKinematic : false;
 
 		if ( "rotationFactor" in data )
 			this.setRotationFactor( data.rotationFactor );
@@ -48,6 +47,18 @@ export class Rigidbody {
 	}
 
 	onEnable() {
+
+		if ( this._isKinematic ) {
+
+			this._ref.setType( 2 );
+
+		} else {
+
+			this._ref.setType( 0 );
+			this.mass = this._ref.mass;
+
+		}
+
 
 		if ( this._ref.getNumShapes() === 0 ) {
 
@@ -180,10 +191,12 @@ export class Rigidbody {
 	}
 	get isKinematic() {
 
-		return this._ref.getType() === 2;
+		return this._isKinematic;
 
 	}
 	set isKinematic( v ) {
+
+		this._isKinematic = v;
 
 		this._ref.setType( v ? 2 : 0 );
 

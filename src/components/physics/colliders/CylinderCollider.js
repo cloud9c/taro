@@ -5,7 +5,7 @@ export class CylinderCollider extends Collider {
 
 	start( data ) {
 
-		this.type = "cylinder";
+		data.type = "cylinder";
 		super.start( data );
 
 	}

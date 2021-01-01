@@ -14,7 +14,7 @@ export class OrthographicCamera extends OC {
 		if ( "far" in data ) this.far = data.far;
 		this.viewport =
 			"viewport" in data ? data.viewport : new Vector4( 0, 0, 1, 1 );
-		this._onResize( this.scene.app.canvas );
+
 		this.updateProjectionMatrix();
 
 		this.addEventListener( "enable", this.onEnable );
@@ -39,7 +39,15 @@ export class OrthographicCamera extends OC {
 
 	}
 
-	_onResize( canvas ) {
+	updateProjectionMatrix() {
+
+		super.updateProjectionMatrix();
+		if ( this.entity !== undefined )
+			this._updateRegion( this.app.canvas );
+
+	}
+
+	_updateRegion( canvas ) {
 
 		const view = this.viewport;
 		this._region.set(
@@ -48,6 +56,15 @@ export class OrthographicCamera extends OC {
 			canvas.width * view.z,
 			canvas.height * view.w
 		);
+
+	}
+
+	toJSON( meta ) {
+
+		const data = super.toJSON( meta );
+		data.object.viewport = this.viewport.toArray();
+
+		return data;
 
 	}
 
