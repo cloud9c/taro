@@ -2,21 +2,20 @@ import { WebGLRenderer } from "../lib/three.js";
 
 export class Render extends WebGLRenderer {
 
-	constructor( app, parameters = {} ) {
+	constructor( parameters ) {
 
-		parameters.canvas = app.canvas;
 		super( parameters );
-		this.canvas = app.canvas;
 
 		this.setPixelRatio( window.devicePixelRatio );
 		this._onResize();
 
-		new ResizeObserver( () => this._onResize() ).observe( this.canvas );
+		new ResizeObserver( () => this._onResize() ).observe( this.domElement );
 
 	}
+
 	_onResize() {
 
-		const canvas = this.canvas;
+		const canvas = this.domElement;
 		this.setSize( canvas.clientWidth, canvas.clientHeight, false );
 		if ( "cameras" in this ) {
 
@@ -30,6 +29,7 @@ export class Render extends WebGLRenderer {
 		}
 
 	}
+
 	_update() {
 
 		for ( let i = 0, len = this.cameras.length; i < len; i ++ ) {
@@ -40,7 +40,7 @@ export class Render extends WebGLRenderer {
 			this.setScissor( camera._region );
 			this.setScissorTest( true );
 
-			this.render( this.scene, this.cameras[ i ] );
+			this.render( this.scene, camera );
 
 		}
 

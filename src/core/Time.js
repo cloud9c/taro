@@ -1,10 +1,11 @@
 export class Time {
 
-	constructor() {
+	constructor( parameters ) {
 
-		this.fixedTimestep = 0.02;
-		this.maxDeltaTime = 0.1;
-		this.timeScale = 1;
+		this.fixedTimestep = parameters.fixedTimestep !== undefined ? parameters.fixedTimestep : 0.02;
+		this.maxDeltaTime = parameters.maxDeltaTime !== undefined ? parameters.maxDeltaTime : 0.1;
+		this.timeScale = parameters.timeScale !== undefined ? parameters.timeScale : 1;
+
 		this.deltaTime = 0;
 		this.lastTimestamp = false;
 

@@ -235,6 +235,12 @@ export class Entity extends Group {
 
 	}
 
+	findByProperty( name, value ) {
+
+		return this.getObjectByProperty( name, value );
+
+	}
+
 	get components() {
 
 		return this._components.slice();

@@ -9,10 +9,10 @@ const matrix = new Matrix4();
 
 export class Physics {
 
-	constructor() {
+	constructor( parameters ) {
 
 		this._accumulator = 0;
-		this._gravity = new Vector3( 0, - 9.80665, 0 );
+		this._gravity = parameters.gravity !== undefined ? parameters.gravity : new Vector3( 0, - 9.80665, 0 );
 
 		this._triggers = [];
 
@@ -48,6 +48,15 @@ export class Physics {
 		} );
 
 	}
+
+	_updateScene( scene ) {
+
+		this._world = scene._physicsWorld;
+		this._world.setGravity( this._gravity );
+		this.rigidbodies = scene._containers[ "Rigidbody" ];
+
+	}
+
 	_update( deltaTime, fixedTimestep ) {
 
 		this._accumulator += deltaTime;

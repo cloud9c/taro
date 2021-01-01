@@ -42,7 +42,7 @@ export class PerspectiveCamera extends PC {
 
 		super.updateProjectionMatrix();
 		if ( this.entity !== undefined )
-			this._updateRegion( this.app.canvas );
+			this._updateRegion( this.app.render.domElement );
 
 	}
 

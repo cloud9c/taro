@@ -6,14 +6,19 @@ import { Input } from "./Input.js";
 
 export class Application {
 
-	constructor( canvas, parameters ) {
+	constructor( parameters = {} ) {
 
-		this.canvas = document.getElementById( canvas );
-		this.time = new Time();
-		this.physics = new Physics();
-		this.render = new Render( this, parameters );
+		if ( typeof parameters.canvas === "string" )
+			parameters.canvas = document.getElementById( parameters.canvas );
+
+		this.parameters = parameters;
+
+		this.render = new Render( parameters );
+		this.time = new Time( parameters );
+		this.physics = new Physics( parameters );
 		this.input = new Input();
 		this.scenes = [];
+		this._currentScene;
 
 		Application.currentApp = this;
 
@@ -51,12 +56,10 @@ export class Application {
 		if ( this.scenes.indexOf( scene ) === - 1 )
 			this.addScene( scene );
 
-		this.render.scene = this._scene = scene;
+		this.render.scene = this._currentScene = scene;
 		this._containers = scene._containers;
 
-		scene._physicsWorld.setGravity( this.physics._gravity );
-		this.physics._world = scene._physicsWorld;
-		this.physics.rigidbodies = scene._containers[ "Rigidbody" ];
+		this.physics._updateScene( scene );
 
 		this.render.cameras = scene._cameras;
 		return scene;
@@ -65,10 +68,10 @@ export class Application {
 
 	findScene( name ) {
 
-		for ( let i = 0, len = this._scenes.length; i < len; i ++ ) {
+		for ( let i = 0, len = this.scenes.length; i < len; i ++ ) {
 
-			if ( this._scenes[ i ].name === name )
-				return this._scenes[ i ];
+			if ( this.scenes[ i ].name === name )
+				return this.scenes[ i ];
 
 		}
 
@@ -76,19 +79,20 @@ export class Application {
 
 	findSceneById( id ) {
 
-		for ( let i = 0, len = this._scenes.length; i < len; i ++ ) {
-
-			if ( this._scenes[ i ].id === id )
-				return this._scenes[ i ];
-
-		}
+		return this.findSceneByProperty( "id", id );
 
 
 	}
 
-	get currentScene() {
+	findSceneByProperty( name, value ) {
 
-		return this._scene;
+		for ( let i = 0, len = this.scenes.length; i < len; i ++ ) {
+
+			if ( this.scenes[ i ][ name ] === value )
+				return this.scenes[ i ];
+
+		}
+
 
 	}
 
@@ -123,9 +127,33 @@ export class Application {
 		window.requestAnimationFrame( ( t ) => this._updateLoop( t / 1000 ) );
 
 	}
+
+	get currentScene() {
+
+		return this._currentScene;
+
+	}
+
 	static getApplication( id ) {
 
 		return Application._apps[ id ];
+
+	}
+
+	toJSON() {
+
+		const data = {
+			scenes: [],
+			currentScene: this.currentScene.uuid,
+			parameters: Object.assign( {}, this.parameters ),
+		};
+
+		for ( let i = 0, len = this.scenes.length; i < len; i ++ )
+			data.scenes[ i ] = this.scenes[ i ].toJSON();
+
+		data.parameters.canvas = data.parameters.canvas.id;
+
+		return data;
 
 	}
 

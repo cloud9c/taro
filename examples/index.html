@@ -23,6 +23,9 @@
 			import { GLTFLoader } from "https://threejs.org/examples/jsm/loaders/GLTFLoader.js";
 			import * as ENGINE from "../src/taro.js";
 
+			window.ENGINE = ENGINE;
+			window.x = new ENGINE.TaroLoader();
+
 			ENGINE.ComponentManager.add(
 				"CameraController",
 				class {
@@ -33,7 +36,7 @@
 						this.ball = this.entity.scene.find("ball");
 
 						window.addEventListener("mousedown", () => {
-							this.entity.scene.app.canvas.requestPointerLock();
+							this.entity.app.render.domElement.requestPointerLock();
 						});
 						// this.ball.addEventListener("collisionenter", function (
 						// 	c
@@ -97,13 +100,15 @@
 			let entity, geo, mat, mesh;
 
 			const loader = new GLTFLoader();
-			const app = new ENGINE.Application("c");
+			const app = new ENGINE.Application({
+				canvas: "c"
+			});
 
 			const scene = new ENGINE.Scene();
 			app.setScene(scene);
 
 			app.currentScene.background = new ENGINE.Color("skyblue");
-			console.log(app.currentScene);
+			console.log(app);
 
 			// lighting
 			entity = new ENGINE.Entity();

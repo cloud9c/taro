@@ -86,4 +86,10 @@ export class Scene extends TS {
 
 	}
 
+	findByProperty( name, value ) {
+
+		return this.getObjectByProperty( name, value );
+
+	}
+
 }

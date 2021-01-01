@@ -43,7 +43,7 @@ export class OrthographicCamera extends OC {
 
 		super.updateProjectionMatrix();
 		if ( this.entity !== undefined )
-			this._updateRegion( this.app.canvas );
+			this._updateRegion( this.app.render.domElement );
 
 	}
 
