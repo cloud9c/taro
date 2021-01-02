@@ -68,40 +68,27 @@ export class Entity extends Group {
 	addComponent( type, data = {} ) {
 
 		const componentData = ComponentManager._components[ type ];
-		let component;
+		const options = componentData.options;
 
-		if ( type === "Renderable" ) {
+		if (
+			options.allowMultiple === false &&
+		this.getComponent( type ) !== undefined
+		) {
 
-			ComponentManager.prototype.componentType.value = "Renderable";
-			component = Object.create( data, ComponentManager.prototype );
-			component.addEventListener( "enable", renderableOnEnable );
-			component.addEventListener( "disable", renderableOnDisable );
-
-		} else {
-
-			const options = componentData.options;
-
-			if (
-				options.allowMultiple === false &&
-			this.getComponent( type ) !== undefined
-			) {
-
-				return console.warn( "TARO.Entity: allowMultiple Attribute is false" );
-
-			}
-
-			if ( "requireComponents" in options ) {
-
-				const required = options.requireComponents;
-				for ( let i = 0, len = required.length; i < len; i ++ )
-					if ( this.getComponent( required[ i ] ) === undefined )
-						this.addComponent( required[ i ] );
-
-			}
-
-			component = new componentData.constructor();
+			return console.warn( "TARO.Entity: allowMultiple Attribute is false" );
 
 		}
+
+		if ( "requireComponents" in options ) {
+
+			const required = options.requireComponents;
+			for ( let i = 0, len = required.length; i < len; i ++ )
+				if ( this.getComponent( required[ i ] ) === undefined )
+					this.addComponent( required[ i ] );
+
+		}
+
+		const component = new componentData.constructor();
 
 		if ( ! ( type in this.scene._containers ) )
 			this.scene._containers[ type ] = [];
@@ -119,45 +106,60 @@ export class Entity extends Group {
 
 		component.dispatchEvent( { type: "enable" } );
 
-		return component;
+		return type === "Renderable" ? component.ref : component;
 
 	}
 
-	add( obj ) {
+	removeComponent( component ) {
 
-		if ( obj instanceof Entity && obj.scene !== this.scene ) {
+		if ( component.enabled ) {
 
-			this.scene.add( obj );
+			const type = component.componentType;
+			const container = this.scene._containers[ type ];
+			container.splice( container.indexOf( component ), 1 );
 
 		}
 
-		return super.add( obj );
+		const components = this.entity.components;
+		components.splice( components.indexOf( component ), 1 );
+
+		this.dispatchEvent( { type: "disable" } );
+		this.dispatchEvent( { type: "remove" } );
 
 	}
 
-	remove( obj ) {
+	add( object ) {
 
-		if ( obj instanceof Entity ) {
+		if ( object instanceof Entity && object.scene !== this.scene ) {
 
-			this.scene.add( obj );
-
-		} else {
-
-			super.remove( obj );
+			this.scene._addComponents( object.components );
 
 		}
 
-		return obj;
+		super.add( object );
+
+		return this;
 
 	}
 
-	destroy() {
+	remove( object ) {
 
-		this.enabled = false;
-		const children = this.getChildren();
-		for ( let i = 0, len = children.length; i < len; i ++ )
-			children[ i ].destroy();
-		this.scene.remove( this );
+		if ( this.children.indexOf( object ) !== - 1 ) {
+
+			if ( object instanceof Entity ) {
+
+				this.enabled = false;
+				const components = this.getChildren();
+				for ( let i = 0, len = components.length; i < len; i ++ )
+					components[ i ].enabled = false;
+
+			}
+
+			super.remove( object );
+
+		}
+
+		return this;
 
 	}
 
@@ -264,7 +266,7 @@ export class Entity extends Group {
 
 				const component = this.components[ i ];
 
-				if ( component.isObject3D ) {
+				if ( component.isObject3D || component.ref !== undefined && component.ref.isObject3D ) {
 
 					continue;
 
@@ -298,17 +300,5 @@ export class Entity extends Group {
 		return data;
 
 	}
-
-}
-
-function renderableOnEnable() {
-
-	this.entity.add( this );
-
-}
-
-function renderableOnDisable() {
-
-	this.entity.remove( this );
 
 }

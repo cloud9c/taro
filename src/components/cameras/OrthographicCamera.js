@@ -63,6 +63,7 @@ export class OrthographicCamera extends OC {
 
 		const data = super.toJSON( meta );
 		data.object.viewport = this.viewport.toArray();
+		data.object.component = true;
 
 		return data;
 

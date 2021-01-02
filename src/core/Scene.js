@@ -21,27 +21,32 @@ export class Scene extends TS {
 
 	}
 
-	// used internally
-	add( entity ) {
+	_addComponents( components ) {
 
-		if ( "scene" in entity && entity.scene !== this ) {
+		for ( let i = 0, len = components.length; i < len; i ++ ) {
 
-			const components = entity._components;
-			for ( let i = 0, len = components.length; i < len; i ++ ) {
+			const component = components[ i ];
+			if ( component._enabled ) {
 
-				const component = components[ i ];
-				if ( component._enabled ) {
+				const type = component.componentType;
+				const container = entity.scene._containers[ type ];
+				container.splice( container.indexOf( component ), 1 );
 
-					const type = component.componentType;
-					const container = entity.scene._containers[ type ];
-					container.splice( container.indexOf( component ), 1 );
-					if ( ! ( type in this._containers ) )
-						this._containers[ type ] = [];
-					this._containers[ type ].push( component );
-
-				}
+				if ( ! ( type in this._containers ) )
+					this._containers[ type ] = [];
+				this._containers[ type ].push( component );
 
 			}
+
+		}
+
+	}
+
+	add( entity ) {
+
+		if ( entity.scene !== this ) {
+
+			this._addComponents( entity.components );
 
 			entity.dispatchEvent( {
 				type: "scenechange",
@@ -54,6 +59,19 @@ export class Scene extends TS {
 		entity.scene = this;
 		super.add( entity );
 		return entity;
+
+	}
+
+	remove( entity ) {
+
+		entity.enabled = false;
+		const components = entity.getChildren();
+		for ( let i = 0, len = components.length; i < len; i ++ )
+			components[ i ].enabled = false;
+
+		super.remove( obj );
+
+		return this;
 
 	}
 

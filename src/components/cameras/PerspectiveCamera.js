@@ -85,6 +85,7 @@ export class PerspectiveCamera extends PC {
 		data.object.viewport = this.viewport.toArray();
 		if ( data.object.autoAspect )
 			data.object.autoAspect = true;
+		data.object.component = true;
 
 		return data;
 

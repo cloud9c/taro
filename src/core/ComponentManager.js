@@ -1,3 +1,5 @@
+import { Renderable } from "../components/Renderable.js";
+
 import { OrthographicCamera } from "../components/cameras/OrthographicCamera.js";
 import { PerspectiveCamera } from "../components/cameras/PerspectiveCamera.js";
 
@@ -25,8 +27,8 @@ export const ComponentManager = {
 
 		if ( type in this._components ) throw "component " + type + " already exists";
 
-		this.prototype.componentType.value = type;
-		Object.defineProperties( constructor.prototype, this.prototype );
+		this.properties.componentType.value = type;
+		Object.defineProperties( constructor.prototype, this.properties );
 		Object.assign( constructor.prototype, EventDispatcher.prototype );
 
 		this._components[ type ] = {
@@ -50,29 +52,7 @@ export const ComponentManager = {
 
 	},
 
-	prototype: {
-		destroy: {
-			value: function () {
-
-				if ( this.enabled ) {
-
-					const type = this.componentType;
-					const container = this.entity.scene._containers[ type ];
-					container.splice( container.indexOf( this ), 1 );
-
-				} else {
-
-					this.dispatchEvent( { type: "disable" } );
-
-				}
-
-				const components = this.entity._components;
-				components.splice( components.indexOf( this ), 1 );
-
-				this.dispatchEvent( { type: "destroy" } );
-
-			},
-		},
+	properties: {
 		componentType: { value: null },
 		_enabled: { value: true, writable: true },
 		enabled: {
@@ -127,6 +107,7 @@ export const ComponentManager = {
 	}
 };
 
+ComponentManager.add( "Renderable", Renderable );
 ComponentManager.add( "OrthographicCamera", OrthographicCamera );
 ComponentManager.add( "PerspectiveCamera", PerspectiveCamera );
 

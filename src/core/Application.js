@@ -17,16 +17,50 @@ export class Application {
 		this.time = new Time( parameters );
 		this.physics = new Physics( parameters );
 		this.input = new Input();
+
+		this.autoRender = parameters.autoRender !== undefined ? parameters.autoRender : true;
+
 		this.scenes = [];
 		this._currentScene;
+		this.requestID;
+
+		if ( parameters.canvas === "undefined" )
+			document.body.appendChild( this.renderer.domElement );
 
 		Application.currentApp = this;
 
 	}
 
-	start() {
+	render( timestamp = 0 ) {
 
-		window.requestAnimationFrame( ( t ) => this._updateLoop( t / 1000 ) );
+		const deltaTime = this.time._update( timestamp );
+
+		this.physics._update(
+			deltaTime,
+			this.time.fixedTimestep * this.time.timeScale
+		);
+
+		// update loop
+		for ( const type in this._containers ) {
+
+			const container = this._containers[ type ];
+			if ( container[ 0 ] && "update" in container[ 0 ] ) {
+
+				for ( let j = 0, lenj = container.length; j < lenj; j ++ ) {
+
+					container[ j ].update( deltaTime );
+
+				}
+
+			}
+
+		}
+
+		this.renderer._update();
+		this.input._reset();
+
+		if ( this.autoRender )
+			window.requestAnimationFrame( ( t ) => this.render( t / 1000 ) );
 
 	}
 
@@ -93,38 +127,6 @@ export class Application {
 
 		}
 
-
-	}
-
-	_updateLoop( timestamp ) {
-
-		const deltaTime = this.time._update( timestamp );
-
-		this.physics._update(
-			deltaTime,
-			this.time.fixedTimestep * this.time.timeScale
-		);
-
-		// update loop
-		for ( const type in this._containers ) {
-
-			const container = this._containers[ type ];
-			if ( container[ 0 ] && "update" in container[ 0 ] ) {
-
-				for ( let j = 0, lenj = container.length; j < lenj; j ++ ) {
-
-					container[ j ].update( deltaTime );
-
-				}
-
-			}
-
-		}
-
-		this.renderer._update();
-		this.input._reset();
-
-		window.requestAnimationFrame( ( t ) => this._updateLoop( t / 1000 ) );
 
 	}
 

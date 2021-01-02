@@ -22,15 +22,14 @@ import {
 	Sprite,
 	Group,
 	Bone,
-	Object3D
+	Object3D,
+	OrthographicCamera,
+	PerspectiveCamera
 } from "../lib/three.js";
 
 import { Application } from "../core/Application.js";
 import { Entity } from "../core/Entity.js";
 import { Scene } from "../core/Scene.js";
-
-import { OrthographicCamera } from "../components/cameras/OrthographicCamera.js";
-import { PerspectiveCamera } from "../components/cameras/PerspectiveCamera.js";
 
 export class AppLoader extends ObjectLoader {
 
@@ -157,7 +156,12 @@ export class AppLoader extends ObjectLoader {
 				if ( data.autoAspect !== undefined )
 					data.aspect = undefined;
 
-				object = new PerspectiveCamera( { fov: data.fov, aspect: data.aspect, near: data.near, far: data.far, viewport: data.viewport } );
+				if ( data.component === true )
+					object = this._entity.addComponent( "PerspectiveCamera", {
+						fov: data.fov, aspect: data.aspect, near: data.near, far: data.far, viewport: data.viewport
+					} );
+				else
+					object = new PerspectiveCamera( data.fov, data.aspect, data.near, data.far );
 
 				if ( data.focus !== undefined ) object.focus = data.focus;
 				if ( data.zoom !== undefined ) object.zoom = data.zoom;
@@ -169,7 +173,12 @@ export class AppLoader extends ObjectLoader {
 
 			case 'OrthographicCamera':
 				// modification
-				object = new OrthographicCamera( { left: data.left, right: data.right, top: data.top, bottom: data.bottom, near: data.near, far: data.far, viewport: data.viewport } );
+				if ( data.component === true )
+					object = this._entity.addComponent( "OrthographicCamera", {
+						left: data.left, right: data.right, top: data.top, bottom: data.bottom, near: data.near, far: data.far, viewport: data.viewport
+					} );
+				else
+					object = new OrthographicCamera( data.left, data.right, data.top, data.bottom, data.near, data.far );
 
 				if ( data.zoom !== undefined ) object.zoom = data.zoom;
 				if ( data.view !== undefined ) object.view = Object.assign( {}, data.view );
@@ -291,7 +300,7 @@ export class AppLoader extends ObjectLoader {
 
 			case 'Group':
 				// modification
-				if ( data.isEntity !== undefined ) {
+				if ( data.isEntity === true ) {
 
 					object = new Entity();
 
