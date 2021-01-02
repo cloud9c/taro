@@ -7,12 +7,13 @@ export class PerspectiveCamera extends PC {
 		this._region = new Vector4();
 		this.autoAspect = true;
 
-		if ( "fov" in data ) this.fov = data.fov;
-		if ( "near" in data ) this.near = data.near;
-		if ( "far" in data ) this.far = data.far;
-		this.viewport =
-			"viewport" in data ? data.viewport : new Vector4( 0, 0, 1, 1 );
-		if ( "aspect" in data ) this.aspect = data.aspect;
+		if ( data.fov !== undefined ) this.fov = data.fov;
+		if ( data.near !== undefined ) this.near = data.near;
+		if ( data.far !== undefined ) this.far = data.far;
+
+		this.viewport = data.viewport !== undefined ? data.viewport : new Vector4( 0, 0, 1, 1 );
+
+		if ( data.aspect !== undefined ) this.aspect = data.aspect;
 
 		this.updateProjectionMatrix();
 
@@ -42,7 +43,7 @@ export class PerspectiveCamera extends PC {
 
 		super.updateProjectionMatrix();
 		if ( this.entity !== undefined )
-			this._updateRegion( this.app.render.domElement );
+			this._updateRegion( this.app.renderer.domElement );
 
 	}
 
@@ -82,6 +83,8 @@ export class PerspectiveCamera extends PC {
 
 		const data = super.toJSON( meta );
 		data.object.viewport = this.viewport.toArray();
+		if ( data.object.autoAspect )
+			data.object.autoAspect = true;
 
 		return data;
 

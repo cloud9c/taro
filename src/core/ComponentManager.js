@@ -1,10 +1,6 @@
 import { OrthographicCamera } from "../components/cameras/OrthographicCamera.js";
 import { PerspectiveCamera } from "../components/cameras/PerspectiveCamera.js";
-import { AmbientLight } from "../components/light/AmbientLight.js";
-import { DirectionalLight } from "../components/light/DirectionalLight.js";
-import { HemisphereLight } from "../components/light/HemisphereLight.js";
-import { PointLight } from "../components/light/PointLight.js";
-import { SpotLight } from "../components/light/SpotLight.js";
+
 import { Rigidbody } from "../components/physics/Rigidbody.js";
 
 import { BoxCollider } from "../components/physics/colliders/BoxCollider.js";
@@ -133,11 +129,7 @@ export const ComponentManager = {
 
 ComponentManager.add( "OrthographicCamera", OrthographicCamera );
 ComponentManager.add( "PerspectiveCamera", PerspectiveCamera );
-ComponentManager.add( "AmbientLight", AmbientLight );
-ComponentManager.add( "DirectionalLight", DirectionalLight );
-ComponentManager.add( "HemisphereLight", HemisphereLight );
-ComponentManager.add( "PointLight", PointLight );
-ComponentManager.add( "SpotLight", SpotLight );
+
 ComponentManager.add( "Rigidbody", Rigidbody );
 
 ComponentManager.add( "BoxCollider", BoxCollider );
@@ -147,23 +139,12 @@ ComponentManager.add( "CylinderCollider", CylinderCollider );
 ComponentManager.add( "MeshCollider", MeshCollider );
 ComponentManager.add( "SphereCollider", SphereCollider );
 
-ComponentManager.add( "BallJoint", BallJoint, {
-	requiredComponents: [ "Rigidbody" ],
-	schema: [ "linkedEntity", "breakForce", "breakTorque", "anchor", "linkedAnchor" ]
-} );
-ComponentManager.add( "CylindricalJoint", CylindricalJoint, {
-	requiredComponents: [ "Rigidbody" ],
-} );
-ComponentManager.add( "PrismaticJoint", PrismaticJoint, {
-	requiredComponents: [ "Rigidbody" ],
-} );
-ComponentManager.add( "RagdollJoint", RagdollJoint, {
-	requiredComponents: [ "Rigidbody" ],
-} );
+ComponentManager.add( "BallJoint", BallJoint, { requiredComponents: [ "Rigidbody" ] } );
+ComponentManager.add( "CylindricalJoint", CylindricalJoint, { requiredComponents: [ "Rigidbody" ] } );
+ComponentManager.add( "PrismaticJoint", PrismaticJoint, { requiredComponents: [ "Rigidbody" ] } );
+ComponentManager.add( "RagdollJoint", RagdollJoint, { requiredComponents: [ "Rigidbody" ] } );
 ComponentManager.add( "HingeJoint", HingeJoint, { requiredComponents: [ "Rigidbody" ] } );
-ComponentManager.add( "UniversalJoint", UniversalJoint, {
-	requiredComponents: [ "Rigidbody" ]
-} );
+ComponentManager.add( "UniversalJoint", UniversalJoint, { requiredComponents: [ "Rigidbody" ] } );
 
 // options: allowMultiple, requiredComponents, schema
 

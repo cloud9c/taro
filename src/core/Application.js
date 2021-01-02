@@ -1,5 +1,5 @@
 import { Physics } from "./Physics.js";
-import { Render } from "./Render.js";
+import { Renderer } from "./Renderer.js";
 import { Time } from "./Time.js";
 import { Scene } from "./Scene.js";
 import { Input } from "./Input.js";
@@ -13,7 +13,7 @@ export class Application {
 
 		this.parameters = parameters;
 
-		this.render = new Render( parameters );
+		this.renderer = new Renderer( parameters );
 		this.time = new Time( parameters );
 		this.physics = new Physics( parameters );
 		this.input = new Input();
@@ -56,12 +56,12 @@ export class Application {
 		if ( this.scenes.indexOf( scene ) === - 1 )
 			this.addScene( scene );
 
-		this.render.scene = this._currentScene = scene;
+		this.renderer.scene = this._currentScene = scene;
 		this._containers = scene._containers;
 
 		this.physics._updateScene( scene );
 
-		this.render.cameras = scene._cameras;
+		this.renderer.cameras = scene._cameras;
 		return scene;
 
 	}
@@ -121,7 +121,7 @@ export class Application {
 
 		}
 
-		this.render._update();
+		this.renderer._update();
 		this.input._reset();
 
 		window.requestAnimationFrame( ( t ) => this._updateLoop( t / 1000 ) );
@@ -151,7 +151,8 @@ export class Application {
 		for ( let i = 0, len = this.scenes.length; i < len; i ++ )
 			data.scenes[ i ] = this.scenes[ i ].toJSON();
 
-		data.parameters.canvas = data.parameters.canvas.id;
+		if ( data.parameters.canvas.id !== undefined )
+			data.parameters.canvas = data.parameters.canvas.id;
 
 		return data;
 

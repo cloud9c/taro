@@ -10,9 +10,7 @@ export class Entity extends Group {
 		super();
 
 		this.tags = [];
-
-		this.isEntity = true;
-		this._components = [];
+		this.components = [];
 		this._enabled = true;
 
 		if ( name !== undefined ) {
@@ -33,7 +31,7 @@ export class Entity extends Group {
 
 			scene.add( this );
 
-		} else {
+		} else if ( Application.currentApp !== undefined && Application.currentApp.currentScene !== undefined ) {
 
 			Application.currentApp.currentScene.add( this );
 
@@ -43,7 +41,7 @@ export class Entity extends Group {
 
 	getComponent( type ) {
 
-		const components = this._components;
+		const components = this.components;
 		for ( let i = 0, len = components.length; i < len; i ++ ) {
 
 			if ( components[ i ].componentType === type ) return components[ i ];
@@ -55,7 +53,8 @@ export class Entity extends Group {
 	getComponents( type ) {
 
 		const list = [];
-		const components = this._components;
+		const components = this.components;
+
 		for ( let i = 0, len = components.length; i < len; i ++ ) {
 
 			if ( components[ i ].componentType === type ) list.push( components[ i ] );
@@ -87,7 +86,7 @@ export class Entity extends Group {
 			this.getComponent( type ) !== undefined
 			) {
 
-				return console.warn( "allowMultiple Attribute is false" );
+				return console.warn( "TARO.Entity: allowMultiple Attribute is false" );
 
 			}
 
@@ -104,21 +103,21 @@ export class Entity extends Group {
 
 		}
 
-		Object.defineProperty( component, "entity", {
-			value: this,
-		} );
-
 		if ( ! ( type in this.scene._containers ) )
 			this.scene._containers[ type ] = [];
 
 		this.scene._containers[ type ].push( component );
 
+		this.components.push( component );
+
+		Object.defineProperty( component, "entity", {
+			value: this,
+		} );
+
 		if ( component.start !== undefined )
 			component.start( data );
 
 		component.dispatchEvent( { type: "enable" } );
-
-		this._components.push( component );
 
 		return component;
 
@@ -174,11 +173,11 @@ export class Entity extends Group {
 
 			if ( value && ! this.parent._enabled )
 				return console.warn(
-					"Entity: Can't enable if an ancestor is disabled"
+					"TARO.Entity: Can't enable if an ancestor is disabled"
 				);
 			this._enabled = value;
 
-			const components = this._components;
+			const components = this.components;
 			for ( let i = 0, len = components.length; i < len; i ++ )
 				components[ i ].enabled = value;
 
@@ -241,12 +240,6 @@ export class Entity extends Group {
 
 	}
 
-	get components() {
-
-		return this._components.slice();
-
-	}
-
 	get app() {
 
 		return this.scene.app;
@@ -263,13 +256,13 @@ export class Entity extends Group {
 		if ( this.tags.length !== 0 ) object.tags = this.tags;
 		object.enabled = this._enabled;
 
-		if ( this._components.length !== 0 ) {
+		if ( this.components.length !== 0 ) {
 
 			object.components = [];
 
-			for ( let i = 0, len = this._components.length; i < len; i ++ ) {
+			for ( let i = 0, len = this.components.length; i < len; i ++ ) {
 
-				const component = this._components[ i ];
+				const component = this.components[ i ];
 
 				if ( component.isObject3D ) {
 
@@ -298,7 +291,7 @@ export class Entity extends Group {
 
 			}
 
-			this._components;
+			this.components;
 
 		}
 

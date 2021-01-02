@@ -1,6 +1,6 @@
 import { WebGLRenderer } from "../lib/three.js";
 
-export class Render extends WebGLRenderer {
+export class Renderer extends WebGLRenderer {
 
 	constructor( parameters ) {
 

@@ -9,9 +9,8 @@ export class Scene extends TS {
 
 		super();
 		this._cameras = [];
-
 		this._containers = {};
-		this._enabled = true;
+
 		for ( const type in ComponentManager._components ) {
 
 			this._containers[ type ] = [];

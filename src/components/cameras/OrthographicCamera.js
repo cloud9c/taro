@@ -6,14 +6,14 @@ export class OrthographicCamera extends OC {
 
 		this._region = new Vector4();
 
-		if ( "left" in data ) this.left = data.left;
-		if ( "right" in data ) this.right = data.right;
-		if ( "top" in data ) this.top = data.top;
-		if ( "bottom" in data ) this.bottom = data.bottom;
-		if ( "near" in data ) this.near = data.near;
-		if ( "far" in data ) this.far = data.far;
+		if ( data.left !== undefined ) this.left = data.left;
+		if ( data.right !== undefined ) this.right = data.right;
+		if ( data.top !== undefined ) this.top = data.top;
+		if ( data.bottom !== undefined ) this.bottom = data.bottom;
+		if ( data.near !== undefined ) this.near = data.near;
+		if ( data.far !== undefined ) this.far = data.far;
 		this.viewport =
-			"viewport" in data ? data.viewport : new Vector4( 0, 0, 1, 1 );
+			data.viewport !== undefined ? data.viewport : new Vector4( 0, 0, 1, 1 );
 
 		this.updateProjectionMatrix();
 
@@ -43,7 +43,7 @@ export class OrthographicCamera extends OC {
 
 		super.updateProjectionMatrix();
 		if ( this.entity !== undefined )
-			this._updateRegion( this.app.render.domElement );
+			this._updateRegion( this.app.renderer.domElement );
 
 	}
 

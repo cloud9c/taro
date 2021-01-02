@@ -13,4 +13,4 @@ export { AngularLimit } from "./physics/AngularLimit.js";
 export { LinearLimit } from "./physics/LinearLimit.js";
 
 // loaders
-export { TaroLoader } from "./loaders/TaroLoader.js";
+export { AppLoader } from "./loaders/AppLoader.js";
