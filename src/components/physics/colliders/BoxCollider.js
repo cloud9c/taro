@@ -16,7 +16,7 @@ export class BoxCollider extends Collider {
 	_addDerivedProperties( data ) {
 
 		this._halfExtents =
-					"halfExtents" in data
+					data.halfExtents !== undefined
 						? data.halfExtents
 						: new Vector( 1, 1, 1 );
 

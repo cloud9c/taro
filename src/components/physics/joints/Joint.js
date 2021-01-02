@@ -21,20 +21,13 @@ export class Joint {
 		const type = data.type;
 
 		configs[ type ].rigidBody1 = this.entity._physicsRef;
-		this._bodyRef2 =
-			"linkedEntity" in data && data.linkedEntity !== null
-				? data.linkedEntity._physicsRef
-				: worldBody;
+
+		this._bodyRef2 = data.linkedEntity !== undefined && data.linkedEntity !== null ? data.linkedEntity._physicsRef : worldBody;
 		this._allowCollision = data.allowCollision === true;
-		this._breakForce =
-			"breakForce" in data && data.breakForce !== 0 ? data.breakForce : 0;
-		this._breakTorque =
-			"breakTorque" in data && data.breakTorque !== 0
-				? data.breakTorque
-				: 0;
-		this._anchor = "anchor" in data ? data.anchor : new Vector3();
-		this._linkedAnchor =
-			"linkedAnchor" in data ? data.linkedAnchor : new Vector3();
+		this._breakForce = data.breakForce !== undefined && data.breakForce !== 0 ? data.breakForce : 0;
+		this._breakTorque = data.breakTorque !== undefined && data.breakTorque !== 0 ? data.breakTorque : 0;
+		this._anchor = data.anchor !== undefined ? data.anchor : new Vector3();
+		this._linkedAnchor = data.linkedAnchor !== undefined ? data.linkedAnchor : new Vector3();
 
 		this._addDerivedProperties( data );
 		this._setJoint();

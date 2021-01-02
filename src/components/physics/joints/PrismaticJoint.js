@@ -15,14 +15,14 @@ export class PrismaticJoint extends Joint {
 
 	_addDerivedProperties( data ) {
 
-		this._axis = "axis" in data ? data.axis : new Vector3( 1, 0, 0 );
+		this._axis = data.axis !== undefined ? data.axis : new Vector3( 1, 0, 0 );
 		this._linkedAxis =
-					"axis" in data ? data.linkedAxis : new Vector3( 1, 0, 0 );
+					data.linkedAxis !== undefined ? data.linkedAxis : new Vector3( 1, 0, 0 );
 
-		this.springDamper = "springDamper" in data
+		this.springDamper = data.springDamper !== undefined
 			? data.springDamper
 			: new SpringDamper();
-		this.linearLimit = "linearLimit" in data
+		this.linearLimit = data.linearLimit !== undefined
 			? data.linearLimit
 			: new LinearLimit();
 

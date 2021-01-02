@@ -15,20 +15,20 @@ export class UniversalJoint extends Joint {
 
 	_addDerivedProperties( data ) {
 
-		this._axis = "axis" in data ? data.axis : new Vector3( 1, 0, 0 );
+		this._axis = data.axis !== undefined ? data.axis : new Vector3( 1, 0, 0 );
 		this._linkedAxis =
-					"axis" in data ? data.linkedAxis : new Vector3( 1, 0, 0 );
+					data.linkedAxis !== undefined ? data.linkedAxis : new Vector3( 1, 0, 0 );
 
-		this.springDamper = "springDamper" in data
+		this.springDamper = data.springDamper !== undefined
 			? data.springDamper
 			: new SpringDamper();
-		this.linkedSpringDamper = "linkedSpringDamper" in data
+		this.linkedSpringDamper = data.linkedSpringDamper !== undefined
 			? data.linkedSpringDamper
 			: new SpringDamper();
-		this.angularLimit = "angularLimit" in data
+		this.angularLimit = data.angularLimit !== undefined
 			? data.angularLimit
 			: new AngularLimit();
-		this.linkedAngularLimit = "linkedAngularLimit" in data
+		this.linkedAngularLimit = data.linkedAngularLimit !== undefined
 			? data.linkedAngularLimit
 			: new AngularLimit();
 

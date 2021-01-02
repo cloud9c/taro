@@ -15,14 +15,13 @@ export class HingeJoint extends Joint {
 
 	_addDerivedProperties( data ) {
 
-		this._axis = "axis" in data ? data.axis : new Vector3( 1, 0, 0 );
-		this._linkedAxis =
-					"axis" in data ? data.linkedAxis : new Vector3( 1, 0, 0 );
+		this._axis = data.axis !== undefined ? data.axis : new Vector3( 1, 0, 0 );
+		this._linkedAxis = data.linkedAxis !== undefined ? data.linkedAxis : new Vector3( 1, 0, 0 );
 
-		this.springDamper = "springDamper" in data
+		this.springDamper = data.springDamper !== undefined
 			? data.springDamper
 			: new SpringDamper();
-		this.angularLimit = "angularLimit" in data
+		this.angularLimit = data.angularLimit !== undefined
 			? data.angularLimit
 			: new AngularLimit();
 

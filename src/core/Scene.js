@@ -29,10 +29,10 @@ export class Scene extends TS {
 			if ( component._enabled ) {
 
 				const type = component.componentType;
-				const container = entity.scene._containers[ type ];
+				const container = this._containers[ type ];
 				container.splice( container.indexOf( component ), 1 );
 
-				if ( ! ( type in this._containers ) )
+				if ( this._containers[ type ] === undefined )
 					this._containers[ type ] = [];
 				this._containers[ type ].push( component );
 
@@ -57,21 +57,16 @@ export class Scene extends TS {
 		}
 
 		entity.scene = this;
-		super.add( entity );
-		return entity;
+
+		return super.add( entity );
 
 	}
 
 	remove( entity ) {
 
-		entity.enabled = false;
-		const components = entity.getChildren();
-		for ( let i = 0, len = components.length; i < len; i ++ )
-			components[ i ].enabled = false;
+		entity._disableEverything();
 
-		super.remove( obj );
-
-		return this;
+		return super.remove( entity );
 
 	}
 

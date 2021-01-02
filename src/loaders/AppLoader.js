@@ -37,8 +37,7 @@ export class AppLoader extends ObjectLoader {
 
 		super( manager );
 
-		this._app;
-		this._currentScene;
+		this._entity;
 
 	}
 
@@ -46,11 +45,15 @@ export class AppLoader extends ObjectLoader {
 
 		const scenes = json.scenes;
 		const app = this._app = new Application( json.parameters );
-		this._currentScene = json.currentScene;
 
 		for ( let i = 0, len = scenes.length; i < len; i ++ ) {
 
-			app.addScene( super.parse( scenes[ i ] ) );
+			const scene = super.parse( scenes[ i ] );
+
+			if ( scene.uuid === this.json.currentScene )
+				app.setScene( scene );
+			else
+				app.addScene( scene );
 
 		}
 
@@ -143,11 +146,6 @@ export class AppLoader extends ObjectLoader {
 					}
 
 				}
-
-				if ( data.uuid === this._currentScene )
-					this._app.setScene( object );
-				else
-					this._app.addScene( object );
 
 				break;
 
@@ -302,7 +300,7 @@ export class AppLoader extends ObjectLoader {
 				// modification
 				if ( data.isEntity === true ) {
 
-					object = new Entity();
+					this._entity = object = new Entity();
 
 					if ( data.tags !== undefined )
 						object.tags = data.tags;
@@ -374,12 +372,19 @@ export class AppLoader extends ObjectLoader {
 
 			for ( let i = 0; i < children.length; i ++ ) {
 
+				// modification
 				const child = this.parseObject( children[ i ], geometries, materials, animations );
 
-				if ( data.isEntity !== undefined && children[ i ].isEntity === undefined )
-					object.addComponent( "Renderable", child );
-				else
+				if ( children[ i ].component === undefined ) {
+
+					console.log( object, child );
 					object.add( child );
+
+				} else if ( child.isCamera === undefined ) {
+
+					object.addComponent( "Renderable", child );
+
+				}
 
 			}
 

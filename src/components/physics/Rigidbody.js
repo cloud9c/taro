@@ -15,30 +15,30 @@ export class Rigidbody {
 		if ( "_physicsRef" in this.entity ) this._ref = this.entity._physicsRef;
 		else Rigidbody.createRigidbody( this, 0 );
 
-		if ( "angularVelocity" in data )
+		if ( data.angularVelocity !== undefined )
 			this.setAngularVelocity( data.angularVelocity );
 
-		if ( "angularDamping" in data )
+		if ( data.angularDamping !== undefined )
 			this.angularDamping = data.angularDamping;
 
-		if ( "linearVelocity" in data )
+		if ( data.linearVelocity !== undefined )
 			this.setLinearVelocity( data.linearVelocity );
 
-		if ( "linearDamping" in data )
+		if ( data.linearDamping !== undefined )
 			this.linearDamping = data.linearDamping;
 
-		if ( "gravityScale" in data )
+		if ( data.gravityScale !== undefined )
 			this.gravityScale = data.gravityScale;
 
-		if ( "autoSleep" in data )
+		if ( data.autoSleep !== undefined )
 			this.autoSleep = data.autoSleep;
 
-		this.isKinematic = "isKinematic" in data ? data.isKinematic : false;
+		this.isKinematic = data.isKinematic !== undefined ? data.isKinematic : false;
 
-		if ( "rotationFactor" in data )
+		if ( data.rotationFactor !== undefined )
 			this.setRotationFactor( data.rotationFactor );
 
-		this._ref.mass = "mass" in data ? data.mass : 1;
+		this._ref.mass = data.mass !== undefined ? data.mass : 1;
 
 		this.addEventListener( "enable", this.onEnable );
 		this.addEventListener( "disable", this.onDisable );
@@ -236,7 +236,7 @@ export class Rigidbody {
 	}
 	get autoSleep() {
 
-		return "_autoSleep" in this ? this._autoSleep : true;
+		return this._autoSleep !== undefined ? this._autoSleep : true;
 
 	}
 	set autoSleep( v ) {

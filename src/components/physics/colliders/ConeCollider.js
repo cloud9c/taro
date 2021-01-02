@@ -12,8 +12,8 @@ export class ConeCollider extends Collider {
 
 	_addDerivedProperties( data ) {
 
-		this._radius = "radius" in data ? data.radius : 0.5;
-		this._halfHeight = "halfHeight" in data ? data.halfHeight : 1;
+		this._radius = data.radius !== undefined ? data.radius : 0.5;
+		this._halfHeight = data.halfHeight !== undefined ? data.halfHeight : 1;
 
 	}
 

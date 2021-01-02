@@ -18,7 +18,7 @@ export class Application {
 		this.physics = new Physics( parameters );
 		this.input = new Input();
 
-		this.autoRender = parameters.autoRender !== undefined ? parameters.autoRender : true;
+		this.autoUpdate = parameters.autoUpdate !== undefined ? parameters.autoUpdate : true;
 
 		this.scenes = [];
 		this._currentScene;
@@ -31,7 +31,7 @@ export class Application {
 
 	}
 
-	render( timestamp = 0 ) {
+	update( timestamp = 0 ) {
 
 		const deltaTime = this.time._update( timestamp );
 
@@ -44,7 +44,7 @@ export class Application {
 		for ( const type in this._containers ) {
 
 			const container = this._containers[ type ];
-			if ( container[ 0 ] && "update" in container[ 0 ] ) {
+			if ( container[ 0 ] && container[ 0 ].update !== undefined ) {
 
 				for ( let j = 0, lenj = container.length; j < lenj; j ++ ) {
 
@@ -59,8 +59,8 @@ export class Application {
 		this.renderer._update();
 		this.input._reset();
 
-		if ( this.autoRender )
-			window.requestAnimationFrame( ( t ) => this.render( t / 1000 ) );
+		if ( this.autoUpdate )
+			window.requestAnimationFrame( ( t ) => this.update( t / 1000 ) );
 
 	}
 

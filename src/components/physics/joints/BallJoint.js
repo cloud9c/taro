@@ -13,7 +13,7 @@ export class BallJoint extends Joint {
 
 	_addDerivedProperties( data ) {
 
-		this.springDamper = "springDamper" in data
+		this.springDamper = data.springDamper !== undefined
 			? data.springDamper
 			: new SpringDamper();
 

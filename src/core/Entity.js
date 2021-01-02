@@ -79,7 +79,7 @@ export class Entity extends Group {
 
 		}
 
-		if ( "requireComponents" in options ) {
+		if ( options.requireComponents !== undefined ) {
 
 			const required = options.requireComponents;
 			for ( let i = 0, len = required.length; i < len; i ++ )
@@ -90,10 +90,14 @@ export class Entity extends Group {
 
 		const component = new componentData.constructor();
 
-		if ( ! ( type in this.scene._containers ) )
-			this.scene._containers[ type ] = [];
+		if ( this.scene !== undefined ) {
 
-		this.scene._containers[ type ].push( component );
+			if ( this.scene._containers[ type ] === undefined )
+				this.scene._containers[ type ] = [];
+
+			this.scene._containers[ type ].push( component );
+
+		}
 
 		this.components.push( component );
 
@@ -134,11 +138,11 @@ export class Entity extends Group {
 
 			this.scene._addComponents( object.components );
 
+			entity.scene = this;
+
 		}
 
-		super.add( object );
-
-		return this;
+		return super.add( object );
 
 	}
 
@@ -148,10 +152,7 @@ export class Entity extends Group {
 
 			if ( object instanceof Entity ) {
 
-				this.enabled = false;
-				const components = this.getChildren();
-				for ( let i = 0, len = components.length; i < len; i ++ )
-					components[ i ].enabled = false;
+				this._disableEverything();
 
 			}
 
@@ -160,6 +161,15 @@ export class Entity extends Group {
 		}
 
 		return this;
+
+	}
+
+	_disableEverything() {
+
+		this.enabled = false;
+		const components = this.getChildren();
+		for ( let i = 0, len = components.length; i < len; i ++ )
+			components[ i ].enabled = false;
 
 	}
 
@@ -276,7 +286,7 @@ export class Entity extends Group {
 				const meta = { type, data: {} };
 
 
-				if ( "toJSON" in component ) {
+				if ( component.toJSON !== undefined ) {
 
 					meta.data = component.toJSON();
 

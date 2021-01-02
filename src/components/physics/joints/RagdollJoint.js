@@ -15,26 +15,14 @@ export class RagdollJoint extends Joint {
 
 	_addDerivedProperties( data ) {
 
-		this._twistAxis =
-					"twistAxis" in data ? data.twistAxis : new Vector3( 1, 0, 0 );
-		this._linkedTwistAxis =
-					"linkedTwistAxis" in data
-						? data.linkedTwistAxis
-						: new Vector3( 1, 0, 0 );
-		this._swingAxis =
-					"swingAxis" in data ? data.swingAxis : new Vector3( 0, 1, 0 );
-		this._maxSwing = "maxSwing" in data ? data.maxSwing : Math.PI;
-		this._linkedMaxSwing =
-					"linkedMaxSwing" in data ? data.linkedMaxSwing : Math.PI;
-		this.twistSpringDamper = "twistSpringDamper" in data
-			? data.twistSpringDamper
-			: new SpringDamper();
-		this.swingSpringDamper = "swingSpringDamper" in data
-			? data.swingSpringDamper
-			: new SpringDamper();
-		this.twistLimit = "twistLimit" in data
-			? data.twistLimit
-			: new AngularLimit();
+		this._twistAxis = data.twistAxis !== undefined ? data.twistAxis : new Vector3( 1, 0, 0 );
+		this._linkedTwistAxis = data.linkedTwistAxis !== undefined ? data.linkedTwistAxis : new Vector3( 1, 0, 0 );
+		this._swingAxis = data.swingAxis !== undefined ? data.swingAxis : new Vector3( 0, 1, 0 );
+		this._maxSwing = data.maxSwing !== undefined ? data.maxSwing : Math.PI;
+		this._linkedMaxSwing = data.linkedMaxSwing !== undefined ? data.linkedMaxSwing : Math.PI;
+		this.twistSpringDamper = data.twistSpringDamper !== undefined ? data.twistSpringDamper : new SpringDamper();
+		this.swingSpringDamper = data.swingSpringDamper !== undefined ? data.swingSpringDamper : new SpringDamper();
+		this.twistLimit = data.twistLimit !== undefined ? data.twistLimit : new AngularLimit();
 
 	}
 

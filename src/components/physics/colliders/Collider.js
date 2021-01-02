@@ -79,16 +79,15 @@ export class Collider {
 
 	start( data ) {
 
-		this._isTrigger = "isTrigger" in data ? data.isTrigger : false;
-		this._collisionGroup =
-			"collisionGroup" in data ? data.collisionGroup : 1;
-		this._collisionMask = "collisionMask" in data ? data.collisionMask : 1;
-		this._center = "center" in data ? data.center : new Vector3( 0, 0, 0 );
-		this._rotation = "rotation" in data ? data.center : new Euler( 0, 0, 0 );
+		this._isTrigger = data.isTrigger !== undefined ? data.isTrigger : false;
+		this._collisionGroup = data.collisionGroup !== undefined ? data.collisionGroup : 1;
+		this._collisionMask = data.collisionMask !== undefined ? data.collisionMask : 1;
+		this._center = data.center !== undefined ? data.center : new Vector3( 0, 0, 0 );
+		this._rotation = data.rotation !== undefined ? data.rotation : new Euler( 0, 0, 0 );
 
 		this._addDerivedProperties( data );
 
-		if ( "material" in data ) this._material = data.material;
+		if ( data.material !== undefined ) this._material = data.material;
 
 		this._setShape();
 
@@ -108,7 +107,7 @@ export class Collider {
 
 		} else {
 
-			if ( "_physicsRef" in this.entity ) {
+			if ( this.entity._physicsRef !== undefined ) {
 
 				const ref = this.entity._physicsRef;
 				this._ref = ref;
@@ -137,7 +136,7 @@ export class Collider {
 		}
 
 		const scale = this.entity.scale;
-		if ( "_colliders" in scale ) {
+		if ( scale._colliders !== undefined ) {
 
 			scale._colliders.push( this );
 
@@ -241,7 +240,7 @@ export class Collider {
 		shapeConfig.position = this._center;
 		shapeConfig.rotation.fromEulerXyz( this._rotation );
 
-		if ( "_shapeRef" in this && this._enabled ) {
+		if ( this._shapeRef !== undefined && this._enabled ) {
 
 			if ( this._isTrigger ) {
 
@@ -270,7 +269,7 @@ export class Collider {
 		this._shapeRef.entity = this.entity;
 		this._shapeRef.collider = this;
 
-		if ( "_material" in this ) this.material = this._material;
+		if ( this._material !== undefined ) this.material = this._material;
 
 	}
 
@@ -333,7 +332,7 @@ export class Collider {
 
 		}
 
-		if ( "_material" in this ) {
+		if ( this._material !== undefined ) {
 
 			const colliders = this._material._colliders;
 			colliders.splice( colliders.indexOf( this._shapeRef ), 1 );
@@ -491,8 +490,8 @@ function contactCallback( contact, type ) {
 	const entity1 = constraint.getShape1().entity;
 	const entity2 = constraint.getShape2().entity;
 
-	const has1 = "_listeners" in entity1 && type in entity1._listeners && entity1._listeners[ type ].length !== 0;
-	const has2 = "_listeners" in entity2 && type in entity2._listeners && entity2._listeners[ type ].length !== 0;
+	const has1 = entity1._listeners !== undefined && entity1._listeners[ type ] !== undefined && entity1._listeners[ type ].length !== 0;
+	const has2 = entity2._listeners !== undefined && entity2._listeners[ type ] !== undefined && entity2._listeners[ type ].length !== 0;
 
 	if ( has1 || has2 ) {
 

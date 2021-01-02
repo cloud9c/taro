@@ -100,6 +100,7 @@ export const ComponentManager = {
 		app: {
 			get() {
 
+				console.log( this.entity );
 				return this.entity.scene.app;
 
 			}

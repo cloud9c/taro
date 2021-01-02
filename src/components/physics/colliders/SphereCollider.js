@@ -12,7 +12,7 @@ export class SphereCollider extends Collider {
 
 	_addDerivedProperties( data ) {
 
-		this._radius = "radius" in data ? data.radius : 0.5;
+		this._radius = data.radius !== undefined ? data.radius : 0.5;
 
 	}
 
