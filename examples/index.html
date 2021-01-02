@@ -21,50 +21,53 @@
 		<canvas id="c"></canvas>
 		<script type="module">
 			import { GLTFLoader } from "https://threejs.org/examples/jsm/loaders/GLTFLoader.js";
-			import * as ENGINE from "../build/taro.js";
+			import * as TARO from "../src/taro.js";
 
-			ENGINE.createComponent(
+			window.TARO = TARO;
+			window.x = new TARO.AppLoader();
+
+			TARO.ComponentManager.add(
 				"CameraController",
-				class {
+				class CameraController {
 					start() {
-						this.direction = new ENGINE.Vector3();
+						this.direction = new TARO.Vector3();
 						this.input = this.entity.scene.app.input;
 						this.entity.rotation.order = "YXZ";
 						this.ball = this.entity.scene.find("ball");
 
 						window.addEventListener("mousedown", () => {
-							this.entity.scene.app.canvas.requestPointerLock();
+							this.entity.app.renderer.domElement.requestPointerLock();
 						});
-						this.ball.addEventListener("collisionenter", function (
-							c
-						) {
-							console.log(c);
-						});
+						// this.ball.addEventListener("collisionenter", function (
+						// 	c
+						// ) {
+						// 	console.log(c);
+						// });
 					}
 					update() {
 						const ball = this.ball;
 						if (this.input.getKeyDown("KeyG")) {
-							ball.position.set(0, 100, -5);
+							console.log(this.ball.toJSON())
 						}
 
 						if (this.input.getKeyDown("ArrowUp")) {
 							ball.getComponent("Rigidbody").applyForceToCenter(
-								new ENGINE.Vector3(0, 0, -200)
+								new TARO.Vector3(0, 0, -200)
 							);
 						}
 						if (this.input.getKeyDown("ArrowDown")) {
 							ball.getComponent("Rigidbody").applyForceToCenter(
-								new ENGINE.Vector3(0, 0, 200)
+								new TARO.Vector3(0, 0, 200)
 							);
 						}
 						if (this.input.getKeyDown("ArrowLeft")) {
 							ball.getComponent("Rigidbody").applyForceToCenter(
-								new ENGINE.Vector3(-200, 0, 0)
+								new TARO.Vector3(-200, 0, 0)
 							);
 						}
 						if (this.input.getKeyDown("ArrowRight")) {
 							ball.getComponent("Rigidbody").applyForceToCenter(
-								new ENGINE.Vector3(200, 0, 0)
+								new TARO.Vector3(200, 0, 0)
 							);
 						}
 
@@ -94,32 +97,32 @@
 				}
 			);
 
+			// x.load("app.json", function(app) {app.update(); console.log(app)})
+
 			let entity, geo, mat, mesh;
 
 			const loader = new GLTFLoader();
-			const app = new ENGINE.Application("c");
+			const app = new TARO.Application({
+				canvas: "c"
+			});
 
-			app.scene.background = new ENGINE.Color("skyblue");
-			console.log(app.scene);
+			const scene = new TARO.Scene();
+			app.setScene(scene);
+
+			app.currentScene.background = new TARO.Color("skyblue");
+			console.log(app);
 
 			// lighting
-			entity = new ENGINE.Entity();
-			const hemiLight = entity.addComponent("HemisphereLight", {
-				color: 0xffffff,
-				groundColor: 0xffffff,
-				intensity: 0.6,
-			});
+			entity = new TARO.Entity();
+			const hemiLight = entity.addComponent("Renderable", new TARO.HemisphereLight(0xffffff, 0xffffff, 0.6));
 
 			hemiLight.color.setHSL(0.6, 1, 0.6);
 			hemiLight.groundColor.setHSL(0.095, 1, 0.75);
 
 			entity.position.set(0, 100, 0);
 
-			entity = new ENGINE.Entity();
-			const dirLight = entity.addComponent("DirectionalLight", {
-				color: 0xffffff,
-				intensity: 1,
-			});
+			entity = new TARO.Entity();
+			const dirLight = entity.addComponent("Renderable", new TARO.DirectionalLight(0xffffff, 1, 0.6));
 
 			dirLight.color.setHSL(0.1, 1, 0.95);
 
@@ -141,33 +144,35 @@
 			entity.position.set(-100, 175, 100);
 
 			// floor
-			geo = new ENGINE.PlaneBufferGeometry(200, 200);
-			mat = new ENGINE.MeshPhongMaterial({
+			geo = new TARO.PlaneBufferGeometry(200, 200);
+			mat = new TARO.MeshPhongMaterial({
 				color: 0x718e3e,
 			});
-			mesh = new ENGINE.Mesh(geo, mat);
+			mesh = new TARO.Mesh(geo, mat);
 			mesh.receiveShadow = true;
 
-			entity = new ENGINE.Entity("floor");
+			entity = new TARO.Entity("floor");
 			entity.addComponent("Renderable", mesh);
 			entity.addComponent("BoxCollider", {
-				halfExtents: new ENGINE.Vector3(100, 100, 0.01),
+				halfExtents: new TARO.Vector3(100, 100, 0.01),
 			});
 			entity.rotation.set(-Math.PI / 2, 0, 0);
 
-			new ENGINE.Entity().addComponent(
+			new TARO.Entity().addComponent(
 				"Renderable",
-				new ENGINE.GridHelper(200, 200, 0x0000ff, 0x808080)
+				new TARO.GridHelper(200, 200, 0x0000ff, 0x808080)
 			);
 
 			// ball
-			geo = new ENGINE.SphereGeometry(1, 32, 32);
-			mat = new ENGINE.MeshPhongMaterial({ color: 0xffff00 });
-			mesh = new ENGINE.Mesh(geo, mat);
-			entity = new ENGINE.Entity("ball");
+			geo = new TARO.SphereGeometry(1, 32, 32);
+			mat = new TARO.MeshPhongMaterial({ color: 0xffff00 });
+			mesh = new TARO.Mesh(geo, mat);
+			entity = new TARO.Entity("ball");
 			entity.addComponent("Renderable", mesh);
 			entity.position.set(0, 5, 2);
-			entity.addComponent("Rigidbody");
+			entity.addComponent("Rigidbody", {
+				mass: 1
+			});
 			entity.addComponent("SphereCollider", {
 				radius: 1,
 			});
@@ -177,18 +182,18 @@
 			});
 
 			// blocks
-			const position = new ENGINE.Vector3(-10, 1, -5);
-			geo = new ENGINE.BoxBufferGeometry(1, 1, 1);
-			mat = new ENGINE.MeshPhongMaterial({ color: 0x2194ce });
+			const position = new TARO.Vector3(-10, 1, -5);
+			geo = new TARO.BoxBufferGeometry(1, 1, 1);
+			mat = new TARO.MeshPhongMaterial({ color: 0x2194ce });
 			for (let k = 0; k < 4; k++) {
 				for (let i = 0; i < 4; i++) {
 					for (let j = 0; j < 20; j++) {
-						entity = new ENGINE.Entity();
-						mesh = new ENGINE.Mesh(geo, mat);
+						entity = new TARO.Entity();
+						mesh = new TARO.Mesh(geo, mat);
 						entity.addComponent("Renderable", mesh);
 						entity.position.copy(position);
 						entity.addComponent("BoxCollider", {
-							halfExtents: new ENGINE.Vector3(0.5, 0.5, 0.5),
+							halfExtents: new TARO.Vector3(0.5, 0.5, 0.5),
 						});
 						entity.addComponent("Rigidbody", { mass: 0.1 });
 						position.x += 1;
@@ -201,12 +206,12 @@
 			}
 
 			// camera
-			entity = new ENGINE.Entity("camera");
+			entity = new TARO.Entity("camera");
 			entity.addComponent("PerspectiveCamera");
 			entity.addComponent("CameraController");
 			entity.position.set(0, 5, 10);
 
-			app.start();
+			app.update();
 		</script>
 	</body>
 </html>
