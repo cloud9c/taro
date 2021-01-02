@@ -1,5 +1,5 @@
-import { Quaternion, Vector3, Matrix4 } from "../lib/three.js";
-import { OIMO } from "../lib/oimo.js";
+import { Quaternion, Vector3, Matrix4 } from '../lib/three.js';
+import { OIMO } from '../lib/oimo.js';
 
 const vector = new Vector3();
 const vector2 = new Vector3();
@@ -53,7 +53,7 @@ export class Physics {
 
 		this._world = scene._physicsWorld;
 		this._world.setGravity( this._gravity );
-		this.rigidbodies = scene._containers[ "Rigidbody" ];
+		this.rigidbodies = scene._containers[ 'Rigidbody' ];
 
 	}
 

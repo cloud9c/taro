@@ -1,14 +1,14 @@
-import { Joint } from "./Joint.js";
-import { AngularLimit } from "../../../physics/AngularLimit.js";
-import { SpringDamper } from "../../../physics/SpringDamper.js";
-import { Vector3 } from "../../../lib/three.js";
-import { OIMO } from "../../../lib/oimo.js";
+import { Joint } from './Joint.js';
+import { AngularLimit } from '../../../physics/AngularLimit.js';
+import { SpringDamper } from '../../../physics/SpringDamper.js';
+import { Vector3 } from '../../../lib/three.js';
+import { OIMO } from '../../../lib/oimo.js';
 
 export class UniversalJoint extends Joint {
 
 	start( data ) {
 
-		data.type = "universal";
+		data.type = 'universal';
 		super.start( data );
 
 	}

@@ -1,21 +1,21 @@
-import { OIMO } from "../../../lib/oimo.js";
-import { Vector3, Euler } from "../../../lib/three.js";
-import { Rigidbody } from "../Rigidbody.js";
+import { OIMO } from '../../../lib/oimo.js';
+import { Vector3, Euler } from '../../../lib/three.js';
+import { Rigidbody } from '../Rigidbody.js';
 
 const vector = new Vector3();
 const massData = new OIMO.MassData();
 const transform = new OIMO.Transform();
 const shapeConfig = new OIMO.ShapeConfig();
 shapeConfig.contactCallback = {
-	beginContact: ( c ) => contactCallback( c, "collisionenter" ),
-	preSolve: ( c ) => contactCallback( c, "collisionpresolve" ),
-	postSolve: ( c ) => contactCallback( c, "collisionpostsolve" ),
-	endContact: ( c ) => contactCallback( c, "collisionend" ),
+	beginContact: ( c ) => contactCallback( c, 'collisionenter' ),
+	preSolve: ( c ) => contactCallback( c, 'collisionpresolve' ),
+	postSolve: ( c ) => contactCallback( c, 'collisionpostsolve' ),
+	endContact: ( c ) => contactCallback( c, 'collisionend' ),
 };
 const config = new OIMO.RigidBodyConfig();
 config.type = 1;
 
-const props = {
+const properties = {
 	_x: { value: 0, writable: true },
 	_y: { value: 0, writable: true },
 	_z: { value: 0, writable: true },
@@ -91,9 +91,9 @@ export class Collider {
 
 		this._setShape();
 
-		this.addEventListener( "enable", this.onEnable );
-		this.addEventListener( "disable", this.onDisable );
-		this.entity.addEventListener( "scenechange", this.onSceneChange );
+		this.addEventListener( 'enable', this.onEnable );
+		this.addEventListener( 'disable', this.onDisable );
+		this.entity.addEventListener( 'scenechange', this.onSceneChange );
 
 	}
 
@@ -143,10 +143,10 @@ export class Collider {
 		} else {
 
 			scale._colliders = [ this ];
-			props._x.value = scale.x;
-			props._y.value = scale.y;
-			props._z.value = scale.z;
-			Object.defineProperties( this.entity.scale, props );
+			properties._x.value = scale.x;
+			properties._y.value = scale.y;
+			properties._z.value = scale.z;
+			Object.defineProperties( this.entity.scale, properties );
 
 		}
 
@@ -180,7 +180,7 @@ export class Collider {
 			const scale = this.entity.scale;
 			if ( scale._colliders.length === 1 ) {
 
-				Object.defineProperty( this.entity, "scale", {
+				Object.defineProperty( this.entity, 'scale', {
 					value: new Vector3().copy( scale ),
 				} );
 

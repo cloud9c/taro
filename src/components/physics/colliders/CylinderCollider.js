@@ -1,11 +1,11 @@
-import { Collider } from "./Collider.js";
-import { OIMO } from "../../../lib/oimo.js";
+import { Collider } from './Collider.js';
+import { OIMO } from '../../../lib/oimo.js';
 
 export class CylinderCollider extends Collider {
 
 	start( data ) {
 
-		data.type = "cylinder";
+		data.type = 'cylinder';
 		super.start( data );
 
 	}

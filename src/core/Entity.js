@@ -1,7 +1,7 @@
-import { Group } from "../lib/three.js";
-import { Scene } from "./Scene.js";
-import { Application } from "./Application.js";
-import { ComponentManager } from "./ComponentManager.js";
+import { Group } from '../lib/three.js';
+import { Scene } from './Scene.js';
+import { Application } from './Application.js';
+import { ComponentManager } from './ComponentManager.js';
 
 export class Entity extends Group {
 
@@ -9,8 +9,10 @@ export class Entity extends Group {
 
 		super();
 
-		this.tags = [];
 		this.components = [];
+		this.queue = [];
+		this.tags = [];
+
 		this._enabled = true;
 
 		if ( name !== undefined ) {
@@ -36,6 +38,36 @@ export class Entity extends Group {
 			Application.currentApp.currentScene.add( this );
 
 		}
+
+		this.addEventListener( 'sceneadd', this._emptyQueue );
+
+	}
+
+	_emptyQueue() {
+
+		while ( this.queue.length > 0 ) {
+
+			const object = this.queue[ 0 ];
+
+			this._activateComponent( object.type, object.component, object.data );
+			this.queue.shift();
+
+		}
+
+
+	}
+
+	_activateComponent( type, component, data ) {
+
+		if ( this.scene._containers[ type ] === undefined )
+			this.scene._containers[ type ] = [];
+
+		this.scene._containers[ type ].push( component );
+
+		if ( component.start !== undefined )
+			component.start( data );
+
+		component.dispatchEvent( { type: 'enable' } );
 
 	}
 
@@ -70,14 +102,8 @@ export class Entity extends Group {
 		const componentData = ComponentManager._components[ type ];
 		const options = componentData.options;
 
-		if (
-			options.allowMultiple === false &&
-		this.getComponent( type ) !== undefined
-		) {
-
-			return console.warn( "TARO.Entity: allowMultiple Attribute is false" );
-
-		}
+		if ( options.allowMultiple === false && this.getComponent( type ) !== undefined )
+			return console.warn( 'TARO.Entity: allowMultiple Attribute is false' );
 
 		if ( options.requireComponents !== undefined ) {
 
@@ -90,27 +116,23 @@ export class Entity extends Group {
 
 		const component = new componentData.constructor();
 
-		if ( this.scene !== undefined ) {
-
-			if ( this.scene._containers[ type ] === undefined )
-				this.scene._containers[ type ] = [];
-
-			this.scene._containers[ type ].push( component );
-
-		}
-
-		this.components.push( component );
-
-		Object.defineProperty( component, "entity", {
+		Object.defineProperty( component, 'entity', {
 			value: this,
 		} );
 
-		if ( component.start !== undefined )
-			component.start( data );
+		this.components.push( component );
 
-		component.dispatchEvent( { type: "enable" } );
+		if ( this.scene !== undefined ) {
 
-		return type === "Renderable" ? component.ref : component;
+			this._activateComponent( type, component, data );
+
+		} else {
+
+			this.queue.push( { type, component, data } );
+
+		}
+
+		return type === 'Renderable' ? component.ref : component;
 
 	}
 
@@ -127,8 +149,8 @@ export class Entity extends Group {
 		const components = this.entity.components;
 		components.splice( components.indexOf( component ), 1 );
 
-		this.dispatchEvent( { type: "disable" } );
-		this.dispatchEvent( { type: "remove" } );
+		this.dispatchEvent( { type: 'disable' } );
+		this.dispatchEvent( { type: 'remove' } );
 
 	}
 
@@ -152,7 +174,7 @@ export class Entity extends Group {
 
 			if ( object instanceof Entity ) {
 
-				this._disableEverything();
+				object._detach();
 
 			}
 
@@ -164,12 +186,14 @@ export class Entity extends Group {
 
 	}
 
-	_disableEverything() {
+	_detach() {
 
+		// disables all components and deletes this.scene
 		this.enabled = false;
 		const components = this.getChildren();
 		for ( let i = 0, len = components.length; i < len; i ++ )
 			components[ i ].enabled = false;
+		delete this.scene;
 
 	}
 
@@ -197,7 +221,7 @@ export class Entity extends Group {
 			for ( let i = 0, len = children.length; i < len; i ++ )
 				children[ i ].enabled = value;
 
-			this.dispatchEvent( { type: value ? "enable" : "disable" } );
+			this.dispatchEvent( { type: value ? 'enable' : 'disable' } );
 
 		}
 
@@ -261,8 +285,19 @@ export class Entity extends Group {
 	toJSON( meta ) {
 
 		const data = super.toJSON( meta );
-
 		const object = data.object;
+
+		const children = object.children;
+
+		for ( let i = 0, len = children.length; i < len; i ++ ) {
+
+			if ( children[ i ].isEntity === undefined ) {
+
+				children[ i ].component = true;
+
+			}
+
+		}
 
 		object.isEntity = true;
 		if ( this.tags.length !== 0 ) object.tags = this.tags;

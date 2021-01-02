@@ -1,6 +1,6 @@
-import { Collider } from "./Collider.js";
-import { Vector3 } from "../../../lib/three.js";
-import { OIMO } from "../../../lib/oimo.js";
+import { Collider } from './Collider.js';
+import { Vector3 } from '../../../lib/three.js';
+import { OIMO } from '../../../lib/oimo.js';
 
 const vector = new Vector3();
 
@@ -8,7 +8,7 @@ export class BoxCollider extends Collider {
 
 	start( data ) {
 
-		data.type = "box";
+		data.type = 'box';
 		super.start( data );
 
 	}

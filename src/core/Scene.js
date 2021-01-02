@@ -1,7 +1,7 @@
-import { Scene as TS } from "../lib/three.js";
-import { OIMO } from "../lib/oimo.js";
-import { Entity } from "./Entity.js";
-import { ComponentManager } from "./ComponentManager.js";
+import { Scene as TS } from '../lib/three.js';
+import { OIMO } from '../lib/oimo.js';
+import { Entity } from './Entity.js';
+import { ComponentManager } from './ComponentManager.js';
 
 export class Scene extends TS {
 
@@ -49,7 +49,7 @@ export class Scene extends TS {
 			this._addComponents( entity.components );
 
 			entity.dispatchEvent( {
-				type: "scenechange",
+				type: 'scenechange',
 				oldScene: entity.scene,
 				newScene: this,
 			} );
@@ -57,6 +57,7 @@ export class Scene extends TS {
 		}
 
 		entity.scene = this;
+		entity.dispatchEvent( { type: 'sceneadd' } );
 
 		return super.add( entity );
 
@@ -64,7 +65,9 @@ export class Scene extends TS {
 
 	remove( entity ) {
 
-		entity._disableEverything();
+		entity._detach();
+
+		entity.dispatchEvent( { type: 'sceneremove' } );
 
 		return super.remove( entity );
 

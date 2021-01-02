@@ -3,8 +3,8 @@ export class Renderable {
 	start( data ) {
 
 		this.ref = data;
-		this.addEventListener( "enable", this.onEnable );
-		this.addEventListener( "disable", this.onDisable );
+		this.addEventListener( 'enable', this.onEnable );
+		this.addEventListener( 'disable', this.onDisable );
 
 	}
 

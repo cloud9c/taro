@@ -1,14 +1,14 @@
-import { Joint } from "./Joint.js";
-import { LinearLimit } from "../../../physics/LinearLimit.js";
-import { SpringDamper } from "../../../physics/SpringDamper.js";
-import { Vector3 } from "../../../lib/three.js";
-import { OIMO } from "../../../lib/oimo.js";
+import { Joint } from './Joint.js';
+import { LinearLimit } from '../../../physics/LinearLimit.js';
+import { SpringDamper } from '../../../physics/SpringDamper.js';
+import { Vector3 } from '../../../lib/three.js';
+import { OIMO } from '../../../lib/oimo.js';
 
 export class PrismaticJoint extends Joint {
 
 	start( data ) {
 
-		data.type = "prismatic";
+		data.type = 'prismatic';
 		super.start( data );
 
 	}

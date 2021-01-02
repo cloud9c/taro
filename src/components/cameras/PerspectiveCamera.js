@@ -1,4 +1,4 @@
-import { PerspectiveCamera as PC, Vector4 } from "../../lib/three.js";
+import { PerspectiveCamera as PC, Vector4 } from '../../lib/three.js';
 
 export class PerspectiveCamera extends PC {
 
@@ -17,8 +17,8 @@ export class PerspectiveCamera extends PC {
 
 		this.updateProjectionMatrix();
 
-		this.addEventListener( "enable", this.onEnable );
-		this.addEventListener( "disable", this.onDisable );
+		this.addEventListener( 'enable', this.onEnable );
+		this.addEventListener( 'disable', this.onDisable );
 
 	}
 
@@ -83,11 +83,21 @@ export class PerspectiveCamera extends PC {
 
 		const data = super.toJSON( meta );
 		data.object.viewport = this.viewport.toArray();
-		if ( data.object.autoAspect )
-			data.object.autoAspect = true;
-		data.object.component = true;
+		if ( this.autoAspect ) {
+
+			delete data.object.aspect;
+
+		}
 
 		return data;
+
+	}
+
+	fromJSON( object ) {
+
+		object.viewport = new Vector4().fromArray( object.viewport );
+
+		return object;
 
 	}
 

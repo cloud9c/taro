@@ -1,4 +1,4 @@
-import { Vector2 } from "../lib/three.js";
+import { Vector2 } from '../lib/three.js';
 
 export class Input {
 
@@ -14,51 +14,51 @@ export class Input {
 		this._keyDown = {};
 		this._keyUp = {};
 
-		window.addEventListener( "blur", () => {
+		window.addEventListener( 'blur', () => {
 
 			this._reset();
 
 		} );
 
-		document.addEventListener( "fullscreenchange", () => {
+		document.addEventListener( 'fullscreenchange', () => {
 
-			console.log( "here" );
+			console.log( 'here' );
 			this._reset();
 
 		} );
 
-		document.addEventListener( "mousemove", ( e ) => {
+		document.addEventListener( 'mousemove', ( e ) => {
 
 			this.mouseDelta.set( e.movementX, e.movementY );
 			this.mousePosition.set( e.clientX, e.clientY );
 
 		} );
-		document.addEventListener( "mousedown", ( e ) => {
+		document.addEventListener( 'mousedown', ( e ) => {
 
 			this._mouse[ e.button ] = true;
 			this._mouseDown[ e.button ] = true;
 
 		} );
-		document.addEventListener( "mouseup", ( e ) => {
+		document.addEventListener( 'mouseup', ( e ) => {
 
 			this._mouse[ e.button ] = false;
 			this._mouseUp[ e.button ] = true;
 
 		} );
 
-		document.addEventListener( "wheel", ( e ) => {
+		document.addEventListener( 'wheel', ( e ) => {
 
 			this.wheelDelta.set( e.deltaX, e.deltaY );
 
 		} );
 
-		document.addEventListener( "keydown", () => {
+		document.addEventListener( 'keydown', () => {
 
 			this._key[ event.code ] = true;
 			if ( ! event.repeat ) this._keyDown[ event.code ] = true;
 
 		} );
-		document.addEventListener( "keyup", () => {
+		document.addEventListener( 'keyup', () => {
 
 			this._key[ event.code ] = false;
 			this._keyUp[ event.code ] = true;

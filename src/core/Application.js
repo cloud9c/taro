@@ -1,14 +1,14 @@
-import { Physics } from "./Physics.js";
-import { Renderer } from "./Renderer.js";
-import { Time } from "./Time.js";
-import { Scene } from "./Scene.js";
-import { Input } from "./Input.js";
+import { Physics } from './Physics.js';
+import { Renderer } from './Renderer.js';
+import { Time } from './Time.js';
+import { Scene } from './Scene.js';
+import { Input } from './Input.js';
 
 export class Application {
 
 	constructor( parameters = {} ) {
 
-		if ( typeof parameters.canvas === "string" )
+		if ( typeof parameters.canvas === 'string' )
 			parameters.canvas = document.getElementById( parameters.canvas );
 
 		this.parameters = parameters;
@@ -24,7 +24,7 @@ export class Application {
 		this._currentScene;
 		this.requestID;
 
-		if ( parameters.canvas === "undefined" )
+		if ( parameters.canvas === 'undefined' )
 			document.body.appendChild( this.renderer.domElement );
 
 		Application.currentApp = this;
@@ -113,7 +113,7 @@ export class Application {
 
 	findSceneById( id ) {
 
-		return this.findSceneByProperty( "id", id );
+		return this.findSceneByProperty( 'id', id );
 
 
 	}
@@ -145,6 +145,10 @@ export class Application {
 	toJSON() {
 
 		const data = {
+			metadata: {
+				type: 'App',
+				generator: 'Application.toJSON'
+			},
 			scenes: [],
 			currentScene: this.currentScene.uuid,
 			parameters: Object.assign( {}, this.parameters ),

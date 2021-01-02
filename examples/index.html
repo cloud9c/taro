@@ -28,7 +28,7 @@
 
 			TARO.ComponentManager.add(
 				"CameraController",
-				class {
+				class CameraController {
 					start() {
 						this.direction = new TARO.Vector3();
 						this.input = this.entity.scene.app.input;
@@ -96,6 +96,8 @@
 					}
 				}
 			);
+
+			// x.load("app.json", function(app) {app.update(); console.log(app)})
 
 			let entity, geo, mat, mesh;
 

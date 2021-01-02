@@ -1,12 +1,12 @@
-import { Joint } from "./Joint.js";
-import { SpringDamper } from "../../../physics/SpringDamper.js";
-import { OIMO } from "../../../lib/oimo.js";
+import { Joint } from './Joint.js';
+import { SpringDamper } from '../../../physics/SpringDamper.js';
+import { OIMO } from '../../../lib/oimo.js';
 
 export class BallJoint extends Joint {
 
 	constructor( data ) {
 
-		data.type = "ball";
+		data.type = 'ball';
 		super.start( data );
 
 	}

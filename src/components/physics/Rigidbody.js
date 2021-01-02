@@ -1,6 +1,6 @@
-import { OIMO } from "../../lib/oimo.js";
-import { Physics } from "../../core/Physics.js";
-import { Vector3, Matrix3, Quaternion } from "../../lib/three.js";
+import { OIMO } from '../../lib/oimo.js';
+import { Physics } from '../../core/Physics.js';
+import { Vector3, Matrix3, Quaternion } from '../../lib/three.js';
 
 const quat = new Quaternion();
 const vector = new Vector3();
@@ -12,7 +12,7 @@ export class Rigidbody {
 
 	start( data ) {
 
-		if ( "_physicsRef" in this.entity ) this._ref = this.entity._physicsRef;
+		if ( '_physicsRef' in this.entity ) this._ref = this.entity._physicsRef;
 		else Rigidbody.createRigidbody( this, 0 );
 
 		if ( data.angularVelocity !== undefined )
@@ -40,9 +40,9 @@ export class Rigidbody {
 
 		this._ref.mass = data.mass !== undefined ? data.mass : 1;
 
-		this.addEventListener( "enable", this.onEnable );
-		this.addEventListener( "disable", this.onDisable );
-		this.entity.addEventListener( "scenechange", this.onSceneChange );
+		this.addEventListener( 'enable', this.onEnable );
+		this.addEventListener( 'disable', this.onDisable );
+		this.entity.addEventListener( 'scenechange', this.onSceneChange );
 
 	}
 

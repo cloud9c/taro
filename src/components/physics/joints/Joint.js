@@ -1,5 +1,5 @@
-import { OIMO } from "../../../lib/oimo.js";
-import { Vector3 } from "../../../lib/three.js";
+import { OIMO } from '../../../lib/oimo.js';
+import { Vector3 } from '../../../lib/three.js';
 
 const configs = {
 	cylindrical: new OIMO.CylindricalJointConfig(),
@@ -32,9 +32,9 @@ export class Joint {
 		this._addDerivedProperties( data );
 		this._setJoint();
 
-		this.addEventListener( "enable", this.onEnable );
-		this.addEventListener( "disable", this.onDisable );
-		this.entity.addEventListener( "scenechange", this.onSceneChange );
+		this.addEventListener( 'enable', this.onEnable );
+		this.addEventListener( 'disable', this.onDisable );
+		this.entity.addEventListener( 'scenechange', this.onSceneChange );
 
 	}
 
@@ -283,7 +283,7 @@ export class Joint {
 	// revolute joint and universal
 	get angle() {
 
-		if ( this.type === "universal" ) return this._ref.getAngle1();
+		if ( this.type === 'universal' ) return this._ref.getAngle1();
 		return this._ref.getAngle();
 
 	}

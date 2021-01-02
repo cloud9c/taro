@@ -1,4 +1,4 @@
-import { WebGLRenderer } from "../lib/three.js";
+import { WebGLRenderer } from '../lib/three.js';
 
 export class Renderer extends WebGLRenderer {
 
@@ -17,7 +17,7 @@ export class Renderer extends WebGLRenderer {
 
 		const canvas = this.domElement;
 		this.setSize( canvas.clientWidth, canvas.clientHeight, false );
-		if ( "cameras" in this ) {
+		if ( 'cameras' in this ) {
 
 			for ( let i = 0, len = this.cameras.length; i < len; i ++ ) {
 

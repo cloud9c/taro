@@ -1,11 +1,11 @@
-import { Collider } from "./Collider.js";
-import { OIMO } from "../../../lib/oimo.js";
+import { Collider } from './Collider.js';
+import { OIMO } from '../../../lib/oimo.js';
 
 export class SphereCollider extends Collider {
 
 	start( data ) {
 
-		data.type = "sphere";
+		data.type = 'sphere';
 		super.start( data );
 
 	}

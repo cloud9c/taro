@@ -1,4 +1,4 @@
-import { OrthographicCamera as OC, Vector4 } from "../../lib/three.js";
+import { OrthographicCamera as OC, Vector4 } from '../../lib/three.js';
 
 export class OrthographicCamera extends OC {
 
@@ -17,8 +17,10 @@ export class OrthographicCamera extends OC {
 
 		this.updateProjectionMatrix();
 
-		this.addEventListener( "enable", this.onEnable );
-		this.addEventListener( "disable", this.onDisable );
+		this.addEventListener( 'enable', this.onEnable );
+		this.addEventListener( 'disable', this.onDisable );
+		this.addEventListener( 'sceneadd', this.onEnable );
+		this.addEventListener( 'sceneremove', this.onDisable );
 
 	}
 
@@ -63,9 +65,16 @@ export class OrthographicCamera extends OC {
 
 		const data = super.toJSON( meta );
 		data.object.viewport = this.viewport.toArray();
-		data.object.component = true;
 
 		return data;
+
+	}
+
+	fromJSON( object ) {
+
+		object.viewport = new Vector4().fromArray( object.viewport );
+
+		return object;
 
 	}
 

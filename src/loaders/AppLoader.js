@@ -25,11 +25,13 @@ import {
 	Object3D,
 	OrthographicCamera,
 	PerspectiveCamera
-} from "../lib/three.js";
+} from '../lib/three.js';
 
-import { Application } from "../core/Application.js";
-import { Entity } from "../core/Entity.js";
-import { Scene } from "../core/Scene.js";
+import { Application } from '../core/Application.js';
+import { Entity } from '../core/Entity.js';
+import { Scene } from '../core/Scene.js';
+
+import { ComponentManager } from '../core/ComponentManager.js';
 
 export class AppLoader extends ObjectLoader {
 
@@ -43,17 +45,18 @@ export class AppLoader extends ObjectLoader {
 
 	parse( json, onLoad ) {
 
-		const scenes = json.scenes;
 		const app = this._app = new Application( json.parameters );
+		const scenes = json.scenes;
 
 		for ( let i = 0, len = scenes.length; i < len; i ++ ) {
 
 			const scene = super.parse( scenes[ i ] );
 
-			if ( scene.uuid === this.json.currentScene )
+			if ( scene.uuid === json.currentScene ) {
+
 				app.setScene( scene );
-			else
-				app.addScene( scene );
+
+			}
 
 		}
 
@@ -123,6 +126,8 @@ export class AppLoader extends ObjectLoader {
 
 				object = new Scene();
 
+				this._app.addScene( object );
+
 				if ( data.background !== undefined ) {
 
 					if ( Number.isInteger( data.background ) ) {
@@ -151,15 +156,18 @@ export class AppLoader extends ObjectLoader {
 
 			case 'PerspectiveCamera':
 				// modification
-				if ( data.autoAspect !== undefined )
-					data.aspect = undefined;
+				if ( data.component === true ) {
 
-				if ( data.component === true )
-					object = this._entity.addComponent( "PerspectiveCamera", {
-						fov: data.fov, aspect: data.aspect, near: data.near, far: data.far, viewport: data.viewport
-					} );
-				else
+					console.log( data );
+					ComponentManager._components[ 'PerspectiveCamera' ].constructor.prototype.fromJSON( data );
+
+					object = this._entity.addComponent( 'PerspectiveCamera', data );
+
+				} else {
+
 					object = new PerspectiveCamera( data.fov, data.aspect, data.near, data.far );
+
+				}
 
 				if ( data.focus !== undefined ) object.focus = data.focus;
 				if ( data.zoom !== undefined ) object.zoom = data.zoom;
@@ -171,11 +179,13 @@ export class AppLoader extends ObjectLoader {
 
 			case 'OrthographicCamera':
 				// modification
-				if ( data.component === true )
-					object = this._entity.addComponent( "OrthographicCamera", {
-						left: data.left, right: data.right, top: data.top, bottom: data.bottom, near: data.near, far: data.far, viewport: data.viewport
-					} );
-				else
+				if ( data.component === true ) {
+
+					ComponentManager._components[ 'OrthographicCamera' ].constructor.prototype.fromJSON( data );
+
+					object = this._entity.addComponent( 'OrthographicCamera', data );
+
+				} else
 					object = new OrthographicCamera( data.left, data.right, data.top, data.bottom, data.near, data.far );
 
 				if ( data.zoom !== undefined ) object.zoom = data.zoom;
@@ -307,6 +317,20 @@ export class AppLoader extends ObjectLoader {
 
 					object.enabled = data.enabled;
 
+					const components = data.components;
+					for ( let i = 0, len = components.length; i < len; i ++ ) {
+
+						let data = components[ i ].data;
+						const type = components[ i ].type;
+						const constructor = ComponentManager._components[ type ].constructor;
+
+						if ( constructor.prototype.fromJSON !== undefined )
+							constructor.prototype.fromJSON( data );
+
+						object.addComponent( type, data );
+
+					}
+
 				} else {
 
 					object = new Group();
@@ -377,12 +401,11 @@ export class AppLoader extends ObjectLoader {
 
 				if ( children[ i ].component === undefined ) {
 
-					console.log( object, child );
 					object.add( child );
 
 				} else if ( child.isCamera === undefined ) {
 
-					object.addComponent( "Renderable", child );
+					object.addComponent( 'Renderable', child );
 
 				}
 
