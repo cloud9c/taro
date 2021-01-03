@@ -46,10 +46,10 @@ camera.lookAt( 0, 10, 0 );
 
 const orbit = new OrbitControls( camera, renderer.domElement );
 orbit.update();
-orbit.addEventListener( 'change', renderer.render );
+orbit.addEventListener( 'change', () => {renderer.render()} );
 
 const control = new TransformControls( camera, renderer.domElement );
-control.addEventListener( 'change', renderer.render );
+control.addEventListener( 'change', () => {renderer.render()} );
 
 control.addEventListener( 'dragging-changed', function ( event ) {
 
