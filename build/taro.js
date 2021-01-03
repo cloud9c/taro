@@ -55581,7 +55581,7 @@ class Application {
 	}
 
 	update( timestamp = performance.now() ) {
-
+		console.log(this)
 		const deltaTime = this.time._update( timestamp );
 
 		this.physics._update(
@@ -56232,7 +56232,6 @@ class AppLoader extends ObjectLoader {
 				// modification
 				if ( data.component === true ) {
 
-					console.log( data );
 					ComponentManager._components[ 'PerspectiveCamera' ].constructor.prototype.fromJSON( data );
 
 					object = this._entity.addComponent( 'PerspectiveCamera', data );

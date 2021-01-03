@@ -37,142 +37,122 @@ app.update();
 let cameraPersp, cameraOrtho, currentCamera;
 let renderer, control, orbit;
 
-init();
+renderer = app.renderer;
+document.body.appendChild( renderer.domElement );
 
-function init() {
+currentCamera = camera;
 
-	renderer = app.renderer;
-	document.body.appendChild( renderer.domElement );
+currentCamera.position.set( 100, 50, 100 );
+currentCamera.lookAt( 0, 200, 0 );
 
-	const aspect = window.innerWidth / window.innerHeight;
+orbit = new OrbitControls( currentCamera, renderer.domElement );
+orbit.update();
+orbit.addEventListener( 'change', app.update() );
 
-	cameraPersp = new TARO.PerspectiveCamera( 50, aspect, 0.01, 30000 );
-	cameraOrtho = new TARO.OrthographicCamera( - 600 * aspect, 600 * aspect, 600, - 600, 0.01, 30000 );
-	currentCamera = cameraPersp;
+control = new TransformControls( currentCamera, renderer.domElement );
+control.addEventListener( 'change', app.update );
 
-	currentCamera.position.set( 100, 50, 100 );
-	currentCamera.lookAt( 0, 200, 0 );
+control.addEventListener( 'dragging-changed', function ( event ) {
 
-	orbit = new OrbitControls( currentCamera, renderer.domElement );
-	orbit.update();
-	orbit.addEventListener( 'change', () => {
+	orbit.enabled = ! event.value;
 
-		app.update();
+} );
 
-	} );
+control.attach( box );
+scene.add( control );
 
-	control = new TransformControls( currentCamera, renderer.domElement );
-	control.addEventListener( 'change', () => {
+window.addEventListener( 'keydown', function ( event ) {
 
-		app.update();
+	switch ( event.keyCode ) {
 
-	} );
+		case 81: // Q
+			control.setSpace( control.space === 'local' ? 'world' : 'local' );
+			break;
 
-	control.addEventListener( 'dragging-changed', function ( event ) {
+		case 16: // Shift
+			control.setTranslationSnap( 100 );
+			control.setRotationSnap( TARO.MathUtils.degToRad( 15 ) );
+			control.setScaleSnap( 0.25 );
+			break;
 
-		orbit.enabled = ! event.value;
+		case 87: // W
+			control.setMode( 'translate' );
+			break;
 
-	} );
+		case 69: // E
+			control.setMode( 'rotate' );
+			break;
 
-	control.attach( box );
-	scene.add( control );
+		case 82: // R
+			control.setMode( 'scale' );
+			break;
 
-	window.addEventListener( 'resize', onWindowResize, false );
+		case 67: // C
+			const position = currentCamera.position.clone();
 
-	window.addEventListener( 'keydown', function ( event ) {
+			currentCamera = currentCamera.isPerspectiveCamera ? cameraOrtho : cameraPersp;
+			currentCamera.position.copy( position );
 
-		switch ( event.keyCode ) {
+			orbit.object = currentCamera;
+			control.camera = currentCamera;
 
-			case 81: // Q
-				control.setSpace( control.space === 'local' ? 'world' : 'local' );
-				break;
+			currentCamera.lookAt( orbit.target.x, orbit.target.y, orbit.target.z );
+			onWindowResize();
+			break;
 
-			case 16: // Shift
-				control.setTranslationSnap( 100 );
-				control.setRotationSnap( TARO.MathUtils.degToRad( 15 ) );
-				control.setScaleSnap( 0.25 );
-				break;
+		case 86: // V
+			const randomFoV = Math.random() + 0.1;
+			const randomZoom = Math.random() + 0.1;
 
-			case 87: // W
-				control.setMode( 'translate' );
-				break;
+			cameraPersp.fov = randomFoV * 160;
+			cameraOrtho.bottom = - randomFoV * 500;
+			cameraOrtho.top = randomFoV * 500;
 
-			case 69: // E
-				control.setMode( 'rotate' );
-				break;
+			cameraPersp.zoom = randomZoom * 5;
+			cameraOrtho.zoom = randomZoom * 5;
+			onWindowResize();
+			break;
 
-			case 82: // R
-				control.setMode( 'scale' );
-				break;
+		case 187:
+		case 107: // +, =, num+
+			control.setSize( control.size + 0.1 );
+			break;
 
-			case 67: // C
-				const position = currentCamera.position.clone();
+		case 189:
+		case 109: // -, _, num-
+			control.setSize( Math.max( control.size - 0.1, 0.1 ) );
+			break;
 
-				currentCamera = currentCamera.isPerspectiveCamera ? cameraOrtho : cameraPersp;
-				currentCamera.position.copy( position );
+		case 88: // X
+			control.showX = ! control.showX;
+			break;
 
-				orbit.object = currentCamera;
-				control.camera = currentCamera;
+		case 89: // Y
+			control.showY = ! control.showY;
+			break;
 
-				currentCamera.lookAt( orbit.target.x, orbit.target.y, orbit.target.z );
-				onWindowResize();
-				break;
+		case 90: // Z
+			control.showZ = ! control.showZ;
+			break;
 
-			case 86: // V
-				const randomFoV = Math.random() + 0.1;
-				const randomZoom = Math.random() + 0.1;
+		case 32: // Spacebar
+			control.enabled = ! control.enabled;
+			break;
 
-				cameraPersp.fov = randomFoV * 160;
-				cameraOrtho.bottom = - randomFoV * 500;
-				cameraOrtho.top = randomFoV * 500;
+	}
 
-				cameraPersp.zoom = randomZoom * 5;
-				cameraOrtho.zoom = randomZoom * 5;
-				onWindowResize();
-				break;
+} );
 
-			case 187:
-			case 107: // +, =, num+
-				control.setSize( control.size + 0.1 );
-				break;
+window.addEventListener( 'keyup', function ( event ) {
 
-			case 189:
-			case 109: // -, _, num-
-				control.setSize( Math.max( control.size - 0.1, 0.1 ) );
-				break;
+	switch ( event.keyCode ) {
 
-			case 88: // X
-				control.showX = ! control.showX;
-				break;
+		case 16: // Shift
+			control.setTranslationSnap( null );
+			control.setRotationSnap( null );
+			control.setScaleSnap( null );
+			break;
 
-			case 89: // Y
-				control.showY = ! control.showY;
-				break;
+	}
 
-			case 90: // Z
-				control.showZ = ! control.showZ;
-				break;
-
-			case 32: // Spacebar
-				control.enabled = ! control.enabled;
-				break;
-
-		}
-
-	} );
-
-	window.addEventListener( 'keyup', function ( event ) {
-
-		switch ( event.keyCode ) {
-
-			case 16: // Shift
-				control.setTranslationSnap( null );
-				control.setRotationSnap( null );
-				control.setScaleSnap( null );
-				break;
-
-		}
-
-	} );
-
-}
+} );
