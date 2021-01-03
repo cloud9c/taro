@@ -6,6 +6,7 @@ export class Renderer extends WebGLRenderer {
 
 		super( parameters );
 
+		this.cameras = [];
 		this.setPixelRatio( window.devicePixelRatio );
 		this._onResize();
 
@@ -17,14 +18,11 @@ export class Renderer extends WebGLRenderer {
 
 		const canvas = this.domElement;
 		this.setSize( canvas.clientWidth, canvas.clientHeight, false );
-		if ( 'cameras' in this ) {
 
-			for ( let i = 0, len = this.cameras.length; i < len; i ++ ) {
+		for ( let i = 0, len = this.cameras.length; i < len; i ++ ) {
 
-				const camera = this.cameras[ i ];
-				camera._updateRegion( canvas );
-
-			}
+			const camera = this.cameras[ i ];
+			camera._updateRegion( canvas );
 
 		}
 
