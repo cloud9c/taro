@@ -22,29 +22,34 @@ const app = new TARO.Application( {
 const scene = new TARO.Scene();
 app.setScene( scene );
 
+//
+
 const cameraEntity = new TARO.Entity();
 const camera = cameraEntity.addComponent( 'PerspectiveCamera' );
 cameraEntity.position.z = 5;
 
 const box = new TARO.Entity();
-box.addComponent( 'Renderable', new TARO.Mesh( new TARO.BoxGeometry(), new TARO.MeshBasicMaterial( { color: 0x00ff00 } ) ) );
+box.addComponent( 'Renderable', new TARO.Mesh( new TARO.BoxGeometry(), new TARO.MeshPhongMaterial( { color: 0x00ff00 } ) ) );
 
-app.renderer.setClearColor( 0xaaaaaa );
-app.update();
+const gridHelper = new TARO.GridHelper( 30, 30, 0x444, 0x9e9e9e );
+scene.add( gridHelper );
+
+//
+
+const renderer = app.renderer;
+renderer.setClearColor( 0xdadce0 );
 
 // transform controls stuff
 
-const renderer = app.renderer;
-
-camera.position.set( 100, 50, 100 );
+camera.position.set( 10, 10, 10 );
 camera.lookAt( 0, 200, 0 );
 
 const orbit = new OrbitControls( camera, renderer.domElement );
 orbit.update();
-orbit.addEventListener( 'change', () => app.update() );
+orbit.addEventListener( 'change', () => app.renderer._update() );
 
 const control = new TransformControls( camera, renderer.domElement );
-control.addEventListener( 'change', () => app.update() );
+control.addEventListener( 'change', () => app.renderer._update() );
 
 control.addEventListener( 'dragging-changed', function ( event ) {
 
@@ -54,6 +59,8 @@ control.addEventListener( 'dragging-changed', function ( event ) {
 
 control.attach( box );
 scene.add( control );
+
+//
 
 window.addEventListener( 'keydown', function ( event ) {
 
