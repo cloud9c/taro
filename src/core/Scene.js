@@ -1,22 +1,15 @@
 import { Scene as TS } from '../lib/three.js';
 import { OIMO } from '../lib/oimo.js';
 import { Entity } from './Entity.js';
-import { ComponentManager } from './ComponentManager.js';
 
 export class Scene extends TS {
 
 	constructor() {
 
 		super();
+
 		this._cameras = [];
-		this._containers = {};
-
-		for ( const type in ComponentManager._components ) {
-
-			this._containers[ type ] = [];
-
-		}
-
+		this._containers = { Rigidbody: [] };
 		this._physicsWorld = new OIMO.World( 2 );
 
 	}
@@ -29,8 +22,6 @@ export class Scene extends TS {
 			if ( component._enabled ) {
 
 				const type = component.componentType;
-				const container = this._containers[ type ];
-				container.splice( container.indexOf( component ), 1 );
 
 				if ( this._containers[ type ] === undefined )
 					this._containers[ type ] = [];
@@ -42,38 +33,73 @@ export class Scene extends TS {
 
 	}
 
-	add( entity ) {
+	_removeComponents( components ) {
 
-		if ( entity instanceof Entity ) {
+		for ( let i = 0, len = components.length; i < len; i ++ ) {
 
-			if ( entity.scene !== this ) {
+			const component = components[ i ];
+			if ( component._enabled ) {
 
-				this._addComponents( entity.components );
+				const type = component.componentType;
+				const container = this._containers[ type ];
 
-				entity.dispatchEvent( {
-					type: 'scenechange',
-					oldScene: entity.scene,
-					newScene: this,
-				} );
+				container.splice( container.indexOf(component), 1 );
 
 			}
 
-			entity.scene = this;
-			entity.dispatchEvent( { type: 'sceneadd' } );
-
 		}
-
-		return super.add( entity );
 
 	}
 
-	remove( entity ) {
+	_addToScene(object) {
+		if ( object instanceof Entity ) {
 
-		entity._detach();
+			if ( object.scene !== undefined && object.scene !== this ) {
 
-		entity.dispatchEvent( { type: 'sceneremove' } );
+				object.scene._removeComponents( object.components )
 
-		return super.remove( entity );
+				object.dispatchEvent( {
+					type: 'scenechange',
+					oldScene: object.scene,
+					newScene: this,
+				} );
+
+			} else {
+				object.dispatchEvent( { type: 'sceneadd', scene: this } );
+			}
+
+			this._addComponents( object.components );
+
+			object.scene = this;
+
+		}
+	}
+
+	_removeFromScene( object ) {
+		if ( this.children.indexOf( object ) !== - 1 ) {
+
+			object._removeComponents( object.components );
+			delete object.scene;
+
+			object.dispatchEvent( { type: 'sceneremove' } );
+
+		}
+
+	}
+
+	add( object ) {
+
+		this._addToScene(  object );
+
+		return super.add( object );
+
+	}
+
+	remove( object ) {
+
+		this._removeFromScene(object)
+
+		return super.remove( object );
 
 	}
 

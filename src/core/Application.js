@@ -3,6 +3,7 @@ import { Renderer } from './Renderer.js';
 import { Time } from './Time.js';
 import { Scene } from './Scene.js';
 import { Input } from './Input.js';
+import { ComponentManager } from './ComponentManager.js';
 
 export class Application {
 
@@ -17,6 +18,7 @@ export class Application {
 		this.time = new Time( parameters );
 		this.physics = new Physics( parameters );
 		this.input = new Input();
+		this.componentManager = new ComponentManager();
 
 		this.autoUpdate = parameters.autoUpdate !== undefined ? parameters.autoUpdate : true;
 
@@ -68,6 +70,7 @@ export class Application {
 
 		scene.app = this;
 		this.scenes.push( scene );
+		scene.dispatchEvent({type: "appadd"})
 		return scene;
 
 	}

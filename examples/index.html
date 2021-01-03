@@ -26,7 +26,16 @@
 			window.TARO = TARO;
 			window.x = new TARO.AppLoader();
 
-			TARO.ComponentManager.add(
+			// x.load("app.json", function(app) {app.update(); console.log(app)})
+
+			let entity, geo, mat, mesh;
+
+			const loader = new GLTFLoader();
+			const app = new TARO.Application({
+				canvas: "c"
+			});
+
+			app.componentManager.add(
 				"CameraController",
 				class CameraController {
 					start() {
@@ -96,15 +105,6 @@
 					}
 				}
 			);
-
-			// x.load("app.json", function(app) {app.update(); console.log(app)})
-
-			let entity, geo, mat, mesh;
-
-			const loader = new GLTFLoader();
-			const app = new TARO.Application({
-				canvas: "c"
-			});
 
 			const scene = new TARO.Scene();
 			app.setScene(scene);

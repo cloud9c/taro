@@ -21,8 +21,87 @@ import { UniversalJoint } from '../components/physics/joints/UniversalJoint.js';
 
 import { EventDispatcher } from '../lib/three.js';
 
-export const ComponentManager = {
-	_components: {},
+export class ComponentManager {
+
+	constructor() {
+
+		this._components = {};
+		this.properties = {
+			componentType: { value: null },
+			_enabled: { value: true, writable: true },
+			enabled: {
+				get() {
+
+					return this._enabled;
+
+				},
+				set( value ) {
+
+					if ( value != this._enabled ) {
+
+						if ( value && ! this.entity._enabled )
+							return console.warn(
+								"Component: Can't enable if the entity is disabled"
+							);
+						this._enabled = value;
+
+						const container = this.entity.scene._containers[
+							this.componentType
+						];
+						if ( value ) {
+
+							container.push( this );
+							this.dispatchEvent( { type: 'enable' } );
+
+						} else {
+
+							container.splice( container.indexOf( this ), 1 );
+							this.dispatchEvent( { type: 'disable' } );
+
+						}
+
+					}
+
+				},
+			},
+			scene: {
+				get() {
+
+					return this.entity.scene;
+
+				}
+			},
+			app: {
+				get() {
+
+					return this.entity.scene.app;
+
+				}
+			}
+		};
+
+		this.add( 'Renderable', Renderable );
+		this.add( 'OrthographicCamera', OrthographicCamera );
+		this.add( 'PerspectiveCamera', PerspectiveCamera );
+
+		this.add( 'Rigidbody', Rigidbody );
+
+		this.add( 'BoxCollider', BoxCollider );
+		this.add( 'CapsuleCollider', CapsuleCollider );
+		this.add( 'ConeCollider', ConeCollider );
+		this.add( 'CylinderCollider', CylinderCollider );
+		this.add( 'MeshCollider', MeshCollider );
+		this.add( 'SphereCollider', SphereCollider );
+
+		this.add( 'BallJoint', BallJoint, { requiredComponents: [ 'Rigidbody' ] } );
+		this.add( 'CylindricalJoint', CylindricalJoint, { requiredComponents: [ 'Rigidbody' ] } );
+		this.add( 'PrismaticJoint', PrismaticJoint, { requiredComponents: [ 'Rigidbody' ] } );
+		this.add( 'RagdollJoint', RagdollJoint, { requiredComponents: [ 'Rigidbody' ] } );
+		this.add( 'HingeJoint', HingeJoint, { requiredComponents: [ 'Rigidbody' ] } );
+		this.add( 'UniversalJoint', UniversalJoint, { requiredComponents: [ 'Rigidbody' ] } );
+
+	}
+
 	add( type, constructor, options = {} ) {
 
 		if ( type in this._components ) throw 'component ' + type + ' already exists';
@@ -35,7 +114,7 @@ export const ComponentManager = {
 			constructor, options
 		};
 
-	},
+	}
 
 	remove( type ) {
 
@@ -44,88 +123,15 @@ export const ComponentManager = {
 		else
 			console.warn( 'component ' + type + ' does not exists' );
 
-	},
+	}
 
 	get( type ) {
 
 		return this._components[ type ];
 
-	},
-
-	properties: {
-		componentType: { value: null },
-		_enabled: { value: true, writable: true },
-		enabled: {
-			get() {
-
-				return this._enabled;
-
-			},
-			set( value ) {
-
-				if ( value != this._enabled ) {
-
-					if ( value && ! this.entity._enabled )
-						return console.warn(
-							"Component: Can't enable if the entity is disabled"
-						);
-					this._enabled = value;
-
-					const container = this.entity.scene._containers[
-						this.componentType
-					];
-					if ( value ) {
-
-						container.push( this );
-						this.dispatchEvent( { type: 'enable' } );
-
-					} else {
-
-						container.splice( container.indexOf( this ), 1 );
-						this.dispatchEvent( { type: 'disable' } );
-
-					}
-
-				}
-
-			},
-		},
-		scene: {
-			get() {
-
-				return this.entity.scene;
-
-			}
-		},
-		app: {
-			get() {
-
-				return this.entity.scene.app;
-
-			}
-		}
 	}
-};
 
-ComponentManager.add( 'Renderable', Renderable );
-ComponentManager.add( 'OrthographicCamera', OrthographicCamera );
-ComponentManager.add( 'PerspectiveCamera', PerspectiveCamera );
-
-ComponentManager.add( 'Rigidbody', Rigidbody );
-
-ComponentManager.add( 'BoxCollider', BoxCollider );
-ComponentManager.add( 'CapsuleCollider', CapsuleCollider );
-ComponentManager.add( 'ConeCollider', ConeCollider );
-ComponentManager.add( 'CylinderCollider', CylinderCollider );
-ComponentManager.add( 'MeshCollider', MeshCollider );
-ComponentManager.add( 'SphereCollider', SphereCollider );
-
-ComponentManager.add( 'BallJoint', BallJoint, { requiredComponents: [ 'Rigidbody' ] } );
-ComponentManager.add( 'CylindricalJoint', CylindricalJoint, { requiredComponents: [ 'Rigidbody' ] } );
-ComponentManager.add( 'PrismaticJoint', PrismaticJoint, { requiredComponents: [ 'Rigidbody' ] } );
-ComponentManager.add( 'RagdollJoint', RagdollJoint, { requiredComponents: [ 'Rigidbody' ] } );
-ComponentManager.add( 'HingeJoint', HingeJoint, { requiredComponents: [ 'Rigidbody' ] } );
-ComponentManager.add( 'UniversalJoint', UniversalJoint, { requiredComponents: [ 'Rigidbody' ] } );
+}
 
 // options: allowMultiple, requiredComponents, schema
 

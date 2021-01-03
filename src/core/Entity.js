@@ -99,7 +99,7 @@ export class Entity extends Group {
 
 	addComponent( type, data = {} ) {
 
-		const componentData = ComponentManager._components[ type ];
+		const componentData = this.app.componentManager._components[ type ];
 		const options = componentData.options;
 
 		if ( options.allowMultiple === false && this.getComponent( type ) !== undefined )
@@ -156,13 +156,7 @@ export class Entity extends Group {
 
 	add( object ) {
 
-		if ( object instanceof Entity && object.scene !== this.scene ) {
-
-			this.scene._addComponents( object.components );
-
-			entity.scene = this;
-
-		}
+		this.scene._addToScene( object );
 
 		return super.add( object );
 
@@ -170,30 +164,9 @@ export class Entity extends Group {
 
 	remove( object ) {
 
-		if ( this.children.indexOf( object ) !== - 1 ) {
-
-			if ( object instanceof Entity ) {
-
-				object._detach();
-
-			}
-
-			super.remove( object );
-
-		}
+		this.scene._removeFromScene( object );
 
 		return this;
-
-	}
-
-	_detach() {
-
-		// disables all components and deletes this.scene
-		this.enabled = false;
-		const components = this.getChildren();
-		for ( let i = 0, len = components.length; i < len; i ++ )
-			components[ i ].enabled = false;
-		delete this.scene;
 
 	}
 
