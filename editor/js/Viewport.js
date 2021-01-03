@@ -22,7 +22,7 @@ export function Viewport( app ) {
 	//
 
 	const renderer = app.renderer;
-	renderer.setClearColor( 0xdadce0 );
+	renderer.setClearColor( 0xc4c4c4 );
 
 	// transform controls stuff
 

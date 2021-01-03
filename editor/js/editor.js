@@ -12,4 +12,4 @@ const app = new Application( {canvas: 'canvas'} );
 const viewport = new Viewport( app );
 
 const toolbar = new Toolbar( viewport.control );
-const sidebarScene = new SidebarScene( app );
+const sidebarScene = new SidebarScene( viewport.scene, app.renderer );

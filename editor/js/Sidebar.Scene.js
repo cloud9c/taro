@@ -1,7 +1,7 @@
 import { TextureLoader } from '../../build/taro.js';
 import * as TARO from '../../build/taro.js';
 
-export function SidebarScene( scene ) {
+export function SidebarScene( scene, renderer ) {
 
 	const textureLoader = new TextureLoader();
 
@@ -17,6 +17,13 @@ export function SidebarScene( scene ) {
 
 	}
 
+	function onColorChange() {
+		scene.background = new TARO.Color(document.getElementById( 'background-color' ).value);
+		renderer.update();
+	}
+
+	document.getElementById('background-color').addEventListener('input', onColorChange)
+
 	document.getElementById( 'background' ).addEventListener( 'change', function ( event ) {
 
 		resetBackgroundInput();
@@ -25,10 +32,11 @@ export function SidebarScene( scene ) {
 
 			case 'none':
 				scene.background = null;
+				renderer.update();
 				break;
 			case 'color':
 				document.getElementById( 'background-color' ).style.setProperty( 'display', 'inherit' );
-				app.scene.background = new TARO.Color(document.getElementById( 'background-color' ).value);
+				onColorChange();
 				break;
 			case 'texture':
 				document.getElementById( 'background-texture' ).style.setProperty( 'display', 'inherit' );
@@ -37,8 +45,6 @@ export function SidebarScene( scene ) {
 				document.getElementById( 'background-equirect' ).style.setProperty( 'display', 'inherit' );
 
 		}
-
-		app.renderer.update();
 
 	} );
 
