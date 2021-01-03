@@ -44,20 +44,24 @@ export class Scene extends TS {
 
 	add( entity ) {
 
-		if ( entity.scene !== this ) {
+		if ( entity instanceof Entity ) {
 
-			this._addComponents( entity.components );
+			if ( entity.scene !== this ) {
 
-			entity.dispatchEvent( {
-				type: 'scenechange',
-				oldScene: entity.scene,
-				newScene: this,
-			} );
+				this._addComponents( entity.components );
+
+				entity.dispatchEvent( {
+					type: 'scenechange',
+					oldScene: entity.scene,
+					newScene: this,
+				} );
+
+			}
+
+			entity.scene = this;
+			entity.dispatchEvent( { type: 'sceneadd' } );
 
 		}
-
-		entity.scene = this;
-		entity.dispatchEvent( { type: 'sceneadd' } );
 
 		return super.add( entity );
 

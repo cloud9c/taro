@@ -31,7 +31,7 @@ export class Application {
 
 	}
 
-	update( timestamp = 0 ) {
+	update( timestamp = performance.now() ) {
 
 		const deltaTime = this.time._update( timestamp );
 
