@@ -1,12 +1,14 @@
 export function Toolbar() {
-	let id;
 
-	function onPointerDown(event) {
-		if (event.isPrimary === false) return;
+	function onPointerDown( event ) {
 
-		delete document.querySelector(".tool[data-selected]").dataset.selected;
-		event.target.dataset.selected = "";
+		if ( event.isPrimary === false || event.target.dataset.selected !== undefined ) return;
+
+		delete document.querySelector( '.tool[data-selected]' ).dataset.selected;
+		event.target.dataset.selected = '';
+
 	}
 
-	document.getElementById("toolbar").addEventListener("pointerdown", onPointerDown);
+	document.getElementById( 'toolbar' ).addEventListener( 'pointerdown', onPointerDown );
+
 }

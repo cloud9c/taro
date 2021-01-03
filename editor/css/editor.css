@@ -1,7 +1,8 @@
 :root {
 	--white-color: rgba(255, 255, 255, 0.8);
-	--dark-color: #2c2c2c;
-	--darker-color: #111;
+	--text-color: #000;
+	--dark-color: #333;
+	--darker-color: #000;
 }
 
 html,
@@ -10,10 +11,12 @@ body {
 }
 
 html,
-body,
-main,
-aside {
+body, aside {
 	height: 100%;
+}
+
+main {
+	height: calc(100% - 32px);
 }
 
 #menubar {
@@ -25,12 +28,13 @@ aside {
 }
 
 .menu {
+	outline: 0;
 	position: relative;
 	color: var(--white-color);
 	cursor: pointer;
 }
 
-.menu:hover {
+.menu:focus {
 	background: var(--darker-color);
 	color: #fff;
 }
@@ -40,7 +44,7 @@ aside {
 	padding: 8px 12px;
 }
 
-.menu:hover .options {
+.menu:focus .options {
 	display: block;
 }
 
@@ -72,7 +76,8 @@ aside, #viewport {
 }
 
 aside {
-	width: 240px;
+	min-width: 280px;
+	width: 260px;
 	overflow: hidden;
 }
 
@@ -80,45 +85,117 @@ aside section {
 	border-bottom: 1px solid var(--border-color);
 }
 
-.tab {
+.tabs {
 	padding: 0 4px;
+	display: flex;
 }
 
-.tab > div {
+.tab {
 	margin: 0;
 	font-weight: 500;
-	display: inline-block;
 	padding: 12px 8px;
 	color: var(--secondary-text-color);
 	cursor: pointer;
 	user-select: none;
 }
 
-.tab > div[data-selected] {
+.tab[data-selected] {
 	color: var(--text-color);
 }
 
-#left-panel {
+.panel section {
+	padding: 12px;
+}
+
+.panel h1 {
+	margin: 0;
+}
+
+.panel fieldset {
+    border: 0;
+    padding: 0;
+    margin: 0;
+}
+
+.panel legend {
+	padding: 0;
+	float:left;
+}
+
+.panel fieldset {
+	display: flex;
+	align-items: center
+}
+
+.panel legend {
+	margin-right: auto;
+}
+
+.panel select {
+	border: 1px solid var(--border-color);
+	font-family: inherit;
+	font-size: inherit;
+	color: inherit;
+	padding: 4px 32px 4px 8px;
+	appearance: none;
+	background: url("../img/chevron-down.svg") no-repeat right 4px center;
+	background-size: 16px;
+}
+
+.panel input, .panel select {
+	outline: 0;
+	cursor: pointer;
+}
+
+input[type="color"] {
+	width: 24px;
+	height: 24px;
+	border: 1px solid var(--border-color);
+	background-color: transparent;
+	padding: 0;
+}
+
+input[type="color"]::-webkit-color-swatch-wrapper {
+	padding: 0;
+}
+input[type="color"]::-webkit-color-swatch {
+	border: none;
+}
+
+#left-sidebar .panel > div {
+	display: none;
+}
+
+#background-color {
+	display: none;
+	margin-left: 8px;
+}
+
+#background-color, #background-texture, #background-equirect {
+	display: none;
+}
+
+#left-sidebar {
 	border-right: 1px solid var(--border-color);
 }
 
-#right-panel {
+#right-sidebar {
 	border-left: 1px solid var(--border-color);
 }
 
 .resizer {
 	position: absolute;
-	width: 5px;
+	width: 7px;
 	height: 100%;
 	cursor: e-resize;
 }
 
 #left-resizer {
-	right: -3px;
+	right: -4px;
 }
 
 #right-resizer {
-	left: -3px;
+	left: -4px;
 }
 
 #viewport {
@@ -146,7 +223,7 @@ aside section {
 }
 
 .tool:hover {
-	background: var(--darker-color);
+	background: #000;
 }
 
 .tool[data-selected] {

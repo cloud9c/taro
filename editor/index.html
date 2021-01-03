@@ -9,39 +9,61 @@
 	</head>
 	<body>
 		<nav id="menubar">
-			<div class="menu">
+			<div class="menu" tabindex="0">
 				<div class="title">File</div>
 				<div class="options">
 					<div class="option">New</div>
 				</div>
 			</div>
-			<div class="menu">
+			<div class="menu" tabindex="0">
 				<div class="title">Edit</div>
 				<div class="options">
 					<div class="option">New</div>
 				</div>
 			</div>
-			<div class="menu">
+			<div class="menu" tabindex="0">
 				<div class="title">Assets</div>
 			</div>
-			<div class="menu">
+			<div class="menu" tabindex="0">
 				<div class="title">Entity</div>
 			</div>
-			<div class="menu">
+			<div class="menu" tabindex="0">
 				<div class="title">Component</div>
 			</div>
-			<div class="menu">
+			<div class="menu" tabindex="0">
 				<div class="title">Play</div>
 			</div>
-			<div class="menu">
+			<div class="menu" tabindex="0">
 				<div class="title">Help</div>
 			</div>
 		</nav>
 		<main>
-			<aside id="left-panel">
-				<section class="tab">
-					<div data-selected>Scene</div><div>App</div><div>Settings</div>
+			<aside id="left-sidebar">
+				<section class="tabs">
+					<div class="tab" data-tab="scene" data-selected>Scene</div>
+					<div class="tab" data-tab="app">App</div>
+					<div class="tab" data-tab="settings">Settings</div>
 				</section>
+				<div class="panel">
+					<div id="scene" style="display: inherit;">
+						<section>
+						<fieldset>
+							<legend>Background</legend>
+							<select name="background" id="background">
+								<option value="none">None</option>
+								<option value="color">Color</option>
+								<option value="texture">Texture</option>
+								<option value="equirect">Equirect</option>
+							</select>
+							<input type="color" id="background-color">
+							<input type="file" id="background-texture">
+							<input type="file" id="background-equirect">
+						</fieldset>
+						</section>
+					</div>
+					<div id="app">2</div>
+					<div id="settings">3</div>
+				</div>
 				<div class="resizer" id="left-resizer"></div>
 			</aside>
 			<div id="viewport">
@@ -85,9 +107,9 @@
 				</div>
 				<canvas id="canvas"></canvas>
 			</div>
-			<aside id="right-panel">
-				<section class="tab">
-					<div data-selected>Inspector</div>
+			<aside id="right-sidebar">
+				<section class="tabs">
+					<div class="tab" data-selected>Inspector</div>
 				</section>
 				<div class="resizer" id="right-resizer"></div>
 			</aside>
