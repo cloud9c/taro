@@ -8,6 +8,21 @@ const app = new TARO.Application( {
 	canvas: 'canvas'
 } );
 
+const scene = new TARO.Scene();
+app.setScene( scene );
+
+const camera = new TARO.Entity();
+camera.addComponent( 'PerspectiveCamera' );
+camera.position.z = 5;
+
+const box = new TARO.Entity();
+box.addComponent( 'Renderable', new TARO.Mesh( new TARO.BoxGeometry(), new TARO.MeshBasicMaterial( { color: 0x00ff00 } ) ) );
+
+app.update();
+app.update();
+app.update();
+app.update();
+app.update();
 app.update();
 
 const resizer = new Resizer();
