@@ -27,15 +27,15 @@ aside {
 .menu {
 	position: relative;
 	color: var(--white-color);
+	cursor: pointer;
 }
 
 .menu:hover {
-	cursor: pointer;
 	background: var(--darker-color);
 	color: #fff;
 }
 
-.title {
+.menu .title {
 	line-height: 16px;
 	padding: 8px 12px;
 }
@@ -67,8 +67,7 @@ main {
 	display: flex;
 }
 
-aside,
-#viewport {
+aside, #viewport {
 	position: relative;
 }
 
@@ -77,15 +76,26 @@ aside {
 	overflow: hidden;
 }
 
-aside > * {
-	padding: 12px 16px;
+aside section {
 	border-bottom: 1px solid var(--border-color);
 }
 
-aside h1 {
+.tab {
+	padding: 0 4px;
+}
+
+.tab > div {
 	margin: 0;
-	font-size: 14px;
 	font-weight: 500;
+	display: inline-block;
+	padding: 12px 8px;
+	color: var(--secondary-text-color);
+	cursor: pointer;
+	user-select: none;
+}
+
+.tab > div[data-selected] {
+	color: var(--text-color);
 }
 
 #left-panel {
@@ -100,9 +110,6 @@ aside h1 {
 	position: absolute;
 	width: 5px;
 	height: 100%;
-}
-
-.resizer:hover {
 	cursor: e-resize;
 }
 

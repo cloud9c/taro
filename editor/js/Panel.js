@@ -8,5 +8,7 @@ export function Toolbar() {
 		event.target.dataset.selected = "";
 	}
 
-	document.getElementById("toolbar").addEventListener("pointerdown", onPointerDown);
+	document
+		.getElementById("toolbar")
+		.addEventListener("pointerdown", onPointerDown);
 }
