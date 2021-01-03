@@ -162,10 +162,6 @@ input[type="color"]::-webkit-color-swatch {
 	border: none;
 }
 
-#left-sidebar .panel > div {
-	display: none;
-}
-
 #background-color {
 	display: none;
 	margin-left: 8px;
@@ -174,6 +170,11 @@ input[type="color"]::-webkit-color-swatch {
 #background-color, #background-texture, #background-equirect {
 	display: none;
 }
+
+#left-sidebar .panel > div {
+	display: none;
+}
+
 
 #left-sidebar {
 	border-right: 1px solid var(--border-color);
