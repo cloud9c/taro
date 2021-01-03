@@ -27,15 +27,16 @@ export function Viewport( app ) {
 	// transform controls stuff
 
 	camera.position.set( 10, 10, 10 );
-	camera.lookAt( 0, 10, 0 );
+	camera.lookAt( 0, 200, 0 );
 
 	const orbit = new OrbitControls( camera, renderer.domElement );
 	orbit.update();
+
 	orbit.addEventListener( 'change', () => renderer.update() );
 
 	const control = new TransformControls( camera, renderer.domElement );
-	control.addEventListener( 'change', () => renderer.update() );
 
+	control.addEventListener( 'change', () => renderer.update() );
 	control.addEventListener( 'dragging-changed', function ( event ) {
 
 		orbit.enabled = ! event.value;

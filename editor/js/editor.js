@@ -5,12 +5,11 @@ import { SidebarScene } from './Sidebar.Scene.js';
 import { Viewport } from './Viewport.js';
 import { Application } from '../../build/taro.js';
 
-// editor stuff
 const resizer = new Resizer();
 const sidebar = new Sidebar();
-const sidebarScene = new SidebarScene();
 
 const app = new Application( {canvas: 'canvas'} );
-
 const viewport = new Viewport( app );
+
 const toolbar = new Toolbar( viewport.control );
+const sidebarScene = new SidebarScene( app );
