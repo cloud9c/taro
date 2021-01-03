@@ -10,7 +10,7 @@ export class Time {
 		this.lastTimestamp = false;
 
 	}
-	_update( timestamp ) {
+	update( timestamp ) {
 
 		this.deltaTime =
 			( timestamp - ( this.lastTimestamp || timestamp ) ) * this.timeScale;

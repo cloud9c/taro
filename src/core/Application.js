@@ -33,9 +33,9 @@ export class Application {
 
 	update( timestamp = performance.now() ) {
 
-		const deltaTime = this.time._update( timestamp );
+		const deltaTime = this.time.update( timestamp );
 
-		this.physics._update(
+		this.physics.step(
 			deltaTime,
 			this.time.fixedTimestep * this.time.timeScale
 		);
@@ -56,7 +56,7 @@ export class Application {
 
 		}
 
-		this.renderer._update();
+		this.renderer.render();
 		this.input._reset();
 
 		if ( this.autoUpdate )

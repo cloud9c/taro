@@ -28,7 +28,7 @@ export class Renderer extends WebGLRenderer {
 
 	}
 
-	_update() {
+	render() {
 
 		for ( let i = 0, len = this.cameras.length; i < len; i ++ ) {
 
