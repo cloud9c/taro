@@ -47,4 +47,8 @@ export function Viewport( app ) {
 
 	renderer.update();
 
+	return {
+		control, orbit, scene
+	}
+
 }

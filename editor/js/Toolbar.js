@@ -1,4 +1,4 @@
-export function Toolbar() {
+export function Toolbar( control ) {
 
 	function onPointerDown( event ) {
 
@@ -6,6 +6,7 @@ export function Toolbar() {
 
 		delete document.querySelector( '.tool[data-selected]' ).dataset.selected;
 		event.target.dataset.selected = '';
+		control.setMode(event.target.dataset.type)
 
 	}
 
