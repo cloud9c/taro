@@ -9,9 +9,7 @@ export function Viewport( app ) {
 	const scene = new TARO.Scene();
 	app.setScene( scene );
 
-	const cameraEntity = new TARO.Entity();
-	const camera = cameraEntity.addComponent( 'PerspectiveCamera' );
-	cameraEntity.position.z = 5;
+	const camera = new TARO.PerspectiveCamera();
 
 	const box = new TARO.Entity();
 	box.addComponent( 'Renderable', new TARO.Mesh( new TARO.BoxGeometry(), new TARO.MeshPhongMaterial( { color: 0x00ff00 } ) ) );
@@ -24,6 +22,10 @@ export function Viewport( app ) {
 	const renderer = app.renderer;
 	renderer.setClearColor( 0xc4c4c4 );
 
+	function render() {
+		renderer.render(scene, camera);
+	}
+
 	// transform controls stuff
 
 	camera.position.set( 10, 10, 10 );
@@ -32,11 +34,11 @@ export function Viewport( app ) {
 	const orbit = new OrbitControls( camera, renderer.domElement );
 	orbit.update();
 
-	orbit.addEventListener( 'change', () => renderer.update() );
+	orbit.addEventListener( 'change', render );
 
 	const control = new TransformControls( camera, renderer.domElement );
 
-	control.addEventListener( 'change', () => renderer.update() );
+	control.addEventListener( 'change', render );
 	control.addEventListener( 'dragging-changed', function ( event ) {
 
 		orbit.enabled = ! event.value;
@@ -45,8 +47,6 @@ export function Viewport( app ) {
 
 	control.attach( box );
 	scene.add( control );
-
-	renderer.update();
 
 	return {
 		control, orbit, scene
