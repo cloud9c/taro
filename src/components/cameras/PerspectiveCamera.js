@@ -83,7 +83,7 @@ export class PerspectiveCamera extends PC {
 
 		const data = super.toJSON( meta );
 		data.object.viewport = this.viewport.toArray();
-		if ( this.autoAspect ) {
+		if ( this.entity !== undefined && this.autoAspect ) {
 
 			delete data.object.aspect;
 
