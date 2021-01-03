@@ -57,7 +57,7 @@ export class Physics {
 
 	}
 
-	step( deltaTime, fixedTimestep ) {
+	update( deltaTime, fixedTimestep ) {
 
 		this._accumulator += deltaTime;
 

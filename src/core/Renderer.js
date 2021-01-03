@@ -28,7 +28,7 @@ export class Renderer extends WebGLRenderer {
 
 	}
 
-	render() {
+	update() {
 
 		for ( let i = 0, len = this.cameras.length; i < len; i ++ ) {
 
@@ -38,7 +38,9 @@ export class Renderer extends WebGLRenderer {
 			this.setScissor( camera._region );
 			this.setScissorTest( true );
 
-			super.render( this.scene, camera );
+			console.log(this.scene, camera)
+
+			this.render( this.scene, camera );
 
 		}
 

@@ -16,14 +16,14 @@ export class Input {
 
 		window.addEventListener( 'blur', () => {
 
-			this._reset();
+			this.update();
 
 		} );
 
 		document.addEventListener( 'fullscreenchange', () => {
 
 			console.log( 'here' );
-			this._reset();
+			this.update();
 
 		} );
 
@@ -66,7 +66,7 @@ export class Input {
 		} );
 
 	}
-	_reset() {
+	update() {
 
 		for ( const prop in this._keyDown ) {
 

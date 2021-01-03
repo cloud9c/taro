@@ -35,7 +35,7 @@ export class Application {
 
 		const deltaTime = this.time.update( timestamp );
 
-		this.physics.step(
+		this.physics.update(
 			deltaTime,
 			this.time.fixedTimestep * this.time.timeScale
 		);
@@ -56,8 +56,8 @@ export class Application {
 
 		}
 
-		this.renderer.render();
-		this.input._reset();
+		this.renderer.update();
+		this.input.update();
 
 		if ( this.autoUpdate )
 			window.requestAnimationFrame( ( t ) => this.update( t / 1000 ) );
