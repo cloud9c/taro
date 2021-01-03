@@ -38,7 +38,7 @@ export class Renderer extends WebGLRenderer {
 			this.setScissor( camera._region );
 			this.setScissorTest( true );
 
-			this.render( this.scene, camera );
+			super.render( this.scene, camera );
 
 		}
 
