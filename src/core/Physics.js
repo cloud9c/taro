@@ -58,9 +58,7 @@ export class Physics {
 	}
 
 	update( deltaTime, fixedTimestep ) {
-
 		this._accumulator += deltaTime;
-
 		if ( this._accumulator >= fixedTimestep ) {
 
 			// trigger collision

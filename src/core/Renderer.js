@@ -38,8 +38,6 @@ export class Renderer extends WebGLRenderer {
 			this.setScissor( camera._region );
 			this.setScissorTest( true );
 
-			console.log(this.scene, camera)
-
 			this.render( this.scene, camera );
 
 		}

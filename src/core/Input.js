@@ -22,7 +22,6 @@ export class Input {
 
 		document.addEventListener( 'fullscreenchange', () => {
 
-			console.log( 'here' );
 			this.update();
 
 		} );
@@ -66,6 +65,7 @@ export class Input {
 		} );
 
 	}
+
 	update() {
 
 		for ( const prop in this._keyDown ) {
@@ -86,31 +86,37 @@ export class Input {
 		this.wheelDelta.set( 0, 0 );
 
 	}
+
 	getKey( v ) {
 
 		return Boolean( this._key[ v ] );
 
 	}
+
 	getKeyDown( v ) {
 
 		return v in this._keyDown;
 
 	}
+
 	getKeyUp( v ) {
 
 		return v in this._keyUp;
 
 	}
+
 	getMouse( v ) {
 
 		return Boolean( this._mouse[ v ] );
 
 	}
+
 	getMouseDown( v ) {
 
 		return Boolean( this._mouseDown[ v ] );
 
 	}
+
 	getMouseUp( v ) {
 
 		return Boolean( this._mouseUp[ v ] );
