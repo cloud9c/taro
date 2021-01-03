@@ -62072,7 +62072,6 @@ class Application {
 
 	update( timestamp = performance.now() ) {
 
-		console.log( this );
 		const deltaTime = this.time._update( timestamp );
 
 		this.physics._update(

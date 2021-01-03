@@ -22,35 +22,29 @@ const app = new TARO.Application( {
 const scene = new TARO.Scene();
 app.setScene( scene );
 
-const camera = new TARO.Entity();
-camera.addComponent( 'PerspectiveCamera' );
-camera.position.z = 5;
+const cameraEntity = new TARO.Entity();
+const camera = cameraEntity.addComponent( 'PerspectiveCamera' );
+cameraEntity.position.z = 5;
 
 const box = new TARO.Entity();
 box.addComponent( 'Renderable', new TARO.Mesh( new TARO.BoxGeometry(), new TARO.MeshBasicMaterial( { color: 0x00ff00 } ) ) );
 
 app.renderer.setClearColor( 0xaaaaaa );
-
 app.update();
 
 // transform controls stuff
-let cameraPersp, cameraOrtho, currentCamera;
-let renderer, control, orbit;
 
-renderer = app.renderer;
-document.body.appendChild( renderer.domElement );
+const renderer = app.renderer;
 
-currentCamera = camera;
+camera.position.set( 100, 50, 100 );
+camera.lookAt( 0, 200, 0 );
 
-currentCamera.position.set( 100, 50, 100 );
-currentCamera.lookAt( 0, 200, 0 );
-
-orbit = new OrbitControls( currentCamera, renderer.domElement );
+const orbit = new OrbitControls( camera, renderer.domElement );
 orbit.update();
-orbit.addEventListener( 'change', app.update() );
+orbit.addEventListener( 'change', () => app.update() );
 
-control = new TransformControls( currentCamera, renderer.domElement );
-control.addEventListener( 'change', app.update );
+const control = new TransformControls( camera, renderer.domElement );
+control.addEventListener( 'change', () => app.update() );
 
 control.addEventListener( 'dragging-changed', function ( event ) {
 
@@ -88,15 +82,15 @@ window.addEventListener( 'keydown', function ( event ) {
 			break;
 
 		case 67: // C
-			const position = currentCamera.position.clone();
+			const position = camera.position.clone();
 
-			currentCamera = currentCamera.isPerspectiveCamera ? cameraOrtho : cameraPersp;
-			currentCamera.position.copy( position );
+			camera = camera.isPerspectiveCamera ? cameraOrtho : cameraPersp;
+			camera.position.copy( position );
 
-			orbit.object = currentCamera;
-			control.camera = currentCamera;
+			orbit.object = camera;
+			control.camera = camera;
 
-			currentCamera.lookAt( orbit.target.x, orbit.target.y, orbit.target.z );
+			camera.lookAt( orbit.target.x, orbit.target.y, orbit.target.z );
 			onWindowResize();
 			break;
 
