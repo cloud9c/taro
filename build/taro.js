@@ -51723,10 +51723,8 @@ class Physics {
 
 	}
 
-	step( deltaTime, fixedTimestep ) {
-
+	update( deltaTime, fixedTimestep ) {
 		this._accumulator += deltaTime;
-
 		if ( this._accumulator >= fixedTimestep ) {
 
 			// trigger collision
@@ -55391,7 +55389,7 @@ class Renderer extends WebGLRenderer {
 
 	}
 
-	render() {
+	update() {
 
 		for ( let i = 0, len = this.cameras.length; i < len; i ++ ) {
 
@@ -55401,7 +55399,7 @@ class Renderer extends WebGLRenderer {
 			this.setScissor( camera._region );
 			this.setScissorTest( true );
 
-			super.render( this.scene, camera );
+			this.render( this.scene, camera );
 
 		}
 
@@ -55450,14 +55448,13 @@ class Input {
 
 		window.addEventListener( 'blur', () => {
 
-			this._reset();
+			this.update();
 
 		} );
 
 		document.addEventListener( 'fullscreenchange', () => {
 
-			console.log( 'here' );
-			this._reset();
+			this.update();
 
 		} );
 
@@ -55500,7 +55497,8 @@ class Input {
 		} );
 
 	}
-	_reset() {
+
+	update() {
 
 		for ( const prop in this._keyDown ) {
 
@@ -55520,31 +55518,37 @@ class Input {
 		this.wheelDelta.set( 0, 0 );
 
 	}
+
 	getKey( v ) {
 
 		return Boolean( this._key[ v ] );
 
 	}
+
 	getKeyDown( v ) {
 
 		return v in this._keyDown;
 
 	}
+
 	getKeyUp( v ) {
 
 		return v in this._keyUp;
 
 	}
+
 	getMouse( v ) {
 
 		return Boolean( this._mouse[ v ] );
 
 	}
+
 	getMouseDown( v ) {
 
 		return Boolean( this._mouseDown[ v ] );
 
 	}
+
 	getMouseUp( v ) {
 
 		return Boolean( this._mouseUp[ v ] );
@@ -55580,11 +55584,11 @@ class Application {
 
 	}
 
-	update( timestamp = performance.now() ) {
+	update( timestamp = 0 ) {
 
 		const deltaTime = this.time.update( timestamp );
 
-		this.physics.step(
+		this.physics.update(
 			deltaTime,
 			this.time.fixedTimestep * this.time.timeScale
 		);
@@ -55605,8 +55609,8 @@ class Application {
 
 		}
 
-		this.renderer.render();
-		this.input._reset();
+		this.renderer.update();
+		this.input.update();
 
 		if ( this.autoUpdate )
 			window.requestAnimationFrame( ( t ) => this.update( t / 1000 ) );
