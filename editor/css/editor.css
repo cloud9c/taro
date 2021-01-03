@@ -7,7 +7,6 @@
 html,
 body {
 	font-size: 14px;
-	overflow: hidden;
 }
 
 html,
@@ -52,8 +51,6 @@ aside {
 	padding: 5px 0;
 	background: var(--dark-color);
 	z-index: 1;
-	box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
-	border-radius: 0 0 4px 4px;
 }
 
 .option {
@@ -76,7 +73,19 @@ aside,
 }
 
 aside {
-	width: 300px;
+	width: 240px;
+	overflow: hidden;
+}
+
+aside > * {
+	padding: 12px 16px;
+	border-bottom: 1px solid var(--border-color);
+}
+
+aside h1 {
+	margin: 0;
+	font-size: 14px;
+	font-weight: 500;
 }
 
 #left-panel {
@@ -119,8 +128,6 @@ aside {
 	left: 10px;
 	top: 10px;
 	width: 32px;
-	border-radius: 4px;
-	box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
 }
 
 .tool {
@@ -133,14 +140,6 @@ aside {
 
 .tool:hover {
 	background: var(--darker-color);
-}
-
-.tool:first-child {
-	border-radius: 4px 4px 0 0;
-}
-
-.tool:last-child {
-	border-radius: 0 0 4px 4px;
 }
 
 .tool[data-selected] {
