@@ -55387,6 +55387,8 @@ class Renderer extends WebGLRenderer {
 
 		}
 
+		this.update();
+
 	}
 
 	update() {
