@@ -42,14 +42,14 @@ renderer.setClearColor( 0xdadce0 );
 // transform controls stuff
 
 camera.position.set( 10, 10, 10 );
-camera.lookAt( 0, 200, 0 );
+camera.lookAt( 0, 10, 0 );
 
 const orbit = new OrbitControls( camera, renderer.domElement );
 orbit.update();
-orbit.addEventListener( 'change', () => app.renderer._update() );
+orbit.addEventListener( 'change', renderer.render );
 
 const control = new TransformControls( camera, renderer.domElement );
-control.addEventListener( 'change', () => app.renderer._update() );
+control.addEventListener( 'change', renderer.render );
 
 control.addEventListener( 'dragging-changed', function ( event ) {
 
@@ -57,6 +57,7 @@ control.addEventListener( 'dragging-changed', function ( event ) {
 
 } );
 
+console.log(camera)
 control.attach( box );
 scene.add( control );
 
