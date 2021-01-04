@@ -6,8 +6,9 @@ export function SidebarScene( scene, renderer, render ) {
 	const textureLoader = new TextureLoader();
 
 	let colorBackground = '#000000';
-	let textureBackground;
-	let textureEquirect;
+	let textureBackground, textureEquirect, environmentTexture;
+	const fog = new TARO.Fog();
+	const fogExp2 = new TARO.FogExp2();
 
 	function processFile( files, target ) {
 
@@ -35,6 +36,10 @@ export function SidebarScene( scene, renderer, render ) {
 						textureEquirect = new TARO.WebGLCubeRenderTarget( texture.image.height );
 						textureEquirect.fromEquirectangularTexture( renderer, texture );
 						onEquirectOption();
+						break;
+					case 'environment-texture':
+						environmentTexture = texture;
+						onEnvironmentOption();
 
 				}
 
@@ -74,8 +79,8 @@ export function SidebarScene( scene, renderer, render ) {
 
 	}
 
-	const dropboxes = document.getElementsByClassName( 'file-wrapper' );
-	const hiddenInputs = document.getElementsByClassName( 'hidden-input' );
+	const dropboxes = document.querySelectorAll( '#scene .file-wrapper' );
+	const hiddenInputs = document.querySelectorAll( '#scene .hidden-input' );
 
 	for ( let i = 0, len = dropboxes.length; i < len; i ++ ) {
 
@@ -104,17 +109,23 @@ export function SidebarScene( scene, renderer, render ) {
 
 	function onTextureOption() {
 
-		if ( textureBackground !== undefined )
+		if ( textureBackground !== undefined ) {
+
 			scene.background = textureBackground;
-		render();
+			render();
+
+		}
 
 	}
 
 	function onEquirectOption() {
 
-		if ( textureEquirect !== undefined )
+		if ( textureEquirect !== undefined ) {
+
 			scene.background = textureEquirect;
-		render();
+			render();
+
+		}
 
 	}
 
@@ -128,19 +139,84 @@ export function SidebarScene( scene, renderer, render ) {
 
 			case 'none':
 				scene.background = null;
+				this.style.removeProperty( 'width' );
 				render();
 				break;
 			case 'color':
 				document.getElementById( 'background-color' ).style.setProperty( 'display', 'inherit' );
 				onColorOption();
+				this.style.setProperty( 'width', '84px' );
 				break;
 			case 'texture':
 				document.getElementById( 'background-texture' ).style.setProperty( 'display', 'inherit' );
 				onTextureOption();
+				this.style.setProperty( 'width', '84px' );
 				break;
 			case 'equirect':
 				document.getElementById( 'background-equirect' ).style.setProperty( 'display', 'inherit' );
 				onEquirectOption();
+				this.style.setProperty( 'width', '84px' );
+
+		}
+
+	} );
+
+	function onEnvironmentOption() {
+
+		if ( environmentTexture !== undefined ) {
+
+			scene.environment = environmentTexture;
+			render();
+
+		}
+
+	}
+
+	document.getElementById( 'environment' ).addEventListener( 'change', function ( event ) {
+
+		switch ( event.target.value ) {
+
+			case 'none':
+				document.getElementById( 'environment-texture' ).style.removeProperty( 'display' );
+				scene.environment = null;
+				render();
+				this.style.removeProperty( 'width' );
+				break;
+			case 'texture':
+				document.getElementById( 'environment-texture' ).style.setProperty( 'display', 'inherit' );
+				onEnvironmentOption();
+				this.style.setProperty( 'width', '84px' );
+				break;
+
+		}
+
+	} );
+
+	function resetFogInput() {
+
+		document.getElementById( 'linear-fog' ).style.removeProperty( 'display' );
+		document.getElementById( 'exponential-fog' ).style.removeProperty( 'display' );
+
+	}
+
+	document.getElementById( 'fog' ).addEventListener( 'change', function ( event ) {
+
+		resetFogInput();
+
+		switch ( event.target.value ) {
+
+			case 'none':
+				scene.fog = null;
+				render();
+				break;
+			case 'linear':
+				document.getElementById( 'linear-fog' ).style.setProperty( 'display', 'flex' );
+				// onLinearFog();
+				break;
+			case 'exponential':
+				document.getElementById( 'exponential-fog' ).style.setProperty( 'display', 'flex' );
+				// onExponentialFog();
+				break;
 
 		}
 

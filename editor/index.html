@@ -39,6 +39,7 @@
 		</nav>
 		<main>
 			<aside id="left-sidebar">
+				<div class="resizer" id="left-resizer"></div>
 				<section class="tabs">
 					<div class="tab" data-tab="scene" data-selected>Scene</div>
 					<div class="tab" data-tab="app">App</div>
@@ -65,12 +66,37 @@
 								<input class="hidden-input" type="file">
 							</div>
 						</fieldset>
+						<fieldset>
+							<legend>Environment</legend>
+							<select name="environment" id="environment">
+								<option value="none">None</option>
+								<option value="texture">Texture</option>
+							</select>
+							<div id="environment-texture" class="file-wrapper">
+								<canvas class="file-display"></canvas>
+								<input class="hidden-input" type="file">
+							</div>
+						</fieldset>
+						<fieldset>
+							<legend>Fog</legend>
+							<select name="fog" id="fog">
+								<option value="none">None</option>
+								<option value="linear">Linear</option>
+								<option value="exponential">Exponential</option>
+							</select>
+						</fieldset>
+						<fieldset id="linear-fog">
+							<input type="color" id="linear-color">
+							<input type="number">
+						</fieldset>
+						<fieldset id="exponential-fog">
+							<input type="color" id="exponential-fog">
+						</fieldset>
 						</section>
 					</div>
 					<div id="app">2</div>
 					<div id="settings">3</div>
 				</div>
-				<div class="resizer" id="left-resizer"></div>
 			</aside>
 			<div id="viewport">
 				<div id="toolbar">
@@ -114,10 +140,10 @@
 				<canvas id="canvas"></canvas>
 			</div>
 			<aside id="right-sidebar">
+				<div class="resizer" id="right-resizer"></div>
 				<section class="tabs">
 					<div class="tab" data-selected>Inspector</div>
 				</section>
-				<div class="resizer" id="right-resizer"></div>
 			</aside>
 		</main>
 		<script type="module" src="js/editor.js"></script>
