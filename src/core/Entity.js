@@ -166,7 +166,7 @@ export class Entity extends Group {
 
 		this.scene._removeFromScene( object );
 
-		return this;
+		return super.remove( object );
 
 	}
 

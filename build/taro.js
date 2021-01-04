@@ -51541,7 +51541,7 @@ class Scene$1 extends Scene {
 
 		if ( object instanceof Entity && this.children.indexOf( object ) !== - 1 ) {
 
-			object._removeComponents( object.components );
+			this._removeComponents( object.components );
 			delete object.scene;
 
 			object.dispatchEvent( { type: 'sceneremove' } );
@@ -55925,7 +55925,7 @@ class Entity extends Group {
 
 		this.scene._removeFromScene( object );
 
-		return this;
+		return super.remove( object );
 
 	}
 

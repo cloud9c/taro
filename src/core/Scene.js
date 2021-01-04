@@ -83,7 +83,7 @@ export class Scene extends TS {
 
 		if ( object instanceof Entity && this.children.indexOf( object ) !== - 1 ) {
 
-			object._removeComponents( object.components );
+			this._removeComponents( object.components );
 			delete object.scene;
 
 			object.dispatchEvent( { type: 'sceneremove' } );
