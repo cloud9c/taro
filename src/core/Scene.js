@@ -43,7 +43,7 @@ export class Scene extends TS {
 				const type = component.componentType;
 				const container = this._containers[ type ];
 
-				container.splice( container.indexOf(component), 1 );
+				container.splice( container.indexOf( component ), 1 );
 
 			}
 
@@ -51,12 +51,13 @@ export class Scene extends TS {
 
 	}
 
-	_addToScene(object) {
+	_addToScene( object ) {
+
 		if ( object instanceof Entity ) {
 
 			if ( object.scene !== undefined && object.scene !== this ) {
 
-				object.scene._removeComponents( object.components )
+				object.scene._removeComponents( object.components );
 
 				object.dispatchEvent( {
 					type: 'scenechange',
@@ -65,7 +66,9 @@ export class Scene extends TS {
 				} );
 
 			} else {
+
 				object.dispatchEvent( { type: 'sceneadd', scene: this } );
+
 			}
 
 			this._addComponents( object.components );
@@ -73,10 +76,12 @@ export class Scene extends TS {
 			object.scene = this;
 
 		}
+
 	}
 
 	_removeFromScene( object ) {
-		if ( this.children.indexOf( object ) !== - 1 ) {
+
+		if ( object instanceof Entity && this.children.indexOf( object ) !== - 1 ) {
 
 			object._removeComponents( object.components );
 			delete object.scene;
@@ -89,7 +94,7 @@ export class Scene extends TS {
 
 	add( object ) {
 
-		this._addToScene(  object );
+		this._addToScene( object );
 
 		return super.add( object );
 
@@ -97,7 +102,7 @@ export class Scene extends TS {
 
 	remove( object ) {
 
-		this._removeFromScene(object)
+		this._removeFromScene( object );
 
 		return super.remove( object );
 
