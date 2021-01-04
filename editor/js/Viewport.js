@@ -9,12 +9,12 @@ export function Viewport( app ) {
 	const scene = new TARO.Scene();
 	app.setScene( scene );
 
-	const camera = new TARO.PerspectiveCamera();
+	const camera = new TARO.Entity().addComponent( 'PerspectiveCamera' );
 
 	const box = new TARO.Entity();
 	box.addComponent( 'Renderable', new TARO.Mesh( new TARO.BoxGeometry(), new TARO.MeshPhongMaterial( { color: 0x00ff00 } ) ) );
 
-	const gridHelper = new TARO.GridHelper( 30, 30, 0x444, 0x9e9e9e );
+	const gridHelper = new TARO.GridHelper( 30, 30 );
 	scene.add( gridHelper );
 
 	//
@@ -23,7 +23,9 @@ export function Viewport( app ) {
 	renderer.setClearColor( 0xc4c4c4 );
 
 	function render() {
-		renderer.render(scene, camera);
+
+		renderer.update();
+
 	}
 
 	// transform controls stuff
@@ -49,7 +51,7 @@ export function Viewport( app ) {
 	scene.add( control );
 
 	return {
-		control, orbit, scene
-	}
+		control, orbit, scene, render
+	};
 
 }

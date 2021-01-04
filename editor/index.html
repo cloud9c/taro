@@ -56,8 +56,14 @@
 								<option value="equirect">Equirect</option>
 							</select>
 							<input type="color" id="background-color">
-							<input type="file" id="background-texture">
-							<input type="file" id="background-equirect">
+							<div id="background-texture" class="file-wrapper">
+								<canvas class="file-display"></canvas>
+								<input class="hidden-input" type="file">
+							</div>
+							<div id="background-equirect" class="file-wrapper">
+								<canvas class="file-display"></canvas>
+								<input class="hidden-input" type="file">
+							</div>
 						</fieldset>
 						</section>
 					</div>
