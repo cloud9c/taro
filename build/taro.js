@@ -51501,7 +51501,7 @@ class Scene$1 extends Scene {
 				const type = component.componentType;
 				const container = this._containers[ type ];
 
-				container.splice( container.indexOf(component), 1 );
+				container.splice( container.indexOf( component ), 1 );
 
 			}
 
@@ -51509,7 +51509,8 @@ class Scene$1 extends Scene {
 
 	}
 
-	_addToScene(object) {
+	_addToScene( object ) {
+
 		if ( object instanceof Entity ) {
 
 			if ( object.scene !== undefined && object.scene !== this ) {
@@ -51523,7 +51524,9 @@ class Scene$1 extends Scene {
 				} );
 
 			} else {
+
 				object.dispatchEvent( { type: 'sceneadd', scene: this } );
+
 			}
 
 			this._addComponents( object.components );
@@ -51531,10 +51534,12 @@ class Scene$1 extends Scene {
 			object.scene = this;
 
 		}
+
 	}
 
 	_removeFromScene( object ) {
-		if ( this.children.indexOf( object ) !== - 1 ) {
+
+		if ( object instanceof Entity && this.children.indexOf( object ) !== - 1 ) {
 
 			object._removeComponents( object.components );
 			delete object.scene;
@@ -51547,7 +51552,7 @@ class Scene$1 extends Scene {
 
 	add( object ) {
 
-		this._addToScene(  object );
+		this._addToScene( object );
 
 		return super.add( object );
 
@@ -51555,7 +51560,7 @@ class Scene$1 extends Scene {
 
 	remove( object ) {
 
-		this._removeFromScene(object);
+		this._removeFromScene( object );
 
 		return super.remove( object );
 
@@ -52110,7 +52115,7 @@ class PerspectiveCamera$1 extends PerspectiveCamera {
 
 		const data = super.toJSON( meta );
 		data.object.viewport = this.viewport.toArray();
-		if ( this.autoAspect ) {
+		if ( this.entity !== undefined && this.autoAspect ) {
 
 			delete data.object.aspect;
 
