@@ -13,3 +13,5 @@ const viewport = new Viewport( app );
 
 const toolbar = new Toolbar( viewport.control );
 const sidebarScene = new SidebarScene( viewport.scene, app.renderer, viewport.render );
+
+viewport.render();

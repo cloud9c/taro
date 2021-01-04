@@ -68,37 +68,52 @@ export function Viewport( app ) {
 	const orbit = new OrbitControls( camera, dom );
 	orbit.update();
 
-	orbit.addEventListener( 'change', render );
+	orbit.addEventListener( 'change', function ( event ) {
+
+		dragging = true;
+		render();
+
+	} );
 
 	const control = new TransformControls( camera, dom );
+	let onControl = false;
 
 	control.addEventListener( 'change', render );
 	control.addEventListener( 'dragging-changed', function ( event ) {
 
+		onControl = event.value;
 		orbit.enabled = ! event.value;
 
 	} );
 
-	control.attach( box );
+	// control.attach( box );
 	sceneHelper.add( control );
 
-	dom.addEventListener( 'pointerdown', function ( event ) {
+	let dragging = false;
+
+	dom.addEventListener( 'pointerup', function ( event ) {
 
 		const firstIntersect = getIntersects( event.clientX, event.clientY )[ 0 ];
 
-		if ( firstIntersect === undefined ) {
+		if ( ! ( onControl || dragging ) ) {
 
-			control.enabled = false;
-			control.detach();
+			if ( firstIntersect === undefined ) {
 
-		} else if ( control.object !== firstIntersect.object && control !== firstIntersect.object ) {
+				control.enabled = false;
+				control.detach();
 
-			control.enabled = true;
-			control.attach( firstIntersect.object );
+			} else if ( control.object !== firstIntersect.object && control !== firstIntersect.object ) {
+
+				control.enabled = true;
+				control.attach( firstIntersect.object );
+
+			}
+
+			render();
 
 		}
 
-		render();
+		dragging = false;
 
 	} );
 
