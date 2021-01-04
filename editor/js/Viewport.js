@@ -14,7 +14,8 @@ export function Viewport( app ) {
 	const box = new TARO.Entity();
 	box.addComponent( 'Renderable', new TARO.Mesh( new TARO.BoxGeometry(), new TARO.MeshPhongMaterial( { color: 0x00ff00 } ) ) );
 
-	const gridHelper = new TARO.GridHelper( 30, 30 );
+	const gridHelper = new TARO.Entity();
+	gridHelper.addComponent( 'Renderable', new TARO.GridHelper( 30, 30 ) );
 
 	const renderer = app.renderer;
 	const dom = renderer.domElement;
@@ -63,12 +64,11 @@ export function Viewport( app ) {
 	} );
 
 	control.attach( box );
-	sceneHelper.add( control );
+	// sceneHelper.add( control );
 
 	dom.addEventListener( 'pointerdown', function ( event ) {
 
 		const firstIntersect = getIntersects( event.clientX, event.clientY )[ 0 ];
-		console.log( firstIntersect );
 
 		if ( firstIntersect === undefined ) {
 
