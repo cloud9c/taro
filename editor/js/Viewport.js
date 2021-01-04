@@ -15,10 +15,6 @@ export function Viewport( app ) {
 	box.addComponent( 'Renderable', new TARO.Mesh( new TARO.BoxGeometry(), new TARO.MeshPhongMaterial( { color: 0x00ff00 } ) ) );
 
 	const gridHelper = new TARO.GridHelper( 30, 30 );
-	scene.add( gridHelper );
-
-	const raycaster = new TARO.Raycaster();
-	const mouse = new TARO.Vector2();
 
 	const renderer = app.renderer;
 	const dom = renderer.domElement;
@@ -26,9 +22,15 @@ export function Viewport( app ) {
 
 	function render() {
 
+		scene.add( gridHelper );
 		renderer.update();
+		scene.remove( gridHelper );
 
 	}
+
+	const raycaster = new TARO.Raycaster();
+	const mouse = new TARO.Vector2();
+	const objects = [ box, box.children[ 0 ] ];
 
 	function getIntersects( x, y ) {
 
@@ -37,16 +39,9 @@ export function Viewport( app ) {
 		mouse.y = - ( ( y - rect.top ) / rect.height ) * 2 + 1;
 		raycaster.setFromCamera( mouse, camera );
 
-		return raycaster.intersectObjects( scene.children );
+		return raycaster.intersectObjects( objects );
 
 	}
-
-	dom.addEventListener( 'pointerdown', function ( event ) {
-
-		const intersects = getIntersects( event.clientX, event.clientY );
-		console.log( intersects );
-
-	} );
 
 	// transform controls stuff
 
@@ -68,9 +63,26 @@ export function Viewport( app ) {
 	} );
 
 	control.attach( box );
-	scene.add( control );
+	sceneHelper.add( control );
 
-	dom.addEventListener( 'pointerdown', function () {
+	dom.addEventListener( 'pointerdown', function ( event ) {
+
+		const firstIntersect = getIntersects( event.clientX, event.clientY )[ 0 ];
+		console.log( firstIntersect );
+
+		if ( firstIntersect === undefined ) {
+
+			control.enabled = false;
+			control.detach();
+
+		} else if ( control.object !== firstIntersect.object && control !== firstIntersect.object ) {
+
+			control.enabled = true;
+			control.attach( firstIntersect.object );
+
+		}
+
+		render();
 
 	} );
 
