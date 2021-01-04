@@ -17,9 +17,11 @@ export function Viewport( app ) {
 	const gridHelper = new TARO.GridHelper( 30, 30 );
 	scene.add( gridHelper );
 
-	//
+	const raycaster = new TARO.Raycaster();
+	const mouse = new TARO.Vector2();
 
 	const renderer = app.renderer;
+	const dom = renderer.domElement;
 	renderer.setClearColor( 0xc4c4c4 );
 
 	function render() {
@@ -28,17 +30,35 @@ export function Viewport( app ) {
 
 	}
 
+	function getIntersects( x, y ) {
+
+		var rect = dom.getBoundingClientRect();
+		mouse.x = ( ( x - rect.left ) / rect.width ) * 2 - 1;
+		mouse.y = - ( ( y - rect.top ) / rect.height ) * 2 + 1;
+		raycaster.setFromCamera( mouse, camera );
+
+		return raycaster.intersectObjects( scene.children );
+
+	}
+
+	dom.addEventListener( 'pointerdown', function ( event ) {
+
+		const intersects = getIntersects( event.clientX, event.clientY );
+		console.log( intersects );
+
+	} );
+
 	// transform controls stuff
 
 	camera.position.set( 10, 10, 10 );
 	camera.lookAt( 0, 200, 0 );
 
-	const orbit = new OrbitControls( camera, renderer.domElement );
+	const orbit = new OrbitControls( camera, dom );
 	orbit.update();
 
 	orbit.addEventListener( 'change', render );
 
-	const control = new TransformControls( camera, renderer.domElement );
+	const control = new TransformControls( camera, dom );
 
 	control.addEventListener( 'change', render );
 	control.addEventListener( 'dragging-changed', function ( event ) {
@@ -49,6 +69,10 @@ export function Viewport( app ) {
 
 	control.attach( box );
 	scene.add( control );
+
+	dom.addEventListener( 'pointerdown', function () {
+
+	} );
 
 	return {
 		control, orbit, scene, render
