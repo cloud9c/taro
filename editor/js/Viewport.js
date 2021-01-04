@@ -39,6 +39,10 @@ export function Viewport( app ) {
 		renderer.render( scene, camera );
 		scene.remove( grid );
 
+		renderer.autoClear = false;
+		renderer.render( sceneHelper, camera );
+		renderer.autoClear = true;
+
 	}
 
 	const raycaster = new TARO.Raycaster();
@@ -76,7 +80,7 @@ export function Viewport( app ) {
 	} );
 
 	control.attach( box );
-	// sceneHelper.add( control );
+	sceneHelper.add( control );
 
 	dom.addEventListener( 'pointerdown', function ( event ) {
 
