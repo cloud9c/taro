@@ -7,25 +7,37 @@ export function Viewport( app ) {
 	// taro stuff
 
 	const scene = new TARO.Scene();
+	const sceneHelper = new TARO.Scene();
 	app.setScene( scene );
-
-	const camera = new TARO.Entity().addComponent( 'PerspectiveCamera' );
 
 	const box = new TARO.Entity();
 	box.addComponent( 'Renderable', new TARO.Mesh( new TARO.BoxGeometry(), new TARO.MeshPhongMaterial( { color: 0x00ff00 } ) ) );
 
-	const gridHelper = new TARO.Entity();
-	gridHelper.addComponent( 'Renderable', new TARO.GridHelper( 30, 30 ) );
+	const grid = new TARO.GridHelper( 30, 30 );
 
 	const renderer = app.renderer;
 	const dom = renderer.domElement;
 	renderer.setClearColor( 0xc4c4c4 );
 
+	const camera = new TARO.PerspectiveCamera();
+	const { width, height } = renderer.domElement.getBoundingClientRect();
+	camera.aspect = width /	height;
+	camera.updateProjectionMatrix();
+
+	window.addEventListener( 'resize', function () {
+
+		const { width, height } = renderer.domElement.getBoundingClientRect();
+		camera.aspect = width /	height;
+		camera.updateProjectionMatrix();
+		render();
+
+	} );
+
 	function render() {
 
-		scene.add( gridHelper );
-		renderer.update();
-		scene.remove( gridHelper );
+		scene.add( grid );
+		renderer.render( scene, camera );
+		scene.remove( grid );
 
 	}
 
