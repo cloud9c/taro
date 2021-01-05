@@ -5,7 +5,7 @@ export function SidebarScene( scene, renderer, render ) {
 
 	const textureLoader = new TextureLoader();
 
-	let colorBackground = '#000000';
+	let colorBackground = new TARO.Color();
 	let textureBackground, textureEquirect, environmentTexture;
 	const fog = new TARO.Fog();
 	const fogExp2 = new TARO.FogExp2();
@@ -15,16 +15,19 @@ export function SidebarScene( scene, renderer, render ) {
 		if ( files.length === 0 ) return;
 
 		const canvas = target.getElementsByClassName( 'file-display' )[ 0 ];
-		const ctx = canvas.getContext( '2d' );
-		const { width, height } = canvas.getBoundingClientRect();
+		const context = canvas.getContext( '2d' );
 		const reader = new FileReader();
 
 		reader.onload = () => {
 
 			textureLoader.load( reader.result, function ( texture ) {
 
-				ctx.drawImage( texture.image, width, height );
-				ctx.clearRect( 0, 0, width, height );
+				const image = texture.image;
+				const scale = canvas.width / image.width;
+
+				context.clearRect( 0, 0, canvas.width, canvas.height );
+				context.drawImage( image, canvas.width / 2 - image.width * scale / 2,
+					canvas.height / 2 - image.height * scale / 2, image.width * scale, image.height * scale );
 
 				switch ( target.id ) {
 
@@ -33,7 +36,7 @@ export function SidebarScene( scene, renderer, render ) {
 						onTextureOption();
 						break;
 					case 'background-equirect':
-						textureEquirect = new TARO.WebGLCubeRenderTarget( texture.image.height );
+						textureEquirect = new TARO.WebGLCubeRenderTarget( image.height );
 						textureEquirect.fromEquirectangularTexture( renderer, texture );
 						onEquirectOption();
 						break;
@@ -58,6 +61,8 @@ export function SidebarScene( scene, renderer, render ) {
 	}
 
 	function onFileDown( event ) {
+
+		if ( event.isPrimary === false ) return;
 
 		event.target.querySelector( 'input' ).click();
 
@@ -102,7 +107,8 @@ export function SidebarScene( scene, renderer, render ) {
 
 	function onColorOption() {
 
-		scene.background = new TARO.Color( document.getElementById( 'background-color' ).value );
+		colorBackground.set( document.getElementById( 'background-color' ).value );
+		scene.background = colorBackground;
 		render();
 
 	}
@@ -144,18 +150,18 @@ export function SidebarScene( scene, renderer, render ) {
 				break;
 			case 'color':
 				document.getElementById( 'background-color' ).style.setProperty( 'display', 'inherit' );
-				onColorOption();
-				this.style.setProperty( 'width', '84px' );
+				onColorOption( event.target );
+				this.style.setProperty( 'width', '90px' );
 				break;
 			case 'texture':
 				document.getElementById( 'background-texture' ).style.setProperty( 'display', 'inherit' );
 				onTextureOption();
-				this.style.setProperty( 'width', '84px' );
+				this.style.setProperty( 'width', '90px' );
 				break;
 			case 'equirect':
 				document.getElementById( 'background-equirect' ).style.setProperty( 'display', 'inherit' );
 				onEquirectOption();
-				this.style.setProperty( 'width', '84px' );
+				this.style.setProperty( 'width', '90px' );
 
 		}
 
@@ -185,7 +191,7 @@ export function SidebarScene( scene, renderer, render ) {
 			case 'texture':
 				document.getElementById( 'environment-texture' ).style.setProperty( 'display', 'inherit' );
 				onEnvironmentOption();
-				this.style.setProperty( 'width', '84px' );
+				this.style.setProperty( 'width', '90px' );
 				break;
 
 		}
@@ -199,7 +205,7 @@ export function SidebarScene( scene, renderer, render ) {
 
 	}
 
-	document.getElementById( 'fog' ).addEventListener( 'change', function ( event ) {
+	document.getElementById( 'fog' ).addEventListener( 'input', function ( event ) {
 
 		resetFogInput();
 
@@ -211,15 +217,50 @@ export function SidebarScene( scene, renderer, render ) {
 				break;
 			case 'linear':
 				document.getElementById( 'linear-fog' ).style.setProperty( 'display', 'flex' );
-				// onLinearFog();
+				setFog();
 				break;
 			case 'exponential':
 				document.getElementById( 'exponential-fog' ).style.setProperty( 'display', 'flex' );
-				// onExponentialFog();
+				setExpFog();
 				break;
 
 		}
 
 	} );
+
+	const fogOptions = document.querySelectorAll( '#fog-options input' );
+	const linearFog = document.getElementById( 'linear-fog' ).children;
+	const expFog = document.getElementById( 'exponential-fog' ).children;
+
+	function setFog() {
+
+		fog.color.set( linearFog[ 0 ].value );
+		fog.near = linearFog[ 1 ].value;
+		fog.far = linearFog[ 2 ].value;
+
+		scene.fog = fog;
+		console.log( scene.fog );
+		render();
+
+	}
+
+	function setExpFog() {
+
+		fogExp2.color.set( expFog[ 0 ].value );
+		fogExp2.density = expFog[ 1 ].value;
+
+		scene.fog = fogExp2;
+		render();
+
+	}
+
+	for ( let i = 0, len = fogOptions.length; i < len; i ++ ) {
+
+		if ( fogOptions[ i ].parentElement === 'linear-fog' )
+			fogOptions[ i ].addEventListener( 'change', setFog );
+		else // exp fog
+			fogOptions[ i ].addEventListener( 'change', setExpFog );
+
+	}
 
 }

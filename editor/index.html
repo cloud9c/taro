@@ -58,11 +58,11 @@
 							</select>
 							<input type="color" id="background-color">
 							<div id="background-texture" class="file-wrapper">
-								<canvas class="file-display"></canvas>
+								<canvas width="22" height="22" class="file-display"></canvas>
 								<input class="hidden-input" type="file">
 							</div>
 							<div id="background-equirect" class="file-wrapper">
-								<canvas class="file-display"></canvas>
+								<canvas width="22" height="22" class="file-display"></canvas>
 								<input class="hidden-input" type="file">
 							</div>
 						</fieldset>
@@ -73,11 +73,11 @@
 								<option value="texture">Texture</option>
 							</select>
 							<div id="environment-texture" class="file-wrapper">
-								<canvas class="file-display"></canvas>
+								<canvas width="22" height="22" class="file-display"></canvas>
 								<input class="hidden-input" type="file">
 							</div>
 						</fieldset>
-						<fieldset>
+						<fieldset id="fog-wrapper">
 							<legend>Fog</legend>
 							<select name="fog" id="fog">
 								<option value="none">None</option>
@@ -85,13 +85,17 @@
 								<option value="exponential">Exponential</option>
 							</select>
 						</fieldset>
-						<fieldset id="linear-fog">
-							<input type="color" id="linear-color">
-							<input type="number">
-						</fieldset>
-						<fieldset id="exponential-fog">
-							<input type="color" id="exponential-fog">
-						</fieldset>
+						<div id="fog-options">
+							<fieldset id="linear-fog">
+								<input type="color">
+								<input type="number" placeholder="Near" value="0.1">
+								<input type="number" placeholder="Far" value="50">
+							</fieldset>
+							<fieldset id="exponential-fog">
+								<input type="color">
+								<input type="number" placeholder="Density" value="0.05">
+							</fieldset>
+						</div>
 						</section>
 					</div>
 					<div id="app">2</div>

@@ -19,7 +19,7 @@ export function Viewport( app ) {
 	const dom = renderer.domElement;
 	renderer.setClearColor( 0xc4c4c4 );
 
-	const camera = new TARO.PerspectiveCamera();
+	const camera = new TARO.Entity().addComponent( 'PerspectiveCamera' );
 	const { width, height } = renderer.domElement.getBoundingClientRect();
 	camera.aspect = width /	height;
 	camera.updateProjectionMatrix();

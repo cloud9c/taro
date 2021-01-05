@@ -117,7 +117,7 @@ aside section {
 	margin: 0;
 	display: flex;
 	align-items: center;
-	margin-bottom: 8px;
+	margin-bottom: 12px;
 }
 
 .panel legend {
@@ -129,12 +129,12 @@ aside section {
 	margin-right: auto;
 }
 
-.panel select {
+select {
 	border: 1px solid var(--border-color);
 	font-family: inherit;
 	font-size: inherit;
 	color: inherit;
-	padding: 4px 0 4px 8px;
+	padding: 1px 0 1px 4px;
 	appearance: none;
 	background: url("../img/chevron-down.svg") no-repeat right 4px center;
 	background-size: 16px;
@@ -146,13 +146,13 @@ input {
 	outline: 0;
 }
 
-.panel input[type="color"], .panel select, .file-wrapper {
+input[type="color"], select, .file-wrapper {
 	cursor: pointer;
 }
 
 input[type="color"], .file-wrapper {
-	width: 28px;
-	height: 28px;
+	width: 22px;
+	height: 22px;
 	border: 1px solid var(--border-color);
 	background-color: transparent;
 	padding: 0;
@@ -171,8 +171,8 @@ input[type="file"] {
 
 input[type="number"] {
 	-moz-appearance: textfield;
-	height: 28px;
-	width: 60px;
+	height: 22px;
+	width: 44px;
 	border: 1px solid var(--border-color);
 }
 
@@ -188,12 +188,35 @@ input::-webkit-inner-spin-button {
 	height: 100%;
 }
 
-#background-color, #background-texture, #background-equirect, #environment-texture, #linear-fog, #exponential-fog {
+#background-color, #background-texture, #background-equirect, #environment-texture {
 	display: none;
 	margin-left: 8px;
 }
 
-#left-sidebar .panel > div {
+#fog-wrapper {
+
+	margin-bottom: 6px;
+
+}
+
+#linear-fog input, #exponential-fog input {
+	margin-left: 5px;
+}
+
+#linear-fog input[type="number"], #exponential-fog[type="number"] {
+	padding: 1px 0 1px 4px;
+}
+
+
+#exponential-fog input[type="number"] {
+	width: 93px;
+}
+
+#linear-fog input[type="color"], #exponential-fog input[type="color"] {
+	margin-left: auto;
+}
+
+#left-sidebar .panel > div, #linear-fog, #exponential-fog {
 	display: none;
 }
 
