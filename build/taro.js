@@ -51740,7 +51740,8 @@ class Renderer extends WebGLRenderer {
 		this.setPixelRatio( window.devicePixelRatio );
 		this._onResize();
 
-		this.observer = new ResizeObserver( () => this._onResize() ).observe( this.domElement );
+		this.observer = new ResizeObserver( () => this._onResize() );
+		this.observer.observe( this.domElement );
 
 	}
 
