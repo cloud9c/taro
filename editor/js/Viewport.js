@@ -17,6 +17,8 @@ export function Viewport( app ) {
 
 	const renderer = app.renderer;
 	const dom = renderer.domElement;
+	console.log( renderer );
+	renderer.observer.disconnect();
 	renderer.setClearColor( 0xc4c4c4 );
 
 	const camera = new TARO.Entity().addComponent( 'PerspectiveCamera' );
