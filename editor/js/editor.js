@@ -8,7 +8,7 @@ import { Application } from '../../build/taro.js';
 const resizer = new Resizer();
 const sidebar = new Sidebar();
 
-const app = new Application( { canvas: 'canvas' } );
+const app = new Application( { canvas: 'canvas', antialias: true } );
 const viewport = new Viewport( app );
 
 const toolbar = new Toolbar( viewport.control );

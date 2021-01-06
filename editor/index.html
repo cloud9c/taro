@@ -87,15 +87,27 @@
 						</fieldset>
 						<div id="fog-options">
 							<fieldset id="linear-fog">
-								<input type="color">
+								<input type="color" value="#c4c4c4">
 								<input type="number" placeholder="Near" value="0.1">
 								<input type="number" placeholder="Far" value="50">
 							</fieldset>
-							<fieldset id="exponential-fog">
+							<fieldset id="exponential-fog" value="#c4c4c4">
 								<input type="color">
 								<input type="number" placeholder="Density" value="0.05">
 							</fieldset>
 						</div>
+						</section>
+						<section>
+							<ul id="scene-tree">
+								<li><span>Camera</span></li>
+								<li>
+									<img src="img/caret.svg">
+									<span>Parent</span>
+									<ul>
+										<li><span>Child</span></li>
+									</ul>
+								</li>
+							</ul>
 						</section>
 					</div>
 					<div id="app">2</div>

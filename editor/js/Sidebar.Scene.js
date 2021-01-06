@@ -25,7 +25,8 @@ export function SidebarScene( scene, renderer, render ) {
 				const image = texture.image;
 				const scale = canvas.width / image.width;
 
-				context.clearRect( 0, 0, canvas.width, canvas.height );
+				context.fillStyle = '#fff';
+				context.fillRect( 0, 0, canvas.width, canvas.height );
 				context.drawImage( image, canvas.width / 2 - image.width * scale / 2,
 					canvas.height / 2 - image.height * scale / 2, image.width * scale, image.height * scale );
 
@@ -235,11 +236,10 @@ export function SidebarScene( scene, renderer, render ) {
 	function setFog() {
 
 		fog.color.set( linearFog[ 0 ].value );
-		fog.near = linearFog[ 1 ].value;
-		fog.far = linearFog[ 2 ].value;
+		fog.near = parseFloat( linearFog[ 1 ].value );
+		fog.far = parseFloat( linearFog[ 2 ].value );
 
 		scene.fog = fog;
-		console.log( scene.fog );
 		render();
 
 	}
@@ -247,7 +247,7 @@ export function SidebarScene( scene, renderer, render ) {
 	function setExpFog() {
 
 		fogExp2.color.set( expFog[ 0 ].value );
-		fogExp2.density = expFog[ 1 ].value;
+		fogExp2.density = parseFloat( expFog[ 1 ].value );
 
 		scene.fog = fogExp2;
 		render();
@@ -256,10 +256,12 @@ export function SidebarScene( scene, renderer, render ) {
 
 	for ( let i = 0, len = fogOptions.length; i < len; i ++ ) {
 
-		if ( fogOptions[ i ].parentElement === 'linear-fog' )
-			fogOptions[ i ].addEventListener( 'change', setFog );
+		// console.log( fogOptions[ i ], fogOptions[ i ].parentElement );
+
+		if ( fogOptions[ i ].parentElement.id === 'linear-fog' )
+			fogOptions[ i ].addEventListener( 'input', setFog );
 		else // exp fog
-			fogOptions[ i ].addEventListener( 'change', setExpFog );
+			fogOptions[ i ].addEventListener( 'input', setExpFog );
 
 	}
 

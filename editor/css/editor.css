@@ -1,8 +1,6 @@
 :root {
 	--white-color: rgba(255, 255, 255, 0.8);
-	--text-color: #000;
 	--dark-color: #333;
-	--darker-color: #000;
 }
 
 html,
@@ -35,7 +33,7 @@ main {
 }
 
 .menu:focus {
-	background: var(--darker-color);
+	background: #000;
 	color: #fff;
 }
 
@@ -186,6 +184,10 @@ input::-webkit-inner-spin-button {
 	pointer-events: none;
 	width: 100%;
 	height: 100%;
+	background-image: url("../img/download.svg");
+	background-position: center;
+	background-size: 16px;
+	background-repeat: no-repeat;
 }
 
 #background-color, #background-texture, #background-equirect, #environment-texture {
@@ -214,6 +216,21 @@ input::-webkit-inner-spin-button {
 
 #linear-fog input[type="color"], #exponential-fog input[type="color"] {
 	margin-left: auto;
+}
+
+#scene-tree {
+	margin: 0;
+	padding: 0 0 0 12px;
+}
+
+#scene-tree img {
+	position: absolute;
+	left: -24px;
+}
+
+#scene-tree li {
+	list-style-type: none;
+	position: relative;
 }
 
 #left-sidebar .panel > div, #linear-fog, #exponential-fog {

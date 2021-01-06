@@ -15,9 +15,28 @@ export function Viewport( app ) {
 
 	const grid = new TARO.GridHelper( 30, 30 );
 
+	const color1 = new TARO.Color( 0x7d7d7d );
+	const color2 = new TARO.Color( 0xDCDCDC );
+
+	const attribute = grid.geometry.attributes.color;
+	const array = attribute.array;
+
+	for ( var i = 0; i < array.length; i += 12 ) {
+
+		const color = ( i % ( 12 * 5 ) === 0 ) ? color1 : color2;
+
+		for ( var j = 0; j < 12; j += 3 ) {
+
+			color.toArray( array, i + j );
+
+		}
+
+	}
+
+	attribute.needsUpdate = true;
+
 	const renderer = app.renderer;
 	const dom = renderer.domElement;
-	console.log( renderer );
 	renderer.observer.disconnect();
 	renderer.setClearColor( 0xc4c4c4 );
 
@@ -29,6 +48,7 @@ export function Viewport( app ) {
 	window.addEventListener( 'resize', function () {
 
 		const { width, height } = renderer.domElement.getBoundingClientRect();
+		renderer.setSize( width, height, false );
 		camera.aspect = width /	height;
 		camera.updateProjectionMatrix();
 		render();
