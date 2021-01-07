@@ -9,7 +9,7 @@ export function Viewport( editor ) {
 		const entity = new TARO.Entity( name );
 
 		const div = document.createElement( 'div' );
-		div.innerText = 'Entity';
+		div.innerText = name;
 		div.dataset.uuid = entity.uuid;
 		document.getElementById( 'scene-tree' ).appendChild( div );
 
@@ -23,8 +23,9 @@ export function Viewport( editor ) {
 	const sceneHelper = new TARO.Scene();
 	app.setScene( scene );
 
-	const box = this.addEntity();
-	box.addComponent( 'Renderable', new TARO.Mesh( new TARO.BoxGeometry(), new TARO.MeshPhongMaterial( { color: 0x00ff00 } ) ) );
+	this.addEntity().addComponent( 'Renderable', new TARO.Mesh( new TARO.BoxGeometry(), new TARO.MeshPhongMaterial( { color: 0x00ff00 } ) ) );
+	this.addEntity().addComponent( 'Renderable', new TARO.Mesh( new TARO.BoxGeometry(), new TARO.MeshPhongMaterial( { color: 0x00ff00 } ) ) );
+	this.addEntity().addComponent( 'Renderable', new TARO.Mesh( new TARO.BoxGeometry(), new TARO.MeshPhongMaterial( { color: 0x00ff00 } ) ) );
 
 	const grid = new TARO.GridHelper( 30, 30 );
 
@@ -53,7 +54,7 @@ export function Viewport( editor ) {
 	renderer.observer.disconnect();
 	renderer.setClearColor( 0xc4c4c4 );
 
-	const camera = new TARO.Entity().addComponent( 'PerspectiveCamera' );
+	const camera = new TARO.PerspectiveCamera();
 	const { width, height } = renderer.domElement.getBoundingClientRect();
 	camera.aspect = width /	height;
 	camera.updateProjectionMatrix();
@@ -82,7 +83,6 @@ export function Viewport( editor ) {
 
 	const raycaster = new TARO.Raycaster();
 	const mouse = new TARO.Vector2();
-	const objects = [ box, box.children[ 0 ] ];
 
 	function getIntersects( x, y ) {
 
@@ -91,7 +91,7 @@ export function Viewport( editor ) {
 		mouse.y = - ( ( y - rect.top ) / rect.height ) * 2 + 1;
 		raycaster.setFromCamera( mouse, camera );
 
-		return raycaster.intersectObjects( objects );
+		return raycaster.intersectObjects( scene.children, true );
 
 	}
 
@@ -129,13 +129,25 @@ export function Viewport( editor ) {
 	dom.addEventListener( 'pointerup', function ( event ) {
 
 		const firstIntersect = getIntersects( event.clientX, event.clientY )[ 0 ];
-		const rayObject = firstIntersect.object;
+		let rayObject;
 
-		while ( rayObject.isEntity === undefined ) {
+		if ( firstIntersect !== undefined ) {
+
+			rayObject = firstIntersect.object;
+
+			while ( rayObject.isEntity === undefined ) {
+
+				rayObject = rayObject.parent;
+
+			}
 
 		}
 
 		if ( ! ( onControl || dragging ) ) {
+
+			const oldTarget = document.querySelector( '#scene-tree [data-selected]' );
+
+			if ( oldTarget !== null ) delete oldTarget.dataset.selected;
 
 			if ( firstIntersect === undefined ) {
 
@@ -144,15 +156,8 @@ export function Viewport( editor ) {
 
 			} else if ( control.object !== rayObject && control !== rayObject ) {
 
-				const oldTarget = document.querySelector( '#scene-tree [data-selected]' );
-
-				if ( oldTarget !== null ) delete oldTarget.dataset.selected;
-
 				const newTarget = document.querySelector( '#scene-tree [data-uuid="' + rayObject.uuid + '"]' );
-				console.log( 'data-uuid="' + rayObject.uuid + '"' );
 				if ( newTarget !== null ) newTarget.dataset.selected = '';
-
-				console.log( newTarget );
 
 				control.enabled = true;
 				control.attach( rayObject );

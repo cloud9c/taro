@@ -275,12 +275,10 @@ export function SidebarScene( editor ) {
 		if ( event.isPrimary === false || target.tagName === 'SECTION' ) return;
 
 		const oldTarget = document.querySelector( '#scene-tree [data-selected]' );
-
 		if ( oldTarget !== null ) delete oldTarget.dataset.selected;
 		target.dataset.selected = '';
 
 		const entity = scene.findByProperty( 'uuid', target.dataset.uuid );
-		if ( entity === undefined ) return;
 
 		editor.viewport.control.enabled = true;
 		editor.viewport.control.attach( entity );
