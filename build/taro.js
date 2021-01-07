@@ -51511,7 +51511,7 @@ class Scene$1 extends Scene {
 
 	_addToScene( object ) {
 
-		if ( object instanceof Entity ) {
+		if ( object.isEntity !== undefined ) {
 
 			if ( object.scene !== undefined && object.scene !== this ) {
 
@@ -51539,7 +51539,7 @@ class Scene$1 extends Scene {
 
 	_removeFromScene( object ) {
 
-		if ( object instanceof Entity && this.children.indexOf( object ) !== - 1 ) {
+		if ( object.isEntity !== undefined && this.children.indexOf( object ) !== - 1 ) {
 
 			this._removeComponents( object.components );
 			delete object.scene;
@@ -51577,7 +51577,7 @@ class Scene$1 extends Scene {
 		const matches = [];
 		this.traverse( ( child ) => {
 
-			if ( child instanceof Entity && child.tags.includes( tag ) ) {
+			if ( child.isEntity !== undefined && child.tags.includes( tag ) ) {
 
 				matches.push( child );
 
@@ -55769,6 +55769,8 @@ class Entity extends Group {
 
 		super();
 
+		Object.defineProperty( this, 'isEntity', { value: true } );
+
 		this.components = [];
 		this.queue = [];
 		this.tags = [];
@@ -55777,7 +55779,7 @@ class Entity extends Group {
 
 		if ( name !== undefined ) {
 
-			if ( name instanceof Scene$1 ) {
+			if ( name.isScene !== undefined ) {
 
 				name.add( this );
 
@@ -55789,7 +55791,7 @@ class Entity extends Group {
 
 		}
 
-		if ( scene instanceof Scene$1 ) {
+		if ( scene.isScene !== undefined ) {
 
 			scene.add( this );
 
@@ -55966,7 +55968,7 @@ class Entity extends Group {
 		const children = this.children;
 		for ( let i = 0, len = children.length; i < len; i ++ ) {
 
-			if ( children[ i ] instanceof Entity )
+			if ( children[ i ].isEntity !== undefined )
 				filteredChildren.push( children[ i ] );
 
 		}
@@ -55986,7 +55988,7 @@ class Entity extends Group {
 		const matches = [];
 		this.traverse( ( child ) => {
 
-			if ( child instanceof Entity && child.tags.includes( tag ) ) {
+			if ( child.isEntity !== undefined && child.tags.includes( tag ) ) {
 
 				matches.push( child );
 

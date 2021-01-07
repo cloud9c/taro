@@ -9,6 +9,8 @@ export class Entity extends Group {
 
 		super();
 
+		Object.defineProperty( this, 'isEntity', { value: true } );
+
 		this.components = [];
 		this.queue = [];
 		this.tags = [];
@@ -17,7 +19,7 @@ export class Entity extends Group {
 
 		if ( name !== undefined ) {
 
-			if ( name instanceof Scene ) {
+			if ( name.isScene !== undefined ) {
 
 				name.add( this );
 
@@ -29,7 +31,7 @@ export class Entity extends Group {
 
 		}
 
-		if ( scene instanceof Scene ) {
+		if ( scene.isScene !== undefined ) {
 
 			scene.add( this );
 
@@ -206,7 +208,7 @@ export class Entity extends Group {
 		const children = this.children;
 		for ( let i = 0, len = children.length; i < len; i ++ ) {
 
-			if ( children[ i ] instanceof Entity )
+			if ( children[ i ].isEntity !== undefined )
 				filteredChildren.push( children[ i ] );
 
 		}
@@ -226,7 +228,7 @@ export class Entity extends Group {
 		const matches = [];
 		this.traverse( ( child ) => {
 
-			if ( child instanceof Entity && child.tags.includes( tag ) ) {
+			if ( child.isEntity !== undefined && child.tags.includes( tag ) ) {
 
 				matches.push( child );
 

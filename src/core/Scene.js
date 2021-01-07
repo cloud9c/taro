@@ -1,6 +1,5 @@
 import { Scene as TS } from '../lib/three.js';
 import { OIMO } from '../lib/oimo.js';
-import { Entity } from './Entity.js';
 
 export class Scene extends TS {
 
@@ -53,7 +52,7 @@ export class Scene extends TS {
 
 	_addToScene( object ) {
 
-		if ( object instanceof Entity ) {
+		if ( object.isEntity !== undefined ) {
 
 			if ( object.scene !== undefined && object.scene !== this ) {
 
@@ -81,7 +80,7 @@ export class Scene extends TS {
 
 	_removeFromScene( object ) {
 
-		if ( object instanceof Entity && this.children.indexOf( object ) !== - 1 ) {
+		if ( object.isEntity !== undefined && this.children.indexOf( object ) !== - 1 ) {
 
 			this._removeComponents( object.components );
 			delete object.scene;
@@ -119,7 +118,7 @@ export class Scene extends TS {
 		const matches = [];
 		this.traverse( ( child ) => {
 
-			if ( child instanceof Entity && child.tags.includes( tag ) ) {
+			if ( child.isEntity !== undefined && child.tags.includes( tag ) ) {
 
 				matches.push( child );
 
