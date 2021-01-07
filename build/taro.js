@@ -55791,7 +55791,7 @@ class Entity extends Group {
 
 		}
 
-		if ( scene.isScene !== undefined ) {
+		if ( scene !== undefined && scene.isScene !== undefined ) {
 
 			scene.add( this );
 
