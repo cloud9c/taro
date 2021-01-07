@@ -1,9 +1,10 @@
 import { Resizer } from './Resizer.js';
-import { Toolbar } from './Toolbar.js';
 import { Sidebar } from './Sidebar.js';
-import { SidebarScene } from './Sidebar.Scene.js';
-import { Viewport } from './Viewport.js';
 import { Application } from '../../build/taro.js';
+import { Viewport } from './Viewport.js';
+import { Toolbar } from './Toolbar.js';
+import { SidebarScene } from './Sidebar.Scene.js';
+import { SidebarInspector } from './Sidebar.Inspector.js';
 
 function Editor() {
 
@@ -16,6 +17,7 @@ function Editor() {
 
 	this.toolbar = new Toolbar( this );
 	this.sidebarScene = new SidebarScene( this );
+	this.sidebarInspector = new SidebarInspector( this );
 
 	this.render();
 
