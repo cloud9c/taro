@@ -2,15 +2,28 @@ import { TransformControls } from './lib/TransformControls.js';
 import { OrbitControls } from './lib/OrbitControls.js';
 import * as TARO from '../../build/taro.js';
 
-export function Viewport( app ) {
+export function Viewport( editor ) {
 
-	// taro stuff
+	this.addEntity = function ( name = 'Entity' ) {
 
-	const scene = new TARO.Scene();
+		const entity = new TARO.Entity( name );
+
+		const div = document.createElement( 'div' );
+		div.innerText = 'Entity';
+		div.dataset.uuid = entity.uuid;
+		document.getElementById( 'scene-tree' ).appendChild( div );
+
+		return entity;
+
+	};
+
+	const app = editor.app;
+
+	const scene = this.scene = new TARO.Scene();
 	const sceneHelper = new TARO.Scene();
 	app.setScene( scene );
 
-	const box = new TARO.Entity();
+	const box = this.addEntity();
 	box.addComponent( 'Renderable', new TARO.Mesh( new TARO.BoxGeometry(), new TARO.MeshPhongMaterial( { color: 0x00ff00 } ) ) );
 
 	const grid = new TARO.GridHelper( 30, 30 );
@@ -55,7 +68,7 @@ export function Viewport( app ) {
 
 	} );
 
-	function render() {
+	const render = this.render = function () {
 
 		scene.add( grid );
 		renderer.render( scene, camera );
@@ -65,7 +78,7 @@ export function Viewport( app ) {
 		renderer.render( sceneHelper, camera );
 		renderer.autoClear = true;
 
-	}
+	};
 
 	const raycaster = new TARO.Raycaster();
 	const mouse = new TARO.Vector2();
@@ -87,7 +100,7 @@ export function Viewport( app ) {
 	camera.position.set( 10, 10, 10 );
 	camera.lookAt( 0, 200, 0 );
 
-	const orbit = new OrbitControls( camera, dom );
+	const orbit = this.orbit = new OrbitControls( camera, dom );
 	orbit.update();
 
 	orbit.addEventListener( 'change', function ( event ) {
@@ -97,7 +110,7 @@ export function Viewport( app ) {
 
 	} );
 
-	const control = new TransformControls( camera, dom );
+	const control = this.control = new TransformControls( camera, dom );
 	let onControl = false;
 
 	control.addEventListener( 'change', render );
@@ -116,6 +129,11 @@ export function Viewport( app ) {
 	dom.addEventListener( 'pointerup', function ( event ) {
 
 		const firstIntersect = getIntersects( event.clientX, event.clientY )[ 0 ];
+		const rayObject = firstIntersect.object;
+
+		while ( rayObject.isEntity === undefined ) {
+
+		}
 
 		if ( ! ( onControl || dragging ) ) {
 
@@ -124,10 +142,20 @@ export function Viewport( app ) {
 				control.enabled = false;
 				control.detach();
 
-			} else if ( control.object !== firstIntersect.object && control !== firstIntersect.object ) {
+			} else if ( control.object !== rayObject && control !== rayObject ) {
+
+				const oldTarget = document.querySelector( '#scene-tree [data-selected]' );
+
+				if ( oldTarget !== null ) delete oldTarget.dataset.selected;
+
+				const newTarget = document.querySelector( '#scene-tree [data-uuid="' + rayObject.uuid + '"]' );
+				console.log( 'data-uuid="' + rayObject.uuid + '"' );
+				if ( newTarget !== null ) newTarget.dataset.selected = '';
+
+				console.log( newTarget );
 
 				control.enabled = true;
-				control.attach( firstIntersect.object );
+				control.attach( rayObject );
 
 			}
 
@@ -138,9 +166,5 @@ export function Viewport( app ) {
 		dragging = false;
 
 	} );
-
-	return {
-		control, orbit, scene, render
-	};
 
 }

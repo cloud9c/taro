@@ -1,6 +1,10 @@
 :root {
-	--white-color: rgba(255, 255, 255, 0.8);
-	--dark-color: #333;
+	--white: rgba(255, 255, 255, 0.8);
+	--gray-1: #333;
+	--gray-2: #7d7d7d;
+	--gray-3: #ccc;
+	--gray-4: #dcdcdc;
+	--gray-5: #eee;
 }
 
 html,
@@ -20,7 +24,7 @@ main {
 #menubar {
 	height: 32px;
 	width: 100%;
-	background: var(--dark-color);
+	background: var(--gray-1);
 	display: flex;
 	align-items: center;
 }
@@ -28,7 +32,7 @@ main {
 .menu {
 	outline: 0;
 	position: relative;
-	color: var(--white-color);
+	color: var(--white);
 	cursor: pointer;
 }
 
@@ -51,13 +55,13 @@ main {
 	position: absolute;
 	width: 150px;
 	padding: 5px 0;
-	background: var(--dark-color);
+	background: var(--gray-1);
 	z-index: 1;
 }
 
 .option {
 	padding: 5px 10px;
-	color: var(--white-color);
+	color: var(--white);
 }
 
 .option:hover {
@@ -184,9 +188,9 @@ input::-webkit-inner-spin-button {
 	pointer-events: none;
 	width: 100%;
 	height: 100%;
-	background-image: url("../img/download.svg");
+	background-image: url("../img/upload.svg");
 	background-position: center;
-	background-size: 16px;
+	background-size: 12px;
 	background-repeat: no-repeat;
 }
 
@@ -219,13 +223,36 @@ input::-webkit-inner-spin-button {
 }
 
 #scene-tree {
-	margin: 0;
-	padding: 0 0 0 12px;
+	background: var(--gray-5);
+	padding: 12px 0;
 }
 
-#scene-tree img {
-	position: absolute;
-	left: -24px;
+#scene-tree div {
+	margin: 0;
+	padding: 4px 0 4px 24px;
+	position: relative;
+	cursor: pointer;
+	user-select: none;
+}
+
+#scene-tree div:hover {
+	background: var(--gray-4);
+}
+
+#scene-tree div[data-selected] {
+	background: var(--gray-3);
+}
+
+.parent:before {
+    content: "";
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    background-image: url("../img/caret.svg");
+    background-repeat: no-repeat;
+    position: absolute;
+    left: 4px;
+    top: 5px;
 }
 
 #scene-tree li {
@@ -281,7 +308,7 @@ input::-webkit-inner-spin-button {
 .tool {
 	padding: 5px 8px;
 	border: none;
-	background: var(--dark-color);
+	background: var(--gray-1);
 	outline: none;
 	cursor: pointer;
 }
@@ -295,7 +322,7 @@ input::-webkit-inner-spin-button {
 }
 
 .tool svg {
-	fill: var(--white-color);
+	fill: var(--white);
 	pointer-events: none;
 }
 

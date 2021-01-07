@@ -5,13 +5,20 @@ import { SidebarScene } from './Sidebar.Scene.js';
 import { Viewport } from './Viewport.js';
 import { Application } from '../../build/taro.js';
 
-const resizer = new Resizer();
-const sidebar = new Sidebar();
+function Editor() {
 
-const app = new Application( { canvas: 'canvas', antialias: true } );
-const viewport = new Viewport( app );
+	this.resizer = new Resizer();
+	this.sidebar = new Sidebar();
 
-const toolbar = new Toolbar( viewport.control );
-const sidebarScene = new SidebarScene( viewport.scene, app.renderer, viewport.render );
+	this.app = new Application( { canvas: 'canvas', antialias: true } );
+	this.viewport = new Viewport( this ); // control, orbit, scene, render
+	this.render = this.viewport.render;
 
-viewport.render();
+	this.toolbar = new Toolbar( this );
+	this.sidebarScene = new SidebarScene( this );
+
+	this.render();
+
+}
+
+const editor = new Editor();

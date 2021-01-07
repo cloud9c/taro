@@ -1,8 +1,13 @@
 import { TextureLoader } from '../../build/taro.js';
 import * as TARO from '../../build/taro.js';
 
-export function SidebarScene( scene, renderer, render ) {
+export function SidebarScene( editor ) {
 
+	const viewport = editor.viewport;
+	const renderer = editor.app.renderer;
+	const render = editor.render;
+
+	const scene = viewport.scene;
 	const textureLoader = new TextureLoader();
 
 	let colorBackground = new TARO.Color();
@@ -256,13 +261,32 @@ export function SidebarScene( scene, renderer, render ) {
 
 	for ( let i = 0, len = fogOptions.length; i < len; i ++ ) {
 
-		// console.log( fogOptions[ i ], fogOptions[ i ].parentElement );
-
 		if ( fogOptions[ i ].parentElement.id === 'linear-fog' )
 			fogOptions[ i ].addEventListener( 'input', setFog );
 		else // exp fog
 			fogOptions[ i ].addEventListener( 'input', setExpFog );
 
 	}
+
+	document.getElementById( 'scene-tree' ).addEventListener( 'pointerdown', function ( event ) {
+
+		const target = event.target;
+
+		if ( event.isPrimary === false || target.tagName === 'SECTION' ) return;
+
+		const oldTarget = document.querySelector( '#scene-tree [data-selected]' );
+
+		if ( oldTarget !== null ) delete oldTarget.dataset.selected;
+		target.dataset.selected = '';
+
+		const entity = scene.findByProperty( 'uuid', target.dataset.uuid );
+		if ( entity === undefined ) return;
+
+		editor.viewport.control.enabled = true;
+		editor.viewport.control.attach( entity );
+
+		editor.render();
+
+	} );
 
 }
