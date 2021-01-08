@@ -233,6 +233,19 @@ input::-webkit-inner-spin-button {
 	position: relative;
 	cursor: pointer;
 	user-select: none;
+	border: 1px dashed transparent;
+}
+
+#scene-tree .drag-into {
+	border-color: var(--theme-color);
+}
+
+#scene-tree .drag-above {
+	border-top-color: var(--theme-color);
+}
+
+#scene-tree .drag-below {
+	border-bottom-color: var(--theme-color);
 }
 
 #scene-tree div:hover {

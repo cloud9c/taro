@@ -4,18 +4,69 @@ import * as TARO from '../../build/taro.js';
 
 export function Viewport( editor ) {
 
-	this.addEntity = function ( name = 'Entity' ) {
+	let currentDrag;
 
-		const entity = new TARO.Entity( name );
+	function onDragStart( event ) {
 
-		const div = document.createElement( 'div' );
-		div.innerText = name;
-		div.dataset.uuid = entity.uuid;
-		document.getElementById( 'scene-tree' ).appendChild( div );
+		currentDrag = this;
 
-		return entity;
+		event.dataTransfer.effectAllowed = 'move';
 
-	};
+	}
+
+	function onDragOver( event ) {
+
+		event.preventDefault();
+		event.dataTransfer.dropEffect = 'move';
+
+		if ( currentDrag === this ) return;
+
+		const area = event.offsetY / this.clientHeight;
+
+		if ( area < 0.25 ) {
+
+			this.classList.add( 'drag-above' );
+			this.classList.remove( 'drag-into', 'drag-below' );
+
+		} else if ( area > 0.75 ) {
+
+			this.classList.add( 'drag-below' );
+			this.classList.remove( 'drag-into', 'drag-above' );
+
+		} else {
+
+			this.classList.add( 'drag-into' );
+			this.classList.remove( 'drag-above', 'drag-below' );
+
+		}
+
+	}
+
+	function onDrop( event ) {
+
+		if ( this.classList.contains( 'drag-above' ) ) {
+
+			this.before( currentDrag );
+
+		} else if ( this.classList.contains( 'drag-below' ) ) {
+
+			this.after( currentDrag );
+
+		} else {
+
+		}
+
+		this.classList.remove( 'drag-into', 'drag-above', 'drag-below' );
+
+		event.preventDefault();
+
+	}
+
+	function onDragLeave( event ) {
+
+		this.classList.remove( 'drag-into', 'drag-above', 'drag-below' );
+
+	}
 
 	const app = editor.app;
 
@@ -23,6 +74,49 @@ export function Viewport( editor ) {
 	const sceneHelper = new TARO.Scene();
 	app.setScene( scene );
 
+	this.addEntity = function ( name = 'Entity' ) {
+
+		let counter = 1;
+		while ( scene.find( name ) !== undefined ) {
+
+			if ( counter > 1 )
+				name = name.slice( 0, - ( 3 + Math.ceil( Math.log10( counter ) ) ) );
+
+			name += ' (' + counter + ')';
+			counter ++;
+
+		}
+
+		const entity = new TARO.Entity( name );
+		const div = document.createElement( 'div' );
+
+		div.innerText = name;
+		div.dataset.id = entity.id;
+
+		div.setAttribute( 'draggable', true );
+		div.addEventListener( 'dragstart', onDragStart );
+		div.addEventListener( 'dragover', onDragOver );
+		div.addEventListener( 'drop', onDrop );
+		div.addEventListener( 'dragleave', onDragLeave );
+
+		document.getElementById( 'scene-tree' ).appendChild( div );
+
+		return entity;
+
+	};
+
+	this.addEntity().addComponent( 'Renderable', new TARO.Mesh( new TARO.BoxGeometry(), new TARO.MeshPhongMaterial( { color: 0x00ff00 } ) ) );
+	this.addEntity().addComponent( 'Renderable', new TARO.Mesh( new TARO.BoxGeometry(), new TARO.MeshPhongMaterial( { color: 0x00ff00 } ) ) );
+	this.addEntity().addComponent( 'Renderable', new TARO.Mesh( new TARO.BoxGeometry(), new TARO.MeshPhongMaterial( { color: 0x00ff00 } ) ) );
+	this.addEntity().addComponent( 'Renderable', new TARO.Mesh( new TARO.BoxGeometry(), new TARO.MeshPhongMaterial( { color: 0x00ff00 } ) ) );
+	this.addEntity().addComponent( 'Renderable', new TARO.Mesh( new TARO.BoxGeometry(), new TARO.MeshPhongMaterial( { color: 0x00ff00 } ) ) );
+	this.addEntity().addComponent( 'Renderable', new TARO.Mesh( new TARO.BoxGeometry(), new TARO.MeshPhongMaterial( { color: 0x00ff00 } ) ) );
+	this.addEntity().addComponent( 'Renderable', new TARO.Mesh( new TARO.BoxGeometry(), new TARO.MeshPhongMaterial( { color: 0x00ff00 } ) ) );
+	this.addEntity().addComponent( 'Renderable', new TARO.Mesh( new TARO.BoxGeometry(), new TARO.MeshPhongMaterial( { color: 0x00ff00 } ) ) );
+	this.addEntity().addComponent( 'Renderable', new TARO.Mesh( new TARO.BoxGeometry(), new TARO.MeshPhongMaterial( { color: 0x00ff00 } ) ) );
+	this.addEntity().addComponent( 'Renderable', new TARO.Mesh( new TARO.BoxGeometry(), new TARO.MeshPhongMaterial( { color: 0x00ff00 } ) ) );
+	this.addEntity().addComponent( 'Renderable', new TARO.Mesh( new TARO.BoxGeometry(), new TARO.MeshPhongMaterial( { color: 0x00ff00 } ) ) );
+	this.addEntity().addComponent( 'Renderable', new TARO.Mesh( new TARO.BoxGeometry(), new TARO.MeshPhongMaterial( { color: 0x00ff00 } ) ) );
 	this.addEntity().addComponent( 'Renderable', new TARO.Mesh( new TARO.BoxGeometry(), new TARO.MeshPhongMaterial( { color: 0x00ff00 } ) ) );
 	this.addEntity().addComponent( 'Renderable', new TARO.Mesh( new TARO.BoxGeometry(), new TARO.MeshPhongMaterial( { color: 0x00ff00 } ) ) );
 	this.addEntity().addComponent( 'Renderable', new TARO.Mesh( new TARO.BoxGeometry(), new TARO.MeshPhongMaterial( { color: 0x00ff00 } ) ) );
@@ -147,16 +241,18 @@ export function Viewport( editor ) {
 
 			const oldTarget = document.querySelector( '#scene-tree [data-selected]' );
 
-			if ( oldTarget !== null ) delete oldTarget.dataset.selected;
-
 			if ( firstIntersect === undefined ) {
+
+				if ( oldTarget !== null ) delete oldTarget.dataset.selected;
 
 				control.enabled = false;
 				control.detach();
 
 			} else if ( control.object !== rayObject && control !== rayObject ) {
 
-				const newTarget = document.querySelector( '#scene-tree [data-uuid="' + rayObject.uuid + '"]' );
+				if ( oldTarget !== null ) delete oldTarget.dataset.selected;
+
+				const newTarget = document.querySelector( '#scene-tree [data-id="' + rayObject.id + '"]' );
 				if ( newTarget !== null ) newTarget.dataset.selected = '';
 
 				control.enabled = true;

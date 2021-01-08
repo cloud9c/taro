@@ -1,5 +1,7 @@
 export function SidebarInspector( editor ) {
 
-	editor.sidebarScene;
+	this.update = function () {
+
+	};
 
 }

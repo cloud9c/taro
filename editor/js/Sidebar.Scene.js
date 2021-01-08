@@ -268,22 +268,42 @@ export function SidebarScene( editor ) {
 
 	}
 
+	let dragging = false;
+
+	function onPointerMove( event ) {
+
+		dragging = true;
+
+	}
+
 	document.getElementById( 'scene-tree' ).addEventListener( 'pointerdown', function ( event ) {
+
+		document.getElementById( 'scene-tree' ).addEventListener( 'pointermove', onPointerMove );
+
+	} );
+
+	document.getElementById( 'scene-tree' ).addEventListener( 'pointerup', function ( event ) {
 
 		const target = event.target;
 
-		if ( event.isPrimary === false || target.tagName === 'SECTION' ) return;
+		if ( ! ( event.isPrimary === false || target.tagName === 'SECTION' || dragging ) ) {
 
-		const oldTarget = document.querySelector( '#scene-tree [data-selected]' );
-		if ( oldTarget !== null ) delete oldTarget.dataset.selected;
-		target.dataset.selected = '';
+			const oldTarget = document.querySelector( '#scene-tree [data-selected]' );
+			if ( oldTarget !== null ) delete oldTarget.dataset.selected;
+			target.dataset.selected = '';
 
-		const entity = scene.findByProperty( 'uuid', target.dataset.uuid );
+			const entity = scene.findById( parseInt( target.dataset.id ) );
 
-		editor.viewport.control.enabled = true;
-		editor.viewport.control.attach( entity );
+			editor.viewport.control.enabled = true;
+			editor.viewport.control.attach( entity );
 
-		editor.render();
+			editor.render();
+
+		}
+
+		document.getElementById( 'scene-tree' ).removeEventListener( 'pointermove', onPointerMove );
+
+		dragging = false;
 
 	} );
 
