@@ -44,15 +44,24 @@ export function Viewport( editor ) {
 
 	function onDrop( event ) {
 
+		const currentObject = scene.findById( parseInt( currentDrag.dataset.id ) );
+		const thisObject = scene.findById( parseInt( this.dataset.id ) );
+
 		if ( this.classList.contains( 'drag-above' ) ) {
+
+			thisObject.parent.add( currentObject );
 
 			this.before( currentDrag );
 
 		} else if ( this.classList.contains( 'drag-below' ) ) {
 
+			thisObject.parent.add( currentObject );
+
 			this.after( currentDrag );
 
 		} else {
+
+			thisObject.add( currentObject );
 
 		}
 
