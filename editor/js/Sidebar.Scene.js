@@ -274,32 +274,50 @@ export function SidebarScene( editor ) {
 
 		if ( event.isPrimary === true && target.tagName !== 'SECTION' ) {
 
-			const oldTarget = document.querySelector( '#scene-tree [data-selected]' );
-			if ( oldTarget !== null ) delete oldTarget.dataset.selected;
-			target.dataset.selected = '';
-
-			const entity = scene.findById( parseInt( target.dataset.id ) );
-
-			editor.viewport.control.enabled = true;
-			editor.viewport.control.attach( entity );
-
-			editor.render();
-
 			if ( target.classList.contains( 'parent' ) && event.clientX - target.getBoundingClientRect().left < 24 ) {
+
+				let sibling = target.nextElementSibling;
 
 				if ( target.dataset.opened !== undefined ) {
 
+					const targetPadding = window.getComputedStyle( target, null ).getPropertyValue( 'padding-left' );
 
+					while ( window.getComputedStyle( sibling, null ).getPropertyValue( 'padding-left' ) > targetPadding ) {
+
+						sibling.style.setProperty( 'display', 'none' );
+
+						sibling = sibling.nextElementSibling;
+
+					}
 
 					delete target.dataset.opened;
 
 				} else {
 
+					while ( sibling.style.getPropertyValue( 'display' ) === 'none' ) {
 
+						sibling.style.removeProperty( 'display' );
+
+						sibling = sibling.nextElementSibling;
+
+					}
 
 					target.dataset.opened = '';
 
 				}
+
+			} else {
+
+				const oldTarget = document.querySelector( '#scene-tree [data-selected]' );
+				if ( oldTarget !== null ) delete oldTarget.dataset.selected;
+				target.dataset.selected = '';
+
+				const entity = scene.findById( parseInt( target.dataset.id ) );
+
+				editor.viewport.control.enabled = true;
+				editor.viewport.control.attach( entity );
+
+				editor.render();
 
 			}
 
