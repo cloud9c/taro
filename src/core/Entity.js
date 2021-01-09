@@ -9,8 +9,6 @@ export class Entity extends Group {
 
 		super();
 
-		Object.defineProperty( this, 'isEntity', { value: true } );
-
 		this.components = [];
 		this.queue = [];
 		this.tags = [];
@@ -31,6 +29,8 @@ export class Entity extends Group {
 
 		}
 
+		this.addEventListener( 'sceneadd', this._emptyQueue );
+
 		if ( scene !== undefined && scene.isScene !== undefined ) {
 
 			scene.add( this );
@@ -40,8 +40,6 @@ export class Entity extends Group {
 			Application.currentApp.currentScene.add( this );
 
 		}
-
-		this.addEventListener( 'sceneadd', this._emptyQueue );
 
 	}
 
@@ -322,3 +320,5 @@ export class Entity extends Group {
 	}
 
 }
+
+Entity.prototype.isEntity = true;

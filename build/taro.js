@@ -51513,25 +51513,25 @@ class Scene$1 extends Scene {
 
 		if ( object.isEntity !== undefined ) {
 
-			if ( object.scene !== undefined && object.scene !== this ) {
+			this._addComponents( object.components );
+			oldScene = object.scene;
+			object.scene = this;
 
-				object.scene._removeComponents( object.components );
+			if ( oldScene === undefined ) {
+
+				object.dispatchEvent( { type: 'sceneadd' } );
+
+			} else if ( oldScene !== this ) {
+
+				oldScene._removeComponents( object.components );
 
 				object.dispatchEvent( {
 					type: 'scenechange',
-					oldScene: object.scene,
+					oldScene: oldScene,
 					newScene: this,
 				} );
 
-			} else {
-
-				object.dispatchEvent( { type: 'sceneadd', scene: this } );
-
 			}
-
-			this._addComponents( object.components );
-
-			object.scene = this;
 
 		}
 
@@ -51659,6 +51659,7 @@ class Physics {
 	}
 
 	update( deltaTime, fixedTimestep ) {
+
 		this._accumulator += deltaTime;
 		if ( this._accumulator >= fixedTimestep ) {
 
@@ -51668,7 +51669,6 @@ class Physics {
 			// 	const trigger = triggers[i];
 			// }
 
-			// time step
 			while ( this._accumulator >= fixedTimestep ) {
 
 				this._world.step( fixedTimestep );
@@ -51722,7 +51722,6 @@ class Physics {
 				this._accumulator -= fixedTimestep;
 
 			}
-			// console.log("finish");
 
 		}
 
@@ -55635,7 +55634,6 @@ class Application {
 			this.time.fixedTimestep * this.time.timeScale
 		);
 
-		// update loop
 		for ( const type in this._containers ) {
 
 			const container = this._containers[ type ];
@@ -55663,7 +55661,7 @@ class Application {
 
 		scene.app = this;
 		this.scenes.push( scene );
-		scene.dispatchEvent({type: "appadd"});
+		scene.dispatchEvent( { type: 'appadd' } );
 		return scene;
 
 	}
@@ -55769,8 +55767,6 @@ class Entity extends Group {
 
 		super();
 
-		Object.defineProperty( this, 'isEntity', { value: true } );
-
 		this.components = [];
 		this.queue = [];
 		this.tags = [];
@@ -55791,6 +55787,8 @@ class Entity extends Group {
 
 		}
 
+		this.addEventListener( 'sceneadd', this._emptyQueue );
+
 		if ( scene !== undefined && scene.isScene !== undefined ) {
 
 			scene.add( this );
@@ -55800,8 +55798,6 @@ class Entity extends Group {
 			Application.currentApp.currentScene.add( this );
 
 		}
-
-		this.addEventListener( 'sceneadd', this._emptyQueue );
 
 	}
 
@@ -56082,6 +56078,8 @@ class Entity extends Group {
 	}
 
 }
+
+Entity.prototype.isEntity = true;
 
 class PhysicMaterial {
 

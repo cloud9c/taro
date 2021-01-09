@@ -54,25 +54,25 @@ export class Scene extends TS {
 
 		if ( object.isEntity !== undefined ) {
 
-			if ( object.scene !== undefined && object.scene !== this ) {
+			this._addComponents( object.components );
+			oldScene = object.scene;
+			object.scene = this;
 
-				object.scene._removeComponents( object.components );
+			if ( oldScene === undefined ) {
+
+				object.dispatchEvent( { type: 'sceneadd' } );
+
+			} else if ( oldScene !== this ) {
+
+				oldScene._removeComponents( object.components );
 
 				object.dispatchEvent( {
 					type: 'scenechange',
-					oldScene: object.scene,
+					oldScene: oldScene,
 					newScene: this,
 				} );
 
-			} else {
-
-				object.dispatchEvent( { type: 'sceneadd', scene: this } );
-
 			}
-
-			this._addComponents( object.components );
-
-			object.scene = this;
 
 		}
 
