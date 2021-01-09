@@ -182,12 +182,12 @@
 			});
 
 			// blocks
-			const position = new TARO.Vector3(-10, 1, -5);
+			const position = new TARO.Vector3(-2, 1, -5);
 			geo = new TARO.BoxBufferGeometry(1, 1, 1);
 			mat = new TARO.MeshPhongMaterial({ color: 0x2194ce });
-			for (let k = 0; k < 4; k++) {
-				for (let i = 0; i < 4; i++) {
-					for (let j = 0; j < 20; j++) {
+			for (let k = 0; k < 5; k++) {
+				for (let i = 0; i < 5; i++) {
+					for (let j = 0; j < 5; j++) {
 						entity = new TARO.Entity();
 						mesh = new TARO.Mesh(geo, mat);
 						entity.addComponent("Renderable", mesh);
@@ -199,7 +199,7 @@
 						position.x += 1;
 					}
 					position.y += 1;
-					position.x = -10;
+					position.x = -2;
 				}
 				position.y = 1;
 				position.z += 1;

@@ -42,7 +42,6 @@ export class Application {
 			this.time.fixedTimestep * this.time.timeScale
 		);
 
-		// update loop
 		for ( const type in this._containers ) {
 
 			const container = this._containers[ type ];
@@ -70,7 +69,7 @@ export class Application {
 
 		scene.app = this;
 		this.scenes.push( scene );
-		scene.dispatchEvent({type: "appadd"})
+		scene.dispatchEvent( { type: 'appadd' } );
 		return scene;
 
 	}
