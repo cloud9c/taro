@@ -58,21 +58,8 @@ export class Scene extends TS {
 			const oldScene = object.scene;
 			object.scene = this;
 
-			if ( oldScene === undefined ) {
-
+			if ( oldScene === undefined )
 				object.dispatchEvent( { type: 'sceneadd' } );
-
-			} else if ( oldScene !== this ) {
-
-				oldScene._removeComponents( object.components );
-
-				object.dispatchEvent( {
-					type: 'scenechange',
-					oldScene: oldScene,
-					newScene: this,
-				} );
-
-			}
 
 		}
 
