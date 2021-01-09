@@ -51517,21 +51517,8 @@ class Scene$1 extends Scene {
 			const oldScene = object.scene;
 			object.scene = this;
 
-			if ( oldScene === undefined ) {
-
+			if ( oldScene === undefined )
 				object.dispatchEvent( { type: 'sceneadd' } );
-
-			} else if ( oldScene !== this ) {
-
-				oldScene._removeComponents( object.components );
-
-				object.dispatchEvent( {
-					type: 'scenechange',
-					oldScene: oldScene,
-					newScene: this,
-				} );
-
-			}
 
 		}
 
@@ -55914,17 +55901,21 @@ class Entity extends Group {
 
 	add( object ) {
 
+		super.add( object );
+
 		this.scene._addToScene( object );
 
-		return super.add( object );
+		return this;
 
 	}
 
 	remove( object ) {
 
+		super.remove( object );
+
 		this.scene._removeFromScene( object );
 
-		return super.remove( object );
+		return this;
 
 	}
 
