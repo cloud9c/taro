@@ -65,12 +65,12 @@ export function Viewport( editor ) {
 
 		} else {
 
+			editor.sidebarScene.openParent( this );
 			this.after( currentDrag );
 
 			this.classList.add( 'parent' );
 			this.dataset.opened = '';
 			currentDrag.style.paddingLeft = parseFloat( window.getComputedStyle( this, null ).getPropertyValue( 'padding-left' ) ) + 16 + 'px';
-			console.log( thisObject );
 			thisObject.add( currentObject );
 
 		}

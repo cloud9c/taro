@@ -268,6 +268,43 @@ export function SidebarScene( editor ) {
 
 	}
 
+	function closeParent( target ) {
+
+		let sibling = target.nextElementSibling;
+		const targetPadding = window.getComputedStyle( target, null ).getPropertyValue( 'padding-left' );
+
+		while ( sibling !== null && window.getComputedStyle( sibling, null ).getPropertyValue( 'padding-left' ) > targetPadding ) {
+
+			sibling.style.setProperty( 'display', 'none' );
+
+			sibling = sibling.nextElementSibling;
+
+		}
+
+		delete target.dataset.opened;
+
+	}
+
+	this.closeParent = closeParent;
+
+	function openParent( target ) {
+
+		let sibling = target.nextElementSibling;
+
+		while ( sibling.style.getPropertyValue( 'display' ) === 'none' ) {
+
+			sibling.style.removeProperty( 'display' );
+
+			sibling = sibling.nextElementSibling;
+
+		}
+
+		target.dataset.opened = '';
+
+	}
+
+	this.openParent = openParent;
+
 	document.getElementById( 'scene-tree' ).addEventListener( 'pointerup', function ( event ) {
 
 		const target = event.target;
@@ -276,33 +313,13 @@ export function SidebarScene( editor ) {
 
 			if ( target.classList.contains( 'parent' ) && event.clientX - target.getBoundingClientRect().left < 24 ) {
 
-				let sibling = target.nextElementSibling;
-
 				if ( target.dataset.opened !== undefined ) {
 
-					const targetPadding = window.getComputedStyle( target, null ).getPropertyValue( 'padding-left' );
-
-					while ( window.getComputedStyle( sibling, null ).getPropertyValue( 'padding-left' ) > targetPadding ) {
-
-						sibling.style.setProperty( 'display', 'none' );
-
-						sibling = sibling.nextElementSibling;
-
-					}
-
-					delete target.dataset.opened;
+					closeParent( target );
 
 				} else {
 
-					while ( sibling.style.getPropertyValue( 'display' ) === 'none' ) {
-
-						sibling.style.removeProperty( 'display' );
-
-						sibling = sibling.nextElementSibling;
-
-					}
-
-					target.dataset.opened = '';
+					openParent( target );
 
 				}
 
