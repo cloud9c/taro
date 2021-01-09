@@ -68,59 +68,59 @@ export class Physics {
 			// 	const trigger = triggers[i];
 			// }
 
-			// while ( this._accumulator >= fixedTimestep ) {
+			while ( this._accumulator >= fixedTimestep ) {
 
-			// 	this._world.step( fixedTimestep );
-			// 	for ( let i = 0, len = this.rigidbodies.length; i < len; i ++ ) {
+				this._world.step( fixedTimestep );
+				for ( let i = 0, len = this.rigidbodies.length; i < len; i ++ ) {
 
-			// 		let rigidbody = this.rigidbodies[ i ];
-			// 		if ( ! rigidbody._ref.isSleeping() ) {
+					let rigidbody = this.rigidbodies[ i ];
+					if ( ! rigidbody._ref.isSleeping() ) {
 
-			// 			const entity = rigidbody.entity;
+						const entity = rigidbody.entity;
 
-			// 			const ePos = entity.position;
-			// 			const pos = rigidbody._ref.getPosition();
-			// 			ePos._x = pos.x;
-			// 			ePos._y = pos.y;
-			// 			ePos._z = pos.z;
+						const ePos = entity.position;
+						const pos = rigidbody._ref.getPosition();
+						ePos._x = pos.x;
+						ePos._y = pos.y;
+						ePos._z = pos.z;
 
-			// 			const eQuat = entity.quaternion;
-			// 			const rot = rigidbody._ref.getOrientation();
-			// 			eQuat._x = rot.x;
-			// 			eQuat._y = rot.y;
-			// 			eQuat._z = rot.z;
-			// 			eQuat._w = rot.w;
+						const eQuat = entity.quaternion;
+						const rot = rigidbody._ref.getOrientation();
+						eQuat._x = rot.x;
+						eQuat._y = rot.y;
+						eQuat._z = rot.z;
+						eQuat._w = rot.w;
 
-			// 			if ( entity.parent !== entity.scene ) {
+						if ( entity.parent !== entity.scene ) {
 
-			// 				vector
-			// 					.copy( ePos )
-			// 					.applyMatrix4(
-			// 						matrix
-			// 							.copy( entity.parent.matrixWorld )
-			// 							.invert()
-			// 					);
-			// 				ePos._x = vector.x;
-			// 				ePos._y = vector.y;
-			// 				ePos._z = vector.z;
+							vector
+								.copy( ePos )
+								.applyMatrix4(
+									matrix
+										.copy( entity.parent.matrixWorld )
+										.invert()
+								);
+							ePos._x = vector.x;
+							ePos._y = vector.y;
+							ePos._z = vector.z;
 
-			// 				quat.copy( eQuat ).premultiply(
-			// 					entity.parent.getWorldQuaternion( quat2 ).invert()
-			// 				);
-			// 				eQuat._x = quat.x;
-			// 				eQuat._y = quat.y;
-			// 				eQuat._z = quat.z;
-			// 				eQuat._w = quat.w;
+							quat.copy( eQuat ).premultiply(
+								entity.parent.getWorldQuaternion( quat2 ).invert()
+							);
+							eQuat._x = quat.x;
+							eQuat._y = quat.y;
+							eQuat._z = quat.z;
+							eQuat._w = quat.w;
 
-			// 			}
+						}
 
-			// 		}
+					}
 
-			// 	}
+				}
 
-			// 	this._accumulator -= fixedTimestep;
+				this._accumulator -= fixedTimestep;
 
-			// }
+			}
 
 		}
 
