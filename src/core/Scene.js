@@ -55,7 +55,7 @@ export class Scene extends TS {
 		if ( object.isEntity !== undefined ) {
 
 			this._addComponents( object.components );
-			oldScene = object.scene;
+			const oldScene = object.scene;
 			object.scene = this;
 
 			if ( oldScene === undefined ) {
