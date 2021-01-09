@@ -268,25 +268,11 @@ export function SidebarScene( editor ) {
 
 	}
 
-	let dragging = false;
-
-	function onPointerMove( event ) {
-
-		dragging = true;
-
-	}
-
-	document.getElementById( 'scene-tree' ).addEventListener( 'pointerdown', function ( event ) {
-
-		document.getElementById( 'scene-tree' ).addEventListener( 'pointermove', onPointerMove );
-
-	} );
-
 	document.getElementById( 'scene-tree' ).addEventListener( 'pointerup', function ( event ) {
 
 		const target = event.target;
 
-		if ( ! ( event.isPrimary === false || target.tagName === 'SECTION' || dragging ) ) {
+		if ( event.isPrimary === true && target.tagName !== 'SECTION' ) {
 
 			const oldTarget = document.querySelector( '#scene-tree [data-selected]' );
 			if ( oldTarget !== null ) delete oldTarget.dataset.selected;
@@ -301,15 +287,23 @@ export function SidebarScene( editor ) {
 
 			if ( target.classList.contains( 'parent' ) && event.clientX - target.getBoundingClientRect().left < 24 ) {
 
-				console.log( 'here' );
+				if ( target.dataset.opened !== undefined ) {
+
+
+
+					delete target.dataset.opened;
+
+				} else {
+
+
+
+					target.dataset.opened = '';
+
+				}
 
 			}
 
 		}
-
-		document.getElementById( 'scene-tree' ).removeEventListener( 'pointermove', onPointerMove );
-
-		dragging = false;
 
 	} );
 

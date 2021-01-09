@@ -268,7 +268,7 @@ input::-webkit-inner-spin-button {
     background-image: url("../img/caret.svg");
     background-repeat: no-repeat;
     position: absolute;
-    left: 4px;
+    margin-left: -20px;
     top: 5px;
 }
 

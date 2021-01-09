@@ -69,7 +69,7 @@ export function Viewport( editor ) {
 
 			this.classList.add( 'parent' );
 			this.dataset.opened = '';
-			currentDrag.style.marginLeft = parseFloat( window.getComputedStyle( this, null ).getPropertyValue( 'margin-left' ) ) + 16 + 'px';
+			currentDrag.style.paddingLeft = parseFloat( window.getComputedStyle( this, null ).getPropertyValue( 'padding-left' ) ) + 16 + 'px';
 			thisObject.add( currentObject );
 
 		}
