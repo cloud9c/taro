@@ -256,6 +256,10 @@ input::-webkit-inner-spin-button {
 	background: var(--gray-3);
 }
 
+.parent[data-opened]:before {
+	transform: rotate(90deg)
+}
+
 .parent:before {
     content: "";
     display: inline-block;

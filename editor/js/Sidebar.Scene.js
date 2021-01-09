@@ -299,6 +299,12 @@ export function SidebarScene( editor ) {
 
 			editor.render();
 
+			if ( target.classList.contains( 'parent' ) && event.clientX - target.getBoundingClientRect().left < 24 ) {
+
+				console.log( 'here' );
+
+			}
+
 		}
 
 		document.getElementById( 'scene-tree' ).removeEventListener( 'pointermove', onPointerMove );

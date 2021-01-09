@@ -44,6 +44,10 @@ export function Viewport( editor ) {
 
 	function onDrop( event ) {
 
+		if ( currentDrag === this ) return;
+
+		this.classList.remove( 'drag-into', 'drag-above', 'drag-below' );
+
 		const currentObject = scene.findById( parseInt( currentDrag.dataset.id ) );
 		const thisObject = scene.findById( parseInt( this.dataset.id ) );
 
@@ -61,11 +65,14 @@ export function Viewport( editor ) {
 
 		} else {
 
+			this.after( currentDrag );
+
+			this.classList.add( 'parent' );
+			this.dataset.opened = '';
+			currentDrag.style.marginLeft = parseFloat( window.getComputedStyle( this, null ).getPropertyValue( 'margin-left' ) ) + 16 + 'px';
 			thisObject.add( currentObject );
 
 		}
-
-		this.classList.remove( 'drag-into', 'drag-above', 'drag-below' );
 
 		event.preventDefault();
 
