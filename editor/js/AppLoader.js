@@ -24,14 +24,11 @@ import {
 	Bone,
 	Object3D,
 	OrthographicCamera,
-	PerspectiveCamera
-} from '../lib/three.js';
-
-import { Application } from '../core/Application.js';
-import { Entity } from '../core/Entity.js';
-import { Scene } from '../core/Scene.js';
-
-import { ComponentManager } from '../core/ComponentManager.js';
+	PerspectiveCamera,
+	Application,
+	Entity,
+	Scene
+} from '../../build/taro.js';
 
 export class AppLoader extends ObjectLoader {
 
@@ -46,6 +43,7 @@ export class AppLoader extends ObjectLoader {
 	parse( json, onLoad ) {
 
 		const app = this._app = new Application( json.parameters );
+		this._componentManager = this._app.componentManager;
 		const scenes = json.scenes;
 
 		for ( let i = 0, len = scenes.length; i < len; i ++ ) {
@@ -159,7 +157,7 @@ export class AppLoader extends ObjectLoader {
 				if ( data.component === true ) {
 
 					console.log( data );
-					ComponentManager._components[ 'PerspectiveCamera' ].constructor.prototype.fromJSON( data );
+					this._componentManager.components[ 'PerspectiveCamera' ].constructor.prototype.fromJSON( data );
 
 					object = this._entity.addComponent( 'PerspectiveCamera', data );
 
@@ -181,7 +179,7 @@ export class AppLoader extends ObjectLoader {
 				// modification
 				if ( data.component === true ) {
 
-					ComponentManager._components[ 'OrthographicCamera' ].constructor.prototype.fromJSON( data );
+					this._componentManager.components[ 'OrthographicCamera' ].constructor.prototype.fromJSON( data );
 
 					object = this._entity.addComponent( 'OrthographicCamera', data );
 
@@ -322,7 +320,7 @@ export class AppLoader extends ObjectLoader {
 
 						let data = components[ i ].data;
 						const type = components[ i ].type;
-						const constructor = ComponentManager._components[ type ].constructor;
+						const constructor = this._componentManager.components[ type ].constructor;
 
 						if ( constructor.prototype.fromJSON !== undefined )
 							constructor.prototype.fromJSON( data );
