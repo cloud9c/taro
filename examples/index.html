@@ -23,11 +23,6 @@
 			import { GLTFLoader } from "https://threejs.org/examples/jsm/loaders/GLTFLoader.js";
 			import * as TARO from "../build/taro.js";
 
-			window.TARO = TARO;
-			window.x = new TARO.AppLoader();
-
-			// x.load("app.json", function(app) {app.update(); console.log(app)})
-
 			let entity, geo, mat, mesh;
 
 			const loader = new GLTFLoader();
