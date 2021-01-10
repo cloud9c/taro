@@ -25,7 +25,7 @@ export class ComponentManager {
 
 	constructor() {
 
-		this._components = {};
+		this.components = {};
 		this.properties = {
 			componentType: { value: null },
 			_enabled: { value: true, writable: true },
@@ -104,13 +104,13 @@ export class ComponentManager {
 
 	add( type, constructor, options = {} ) {
 
-		if ( type in this._components ) throw 'component ' + type + ' already exists';
+		if ( this.components.type !== undefined ) throw 'component ' + type + ' already exists';
 
 		this.properties.componentType.value = type;
 		Object.defineProperties( constructor.prototype, this.properties );
 		Object.assign( constructor.prototype, EventDispatcher.prototype );
 
-		this._components[ type ] = {
+		this.components[ type ] = {
 			constructor, options
 		};
 
@@ -118,16 +118,10 @@ export class ComponentManager {
 
 	remove( type ) {
 
-		if ( type in this._components )
-			delete this._components[ type ];
+		if ( type in this.components )
+			delete this.components[ type ];
 		else
 			console.warn( 'component ' + type + ' does not exists' );
-
-	}
-
-	get( type ) {
-
-		return this._components[ type ];
 
 	}
 
@@ -135,6 +129,6 @@ export class ComponentManager {
 
 // options: allowMultiple, requiredComponents, schema
 
-// schema can be an array of strings or an array of objects (containing value, type, etc)
-// ex: schema: ["velocity"]
-// ex: schema: [{name: "velocity", accessor: "_velocity"}]
+// schema is an array of objects
+// ex: schema: [{name: "velocity", type: "number", default}]
+// ex: schema: [{name: "velocity"}]

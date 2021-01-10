@@ -99,7 +99,7 @@ export class Entity extends Group {
 
 	addComponent( type, data = {} ) {
 
-		const componentData = this.app.componentManager._components[ type ];
+		const componentData = this.app.componentManager.components[ type ];
 		const options = componentData.options;
 
 		if ( options.allowMultiple === false && this.getComponent( type ) !== undefined )
