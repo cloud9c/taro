@@ -55470,7 +55470,7 @@ class ComponentManager {
 
 	constructor() {
 
-		this._components = {};
+		this.components = {};
 		this.properties = {
 			componentType: { value: null },
 			_enabled: { value: true, writable: true },
@@ -55549,13 +55549,13 @@ class ComponentManager {
 
 	add( type, constructor, options = {} ) {
 
-		if ( type in this._components ) throw 'component ' + type + ' already exists';
+		if ( this.components.type !== undefined ) throw 'component ' + type + ' already exists';
 
 		this.properties.componentType.value = type;
 		Object.defineProperties( constructor.prototype, this.properties );
 		Object.assign( constructor.prototype, EventDispatcher.prototype );
 
-		this._components[ type ] = {
+		this.components[ type ] = {
 			constructor, options
 		};
 
@@ -55563,16 +55563,10 @@ class ComponentManager {
 
 	remove( type ) {
 
-		if ( type in this._components )
-			delete this._components[ type ];
+		if ( type in this.components )
+			delete this.components[ type ];
 		else
 			console.warn( 'component ' + type + ' does not exists' );
-
-	}
-
-	get( type ) {
-
-		return this._components[ type ];
 
 	}
 
@@ -55580,9 +55574,9 @@ class ComponentManager {
 
 // options: allowMultiple, requiredComponents, schema
 
-// schema can be an array of strings or an array of objects (containing value, type, etc)
-// ex: schema: ["velocity"]
-// ex: schema: [{name: "velocity", accessor: "_velocity"}]
+// schema is an array of objects
+// ex: schema: [{name: "velocity", type: "number", default}]
+// ex: schema: [{name: "velocity"}]
 
 class Application {
 
@@ -55844,7 +55838,7 @@ class Entity extends Group {
 
 	addComponent( type, data = {} ) {
 
-		const componentData = this.app.componentManager._components[ type ];
+		const componentData = this.app.componentManager.components[ type ];
 		const options = componentData.options;
 
 		if ( options.allowMultiple === false && this.getComponent( type ) !== undefined )
@@ -56118,425 +56112,4 @@ class PhysicMaterial {
 
 }
 
-class AppLoader extends ObjectLoader {
-
-	constructor( manager ) {
-
-		super( manager );
-
-		this._entity;
-
-	}
-
-	parse( json, onLoad ) {
-
-		const app = this._app = new Application( json.parameters );
-		const scenes = json.scenes;
-
-		for ( let i = 0, len = scenes.length; i < len; i ++ ) {
-
-			const scene = super.parse( scenes[ i ] );
-
-			if ( scene.uuid === json.currentScene ) {
-
-				app.setScene( scene );
-
-			}
-
-		}
-
-		if ( onLoad !== undefined ) onLoad( app );
-
-		return app;
-
-	}
-
-	parseObject( data, geometries, materials, animations ) {
-
-		let object;
-
-		function getGeometry( name ) {
-
-			if ( geometries[ name ] === undefined ) {
-
-				console.warn( 'TARO.AppLoader: Undefined geometry', name );
-
-			}
-
-			return geometries[ name ];
-
-		}
-
-		function getMaterial( name ) {
-
-			if ( name === undefined ) return undefined;
-
-			if ( Array.isArray( name ) ) {
-
-				const array = [];
-
-				for ( let i = 0, l = name.length; i < l; i ++ ) {
-
-					const uuid = name[ i ];
-
-					if ( materials[ uuid ] === undefined ) {
-
-						console.warn( 'TARO.AppLoader: Undefined material', uuid );
-
-					}
-
-					array.push( materials[ uuid ] );
-
-				}
-
-				return array;
-
-			}
-
-			if ( materials[ name ] === undefined ) {
-
-				console.warn( 'TARO.AppLoader: Undefined material', name );
-
-			}
-
-			return materials[ name ];
-
-		}
-
-		let geometry, material;
-
-		switch ( data.type ) {
-
-			case 'Scene':
-
-				object = new Scene$1();
-
-				this._app.addScene( object );
-
-				if ( data.background !== undefined ) {
-
-					if ( Number.isInteger( data.background ) ) {
-
-						object.background = new Color( data.background );
-
-					}
-
-				}
-
-				if ( data.fog !== undefined ) {
-
-					if ( data.fog.type === 'Fog' ) {
-
-						object.fog = new Fog( data.fog.color, data.fog.near, data.fog.far );
-
-					} else if ( data.fog.type === 'FogExp2' ) {
-
-						object.fog = new FogExp2( data.fog.color, data.fog.density );
-
-					}
-
-				}
-
-				break;
-
-			case 'PerspectiveCamera':
-				// modification
-				if ( data.component === true ) {
-
-					console.log( data );
-					ComponentManager._components[ 'PerspectiveCamera' ].constructor.prototype.fromJSON( data );
-
-					object = this._entity.addComponent( 'PerspectiveCamera', data );
-
-				} else {
-
-					object = new PerspectiveCamera( data.fov, data.aspect, data.near, data.far );
-
-				}
-
-				if ( data.focus !== undefined ) object.focus = data.focus;
-				if ( data.zoom !== undefined ) object.zoom = data.zoom;
-				if ( data.filmGauge !== undefined ) object.filmGauge = data.filmGauge;
-				if ( data.filmOffset !== undefined ) object.filmOffset = data.filmOffset;
-				if ( data.view !== undefined ) object.view = Object.assign( {}, data.view );
-
-				break;
-
-			case 'OrthographicCamera':
-				// modification
-				if ( data.component === true ) {
-
-					ComponentManager._components[ 'OrthographicCamera' ].constructor.prototype.fromJSON( data );
-
-					object = this._entity.addComponent( 'OrthographicCamera', data );
-
-				} else
-					object = new OrthographicCamera( data.left, data.right, data.top, data.bottom, data.near, data.far );
-
-				if ( data.zoom !== undefined ) object.zoom = data.zoom;
-				if ( data.view !== undefined ) object.view = Object.assign( {}, data.view );
-
-				break;
-
-			case 'AmbientLight':
-
-				object = new AmbientLight( data.color, data.intensity );
-
-				break;
-
-			case 'DirectionalLight':
-
-				object = new DirectionalLight( data.color, data.intensity );
-
-				break;
-
-			case 'PointLight':
-
-				object = new PointLight( data.color, data.intensity, data.distance, data.decay );
-
-				break;
-
-			case 'RectAreaLight':
-
-				object = new RectAreaLight( data.color, data.intensity, data.width, data.height );
-
-				break;
-
-			case 'SpotLight':
-
-				object = new SpotLight( data.color, data.intensity, data.distance, data.angle, data.penumbra, data.decay );
-
-				break;
-
-			case 'HemisphereLight':
-
-				object = new HemisphereLight( data.color, data.groundColor, data.intensity );
-
-				break;
-
-			case 'LightProbe':
-
-				object = new LightProbe().fromJSON( data );
-
-				break;
-
-			case 'SkinnedMesh':
-
-				geometry = getGeometry( data.geometry );
-			 	material = getMaterial( data.material );
-
-				object = new SkinnedMesh( geometry, material );
-
-				if ( data.bindMode !== undefined ) object.bindMode = data.bindMode;
-				if ( data.bindMatrix !== undefined ) object.bindMatrix.fromArray( data.bindMatrix );
-				if ( data.skeleton !== undefined ) object.skeleton = data.skeleton;
-
-				break;
-
-			case 'Mesh':
-
-				geometry = getGeometry( data.geometry );
-				material = getMaterial( data.material );
-
-				object = new Mesh( geometry, material );
-
-				break;
-
-			case 'InstancedMesh':
-
-				geometry = getGeometry( data.geometry );
-				material = getMaterial( data.material );
-				const count = data.count;
-				const instanceMatrix = data.instanceMatrix;
-
-				object = new InstancedMesh( geometry, material, count );
-				object.instanceMatrix = new BufferAttribute( new Float32Array( instanceMatrix.array ), 16 );
-
-				break;
-
-			case 'LOD':
-
-				object = new LOD();
-
-				break;
-
-			case 'Line':
-
-				object = new Line( getGeometry( data.geometry ), getMaterial( data.material ) );
-
-				break;
-
-			case 'LineLoop':
-
-				object = new LineLoop( getGeometry( data.geometry ), getMaterial( data.material ) );
-
-				break;
-
-			case 'LineSegments':
-
-				object = new LineSegments( getGeometry( data.geometry ), getMaterial( data.material ) );
-
-				break;
-
-			case 'PointCloud':
-			case 'Points':
-
-				object = new Points( getGeometry( data.geometry ), getMaterial( data.material ) );
-
-				break;
-
-			case 'Sprite':
-
-				object = new Sprite( getMaterial( data.material ) );
-
-				break;
-
-			case 'Group':
-				// modification
-				if ( data.isEntity === true ) {
-
-					this._entity = object = new Entity();
-
-					if ( data.tags !== undefined )
-						object.tags = data.tags;
-
-					object.enabled = data.enabled;
-
-					const components = data.components;
-					for ( let i = 0, len = components.length; i < len; i ++ ) {
-
-						let data = components[ i ].data;
-						const type = components[ i ].type;
-						const constructor = ComponentManager._components[ type ].constructor;
-
-						if ( constructor.prototype.fromJSON !== undefined )
-							constructor.prototype.fromJSON( data );
-
-						object.addComponent( type, data );
-
-					}
-
-				} else {
-
-					object = new Group();
-
-				}
-
-				break;
-
-			case 'Bone':
-
-				object = new Bone();
-
-				break;
-
-			default:
-
-				object = new Object3D();
-
-		}
-
-		object.uuid = data.uuid;
-
-		if ( data.name !== undefined ) object.name = data.name;
-
-		if ( data.matrix !== undefined ) {
-
-			object.matrix.fromArray( data.matrix );
-
-			if ( data.matrixAutoUpdate !== undefined ) object.matrixAutoUpdate = data.matrixAutoUpdate;
-			if ( object.matrixAutoUpdate ) object.matrix.decompose( object.position, object.quaternion, object.scale );
-
-		} else {
-
-			if ( data.position !== undefined ) object.position.fromArray( data.position );
-			if ( data.rotation !== undefined ) object.rotation.fromArray( data.rotation );
-			if ( data.quaternion !== undefined ) object.quaternion.fromArray( data.quaternion );
-			if ( data.scale !== undefined ) object.scale.fromArray( data.scale );
-
-		}
-
-		if ( data.castShadow !== undefined ) object.castShadow = data.castShadow;
-		if ( data.receiveShadow !== undefined ) object.receiveShadow = data.receiveShadow;
-
-		if ( data.shadow ) {
-
-			if ( data.shadow.bias !== undefined ) object.shadow.bias = data.shadow.bias;
-			if ( data.shadow.normalBias !== undefined ) object.shadow.normalBias = data.shadow.normalBias;
-			if ( data.shadow.radius !== undefined ) object.shadow.radius = data.shadow.radius;
-			if ( data.shadow.mapSize !== undefined ) object.shadow.mapSize.fromArray( data.shadow.mapSize );
-			if ( data.shadow.camera !== undefined ) object.shadow.camera = this.parseObject( data.shadow.camera );
-
-		}
-
-		if ( data.visible !== undefined ) object.visible = data.visible;
-		if ( data.frustumCulled !== undefined ) object.frustumCulled = data.frustumCulled;
-		if ( data.renderOrder !== undefined ) object.renderOrder = data.renderOrder;
-		if ( data.userData !== undefined ) object.userData = data.userData;
-		if ( data.layers !== undefined ) object.layers.mask = data.layers;
-
-		if ( data.children !== undefined ) {
-
-			const children = data.children;
-
-			for ( let i = 0; i < children.length; i ++ ) {
-
-				// modification
-				const child = this.parseObject( children[ i ], geometries, materials, animations );
-
-				if ( children[ i ].component === undefined ) {
-
-					object.add( child );
-
-				} else if ( child.isCamera === undefined ) {
-
-					object.addComponent( 'Renderable', child );
-
-				}
-
-			}
-
-		}
-
-		if ( data.animations !== undefined ) {
-
-			const objectAnimations = data.animations;
-
-			for ( let i = 0; i < objectAnimations.length; i ++ ) {
-
-				const uuid = objectAnimations[ i ];
-
-				object.animations.push( animations[ uuid ] );
-
-			}
-
-		}
-
-		if ( data.type === 'LOD' ) {
-
-			if ( data.autoUpdate !== undefined ) object.autoUpdate = data.autoUpdate;
-
-			const levels = data.levels;
-
-			for ( let l = 0; l < levels.length; l ++ ) {
-
-				const level = levels[ l ];
-				const child = object.getObjectByProperty( 'uuid', level.object );
-
-				if ( child !== undefined ) {
-
-					object.addLevel( child, level.distance );
-
-				}
-
-			}
-
-		}
-
-		return object;
-
-	}
-
-}
-
-export { ACESFilmicToneMapping, AddEquation, AddOperation, AdditiveAnimationBlendMode, AdditiveBlending, AlphaFormat, AlwaysDepth, AlwaysStencilFunc, AmbientLight, AmbientLightProbe, AngularLimit, AnimationClip, AnimationLoader, AnimationMixer, AnimationObjectGroup, AnimationUtils, AppLoader, Application, ArcCurve, ArrayCamera, ArrowHelper, Audio, AudioAnalyser, AudioContext, AudioListener, AudioLoader, AxesHelper, AxisHelper, BackSide, BasicDepthPacking, BasicShadowMap, BinaryTextureLoader, Bone, BooleanKeyframeTrack, BoundingBoxHelper, Box2, Box3, Box3Helper, BoxBufferGeometry, BoxGeometry, BoxHelper, BufferAttribute, BufferGeometry, BufferGeometryLoader, ByteType, Cache, Camera, CameraHelper, CanvasRenderer, CanvasTexture, CatmullRomCurve3, CineonToneMapping, CircleBufferGeometry, CircleGeometry, ClampToEdgeWrapping, Clock, ClosedSplineCurve3, Color, ColorKeyframeTrack, ComponentManager, CompressedTexture, CompressedTextureLoader, ConeBufferGeometry, ConeGeometry, CubeCamera, BoxGeometry as CubeGeometry, CubeReflectionMapping, CubeRefractionMapping, CubeTexture, CubeTextureLoader, CubeUVReflectionMapping, CubeUVRefractionMapping, CubicBezierCurve, CubicBezierCurve3, CubicInterpolant, CullFaceBack, CullFaceFront, CullFaceFrontBack, CullFaceNone, Curve, CurvePath, CustomBlending, CustomToneMapping, CylinderBufferGeometry, CylinderGeometry, Cylindrical, DataTexture, DataTexture2DArray, DataTexture3D, DataTextureLoader, DataUtils, DecrementStencilOp, DecrementWrapStencilOp, DefaultLoadingManager, DepthFormat, DepthStencilFormat, DepthTexture, DirectionalLight, DirectionalLightHelper, DiscreteInterpolant, DodecahedronBufferGeometry, DodecahedronGeometry, DoubleSide, DstAlphaFactor, DstColorFactor, DynamicBufferAttribute, DynamicCopyUsage, DynamicDrawUsage, DynamicReadUsage, EdgesGeometry, EdgesHelper, EllipseCurve, Entity, EqualDepth, EqualStencilFunc, EquirectangularReflectionMapping, EquirectangularRefractionMapping, Euler, EventDispatcher, ExtrudeBufferGeometry, ExtrudeGeometry, Face3, Face4, FaceColors, FileLoader, FlatShading, Float16BufferAttribute, Float32Attribute, Float32BufferAttribute, Float64Attribute, Float64BufferAttribute, FloatType, Fog, FogExp2, Font, FontLoader, FrontSide, Frustum, GLBufferAttribute, GLSL1, GLSL3, GammaEncoding, Geometry, GeometryUtils, GreaterDepth, GreaterEqualDepth, GreaterEqualStencilFunc, GreaterStencilFunc, GridHelper, Group, HalfFloatType, HemisphereLight, HemisphereLightHelper, HemisphereLightProbe, IcosahedronBufferGeometry, IcosahedronGeometry, ImageBitmapLoader, ImageLoader, ImageUtils, ImmediateRenderObject, IncrementStencilOp, IncrementWrapStencilOp, InstancedBufferAttribute, InstancedBufferGeometry, InstancedInterleavedBuffer, InstancedMesh, Int16Attribute, Int16BufferAttribute, Int32Attribute, Int32BufferAttribute, Int8Attribute, Int8BufferAttribute, IntType, InterleavedBuffer, InterleavedBufferAttribute, Interpolant, InterpolateDiscrete, InterpolateLinear, InterpolateSmooth, InvertStencilOp, JSONLoader, KeepStencilOp, KeyframeTrack, LOD, LatheBufferGeometry, LatheGeometry, Layers, LensFlare, LessDepth, LessEqualDepth, LessEqualStencilFunc, LessStencilFunc, Light, LightProbe, Line, Line3, LineBasicMaterial, LineCurve, LineCurve3, LineDashedMaterial, LineLoop, LinePieces, LineSegments, LineStrip, LinearEncoding, LinearFilter, LinearInterpolant, LinearLimit, LinearMipMapLinearFilter, LinearMipMapNearestFilter, LinearMipmapLinearFilter, LinearMipmapNearestFilter, LinearToneMapping, Loader, LoaderUtils, LoadingManager, LogLuvEncoding, LoopOnce, LoopPingPong, LoopRepeat, LuminanceAlphaFormat, LuminanceFormat, MOUSE, Material, MaterialLoader, MathUtils as Math, MathUtils, Matrix3, Matrix4, MaxEquation, Mesh, MeshBasicMaterial, MeshDepthMaterial, MeshDistanceMaterial, MeshFaceMaterial, MeshLambertMaterial, MeshMatcapMaterial, MeshNormalMaterial, MeshPhongMaterial, MeshPhysicalMaterial, MeshStandardMaterial, MeshToonMaterial, MinEquation, MirroredRepeatWrapping, MixOperation, MultiMaterial, MultiplyBlending, MultiplyOperation, NearestFilter, NearestMipMapLinearFilter, NearestMipMapNearestFilter, NearestMipmapLinearFilter, NearestMipmapNearestFilter, NeverDepth, NeverStencilFunc, NoBlending, NoColors, NoToneMapping, NormalAnimationBlendMode, NormalBlending, NotEqualDepth, NotEqualStencilFunc, NumberKeyframeTrack, Object3D, ObjectLoader, ObjectSpaceNormalMap, OctahedronBufferGeometry, OctahedronGeometry, OneFactor, OneMinusDstAlphaFactor, OneMinusDstColorFactor, OneMinusSrcAlphaFactor, OneMinusSrcColorFactor, OrthographicCamera, PCFShadowMap, PCFSoftShadowMap, PMREMGenerator, ParametricBufferGeometry, ParametricGeometry, Particle, ParticleBasicMaterial, ParticleSystem, ParticleSystemMaterial, Path, PerspectiveCamera, PhysicMaterial, Plane, PlaneBufferGeometry, PlaneGeometry, PlaneHelper, PointCloud, PointCloudMaterial, PointLight, PointLightHelper, Points, PointsMaterial, PolarGridHelper, PolyhedronBufferGeometry, PolyhedronGeometry, PositionalAudio, PropertyBinding, PropertyMixer, QuadraticBezierCurve, QuadraticBezierCurve3, Quaternion, QuaternionKeyframeTrack, QuaternionLinearInterpolant, REVISION, RGBADepthPacking, RGBAFormat, RGBAIntegerFormat, RGBA_ASTC_10x10_Format, RGBA_ASTC_10x5_Format, RGBA_ASTC_10x6_Format, RGBA_ASTC_10x8_Format, RGBA_ASTC_12x10_Format, RGBA_ASTC_12x12_Format, RGBA_ASTC_4x4_Format, RGBA_ASTC_5x4_Format, RGBA_ASTC_5x5_Format, RGBA_ASTC_6x5_Format, RGBA_ASTC_6x6_Format, RGBA_ASTC_8x5_Format, RGBA_ASTC_8x6_Format, RGBA_ASTC_8x8_Format, RGBA_BPTC_Format, RGBA_ETC2_EAC_Format, RGBA_PVRTC_2BPPV1_Format, RGBA_PVRTC_4BPPV1_Format, RGBA_S3TC_DXT1_Format, RGBA_S3TC_DXT3_Format, RGBA_S3TC_DXT5_Format, RGBDEncoding, RGBEEncoding, RGBEFormat, RGBFormat, RGBIntegerFormat, RGBM16Encoding, RGBM7Encoding, RGB_ETC1_Format, RGB_ETC2_Format, RGB_PVRTC_2BPPV1_Format, RGB_PVRTC_4BPPV1_Format, RGB_S3TC_DXT1_Format, RGFormat, RGIntegerFormat, RawShaderMaterial, Ray, Raycaster, RectAreaLight, RedFormat, RedIntegerFormat, ReinhardToneMapping, RepeatWrapping, ReplaceStencilOp, ReverseSubtractEquation, RingBufferGeometry, RingGeometry, SRGB8_ALPHA8_ASTC_10x10_Format, SRGB8_ALPHA8_ASTC_10x5_Format, SRGB8_ALPHA8_ASTC_10x6_Format, SRGB8_ALPHA8_ASTC_10x8_Format, SRGB8_ALPHA8_ASTC_12x10_Format, SRGB8_ALPHA8_ASTC_12x12_Format, SRGB8_ALPHA8_ASTC_4x4_Format, SRGB8_ALPHA8_ASTC_5x4_Format, SRGB8_ALPHA8_ASTC_5x5_Format, SRGB8_ALPHA8_ASTC_6x5_Format, SRGB8_ALPHA8_ASTC_6x6_Format, SRGB8_ALPHA8_ASTC_8x5_Format, SRGB8_ALPHA8_ASTC_8x6_Format, SRGB8_ALPHA8_ASTC_8x8_Format, Scene$1 as Scene, SceneUtils, ShaderChunk, ShaderLib, ShaderMaterial, ShadowMaterial, Shape, ShapeBufferGeometry, ShapeGeometry, ShapePath, ShapeUtils, ShortType, Skeleton, SkeletonHelper, SkinnedMesh, SmoothShading, Sphere, SphereBufferGeometry, SphereGeometry, Spherical, SphericalHarmonics3, Spline, SplineCurve, SplineCurve3, SpotLight, SpotLightHelper, SpringDamper, Sprite, SpriteMaterial, SrcAlphaFactor, SrcAlphaSaturateFactor, SrcColorFactor, StaticCopyUsage, StaticDrawUsage, StaticReadUsage, StereoCamera, StreamCopyUsage, StreamDrawUsage, StreamReadUsage, StringKeyframeTrack, SubtractEquation, SubtractiveBlending, TOUCH, TangentSpaceNormalMap, TetrahedronBufferGeometry, TetrahedronGeometry, TextBufferGeometry, TextGeometry, Texture, TextureLoader, TorusBufferGeometry, TorusGeometry, TorusKnotBufferGeometry, TorusKnotGeometry, Triangle, TriangleFanDrawMode, TriangleStripDrawMode, TrianglesDrawMode, TubeBufferGeometry, TubeGeometry, UVMapping, Uint16Attribute, Uint16BufferAttribute, Uint32Attribute, Uint32BufferAttribute, Uint8Attribute, Uint8BufferAttribute, Uint8ClampedAttribute, Uint8ClampedBufferAttribute, Uniform, UniformsLib, UniformsUtils, UnsignedByteType, UnsignedInt248Type, UnsignedIntType, UnsignedShort4444Type, UnsignedShort5551Type, UnsignedShort565Type, UnsignedShortType, VSMShadowMap, Vector2, Vector3$1 as Vector3, Vector4, VectorKeyframeTrack, Vertex, VertexColors, VideoTexture, WebGL1Renderer, WebGLCubeRenderTarget, WebGLMultisampleRenderTarget, WebGLRenderTarget, WebGLRenderTargetCube, WebGLRenderer, WebGLUtils, WireframeGeometry, WireframeHelper, WrapAroundEnding, XHRLoader, ZeroCurvatureEnding, ZeroFactor, ZeroSlopeEnding, ZeroStencilOp, sRGBEncoding };
+export { ACESFilmicToneMapping, AddEquation, AddOperation, AdditiveAnimationBlendMode, AdditiveBlending, AlphaFormat, AlwaysDepth, AlwaysStencilFunc, AmbientLight, AmbientLightProbe, AngularLimit, AnimationClip, AnimationLoader, AnimationMixer, AnimationObjectGroup, AnimationUtils, Application, ArcCurve, ArrayCamera, ArrowHelper, Audio, AudioAnalyser, AudioContext, AudioListener, AudioLoader, AxesHelper, AxisHelper, BackSide, BasicDepthPacking, BasicShadowMap, BinaryTextureLoader, Bone, BooleanKeyframeTrack, BoundingBoxHelper, Box2, Box3, Box3Helper, BoxBufferGeometry, BoxGeometry, BoxHelper, BufferAttribute, BufferGeometry, BufferGeometryLoader, ByteType, Cache, Camera, CameraHelper, CanvasRenderer, CanvasTexture, CatmullRomCurve3, CineonToneMapping, CircleBufferGeometry, CircleGeometry, ClampToEdgeWrapping, Clock, ClosedSplineCurve3, Color, ColorKeyframeTrack, ComponentManager, CompressedTexture, CompressedTextureLoader, ConeBufferGeometry, ConeGeometry, CubeCamera, BoxGeometry as CubeGeometry, CubeReflectionMapping, CubeRefractionMapping, CubeTexture, CubeTextureLoader, CubeUVReflectionMapping, CubeUVRefractionMapping, CubicBezierCurve, CubicBezierCurve3, CubicInterpolant, CullFaceBack, CullFaceFront, CullFaceFrontBack, CullFaceNone, Curve, CurvePath, CustomBlending, CustomToneMapping, CylinderBufferGeometry, CylinderGeometry, Cylindrical, DataTexture, DataTexture2DArray, DataTexture3D, DataTextureLoader, DataUtils, DecrementStencilOp, DecrementWrapStencilOp, DefaultLoadingManager, DepthFormat, DepthStencilFormat, DepthTexture, DirectionalLight, DirectionalLightHelper, DiscreteInterpolant, DodecahedronBufferGeometry, DodecahedronGeometry, DoubleSide, DstAlphaFactor, DstColorFactor, DynamicBufferAttribute, DynamicCopyUsage, DynamicDrawUsage, DynamicReadUsage, EdgesGeometry, EdgesHelper, EllipseCurve, Entity, EqualDepth, EqualStencilFunc, EquirectangularReflectionMapping, EquirectangularRefractionMapping, Euler, EventDispatcher, ExtrudeBufferGeometry, ExtrudeGeometry, Face3, Face4, FaceColors, FileLoader, FlatShading, Float16BufferAttribute, Float32Attribute, Float32BufferAttribute, Float64Attribute, Float64BufferAttribute, FloatType, Fog, FogExp2, Font, FontLoader, FrontSide, Frustum, GLBufferAttribute, GLSL1, GLSL3, GammaEncoding, Geometry, GeometryUtils, GreaterDepth, GreaterEqualDepth, GreaterEqualStencilFunc, GreaterStencilFunc, GridHelper, Group, HalfFloatType, HemisphereLight, HemisphereLightHelper, HemisphereLightProbe, IcosahedronBufferGeometry, IcosahedronGeometry, ImageBitmapLoader, ImageLoader, ImageUtils, ImmediateRenderObject, IncrementStencilOp, IncrementWrapStencilOp, InstancedBufferAttribute, InstancedBufferGeometry, InstancedInterleavedBuffer, InstancedMesh, Int16Attribute, Int16BufferAttribute, Int32Attribute, Int32BufferAttribute, Int8Attribute, Int8BufferAttribute, IntType, InterleavedBuffer, InterleavedBufferAttribute, Interpolant, InterpolateDiscrete, InterpolateLinear, InterpolateSmooth, InvertStencilOp, JSONLoader, KeepStencilOp, KeyframeTrack, LOD, LatheBufferGeometry, LatheGeometry, Layers, LensFlare, LessDepth, LessEqualDepth, LessEqualStencilFunc, LessStencilFunc, Light, LightProbe, Line, Line3, LineBasicMaterial, LineCurve, LineCurve3, LineDashedMaterial, LineLoop, LinePieces, LineSegments, LineStrip, LinearEncoding, LinearFilter, LinearInterpolant, LinearLimit, LinearMipMapLinearFilter, LinearMipMapNearestFilter, LinearMipmapLinearFilter, LinearMipmapNearestFilter, LinearToneMapping, Loader, LoaderUtils, LoadingManager, LogLuvEncoding, LoopOnce, LoopPingPong, LoopRepeat, LuminanceAlphaFormat, LuminanceFormat, MOUSE, Material, MaterialLoader, MathUtils as Math, MathUtils, Matrix3, Matrix4, MaxEquation, Mesh, MeshBasicMaterial, MeshDepthMaterial, MeshDistanceMaterial, MeshFaceMaterial, MeshLambertMaterial, MeshMatcapMaterial, MeshNormalMaterial, MeshPhongMaterial, MeshPhysicalMaterial, MeshStandardMaterial, MeshToonMaterial, MinEquation, MirroredRepeatWrapping, MixOperation, MultiMaterial, MultiplyBlending, MultiplyOperation, NearestFilter, NearestMipMapLinearFilter, NearestMipMapNearestFilter, NearestMipmapLinearFilter, NearestMipmapNearestFilter, NeverDepth, NeverStencilFunc, NoBlending, NoColors, NoToneMapping, NormalAnimationBlendMode, NormalBlending, NotEqualDepth, NotEqualStencilFunc, NumberKeyframeTrack, Object3D, ObjectLoader, ObjectSpaceNormalMap, OctahedronBufferGeometry, OctahedronGeometry, OneFactor, OneMinusDstAlphaFactor, OneMinusDstColorFactor, OneMinusSrcAlphaFactor, OneMinusSrcColorFactor, OrthographicCamera, PCFShadowMap, PCFSoftShadowMap, PMREMGenerator, ParametricBufferGeometry, ParametricGeometry, Particle, ParticleBasicMaterial, ParticleSystem, ParticleSystemMaterial, Path, PerspectiveCamera, PhysicMaterial, Plane, PlaneBufferGeometry, PlaneGeometry, PlaneHelper, PointCloud, PointCloudMaterial, PointLight, PointLightHelper, Points, PointsMaterial, PolarGridHelper, PolyhedronBufferGeometry, PolyhedronGeometry, PositionalAudio, PropertyBinding, PropertyMixer, QuadraticBezierCurve, QuadraticBezierCurve3, Quaternion, QuaternionKeyframeTrack, QuaternionLinearInterpolant, REVISION, RGBADepthPacking, RGBAFormat, RGBAIntegerFormat, RGBA_ASTC_10x10_Format, RGBA_ASTC_10x5_Format, RGBA_ASTC_10x6_Format, RGBA_ASTC_10x8_Format, RGBA_ASTC_12x10_Format, RGBA_ASTC_12x12_Format, RGBA_ASTC_4x4_Format, RGBA_ASTC_5x4_Format, RGBA_ASTC_5x5_Format, RGBA_ASTC_6x5_Format, RGBA_ASTC_6x6_Format, RGBA_ASTC_8x5_Format, RGBA_ASTC_8x6_Format, RGBA_ASTC_8x8_Format, RGBA_BPTC_Format, RGBA_ETC2_EAC_Format, RGBA_PVRTC_2BPPV1_Format, RGBA_PVRTC_4BPPV1_Format, RGBA_S3TC_DXT1_Format, RGBA_S3TC_DXT3_Format, RGBA_S3TC_DXT5_Format, RGBDEncoding, RGBEEncoding, RGBEFormat, RGBFormat, RGBIntegerFormat, RGBM16Encoding, RGBM7Encoding, RGB_ETC1_Format, RGB_ETC2_Format, RGB_PVRTC_2BPPV1_Format, RGB_PVRTC_4BPPV1_Format, RGB_S3TC_DXT1_Format, RGFormat, RGIntegerFormat, RawShaderMaterial, Ray, Raycaster, RectAreaLight, RedFormat, RedIntegerFormat, ReinhardToneMapping, RepeatWrapping, ReplaceStencilOp, ReverseSubtractEquation, RingBufferGeometry, RingGeometry, SRGB8_ALPHA8_ASTC_10x10_Format, SRGB8_ALPHA8_ASTC_10x5_Format, SRGB8_ALPHA8_ASTC_10x6_Format, SRGB8_ALPHA8_ASTC_10x8_Format, SRGB8_ALPHA8_ASTC_12x10_Format, SRGB8_ALPHA8_ASTC_12x12_Format, SRGB8_ALPHA8_ASTC_4x4_Format, SRGB8_ALPHA8_ASTC_5x4_Format, SRGB8_ALPHA8_ASTC_5x5_Format, SRGB8_ALPHA8_ASTC_6x5_Format, SRGB8_ALPHA8_ASTC_6x6_Format, SRGB8_ALPHA8_ASTC_8x5_Format, SRGB8_ALPHA8_ASTC_8x6_Format, SRGB8_ALPHA8_ASTC_8x8_Format, Scene$1 as Scene, SceneUtils, ShaderChunk, ShaderLib, ShaderMaterial, ShadowMaterial, Shape, ShapeBufferGeometry, ShapeGeometry, ShapePath, ShapeUtils, ShortType, Skeleton, SkeletonHelper, SkinnedMesh, SmoothShading, Sphere, SphereBufferGeometry, SphereGeometry, Spherical, SphericalHarmonics3, Spline, SplineCurve, SplineCurve3, SpotLight, SpotLightHelper, SpringDamper, Sprite, SpriteMaterial, SrcAlphaFactor, SrcAlphaSaturateFactor, SrcColorFactor, StaticCopyUsage, StaticDrawUsage, StaticReadUsage, StereoCamera, StreamCopyUsage, StreamDrawUsage, StreamReadUsage, StringKeyframeTrack, SubtractEquation, SubtractiveBlending, TOUCH, TangentSpaceNormalMap, TetrahedronBufferGeometry, TetrahedronGeometry, TextBufferGeometry, TextGeometry, Texture, TextureLoader, TorusBufferGeometry, TorusGeometry, TorusKnotBufferGeometry, TorusKnotGeometry, Triangle, TriangleFanDrawMode, TriangleStripDrawMode, TrianglesDrawMode, TubeBufferGeometry, TubeGeometry, UVMapping, Uint16Attribute, Uint16BufferAttribute, Uint32Attribute, Uint32BufferAttribute, Uint8Attribute, Uint8BufferAttribute, Uint8ClampedAttribute, Uint8ClampedBufferAttribute, Uniform, UniformsLib, UniformsUtils, UnsignedByteType, UnsignedInt248Type, UnsignedIntType, UnsignedShort4444Type, UnsignedShort5551Type, UnsignedShort565Type, UnsignedShortType, VSMShadowMap, Vector2, Vector3$1 as Vector3, Vector4, VectorKeyframeTrack, Vertex, VertexColors, VideoTexture, WebGL1Renderer, WebGLCubeRenderTarget, WebGLMultisampleRenderTarget, WebGLRenderTarget, WebGLRenderTargetCube, WebGLRenderer, WebGLUtils, WireframeGeometry, WireframeHelper, WrapAroundEnding, XHRLoader, ZeroCurvatureEnding, ZeroFactor, ZeroSlopeEnding, ZeroStencilOp, sRGBEncoding };
