@@ -75,6 +75,8 @@ export function Viewport( editor ) {
 
 		}
 
+		render();
+
 		event.preventDefault();
 
 	}
@@ -170,7 +172,7 @@ export function Viewport( editor ) {
 	camera.aspect = width /	height;
 	camera.updateProjectionMatrix();
 
-	window.addEventListener( 'resize', function () {
+	const observer = new ResizeObserver( function () {
 
 		const { width, height } = renderer.domElement.getBoundingClientRect();
 		renderer.setSize( width, height, false );
@@ -179,6 +181,8 @@ export function Viewport( editor ) {
 		render();
 
 	} );
+
+	observer.observe( document.getElementById( 'canvas' ) );
 
 	const render = this.render = function () {
 
