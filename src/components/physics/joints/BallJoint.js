@@ -26,24 +26,4 @@ export class BallJoint extends Joint {
 
 	}
 
-	toJSON() {
-
-		const object = super.toJSON();
-
-		object.springDamper = this.springDamper;
-
-		return object;
-
-	}
-
-	fromJSON( object ) {
-
-		object = super.fromJSON( object );
-
-		object.springDamper = Object.create( SpringDamper, object.springDamper );
-
-		return object;
-
-	}
-
 }

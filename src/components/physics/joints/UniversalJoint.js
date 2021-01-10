@@ -47,38 +47,4 @@ export class UniversalJoint extends Joint {
 
 	}
 
-	toJSON() {
-
-		const object = super.toJSON();
-
-		object.axis = new Vector3().fromArray( object.axis );
-		object.linkedAxis = new Vector3().fromArray( object.linkedAxis );
-
-		object.springDamper = this.springDamper;
-		object.linkedSpringDamper = this.linkedSpringDamper;
-
-		object.angularLimit = this.angularLimit;
-		object.linkedAngularLimit = this.linkedAngularLimit;
-
-		return object;
-
-	}
-
-	fromJSON( object ) {
-
-		object = super.fromJSON( object );
-
-		object.axis = new Vector3().fromArray( object.axis );
-		object.linkedAxis = new Vector3().fromArray( object.linkedAxis );
-
-		object.springDamper = Object.create( SpringDamper, object.springDamper );
-		object.linkedSpringDamper = Object.create( SpringDamper, object.linkedSpringDamper );
-
-		object.angularLimit = Object.create( AngularLimit, object.angularLimit );
-		object.linkedAngularLimit = Object.create( AngularLimit, object.linkedAngularLimit );
-
-		return object;
-
-	}
-
 }

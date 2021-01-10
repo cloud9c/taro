@@ -48,36 +48,4 @@ export class CylindricalJoint extends Joint {
 
 	}
 
-	toJSON() {
-
-		const object = super.toJSON();
-
-		object.axis = this._axis.toArray();
-		object.linkedAxis = this._linkedAxis.toArray();
-
-		object.linearLimit = this.linearLimit;
-		object.linearSpringDamper = this.linearSpringDamper;
-		object.angularLimit = this.angularLimit;
-		object.angularSpringDamper = this.angularSpringDamper;
-
-		return object;
-
-	}
-
-	fromJSON( object ) {
-
-		object = super.fromJSON( object );
-
-		object.axis = new Vector3().fromArray( object.axis );
-		object.linkedAxis = new Vector3().fromArray( object.linkedAxis );
-
-		object.linearLimit = Object.create( LinearLimit, object.linearLimit );
-		object.linearSpringDamper = Object.create( SpringDamper, object.linearSpringDamper );
-		object.angularLimit = Object.create( AngularLimit, object.angularLimit );
-		object.angularSpringDamper = Object.create( SpringDamper, object.angularSpringDamper );
-
-		return object;
-
-	}
-
 }

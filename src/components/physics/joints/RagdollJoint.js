@@ -40,39 +40,4 @@ export class RagdollJoint extends Joint {
 
 	}
 
-	toJSON() {
-
-		const object = super.toJSON();
-
-		object.twistAxis = this._twistAxis.toArray();
-		object.linkedTwistAxis = this._linkedTwistAxis.toArray();
-		object.swingAxis = this._swingAxis.toArray();
-
-		object.maxSwing = this._maxSwing;
-		object.linkedMaxSwing = this._linkedMaxSwing;
-
-		object.twistSpringDamper = this.twistSpringDamper;
-		object.swingSpringDamper = this.swingSpringDamper;
-		object.twistLimit = this.twistLimit;
-
-		return object;
-
-	}
-
-	fromJSON( object ) {
-
-		object = super.fromJSON( object );
-
-		object.twistAxis = new Vector3().fromArray( object.twistAxis );
-		object.linkedTwistAxis = new Vector3().fromArray( object.linkedTwistAxis );
-		object.swingAxis = new Vector3().fromArray( object.swingAxis );
-
-		object.twistSpringDamper = Object.create( SpringDamper, object.twistSpringDamper );
-		object.swingSpringDamper = Object.create( SpringDamper, object.swingSpringDamper );
-		object.twistLimit = Object.create( AngularLimit, object.twistLimit );
-
-		return object;
-
-	}
-
 }

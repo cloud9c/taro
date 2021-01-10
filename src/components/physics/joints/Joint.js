@@ -297,26 +297,4 @@ export class Joint {
 
 	}
 
-	toJSON() {
-
-		return {
-			linkedEntity: this._bodyRef2.UUID,
-			breakForce: this._breakForce,
-			breakTorque: this._breakTorque,
-			anchor: this._anchor.toArray(),
-			linkedAnchor: this._linkedAnchor.toArray(),
-		};
-
-	}
-
-	fromJSON( object ) {
-
-		object.linkedEntity = this.scene.findById( object.linkedEntity );
-		object.anchor = new Vector3().fromArray( object.anchor );
-		object.linkedAnchor = new Vector3().fromArray( object.linkedAnchor );
-
-		return object;
-
-	}
-
 }

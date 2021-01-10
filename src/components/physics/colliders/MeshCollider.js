@@ -1,6 +1,6 @@
-import { Collider } from "./Collider.js";
-import { ConvexHull } from "../../../physics/ConvexHull.js";
-import { OIMO } from "../../../lib/oimo.js";
+import { Collider } from './Collider.js';
+import { ConvexHull } from '../../../physics/ConvexHull.js';
+import { OIMO } from '../../../lib/oimo.js';
 
 const convexHull = new ConvexHull();
 
@@ -8,7 +8,7 @@ export class MeshCollider extends Collider {
 
 	start( data ) {
 
-		data.type = "mesh";
+		data.type = 'mesh';
 		super.start( data );
 
 	}
@@ -33,41 +33,11 @@ export class MeshCollider extends Collider {
 
 		} else {
 
-			throw "MeshCollider: points or mesh must be provided";
+			throw 'MeshCollider: points or mesh must be provided';
 
 		}
 
 		return new OIMO.ConvexHullGeometry( this._points );
-
-	}
-
-	toJSON() {
-
-		const object = super.toJSON();
-
-		for ( let i = 0, len = this._points.length; i < len; i ++ ) {
-
-			this._points[ i ] = this._points[ i ].toArray();
-
-		}
-
-		object.points = this._points;
-
-		return object;
-
-	}
-
-	fromJSON( object ) {
-
-		object = super.fromJSON( object );
-
-		for ( let i = 0, len = object.points.length; i < len; i ++ ) {
-
-			object.points[ i ] = new Vector3().fromArray( object.points[ i ] );
-
-		}
-
-		return object;
 
 	}
 

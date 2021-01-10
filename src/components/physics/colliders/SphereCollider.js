@@ -22,14 +22,4 @@ export class SphereCollider extends Collider {
 
 	}
 
-	toJSON() {
-
-		const object = super.toJSON();
-
-		object.radius = this._radius;
-
-		return object;
-
-	}
-
 }

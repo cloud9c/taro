@@ -461,27 +461,6 @@ export class Collider {
 
 	}
 
-	toJSON() {
-
-		return {
-			isTrigger: this._isTrigger,
-			collisionGroup: this._collisionGroup,
-			collisionMask: this._collisionMask,
-			center: this._center.toArray(),
-			rotation: this._rotation.toArray()
-		};
-
-	}
-
-	fromJSON( object ) {
-
-		object.center = new Vector3().fromArray( object.center );
-		object.rotation = new Euler().fromArray( object.rotation );
-
-		return object;
-
-	}
-
 }
 
 function contactCallback( contact, type ) {

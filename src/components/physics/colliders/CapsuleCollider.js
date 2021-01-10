@@ -26,15 +26,4 @@ export class CapsuleCollider extends Collider {
 
 	}
 
-	toJSON() {
-
-		const object = super.toJSON();
-
-		object.radius = this._radius;
-		object.halfHeight = this._halfHeight;
-
-		return object;
-
-	}
-
 }

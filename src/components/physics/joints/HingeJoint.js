@@ -38,32 +38,4 @@ export class HingeJoint extends Joint {
 
 	}
 
-	toJSON() {
-
-		const object = super.toJSON();
-
-		object.axis = this._axis.toArray();
-		object.linkedAxis = this._linkedAxis.toArray();
-
-		object.springDamper = this.springDamper;
-		object.angularLimit = this.angularLimit;
-
-		return object;
-
-	}
-
-	fromJSON( object ) {
-
-		object = super.fromJSON( object );
-
-		object.axis = new Vector3().fromArray( object.axis );
-		object.linkedAxis = new Vector3().fromArray( object.linkedAxis );
-
-		object.springDamper = Object.create( SpringDamper, object.springDamper );
-		object.angularLimit = Object.create( AngularLimit, object.angularLimit );
-
-		return object;
-
-	}
-
 }

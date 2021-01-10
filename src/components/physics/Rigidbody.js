@@ -278,32 +278,6 @@ export class Rigidbody {
 
 	}
 
-	toJSON() {
-
-		return {
-			angularVelocity: this.getAngularVelocity().toArray(),
-			angularDamping: this.angularDamping,
-			linearVelocity: this.getLinearVelocity().toArray(),
-			linearDamping: this.linearDamping,
-			gravityScale: this.gravityScale,
-			autoSleep: this.autoSleep,
-			isKinematic: this.isKinematic,
-			rotationFactor: this.getRotationFactor().toArray(),
-			mass: this.mass,
-		};
-
-	}
-
-	fromJSON( object ) {
-
-		object.angularVelocity = new Vector3().fromArray( object.angularVelocity );
-		object.linearVelocity = new Vector3().fromArray( object.linearVelocity );
-		object.rotationFactor = new Vector3().fromArray( object.rotationFactor );
-
-		return object;
-
-	}
-
 	static createRigidbody( self, type ) {
 
 		const entity = self.entity;

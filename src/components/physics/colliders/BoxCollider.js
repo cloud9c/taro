@@ -30,24 +30,4 @@ export class BoxCollider extends Collider {
 
 	}
 
-	toJSON() {
-
-		const object = super.toJSON();
-
-		object.halfExtents = this._halfExtents.toArray();
-
-		return object;
-
-	}
-
-	fromJSON( object ) {
-
-		object = super.fromJSON( object );
-
-		object.halfExtents = new Vector3().fromArray( object.halfExtents );
-
-		return object;
-
-	}
-
 }
