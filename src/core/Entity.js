@@ -131,7 +131,7 @@ export class Entity extends Group {
 
 		}
 
-		return type === 'Renderable' ? component.ref : component;
+		return component;
 
 	}
 

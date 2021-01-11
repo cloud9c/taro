@@ -8,7 +8,7 @@ import { ComponentManager } from './ComponentManager.js';
 export class Application {
 
 	constructor( parameters = {} ) {
-		
+
 		this.parameters = parameters;
 
 		this.renderer = new Renderer( parameters );
@@ -23,9 +23,7 @@ export class Application {
 		this._currentScene;
 		this.requestID;
 
-		const dom = document.createElement( 'div' );
-		dom.appendChild( renderer.domElement );
-		this.dom = dom;
+		this.domElement = this.renderer.domElement;
 
 		Application.currentApp = this;
 

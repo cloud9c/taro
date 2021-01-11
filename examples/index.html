@@ -26,9 +26,7 @@
 			let entity, geo, mat, mesh;
 
 			const loader = new GLTFLoader();
-			const app = new TARO.Application({
-				canvas: "c"
-			});
+			const app = new TARO.Application({canvas: document.getElementById("c")});
 
 			app.componentManager.add(
 				"CameraController",
@@ -109,7 +107,7 @@
 
 			// lighting
 			entity = new TARO.Entity();
-			const hemiLight = entity.addComponent("Renderable", new TARO.HemisphereLight(0xffffff, 0xffffff, 0.6));
+			const hemiLight = entity.addComponent("Renderable", new TARO.HemisphereLight(0xffffff, 0xffffff, 0.6)).ref;
 
 			hemiLight.color.setHSL(0.6, 1, 0.6);
 			hemiLight.groundColor.setHSL(0.095, 1, 0.75);
@@ -117,7 +115,7 @@
 			entity.position.set(0, 100, 0);
 
 			entity = new TARO.Entity();
-			const dirLight = entity.addComponent("Renderable", new TARO.DirectionalLight(0xffffff, 1, 0.6));
+			const dirLight = entity.addComponent("Renderable", new TARO.DirectionalLight(0xffffff, 1, 0.6)).ref;
 
 			dirLight.color.setHSL(0.1, 1, 0.95);
 
