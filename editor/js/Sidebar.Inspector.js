@@ -91,45 +91,46 @@ export function SidebarInspector( editor ) {
 			for ( let i = 0, len = schema.length; i < len; i ++ ) {
 
 				const _default = schema[ i ].default;
+				let value;
 
 				switch ( schema[ i ].type ) {
 
 					case 'string':
-						const value = _default !== undefined ? _default : "";
+						value = _default !== undefined ? _default : '';
 						break;
 					case 'color':
-						const value = _default !== undefined ? _default : 0x000000;
+						value = _default !== undefined ? _default : 0x000000;
 						break;
 					case 'vector2':
-						const value = _default !== undefined ? _default : {x: 0, y: 0};
+						value = _default !== undefined ? _default : { x: 0, y: 0 };
 						break;
 					case 'vector3':
-						const value = _default !== undefined ? _default : {x: 0, y: 0, z: 0};
+						value = _default !== undefined ? _default : { x: 0, y: 0, z: 0 };
 						break;
 					case 'vector4':
-						const value = _default !== undefined ? _default : {x: 0, y: 0, z: 0, w: 0};
+						value = _default !== undefined ? _default : { x: 0, y: 0, z: 0, w: 0 };
 						break;
 					case 'boolean':
-						const value = _default !== undefined ? _default : false;
+						value = _default !== undefined ? _default : false;
 						break;
 					case 'slider':
-						const value = _default !== undefined ? _default : 0;
+						value = _default !== undefined ? _default : 0;
 						break;
 					case 'number':
-						const value = _default !== undefined ? _default : 0;
+						value = _default !== undefined ? _default : 0;
 						break;
 					case 'select':
-						const value = _default !== undefined ? _default : [];
+						value = _default !== undefined ? _default : [];
 						break;
 					case 'asset':
-						const value = _default !== undefined ? _default : null;
+						value = _default !== undefined ? _default : null;
 						break;
 					default:
 						return console.warn( 'SidebarInspector: Invalid schema type: ' + schema.type );
 
 				}
 
-				data[schema[i].name] = value;
+				data[ schema[ i ].name ] = value;
 
 			}
 
