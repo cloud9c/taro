@@ -87,6 +87,7 @@ export function Viewport( editor ) {
 
 	}
 
+	const inspector = editor.sidebarInspector;
 	const app = editor.app;
 
 	const scene = this.scene = new TARO.Scene();
@@ -236,7 +237,6 @@ export function Viewport( editor ) {
 
 	} );
 
-	// control.attach( box );
 	sceneHelper.add( control );
 
 	let dragging = false;
@@ -268,6 +268,7 @@ export function Viewport( editor ) {
 
 				control.enabled = false;
 				control.detach();
+				inspector.detach();
 
 			} else if ( control.object !== rayObject && control !== rayObject ) {
 
@@ -278,6 +279,7 @@ export function Viewport( editor ) {
 
 				control.enabled = true;
 				control.attach( rayObject );
+				inspector.attach( rayObject );
 
 			}
 

@@ -3,6 +3,7 @@ import * as TARO from '../../build/taro.js';
 
 export function SidebarScene( editor ) {
 
+	const inspector = editor.sidebarInspector;
 	const viewport = editor.viewport;
 	const renderer = editor.app.renderer;
 	const render = editor.render;
@@ -211,7 +212,7 @@ export function SidebarScene( editor ) {
 
 	}
 
-	document.getElementById( 'fog' ).addEventListener( 'input', function ( event ) {
+	document.getElementById( 'fog' ).addEventListener( 'change', function ( event ) {
 
 		resetFogInput();
 
@@ -261,10 +262,12 @@ export function SidebarScene( editor ) {
 
 	for ( let i = 0, len = fogOptions.length; i < len; i ++ ) {
 
-		if ( fogOptions[ i ].parentElement.id === 'linear-fog' )
-			fogOptions[ i ].addEventListener( 'input', setFog );
+		const option = fogOptions[ i ];
+
+		if ( option.parentElement.id === 'linear-fog' )
+			option.addEventListener( option.type === 'color' ? 'input' : 'change', setFog );
 		else // exp fog
-			fogOptions[ i ].addEventListener( 'input', setExpFog );
+			option.addEventListener( option.type === 'color' ? 'input' : 'change', setExpFog );
 
 	}
 
@@ -324,8 +327,9 @@ export function SidebarScene( editor ) {
 
 				const entity = scene.findById( parseInt( target.dataset.id ) );
 
-				editor.viewport.control.enabled = true;
-				editor.viewport.control.attach( entity );
+				viewport.control.enabled = true;
+				viewport.control.attach( entity );
+				inspector.attach( entity );
 
 				editor.render();
 
