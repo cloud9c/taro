@@ -3122,7 +3122,7 @@ class Quaternion {
 
 }
 
-class Vector3$1 {
+class Vector3 {
 
 	constructor( x = 0, y = 0, z = 0 ) {
 
@@ -3836,7 +3836,7 @@ class Vector3$1 {
 
 }
 
-const _vector = /*@__PURE__*/ new Vector3$1();
+const _vector = /*@__PURE__*/ new Vector3();
 const _quaternion = /*@__PURE__*/ new Quaternion();
 
 class Box3 {
@@ -3845,8 +3845,8 @@ class Box3 {
 
 		Object.defineProperty( this, 'isBox3', { value: true } );
 
-		this.min = ( min !== undefined ) ? min : new Vector3$1( + Infinity, + Infinity, + Infinity );
-		this.max = ( max !== undefined ) ? max : new Vector3$1( - Infinity, - Infinity, - Infinity );
+		this.min = ( min !== undefined ) ? min : new Vector3( + Infinity, + Infinity, + Infinity );
+		this.max = ( max !== undefined ) ? max : new Vector3( - Infinity, - Infinity, - Infinity );
 
 	}
 
@@ -3995,7 +3995,7 @@ class Box3 {
 		if ( target === undefined ) {
 
 			console.warn( 'THREE.Box3: .getCenter() target is now required' );
-			target = new Vector3$1();
+			target = new Vector3();
 
 		}
 
@@ -4008,7 +4008,7 @@ class Box3 {
 		if ( target === undefined ) {
 
 			console.warn( 'THREE.Box3: .getSize() target is now required' );
-			target = new Vector3$1();
+			target = new Vector3();
 
 		}
 
@@ -4103,7 +4103,7 @@ class Box3 {
 		if ( target === undefined ) {
 
 			console.warn( 'THREE.Box3: .getParameter() target is now required' );
-			target = new Vector3$1();
+			target = new Vector3();
 
 		}
 
@@ -4239,7 +4239,7 @@ class Box3 {
 		if ( target === undefined ) {
 
 			console.warn( 'THREE.Box3: .clampPoint() target is now required' );
-			target = new Vector3$1();
+			target = new Vector3();
 
 		}
 
@@ -4358,36 +4358,36 @@ function satForAxes( axes, v0, v1, v2, extents ) {
 }
 
 const _points = [
-	/*@__PURE__*/ new Vector3$1(),
-	/*@__PURE__*/ new Vector3$1(),
-	/*@__PURE__*/ new Vector3$1(),
-	/*@__PURE__*/ new Vector3$1(),
-	/*@__PURE__*/ new Vector3$1(),
-	/*@__PURE__*/ new Vector3$1(),
-	/*@__PURE__*/ new Vector3$1(),
-	/*@__PURE__*/ new Vector3$1()
+	/*@__PURE__*/ new Vector3(),
+	/*@__PURE__*/ new Vector3(),
+	/*@__PURE__*/ new Vector3(),
+	/*@__PURE__*/ new Vector3(),
+	/*@__PURE__*/ new Vector3(),
+	/*@__PURE__*/ new Vector3(),
+	/*@__PURE__*/ new Vector3(),
+	/*@__PURE__*/ new Vector3()
 ];
 
-const _vector$1 = /*@__PURE__*/ new Vector3$1();
+const _vector$1 = /*@__PURE__*/ new Vector3();
 
 const _box = /*@__PURE__*/ new Box3();
 
 // triangle centered vertices
 
-const _v0 = /*@__PURE__*/ new Vector3$1();
-const _v1 = /*@__PURE__*/ new Vector3$1();
-const _v2 = /*@__PURE__*/ new Vector3$1();
+const _v0 = /*@__PURE__*/ new Vector3();
+const _v1 = /*@__PURE__*/ new Vector3();
+const _v2 = /*@__PURE__*/ new Vector3();
 
 // triangle edge vectors
 
-const _f0 = /*@__PURE__*/ new Vector3$1();
-const _f1 = /*@__PURE__*/ new Vector3$1();
-const _f2 = /*@__PURE__*/ new Vector3$1();
+const _f0 = /*@__PURE__*/ new Vector3();
+const _f1 = /*@__PURE__*/ new Vector3();
+const _f2 = /*@__PURE__*/ new Vector3();
 
-const _center = /*@__PURE__*/ new Vector3$1();
-const _extents = /*@__PURE__*/ new Vector3$1();
-const _triangleNormal = /*@__PURE__*/ new Vector3$1();
-const _testAxis = /*@__PURE__*/ new Vector3$1();
+const _center = /*@__PURE__*/ new Vector3();
+const _extents = /*@__PURE__*/ new Vector3();
+const _triangleNormal = /*@__PURE__*/ new Vector3();
+const _testAxis = /*@__PURE__*/ new Vector3();
 
 const _box$1 = /*@__PURE__*/ new Box3();
 
@@ -4395,7 +4395,7 @@ class Sphere {
 
 	constructor( center, radius ) {
 
-		this.center = ( center !== undefined ) ? center : new Vector3$1();
+		this.center = ( center !== undefined ) ? center : new Vector3();
 		this.radius = ( radius !== undefined ) ? radius : - 1;
 
 	}
@@ -4506,7 +4506,7 @@ class Sphere {
 		if ( target === undefined ) {
 
 			console.warn( 'THREE.Sphere: .clampPoint() target is now required' );
-			target = new Vector3$1();
+			target = new Vector3();
 
 		}
 
@@ -4572,21 +4572,21 @@ class Sphere {
 
 }
 
-const _vector$2 = /*@__PURE__*/ new Vector3$1();
-const _segCenter = /*@__PURE__*/ new Vector3$1();
-const _segDir = /*@__PURE__*/ new Vector3$1();
-const _diff = /*@__PURE__*/ new Vector3$1();
+const _vector$2 = /*@__PURE__*/ new Vector3();
+const _segCenter = /*@__PURE__*/ new Vector3();
+const _segDir = /*@__PURE__*/ new Vector3();
+const _diff = /*@__PURE__*/ new Vector3();
 
-const _edge1 = /*@__PURE__*/ new Vector3$1();
-const _edge2 = /*@__PURE__*/ new Vector3$1();
-const _normal = /*@__PURE__*/ new Vector3$1();
+const _edge1 = /*@__PURE__*/ new Vector3();
+const _edge2 = /*@__PURE__*/ new Vector3();
+const _normal = /*@__PURE__*/ new Vector3();
 
 class Ray {
 
 	constructor( origin, direction ) {
 
-		this.origin = ( origin !== undefined ) ? origin : new Vector3$1();
-		this.direction = ( direction !== undefined ) ? direction : new Vector3$1( 0, 0, - 1 );
+		this.origin = ( origin !== undefined ) ? origin : new Vector3();
+		this.direction = ( direction !== undefined ) ? direction : new Vector3( 0, 0, - 1 );
 
 	}
 
@@ -4619,7 +4619,7 @@ class Ray {
 		if ( target === undefined ) {
 
 			console.warn( 'THREE.Ray: .at() target is now required' );
-			target = new Vector3$1();
+			target = new Vector3();
 
 		}
 
@@ -4648,7 +4648,7 @@ class Ray {
 		if ( target === undefined ) {
 
 			console.warn( 'THREE.Ray: .closestPointToPoint() target is now required' );
-			target = new Vector3$1();
+			target = new Vector3();
 
 		}
 
@@ -5936,13 +5936,13 @@ class Matrix4 {
 
 }
 
-const _v1$1 = /*@__PURE__*/ new Vector3$1();
+const _v1$1 = /*@__PURE__*/ new Vector3();
 const _m1 = /*@__PURE__*/ new Matrix4();
-const _zero = /*@__PURE__*/ new Vector3$1( 0, 0, 0 );
-const _one = /*@__PURE__*/ new Vector3$1( 1, 1, 1 );
-const _x = /*@__PURE__*/ new Vector3$1();
-const _y = /*@__PURE__*/ new Vector3$1();
-const _z = /*@__PURE__*/ new Vector3$1();
+const _zero = /*@__PURE__*/ new Vector3( 0, 0, 0 );
+const _one = /*@__PURE__*/ new Vector3( 1, 1, 1 );
+const _x = /*@__PURE__*/ new Vector3();
+const _y = /*@__PURE__*/ new Vector3();
+const _z = /*@__PURE__*/ new Vector3();
 
 class Euler {
 
@@ -6240,7 +6240,7 @@ class Euler {
 
 		} else {
 
-			return new Vector3$1( this._x, this._y, this._z );
+			return new Vector3( this._x, this._y, this._z );
 
 		}
 
@@ -6318,18 +6318,18 @@ class Layers {
 
 let _object3DId = 0;
 
-const _v1$2 = new Vector3$1();
+const _v1$2 = new Vector3();
 const _q1 = new Quaternion();
 const _m1$1 = new Matrix4();
-const _target = new Vector3$1();
+const _target = new Vector3();
 
-const _position = new Vector3$1();
-const _scale = new Vector3$1();
+const _position = new Vector3();
+const _scale = new Vector3();
 const _quaternion$2 = new Quaternion();
 
-const _xAxis = new Vector3$1( 1, 0, 0 );
-const _yAxis = new Vector3$1( 0, 1, 0 );
-const _zAxis = new Vector3$1( 0, 0, 1 );
+const _xAxis = new Vector3( 1, 0, 0 );
+const _yAxis = new Vector3( 0, 1, 0 );
+const _zAxis = new Vector3( 0, 0, 1 );
 
 const _addedEvent = { type: 'added' };
 const _removedEvent = { type: 'removed' };
@@ -6348,10 +6348,10 @@ function Object3D() {
 
 	this.up = Object3D.DefaultUp.clone();
 
-	const position = new Vector3$1();
+	const position = new Vector3();
 	const rotation = new Euler();
 	const quaternion = new Quaternion();
-	const scale = new Vector3$1( 1, 1, 1 );
+	const scale = new Vector3( 1, 1, 1 );
 
 	function onRotationChange() {
 
@@ -6418,7 +6418,7 @@ function Object3D() {
 
 }
 
-Object3D.DefaultUp = new Vector3$1( 0, 1, 0 );
+Object3D.DefaultUp = new Vector3( 0, 1, 0 );
 Object3D.DefaultMatrixAutoUpdate = true;
 
 Object3D.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
@@ -6764,7 +6764,7 @@ Object3D.prototype = Object.assign( Object.create( EventDispatcher.prototype ), 
 		if ( target === undefined ) {
 
 			console.warn( 'THREE.Object3D: .getWorldPosition() target is now required' );
-			target = new Vector3$1();
+			target = new Vector3();
 
 		}
 
@@ -6796,7 +6796,7 @@ Object3D.prototype = Object.assign( Object.create( EventDispatcher.prototype ), 
 		if ( target === undefined ) {
 
 			console.warn( 'THREE.Object3D: .getWorldScale() target is now required' );
-			target = new Vector3$1();
+			target = new Vector3();
 
 		}
 
@@ -6813,7 +6813,7 @@ Object3D.prototype = Object.assign( Object.create( EventDispatcher.prototype ), 
 		if ( target === undefined ) {
 
 			console.warn( 'THREE.Object3D: .getWorldDirection() target is now required' );
-			target = new Vector3$1();
+			target = new Vector3();
 
 		}
 
@@ -7218,8 +7218,8 @@ Object3D.prototype = Object.assign( Object.create( EventDispatcher.prototype ), 
 
 } );
 
-const _vector1 = /*@__PURE__*/ new Vector3$1();
-const _vector2 = /*@__PURE__*/ new Vector3$1();
+const _vector1 = /*@__PURE__*/ new Vector3();
+const _vector2 = /*@__PURE__*/ new Vector3();
 const _normalMatrix = /*@__PURE__*/ new Matrix3();
 
 class Plane {
@@ -7230,7 +7230,7 @@ class Plane {
 
 		// normal is assumed to be normalized
 
-		this.normal = ( normal !== undefined ) ? normal : new Vector3$1( 1, 0, 0 );
+		this.normal = ( normal !== undefined ) ? normal : new Vector3( 1, 0, 0 );
 		this.constant = ( constant !== undefined ) ? constant : 0;
 
 	}
@@ -7327,7 +7327,7 @@ class Plane {
 		if ( target === undefined ) {
 
 			console.warn( 'THREE.Plane: .projectPoint() target is now required' );
-			target = new Vector3$1();
+			target = new Vector3();
 
 		}
 
@@ -7340,7 +7340,7 @@ class Plane {
 		if ( target === undefined ) {
 
 			console.warn( 'THREE.Plane: .intersectLine() target is now required' );
-			target = new Vector3$1();
+			target = new Vector3();
 
 		}
 
@@ -7402,7 +7402,7 @@ class Plane {
 		if ( target === undefined ) {
 
 			console.warn( 'THREE.Plane: .coplanarPoint() target is now required' );
-			target = new Vector3$1();
+			target = new Vector3();
 
 		}
 
@@ -7440,25 +7440,25 @@ class Plane {
 
 }
 
-const _v0$1 = /*@__PURE__*/ new Vector3$1();
-const _v1$3 = /*@__PURE__*/ new Vector3$1();
-const _v2$1 = /*@__PURE__*/ new Vector3$1();
-const _v3 = /*@__PURE__*/ new Vector3$1();
+const _v0$1 = /*@__PURE__*/ new Vector3();
+const _v1$3 = /*@__PURE__*/ new Vector3();
+const _v2$1 = /*@__PURE__*/ new Vector3();
+const _v3 = /*@__PURE__*/ new Vector3();
 
-const _vab = /*@__PURE__*/ new Vector3$1();
-const _vac = /*@__PURE__*/ new Vector3$1();
-const _vbc = /*@__PURE__*/ new Vector3$1();
-const _vap = /*@__PURE__*/ new Vector3$1();
-const _vbp = /*@__PURE__*/ new Vector3$1();
-const _vcp = /*@__PURE__*/ new Vector3$1();
+const _vab = /*@__PURE__*/ new Vector3();
+const _vac = /*@__PURE__*/ new Vector3();
+const _vbc = /*@__PURE__*/ new Vector3();
+const _vap = /*@__PURE__*/ new Vector3();
+const _vbp = /*@__PURE__*/ new Vector3();
+const _vcp = /*@__PURE__*/ new Vector3();
 
 class Triangle {
 
 	constructor( a, b, c ) {
 
-		this.a = ( a !== undefined ) ? a : new Vector3$1();
-		this.b = ( b !== undefined ) ? b : new Vector3$1();
-		this.c = ( c !== undefined ) ? c : new Vector3$1();
+		this.a = ( a !== undefined ) ? a : new Vector3();
+		this.b = ( b !== undefined ) ? b : new Vector3();
+		this.c = ( c !== undefined ) ? c : new Vector3();
 
 	}
 
@@ -7467,7 +7467,7 @@ class Triangle {
 		if ( target === undefined ) {
 
 			console.warn( 'THREE.Triangle: .getNormal() target is now required' );
-			target = new Vector3$1();
+			target = new Vector3();
 
 		}
 
@@ -7505,7 +7505,7 @@ class Triangle {
 		if ( target === undefined ) {
 
 			console.warn( 'THREE.Triangle: .getBarycoord() target is now required' );
-			target = new Vector3$1();
+			target = new Vector3();
 
 		}
 
@@ -7608,7 +7608,7 @@ class Triangle {
 		if ( target === undefined ) {
 
 			console.warn( 'THREE.Triangle: .getMidpoint() target is now required' );
-			target = new Vector3$1();
+			target = new Vector3();
 
 		}
 
@@ -7670,7 +7670,7 @@ class Triangle {
 		if ( target === undefined ) {
 
 			console.warn( 'THREE.Triangle: .closestPointToPoint() target is now required' );
-			target = new Vector3$1();
+			target = new Vector3();
 
 		}
 
@@ -8367,7 +8367,7 @@ class Face3 {
 		this.b = b;
 		this.c = c;
 
-		this.normal = ( normal && normal.isVector3 ) ? normal : new Vector3$1();
+		this.normal = ( normal && normal.isVector3 ) ? normal : new Vector3();
 		this.vertexNormals = Array.isArray( normal ) ? normal : [];
 
 		this.color = ( color && color.isColor ) ? color : new Color();
@@ -8965,7 +8965,7 @@ MeshBasicMaterial.prototype.copy = function ( source ) {
 
 };
 
-const _vector$3 = new Vector3$1();
+const _vector$3 = new Vector3();
 const _vector2$1 = new Vector2();
 
 function BufferAttribute( array, itemSize, normalized ) {
@@ -9114,7 +9114,7 @@ Object.assign( BufferAttribute.prototype, {
 			if ( vector === undefined ) {
 
 				console.warn( 'THREE.BufferAttribute.copyVector3sArray(): vector is undefined', i );
-				vector = new Vector3$1();
+				vector = new Vector3();
 
 			}
 
@@ -9784,10 +9784,10 @@ let _bufferGeometryId = 1; // BufferGeometry uses odd numbers as Id
 
 const _m1$2 = new Matrix4();
 const _obj = new Object3D();
-const _offset = new Vector3$1();
+const _offset = new Vector3();
 const _box$2 = new Box3();
 const _boxMorphTargets = new Box3();
-const _vector$4 = new Vector3$1();
+const _vector$4 = new Vector3();
 
 function BufferGeometry() {
 
@@ -10337,8 +10337,8 @@ BufferGeometry.prototype = Object.assign( Object.create( EventDispatcher.prototy
 			console.error( 'THREE.BufferGeometry.computeBoundingBox(): GLBufferAttribute requires a manual bounding box. Alternatively set "mesh.frustumCulled" to "false".', this );
 
 			this.boundingBox.set(
-				new Vector3$1( - Infinity, - Infinity, - Infinity ),
-				new Vector3$1( + Infinity, + Infinity, + Infinity )
+				new Vector3( - Infinity, - Infinity, - Infinity ),
+				new Vector3( + Infinity, + Infinity, + Infinity )
 			);
 
 			return;
@@ -10406,7 +10406,7 @@ BufferGeometry.prototype = Object.assign( Object.create( EventDispatcher.prototy
 
 			console.error( 'THREE.BufferGeometry.computeBoundingSphere(): GLBufferAttribute requires a manual bounding sphere. Alternatively set "mesh.frustumCulled" to "false".', this );
 
-			this.boundingSphere.set( new Vector3$1(), Infinity );
+			this.boundingSphere.set( new Vector3(), Infinity );
 
 			return;
 
@@ -10535,9 +10535,9 @@ BufferGeometry.prototype = Object.assign( Object.create( EventDispatcher.prototy
 
 			}
 
-			const pA = new Vector3$1(), pB = new Vector3$1(), pC = new Vector3$1();
-			const nA = new Vector3$1(), nB = new Vector3$1(), nC = new Vector3$1();
-			const cb = new Vector3$1(), ab = new Vector3$1();
+			const pA = new Vector3(), pB = new Vector3(), pC = new Vector3();
+			const nA = new Vector3(), nB = new Vector3(), nC = new Vector3();
+			const cb = new Vector3(), ab = new Vector3();
 
 			// indexed elements
 
@@ -11024,24 +11024,24 @@ const _inverseMatrix = new Matrix4();
 const _ray = new Ray();
 const _sphere = new Sphere();
 
-const _vA = new Vector3$1();
-const _vB = new Vector3$1();
-const _vC = new Vector3$1();
+const _vA = new Vector3();
+const _vB = new Vector3();
+const _vC = new Vector3();
 
-const _tempA = new Vector3$1();
-const _tempB = new Vector3$1();
-const _tempC = new Vector3$1();
+const _tempA = new Vector3();
+const _tempB = new Vector3();
+const _tempC = new Vector3();
 
-const _morphA = new Vector3$1();
-const _morphB = new Vector3$1();
-const _morphC = new Vector3$1();
+const _morphA = new Vector3();
+const _morphB = new Vector3();
+const _morphC = new Vector3();
 
 const _uvA = new Vector2();
 const _uvB = new Vector2();
 const _uvC = new Vector2();
 
-const _intersectionPoint = new Vector3$1();
-const _intersectionPointWorld = new Vector3$1();
+const _intersectionPoint = new Vector3();
+const _intersectionPointWorld = new Vector3();
 
 function Mesh( geometry = new BufferGeometry(), material = new MeshBasicMaterial() ) {
 
@@ -11531,7 +11531,7 @@ class BoxBufferGeometry extends BufferGeometry {
 			let vertexCounter = 0;
 			let groupCount = 0;
 
-			const vector = new Vector3$1();
+			const vector = new Vector3();
 
 			// generate vertices, normals and uvs
 
@@ -11933,7 +11933,7 @@ Camera.prototype = Object.assign( Object.create( Object3D.prototype ), {
 		if ( target === undefined ) {
 
 			console.warn( 'THREE.Camera: .getWorldDirection() target is now required' );
-			target = new Vector3$1();
+			target = new Vector3();
 
 		}
 
@@ -12220,37 +12220,37 @@ function CubeCamera( near, far, renderTarget ) {
 	const cameraPX = new PerspectiveCamera( fov, aspect, near, far );
 	cameraPX.layers = this.layers;
 	cameraPX.up.set( 0, - 1, 0 );
-	cameraPX.lookAt( new Vector3$1( 1, 0, 0 ) );
+	cameraPX.lookAt( new Vector3( 1, 0, 0 ) );
 	this.add( cameraPX );
 
 	const cameraNX = new PerspectiveCamera( fov, aspect, near, far );
 	cameraNX.layers = this.layers;
 	cameraNX.up.set( 0, - 1, 0 );
-	cameraNX.lookAt( new Vector3$1( - 1, 0, 0 ) );
+	cameraNX.lookAt( new Vector3( - 1, 0, 0 ) );
 	this.add( cameraNX );
 
 	const cameraPY = new PerspectiveCamera( fov, aspect, near, far );
 	cameraPY.layers = this.layers;
 	cameraPY.up.set( 0, 0, 1 );
-	cameraPY.lookAt( new Vector3$1( 0, 1, 0 ) );
+	cameraPY.lookAt( new Vector3( 0, 1, 0 ) );
 	this.add( cameraPY );
 
 	const cameraNY = new PerspectiveCamera( fov, aspect, near, far );
 	cameraNY.layers = this.layers;
 	cameraNY.up.set( 0, 0, - 1 );
-	cameraNY.lookAt( new Vector3$1( 0, - 1, 0 ) );
+	cameraNY.lookAt( new Vector3( 0, - 1, 0 ) );
 	this.add( cameraNY );
 
 	const cameraPZ = new PerspectiveCamera( fov, aspect, near, far );
 	cameraPZ.layers = this.layers;
 	cameraPZ.up.set( 0, - 1, 0 );
-	cameraPZ.lookAt( new Vector3$1( 0, 0, 1 ) );
+	cameraPZ.lookAt( new Vector3( 0, 0, 1 ) );
 	this.add( cameraPZ );
 
 	const cameraNZ = new PerspectiveCamera( fov, aspect, near, far );
 	cameraNZ.layers = this.layers;
 	cameraNZ.up.set( 0, - 1, 0 );
-	cameraNZ.lookAt( new Vector3$1( 0, 0, - 1 ) );
+	cameraNZ.lookAt( new Vector3( 0, 0, - 1 ) );
 	this.add( cameraNZ );
 
 	this.update = function ( renderer, scene ) {
@@ -12497,7 +12497,7 @@ DataTexture.prototype.constructor = DataTexture;
 DataTexture.prototype.isDataTexture = true;
 
 const _sphere$1 = /*@__PURE__*/ new Sphere();
-const _vector$5 = /*@__PURE__*/ new Vector3$1();
+const _vector$5 = /*@__PURE__*/ new Vector3();
 
 class Frustum {
 
@@ -13827,7 +13827,7 @@ const ShaderLib = {
 			UniformsLib.common,
 			UniformsLib.displacementmap,
 			{
-				referencePosition: { value: new Vector3$1() },
+				referencePosition: { value: new Vector3() },
 				nearDistance: { value: 1 },
 				farDistance: { value: 1000 }
 			}
@@ -18234,15 +18234,15 @@ function UniformsCache() {
 
 				case 'DirectionalLight':
 					uniforms = {
-						direction: new Vector3$1(),
+						direction: new Vector3(),
 						color: new Color()
 					};
 					break;
 
 				case 'SpotLight':
 					uniforms = {
-						position: new Vector3$1(),
-						direction: new Vector3$1(),
+						position: new Vector3(),
+						direction: new Vector3(),
 						color: new Color(),
 						distance: 0,
 						coneCos: 0,
@@ -18253,7 +18253,7 @@ function UniformsCache() {
 
 				case 'PointLight':
 					uniforms = {
-						position: new Vector3$1(),
+						position: new Vector3(),
 						color: new Color(),
 						distance: 0,
 						decay: 0
@@ -18262,7 +18262,7 @@ function UniformsCache() {
 
 				case 'HemisphereLight':
 					uniforms = {
-						direction: new Vector3$1(),
+						direction: new Vector3(),
 						skyColor: new Color(),
 						groundColor: new Color()
 					};
@@ -18271,9 +18271,9 @@ function UniformsCache() {
 				case 'RectAreaLight':
 					uniforms = {
 						color: new Color(),
-						position: new Vector3$1(),
-						halfWidth: new Vector3$1(),
-						halfHeight: new Vector3$1()
+						position: new Vector3(),
+						halfWidth: new Vector3(),
+						halfHeight: new Vector3()
 					};
 					break;
 
@@ -18403,9 +18403,9 @@ function WebGLLights( extensions, capabilities ) {
 
 	};
 
-	for ( let i = 0; i < 9; i ++ ) state.probe.push( new Vector3$1() );
+	for ( let i = 0; i < 9; i ++ ) state.probe.push( new Vector3() );
 
-	const vector3 = new Vector3$1();
+	const vector3 = new Vector3();
 	const matrix4 = new Matrix4();
 	const matrix42 = new Matrix4();
 
@@ -18959,7 +18959,7 @@ function MeshDistanceMaterial( parameters ) {
 
 	this.type = 'MeshDistanceMaterial';
 
-	this.referencePosition = new Vector3$1();
+	this.referencePosition = new Vector3();
 	this.nearDistance = 1;
 	this.farDistance = 1000;
 
@@ -22393,8 +22393,8 @@ function WebXRManager( renderer, gl ) {
 
 	//
 
-	const cameraLPos = new Vector3$1();
-	const cameraRPos = new Vector3$1();
+	const cameraLPos = new Vector3();
+	const cameraRPos = new Vector3();
 
 	/**
 	 * Assumes 2 cameras that are parallel and share an X-axis, and that
@@ -23435,7 +23435,7 @@ function WebGLRenderer( parameters ) {
 
 	const _projScreenMatrix = new Matrix4();
 
-	const _vector3 = new Vector3$1();
+	const _vector3 = new Vector3();
 
 	const _emptyScene = { background: null, fog: null, environment: null, overrideMaterial: null, isScene: true };
 
@@ -25555,7 +25555,7 @@ Object.assign( InterleavedBuffer.prototype, {
 
 } );
 
-const _vector$6 = new Vector3$1();
+const _vector$6 = new Vector3();
 
 function InterleavedBufferAttribute( interleavedBuffer, itemSize, offset, normalized ) {
 
@@ -25874,17 +25874,17 @@ SpriteMaterial.prototype.copy = function ( source ) {
 
 let _geometry;
 
-const _intersectPoint = new Vector3$1();
-const _worldScale = new Vector3$1();
-const _mvPosition = new Vector3$1();
+const _intersectPoint = new Vector3();
+const _worldScale = new Vector3();
+const _mvPosition = new Vector3();
 
 const _alignedPosition = new Vector2();
 const _rotatedPosition = new Vector2();
 const _viewWorldMatrix = new Matrix4();
 
-const _vA$1 = new Vector3$1();
-const _vB$1 = new Vector3$1();
-const _vC$1 = new Vector3$1();
+const _vA$1 = new Vector3();
+const _vB$1 = new Vector3();
+const _vC$1 = new Vector3();
 
 const _uvA$1 = new Vector2();
 const _uvB$1 = new Vector2();
@@ -26044,8 +26044,8 @@ function transformVertex( vertexPosition, mvPosition, center, scale, sin, cos ) 
 
 }
 
-const _v1$4 = new Vector3$1();
-const _v2$2 = new Vector3$1();
+const _v1$4 = new Vector3();
+const _v2$2 = new Vector3();
 
 function LOD() {
 
@@ -26235,12 +26235,12 @@ LOD.prototype = Object.assign( Object.create( Object3D.prototype ), {
 
 } );
 
-const _basePosition = new Vector3$1();
+const _basePosition = new Vector3();
 
 const _skinIndex = new Vector4();
 const _skinWeight = new Vector4();
 
-const _vector$7 = new Vector3$1();
+const _vector$7 = new Vector3();
 const _matrix$1 = new Matrix4();
 
 function SkinnedMesh( geometry, material ) {
@@ -26821,8 +26821,8 @@ LineBasicMaterial.prototype.copy = function ( source ) {
 
 };
 
-const _start = new Vector3$1();
-const _end = new Vector3$1();
+const _start = new Vector3();
+const _end = new Vector3();
 const _inverseMatrix$1 = new Matrix4();
 const _ray$1 = new Ray();
 const _sphere$2 = new Sphere();
@@ -26932,10 +26932,10 @@ Line.prototype = Object.assign( Object.create( Object3D.prototype ), {
 		const localThreshold = threshold / ( ( this.scale.x + this.scale.y + this.scale.z ) / 3 );
 		const localThresholdSq = localThreshold * localThreshold;
 
-		const vStart = new Vector3$1();
-		const vEnd = new Vector3$1();
-		const interSegment = new Vector3$1();
-		const interRay = new Vector3$1();
+		const vStart = new Vector3();
+		const vEnd = new Vector3();
+		const interSegment = new Vector3();
+		const interRay = new Vector3();
 		const step = this.isLineSegments ? 2 : 1;
 
 		if ( geometry.isBufferGeometry ) {
@@ -27098,8 +27098,8 @@ Line.prototype = Object.assign( Object.create( Object3D.prototype ), {
 
 } );
 
-const _start$1 = new Vector3$1();
-const _end$1 = new Vector3$1();
+const _start$1 = new Vector3();
+const _end$1 = new Vector3();
 
 function LineSegments( geometry, material ) {
 
@@ -27247,7 +27247,7 @@ PointsMaterial.prototype.copy = function ( source ) {
 const _inverseMatrix$2 = new Matrix4();
 const _ray$2 = new Ray();
 const _sphere$3 = new Sphere();
-const _position$1 = new Vector3$1();
+const _position$1 = new Vector3();
 
 function Points( geometry = new BufferGeometry(), material = new PointsMaterial() ) {
 
@@ -27402,7 +27402,7 @@ function testPoint( point, index, localThresholdSq, matrixWorld, raycaster, inte
 
 	if ( rayPointDistanceSq < localThresholdSq ) {
 
-		const intersectPoint = new Vector3$1();
+		const intersectPoint = new Vector3();
 
 		_ray$2.closestPointToPoint( point, intersectPoint );
 		intersectPoint.applyMatrix4( matrixWorld );
@@ -27549,7 +27549,7 @@ DepthTexture.prototype.isDepthTexture = true;
 let _geometryId = 0; // Geometry uses even numbers as Id
 const _m1$3 = new Matrix4();
 const _obj$1 = new Object3D();
-const _offset$1 = new Vector3$1();
+const _offset$1 = new Vector3();
 
 function Geometry() {
 
@@ -27733,7 +27733,7 @@ Geometry.prototype = Object.assign( Object.create( EventDispatcher.prototype ), 
 
 		for ( let i = 0; i < position.count; i ++ ) {
 
-			scope.vertices.push( new Vector3$1().fromBufferAttribute( position, i ) );
+			scope.vertices.push( new Vector3().fromBufferAttribute( position, i ) );
 
 			if ( color !== undefined ) {
 
@@ -27752,9 +27752,9 @@ Geometry.prototype = Object.assign( Object.create( EventDispatcher.prototype ), 
 			];
 
 			const vertexNormals = ( normal === undefined ) ? [] : [
-				new Vector3$1().fromBufferAttribute( normal, a ),
-				new Vector3$1().fromBufferAttribute( normal, b ),
-				new Vector3$1().fromBufferAttribute( normal, c )
+				new Vector3().fromBufferAttribute( normal, a ),
+				new Vector3().fromBufferAttribute( normal, b ),
+				new Vector3().fromBufferAttribute( normal, c )
 			];
 
 			const face = new Face3( a, b, c, vertexNormals, vertexColors, materialIndex );
@@ -27887,7 +27887,7 @@ Geometry.prototype = Object.assign( Object.create( EventDispatcher.prototype ), 
 
 	computeFaceNormals: function () {
 
-		const cb = new Vector3$1(), ab = new Vector3$1();
+		const cb = new Vector3(), ab = new Vector3();
 
 		for ( let f = 0, fl = this.faces.length; f < fl; f ++ ) {
 
@@ -27915,7 +27915,7 @@ Geometry.prototype = Object.assign( Object.create( EventDispatcher.prototype ), 
 
 		for ( let v = 0, vl = this.vertices.length; v < vl; v ++ ) {
 
-			vertices[ v ] = new Vector3$1();
+			vertices[ v ] = new Vector3();
 
 		}
 
@@ -27924,7 +27924,7 @@ Geometry.prototype = Object.assign( Object.create( EventDispatcher.prototype ), 
 			// vertex normals weighted by triangle areas
 			// http://www.iquilezles.org/www/articles/normals/normals.htm
 
-			const cb = new Vector3$1(), ab = new Vector3$1();
+			const cb = new Vector3(), ab = new Vector3();
 
 			for ( let f = 0, fl = this.faces.length; f < fl; f ++ ) {
 
@@ -28088,8 +28088,8 @@ Geometry.prototype = Object.assign( Object.create( EventDispatcher.prototype ), 
 
 				for ( let f = 0, fl = this.faces.length; f < fl; f ++ ) {
 
-					const faceNormal = new Vector3$1();
-					const vertexNormals = { a: new Vector3$1(), b: new Vector3$1(), c: new Vector3$1() };
+					const faceNormal = new Vector3();
+					const vertexNormals = { a: new Vector3(), b: new Vector3(), c: new Vector3() };
 
 					dstNormalsFace.push( faceNormal );
 					dstNormalsVertex.push( vertexNormals );
@@ -28391,7 +28391,7 @@ Geometry.prototype = Object.assign( Object.create( EventDispatcher.prototype ), 
 		for ( let i = 0, l = points.length; i < l; i ++ ) {
 
 			const point = points[ i ];
-			this.vertices.push( new Vector3$1( point.x, point.y, point.z || 0 ) );
+			this.vertices.push( new Vector3( point.x, point.y, point.z || 0 ) );
 
 		}
 
@@ -28959,7 +28959,7 @@ class CircleBufferGeometry extends BufferGeometry {
 
 		// helper variables
 
-		const vertex = new Vector3$1();
+		const vertex = new Vector3();
 		const uv = new Vector2();
 
 		// center point
@@ -29089,8 +29089,8 @@ class CylinderBufferGeometry extends BufferGeometry {
 
 		function generateTorso() {
 
-			const normal = new Vector3$1();
-			const vertex = new Vector3$1();
+			const normal = new Vector3();
+			const vertex = new Vector3();
 
 			let groupCount = 0;
 
@@ -29188,7 +29188,7 @@ class CylinderBufferGeometry extends BufferGeometry {
 			const centerIndexStart = index;
 
 			const uv = new Vector2();
-			const vertex = new Vector3$1();
+			const vertex = new Vector3();
 
 			let groupCount = 0;
 
@@ -29414,9 +29414,9 @@ class PolyhedronBufferGeometry extends BufferGeometry {
 
 		function subdivide( detail ) {
 
-			const a = new Vector3$1();
-			const b = new Vector3$1();
-			const c = new Vector3$1();
+			const a = new Vector3();
+			const b = new Vector3();
+			const c = new Vector3();
 
 			// iterate over all faces and apply a subdivison with the given detail value
 
@@ -29501,7 +29501,7 @@ class PolyhedronBufferGeometry extends BufferGeometry {
 
 		function applyRadius( radius ) {
 
-			const vertex = new Vector3$1();
+			const vertex = new Vector3();
 
 			// iterate over the entire buffer and apply the radius to each vertex
 
@@ -29523,7 +29523,7 @@ class PolyhedronBufferGeometry extends BufferGeometry {
 
 		function generateUVs() {
 
-			const vertex = new Vector3$1();
+			const vertex = new Vector3();
 
 			for ( let i = 0; i < vertexBuffer.length; i += 3 ) {
 
@@ -29590,11 +29590,11 @@ class PolyhedronBufferGeometry extends BufferGeometry {
 
 		function correctUVs() {
 
-			const a = new Vector3$1();
-			const b = new Vector3$1();
-			const c = new Vector3$1();
+			const a = new Vector3();
+			const b = new Vector3();
+			const c = new Vector3();
 
-			const centroid = new Vector3$1();
+			const centroid = new Vector3();
 
 			const uvA = new Vector2();
 			const uvB = new Vector2();
@@ -29734,9 +29734,9 @@ class DodecahedronGeometry extends Geometry {
 
 }
 
-const _v0$2 = new Vector3$1();
-const _v1$5 = new Vector3$1();
-const _normal$1 = new Vector3$1();
+const _v0$2 = new Vector3();
+const _v1$5 = new Vector3();
+const _normal$1 = new Vector3();
 const _triangle = new Triangle();
 
 class EdgesGeometry extends BufferGeometry {
@@ -30858,9 +30858,9 @@ class ExtrudeBufferGeometry extends BufferGeometry {
 
 				// console.log(splineTube, 'splineTube', splineTube.normals.length, 'steps', steps, 'extrudePts', extrudePts.length);
 
-				binormal = new Vector3$1();
-				normal = new Vector3$1();
-				position2 = new Vector3$1();
+				binormal = new Vector3();
+				normal = new Vector3();
+				position2 = new Vector3();
 
 			}
 
@@ -31689,7 +31689,7 @@ class LatheBufferGeometry extends BufferGeometry {
 		// helper variables
 
 		const inverseSegments = 1.0 / segments;
-		const vertex = new Vector3$1();
+		const vertex = new Vector3();
 		const uv = new Vector2();
 
 		// generate vertices and uvs
@@ -31761,9 +31761,9 @@ class LatheBufferGeometry extends BufferGeometry {
 		if ( phiLength === Math.PI * 2 ) {
 
 			const normals = this.attributes.normal.array;
-			const n1 = new Vector3$1();
-			const n2 = new Vector3$1();
-			const n = new Vector3$1();
+			const n1 = new Vector3();
+			const n2 = new Vector3();
+			const n = new Vector3();
 
 			// this is the buffer offset for the last line of vertices
 
@@ -31897,10 +31897,10 @@ function ParametricBufferGeometry( func, slices, stacks ) {
 
 	const EPS = 0.00001;
 
-	const normal = new Vector3$1();
+	const normal = new Vector3();
 
-	const p0 = new Vector3$1(), p1 = new Vector3$1();
-	const pu = new Vector3$1(), pv = new Vector3$1();
+	const p0 = new Vector3(), p1 = new Vector3();
+	const pu = new Vector3(), pv = new Vector3();
 
 	if ( func.length < 3 ) {
 
@@ -32098,7 +32098,7 @@ class RingBufferGeometry extends BufferGeometry {
 
 		let radius = innerRadius;
 		const radiusStep = ( ( outerRadius - innerRadius ) / phiSegments );
-		const vertex = new Vector3$1();
+		const vertex = new Vector3();
 		const uv = new Vector2();
 
 		// generate vertices, normals and uvs
@@ -32443,8 +32443,8 @@ class SphereBufferGeometry extends BufferGeometry {
 		let index = 0;
 		const grid = [];
 
-		const vertex = new Vector3$1();
-		const normal = new Vector3$1();
+		const vertex = new Vector3();
+		const normal = new Vector3();
 
 		// buffers
 
@@ -32714,9 +32714,9 @@ class TorusBufferGeometry extends BufferGeometry {
 
 		// helper variables
 
-		const center = new Vector3$1();
-		const vertex = new Vector3$1();
-		const normal = new Vector3$1();
+		const center = new Vector3();
+		const vertex = new Vector3();
+		const normal = new Vector3();
 
 		// generate vertices, normals and uvs
 
@@ -32835,15 +32835,15 @@ class TorusKnotBufferGeometry extends BufferGeometry {
 
 		// helper variables
 
-		const vertex = new Vector3$1();
-		const normal = new Vector3$1();
+		const vertex = new Vector3();
+		const normal = new Vector3();
 
-		const P1 = new Vector3$1();
-		const P2 = new Vector3$1();
+		const P1 = new Vector3();
+		const P2 = new Vector3();
 
-		const B = new Vector3$1();
-		const T = new Vector3$1();
-		const N = new Vector3$1();
+		const B = new Vector3();
+		const T = new Vector3();
+		const N = new Vector3();
 
 		// generate vertices, normals and uvs
 
@@ -33002,10 +33002,10 @@ class TubeBufferGeometry extends BufferGeometry {
 
 		// helper variables
 
-		const vertex = new Vector3$1();
-		const normal = new Vector3$1();
+		const vertex = new Vector3();
+		const normal = new Vector3();
 		const uv = new Vector2();
-		let P = new Vector3$1();
+		let P = new Vector3();
 
 		// buffer
 
@@ -33243,7 +33243,7 @@ class WireframeGeometry extends BufferGeometry {
 
 		} else if ( geometry && geometry.isBufferGeometry ) {
 
-			const vertex = new Vector3$1();
+			const vertex = new Vector3();
 
 			if ( geometry.index !== null ) {
 
@@ -37553,7 +37553,7 @@ Object.assign( Curve.prototype, {
 		const pt1 = this.getPoint( t1 );
 		const pt2 = this.getPoint( t2 );
 
-		const tangent = optionalTarget || ( ( pt1.isVector2 ) ? new Vector2() : new Vector3$1() );
+		const tangent = optionalTarget || ( ( pt1.isVector2 ) ? new Vector2() : new Vector3() );
 
 		tangent.copy( pt2 ).sub( pt1 ).normalize();
 
@@ -37572,13 +37572,13 @@ Object.assign( Curve.prototype, {
 
 		// see http://www.cs.indiana.edu/pub/techreports/TR425.pdf
 
-		const normal = new Vector3$1();
+		const normal = new Vector3();
 
 		const tangents = [];
 		const normals = [];
 		const binormals = [];
 
-		const vec = new Vector3$1();
+		const vec = new Vector3();
 		const mat = new Matrix4();
 
 		// compute the tangent vectors for each segment on the curve
@@ -37587,7 +37587,7 @@ Object.assign( Curve.prototype, {
 
 			const u = i / segments;
 
-			tangents[ i ] = this.getTangentAt( u, new Vector3$1() );
+			tangents[ i ] = this.getTangentAt( u, new Vector3() );
 			tangents[ i ].normalize();
 
 		}
@@ -37595,8 +37595,8 @@ Object.assign( Curve.prototype, {
 		// select an initial normal vector perpendicular to the first tangent vector,
 		// and in the direction of the minimum tangent xyz component
 
-		normals[ 0 ] = new Vector3$1();
-		binormals[ 0 ] = new Vector3$1();
+		normals[ 0 ] = new Vector3();
+		binormals[ 0 ] = new Vector3();
 		let min = Number.MAX_VALUE;
 		const tx = Math.abs( tangents[ 0 ].x );
 		const ty = Math.abs( tangents[ 0 ].y );
@@ -37966,7 +37966,7 @@ function CubicPoly() {
 
 //
 
-const tmp = new Vector3$1();
+const tmp = new Vector3();
 const px = new CubicPoly(), py = new CubicPoly(), pz = new CubicPoly();
 
 function CatmullRomCurve3( points = [], closed = false, curveType = 'centripetal', tension = 0.5 ) {
@@ -37987,7 +37987,7 @@ CatmullRomCurve3.prototype.constructor = CatmullRomCurve3;
 
 CatmullRomCurve3.prototype.isCatmullRomCurve3 = true;
 
-CatmullRomCurve3.prototype.getPoint = function ( t, optionalTarget = new Vector3$1() ) {
+CatmullRomCurve3.prototype.getPoint = function ( t, optionalTarget = new Vector3() ) {
 
 	const point = optionalTarget;
 
@@ -38125,7 +38125,7 @@ CatmullRomCurve3.prototype.fromJSON = function ( json ) {
 	for ( let i = 0, l = json.points.length; i < l; i ++ ) {
 
 		const point = json.points[ i ];
-		this.points.push( new Vector3$1().fromArray( point ) );
+		this.points.push( new Vector3().fromArray( point ) );
 
 	}
 
@@ -38287,7 +38287,7 @@ CubicBezierCurve.prototype.fromJSON = function ( json ) {
 
 };
 
-function CubicBezierCurve3( v0 = new Vector3$1(), v1 = new Vector3$1(), v2 = new Vector3$1(), v3 = new Vector3$1() ) {
+function CubicBezierCurve3( v0 = new Vector3(), v1 = new Vector3(), v2 = new Vector3(), v3 = new Vector3() ) {
 
 	Curve.call( this );
 
@@ -38305,7 +38305,7 @@ CubicBezierCurve3.prototype.constructor = CubicBezierCurve3;
 
 CubicBezierCurve3.prototype.isCubicBezierCurve3 = true;
 
-CubicBezierCurve3.prototype.getPoint = function ( t, optionalTarget = new Vector3$1() ) {
+CubicBezierCurve3.prototype.getPoint = function ( t, optionalTarget = new Vector3() ) {
 
 	const point = optionalTarget;
 
@@ -38446,7 +38446,7 @@ LineCurve.prototype.fromJSON = function ( json ) {
 
 };
 
-function LineCurve3( v1 = new Vector3$1(), v2 = new Vector3$1() ) {
+function LineCurve3( v1 = new Vector3(), v2 = new Vector3() ) {
 
 	Curve.call( this );
 
@@ -38462,7 +38462,7 @@ LineCurve3.prototype.constructor = LineCurve3;
 
 LineCurve3.prototype.isLineCurve3 = true;
 
-LineCurve3.prototype.getPoint = function ( t, optionalTarget = new Vector3$1() ) {
+LineCurve3.prototype.getPoint = function ( t, optionalTarget = new Vector3() ) {
 
 	const point = optionalTarget;
 
@@ -38590,7 +38590,7 @@ QuadraticBezierCurve.prototype.fromJSON = function ( json ) {
 
 };
 
-function QuadraticBezierCurve3( v0 = new Vector3$1(), v1 = new Vector3$1(), v2 = new Vector3$1() ) {
+function QuadraticBezierCurve3( v0 = new Vector3(), v1 = new Vector3(), v2 = new Vector3() ) {
 
 	Curve.call( this );
 
@@ -38607,7 +38607,7 @@ QuadraticBezierCurve3.prototype.constructor = QuadraticBezierCurve3;
 
 QuadraticBezierCurve3.prototype.isQuadraticBezierCurve3 = true;
 
-QuadraticBezierCurve3.prototype.getPoint = function ( t, optionalTarget = new Vector3$1() ) {
+QuadraticBezierCurve3.prototype.getPoint = function ( t, optionalTarget = new Vector3() ) {
 
 	const point = optionalTarget;
 
@@ -39415,9 +39415,9 @@ Object.assign( LightShadow.prototype, {
 
 	_projScreenMatrix: new Matrix4(),
 
-	_lightPositionWorld: new Vector3$1(),
+	_lightPositionWorld: new Vector3(),
 
-	_lookTarget: new Vector3$1(),
+	_lookTarget: new Vector3(),
 
 	getViewportCount: function () {
 
@@ -39646,13 +39646,13 @@ function PointLightShadow() {
 	];
 
 	this._cubeDirections = [
-		new Vector3$1( 1, 0, 0 ), new Vector3$1( - 1, 0, 0 ), new Vector3$1( 0, 0, 1 ),
-		new Vector3$1( 0, 0, - 1 ), new Vector3$1( 0, 1, 0 ), new Vector3$1( 0, - 1, 0 )
+		new Vector3( 1, 0, 0 ), new Vector3( - 1, 0, 0 ), new Vector3( 0, 0, 1 ),
+		new Vector3( 0, 0, - 1 ), new Vector3( 0, 1, 0 ), new Vector3( 0, - 1, 0 )
 	];
 
 	this._cubeUps = [
-		new Vector3$1( 0, 1, 0 ), new Vector3$1( 0, 1, 0 ), new Vector3$1( 0, 1, 0 ),
-		new Vector3$1( 0, 1, 0 ), new Vector3$1( 0, 0, 1 ),	new Vector3$1( 0, 0, - 1 )
+		new Vector3( 0, 1, 0 ), new Vector3( 0, 1, 0 ), new Vector3( 0, 1, 0 ),
+		new Vector3( 0, 1, 0 ), new Vector3( 0, 0, 1 ),	new Vector3( 0, 0, - 1 )
 	];
 
 }
@@ -40007,7 +40007,7 @@ class SphericalHarmonics3 {
 
 		for ( let i = 0; i < 9; i ++ ) {
 
-			this.coefficients.push( new Vector3$1() );
+			this.coefficients.push( new Vector3() );
 
 		}
 
@@ -40438,7 +40438,7 @@ MaterialLoader.prototype = Object.assign( Object.create( Loader.prototype ), {
 						break;
 
 					case 'v3':
-						material.uniforms[ name ].value = new Vector3$1().fromArray( uniform.value );
+						material.uniforms[ name ].value = new Vector3().fromArray( uniform.value );
 						break;
 
 					case 'v4':
@@ -40884,7 +40884,7 @@ BufferGeometryLoader.prototype = Object.assign( Object.create( Loader.prototype 
 
 		if ( boundingSphere !== undefined ) {
 
-			const center = new Vector3$1();
+			const center = new Vector3();
 
 			if ( boundingSphere.center !== undefined ) {
 
@@ -42679,8 +42679,8 @@ function HemisphereLightProbe( skyColor, groundColor, intensity ) {
 	const color1 = new Color().set( skyColor );
 	const color2 = new Color().set( groundColor );
 
-	const sky = new Vector3$1( color1.r, color1.g, color1.b );
-	const ground = new Vector3$1( color2.r, color2.g, color2.b );
+	const sky = new Vector3( color1.r, color1.g, color1.b );
+	const ground = new Vector3( color2.r, color2.g, color2.b );
 
 	// without extra factor of PI in the shader, should = 1 / Math.sqrt( Math.PI );
 	const c0 = Math.sqrt( Math.PI );
@@ -42921,10 +42921,10 @@ function now() {
 
 }
 
-const _position$2 = /*@__PURE__*/ new Vector3$1();
+const _position$2 = /*@__PURE__*/ new Vector3();
 const _quaternion$3 = /*@__PURE__*/ new Quaternion();
-const _scale$1 = /*@__PURE__*/ new Vector3$1();
-const _orientation = /*@__PURE__*/ new Vector3$1();
+const _scale$1 = /*@__PURE__*/ new Vector3();
+const _orientation = /*@__PURE__*/ new Vector3();
 
 class AudioListener extends Object3D {
 
@@ -43439,10 +43439,10 @@ class Audio extends Object3D {
 
 }
 
-const _position$3 = /*@__PURE__*/ new Vector3$1();
+const _position$3 = /*@__PURE__*/ new Vector3();
 const _quaternion$4 = /*@__PURE__*/ new Quaternion();
-const _scale$2 = /*@__PURE__*/ new Vector3$1();
-const _orientation$1 = /*@__PURE__*/ new Vector3$1();
+const _scale$2 = /*@__PURE__*/ new Vector3();
+const _orientation$1 = /*@__PURE__*/ new Vector3();
 
 class PositionalAudio extends Audio {
 
@@ -47067,15 +47067,15 @@ class Box2 {
 
 }
 
-const _startP = /*@__PURE__*/ new Vector3$1();
-const _startEnd = /*@__PURE__*/ new Vector3$1();
+const _startP = /*@__PURE__*/ new Vector3();
+const _startEnd = /*@__PURE__*/ new Vector3();
 
 class Line3 {
 
 	constructor( start, end ) {
 
-		this.start = ( start !== undefined ) ? start : new Vector3$1();
-		this.end = ( end !== undefined ) ? end : new Vector3$1();
+		this.start = ( start !== undefined ) ? start : new Vector3();
+		this.end = ( end !== undefined ) ? end : new Vector3();
 
 	}
 
@@ -47108,7 +47108,7 @@ class Line3 {
 		if ( target === undefined ) {
 
 			console.warn( 'THREE.Line3: .getCenter() target is now required' );
-			target = new Vector3$1();
+			target = new Vector3();
 
 		}
 
@@ -47121,7 +47121,7 @@ class Line3 {
 		if ( target === undefined ) {
 
 			console.warn( 'THREE.Line3: .delta() target is now required' );
-			target = new Vector3$1();
+			target = new Vector3();
 
 		}
 
@@ -47146,7 +47146,7 @@ class Line3 {
 		if ( target === undefined ) {
 
 			console.warn( 'THREE.Line3: .at() target is now required' );
-			target = new Vector3$1();
+			target = new Vector3();
 
 		}
 
@@ -47181,7 +47181,7 @@ class Line3 {
 		if ( target === undefined ) {
 
 			console.warn( 'THREE.Line3: .closestPointToPoint() target is now required' );
-			target = new Vector3$1();
+			target = new Vector3();
 
 		}
 
@@ -47232,7 +47232,7 @@ ImmediateRenderObject.prototype.constructor = ImmediateRenderObject;
 
 ImmediateRenderObject.prototype.isImmediateRenderObject = true;
 
-const _vector$9 = /*@__PURE__*/ new Vector3$1();
+const _vector$9 = /*@__PURE__*/ new Vector3();
 
 class SpotLightHelper extends Object3D {
 
@@ -47314,7 +47314,7 @@ class SpotLightHelper extends Object3D {
 
 }
 
-const _vector$a = /*@__PURE__*/ new Vector3$1();
+const _vector$a = /*@__PURE__*/ new Vector3();
 const _boneMatrix = /*@__PURE__*/ new Matrix4();
 const _matrixWorldInv = /*@__PURE__*/ new Matrix4();
 
@@ -47509,7 +47509,7 @@ class PointLightHelper extends Mesh {
 
 }
 
-const _vector$b = /*@__PURE__*/ new Vector3$1();
+const _vector$b = /*@__PURE__*/ new Vector3();
 const _color1 = /*@__PURE__*/ new Color();
 const _color2 = /*@__PURE__*/ new Color();
 
@@ -47701,9 +47701,9 @@ class PolarGridHelper extends LineSegments {
 
 }
 
-const _v1$6 = /*@__PURE__*/ new Vector3$1();
-const _v2$3 = /*@__PURE__*/ new Vector3$1();
-const _v3$1 = /*@__PURE__*/ new Vector3$1();
+const _v1$6 = /*@__PURE__*/ new Vector3();
+const _v2$3 = /*@__PURE__*/ new Vector3();
+const _v3$1 = /*@__PURE__*/ new Vector3();
 
 class DirectionalLightHelper extends Object3D {
 
@@ -47780,7 +47780,7 @@ class DirectionalLightHelper extends Object3D {
 
 }
 
-const _vector$c = /*@__PURE__*/ new Vector3$1();
+const _vector$c = /*@__PURE__*/ new Vector3();
 const _camera = /*@__PURE__*/ new Camera();
 
 /**
@@ -48163,7 +48163,7 @@ class PlaneHelper extends Line {
 
 }
 
-const _axis = /*@__PURE__*/ new Vector3$1();
+const _axis = /*@__PURE__*/ new Vector3();
 let _lineGeometry, _coneGeometry;
 
 class ArrowHelper extends Object3D {
@@ -48175,8 +48175,8 @@ class ArrowHelper extends Object3D {
 
 		this.type = 'ArrowHelper';
 
-		if ( dir === undefined ) dir = new Vector3$1( 0, 0, 1 );
-		if ( origin === undefined ) origin = new Vector3$1( 0, 0, 0 );
+		if ( dir === undefined ) dir = new Vector3( 0, 0, 1 );
+		if ( origin === undefined ) origin = new Vector3( 0, 0, 0 );
 		if ( length === undefined ) length = 1;
 		if ( color === undefined ) color = 0xffff00;
 		if ( headLength === undefined ) headLength = 0.2 * length;
@@ -48391,16 +48391,16 @@ const INV_PHI = 1 / PHI;
 // Vertices of a dodecahedron (except the opposites, which represent the
 // same axis), used as axis directions evenly spread on a sphere.
 const _axisDirections = [
-	/*@__PURE__*/ new Vector3$1( 1, 1, 1 ),
-	/*@__PURE__*/ new Vector3$1( - 1, 1, 1 ),
-	/*@__PURE__*/ new Vector3$1( 1, 1, - 1 ),
-	/*@__PURE__*/ new Vector3$1( - 1, 1, - 1 ),
-	/*@__PURE__*/ new Vector3$1( 0, PHI, INV_PHI ),
-	/*@__PURE__*/ new Vector3$1( 0, PHI, - INV_PHI ),
-	/*@__PURE__*/ new Vector3$1( INV_PHI, 0, PHI ),
-	/*@__PURE__*/ new Vector3$1( - INV_PHI, 0, PHI ),
-	/*@__PURE__*/ new Vector3$1( PHI, INV_PHI, 0 ),
-	/*@__PURE__*/ new Vector3$1( - PHI, INV_PHI, 0 ) ];
+	/*@__PURE__*/ new Vector3( 1, 1, 1 ),
+	/*@__PURE__*/ new Vector3( - 1, 1, 1 ),
+	/*@__PURE__*/ new Vector3( 1, 1, - 1 ),
+	/*@__PURE__*/ new Vector3( - 1, 1, - 1 ),
+	/*@__PURE__*/ new Vector3( 0, PHI, INV_PHI ),
+	/*@__PURE__*/ new Vector3( 0, PHI, - INV_PHI ),
+	/*@__PURE__*/ new Vector3( INV_PHI, 0, PHI ),
+	/*@__PURE__*/ new Vector3( - INV_PHI, 0, PHI ),
+	/*@__PURE__*/ new Vector3( PHI, INV_PHI, 0 ),
+	/*@__PURE__*/ new Vector3( - PHI, INV_PHI, 0 ) ];
 
 /**
  * This class generates a Prefiltered, Mipmapped Radiance Environment Map
@@ -48928,7 +48928,7 @@ function _setViewport( target, x, y, width, height ) {
 function _getBlurShader( maxSamples ) {
 
 	const weights = new Float32Array( maxSamples );
-	const poleAxis = new Vector3$1( 0, 1, 0 );
+	const poleAxis = new Vector3( 0, 1, 0 );
 	const shaderMaterial = new RawShaderMaterial( {
 
 		name: 'SphericalGaussianBlur',
@@ -49364,7 +49364,7 @@ function ParticleSystemMaterial( parameters ) {
 function Vertex( x, y, z ) {
 
 	console.warn( 'THREE.Vertex has been removed. Use THREE.Vector3 instead.' );
-	return new Vector3$1( x, y, z );
+	return new Vector3( x, y, z );
 
 }
 
@@ -49489,7 +49489,7 @@ Object.assign( CurvePath.prototype, {
 		for ( let i = 0, l = points.length; i < l; i ++ ) {
 
 			const point = points[ i ];
-			geometry.vertices.push( new Vector3$1( point.x, point.y, point.z || 0 ) );
+			geometry.vertices.push( new Vector3( point.x, point.y, point.z || 0 ) );
 
 		}
 
@@ -49827,7 +49827,7 @@ Object.assign( Matrix4.prototype, {
 	getPosition: function () {
 
 		console.warn( 'THREE.Matrix4: .getPosition() has been removed. Use Vector3.setFromMatrixPosition( matrix ) instead.' );
-		return new Vector3$1().setFromMatrixColumn( this, 3 );
+		return new Vector3().setFromMatrixColumn( this, 3 );
 
 	},
 	setRotationFromQuaternion: function ( q ) {
@@ -50066,7 +50066,7 @@ Object.assign( Vector2.prototype, {
 
 } );
 
-Object.assign( Vector3$1.prototype, {
+Object.assign( Vector3.prototype, {
 
 	setEulerFromRotationMatrix: function () {
 
@@ -51589,8 +51589,8 @@ class Scene$1 extends Scene {
 
 }
 
-const vector = new Vector3$1();
-const vector2 = new Vector3$1();
+const vector = new Vector3();
+const vector2 = new Vector3();
 const quat = new Quaternion();
 const quat2 = new Quaternion();
 const matrix = new Matrix4();
@@ -51600,7 +51600,7 @@ class Physics {
 	constructor( parameters ) {
 
 		this._accumulator = 0;
-		this._gravity = parameters.gravity !== undefined ? parameters.gravity : new Vector3$1( 0, - 9.80665, 0 );
+		this._gravity = parameters.gravity !== undefined ? parameters.gravity : new Vector3( 0, - 9.80665, 0 );
 
 		this._triggers = [];
 
@@ -51628,8 +51628,8 @@ class Physics {
 				callback(
 					shape.collider,
 					hit.fraction,
-					new Vector3$1().copy( hit.normal ),
-					new Vector3$1().copy( hit.position )
+					new Vector3().copy( hit.normal ),
+					new Vector3().copy( hit.position )
 				);
 
 			},
@@ -52123,8 +52123,8 @@ class PerspectiveCamera$1 extends PerspectiveCamera {
 }
 
 const quat$1 = new Quaternion();
-const vector$1 = new Vector3$1();
-const vector2$1 = new Vector3$1();
+const vector$1 = new Vector3();
+const vector2$1 = new Vector3();
 const massData = new OIMO.MassData();
 const config = new OIMO.RigidBodyConfig();
 
@@ -52261,7 +52261,7 @@ class Rigidbody {
 	}
 	getAngularVelocity() {
 
-		const vector = new Vector3$1();
+		const vector = new Vector3();
 		this._ref.getAngularVelocityTo( vector );
 		return vector;
 
@@ -52278,7 +52278,7 @@ class Rigidbody {
 	}
 	getLinearVelocity() {
 
-		const vector = new Vector3$1();
+		const vector = new Vector3();
 		this._ref.getLinearVelocityTo( vector );
 		return vector;
 
@@ -52389,38 +52389,12 @@ class Rigidbody {
 	}
 	getRotationFactor() {
 
-		return new Vector3$1().copy( this._ref.getRotationFactor() );
+		return new Vector3().copy( this._ref.getRotationFactor() );
 
 	}
 	setRotationFactor( vector ) {
 
 		this._ref.setRotationFactor( vector );
-
-	}
-
-	toJSON() {
-
-		return {
-			angularVelocity: this.getAngularVelocity().toArray(),
-			angularDamping: this.angularDamping,
-			linearVelocity: this.getLinearVelocity().toArray(),
-			linearDamping: this.linearDamping,
-			gravityScale: this.gravityScale,
-			autoSleep: this.autoSleep,
-			isKinematic: this.isKinematic,
-			rotationFactor: this.getRotationFactor().toArray(),
-			mass: this.mass,
-		};
-
-	}
-
-	fromJSON( object ) {
-
-		object.angularVelocity = new Vector3$1().fromArray( object.angularVelocity );
-		object.linearVelocity = new Vector3$1().fromArray( object.linearVelocity );
-		object.rotationFactor = new Vector3$1().fromArray( object.rotationFactor );
-
-		return object;
 
 	}
 
@@ -52520,7 +52494,7 @@ function onRotationChange() {
 
 }
 
-const vector$2 = new Vector3$1();
+const vector$2 = new Vector3();
 const massData$1 = new OIMO.MassData();
 const transform = new OIMO.Transform();
 const shapeConfig = new OIMO.ShapeConfig();
@@ -52600,7 +52574,7 @@ class Collider {
 		this._isTrigger = data.isTrigger !== undefined ? data.isTrigger : false;
 		this._collisionGroup = data.collisionGroup !== undefined ? data.collisionGroup : 1;
 		this._collisionMask = data.collisionMask !== undefined ? data.collisionMask : 1;
-		this._center = data.center !== undefined ? data.center : new Vector3$1( 0, 0, 0 );
+		this._center = data.center !== undefined ? data.center : new Vector3( 0, 0, 0 );
 		this._rotation = data.rotation !== undefined ? data.rotation : new Euler( 0, 0, 0 );
 
 		this._addDerivedProperties( data );
@@ -52699,7 +52673,7 @@ class Collider {
 			if ( scale._colliders.length === 1 ) {
 
 				Object.defineProperty( this.entity, 'scale', {
-					value: new Vector3$1().copy( scale ),
+					value: new Vector3().copy( scale ),
 				} );
 
 			} else {
@@ -52979,27 +52953,6 @@ class Collider {
 
 	}
 
-	toJSON() {
-
-		return {
-			isTrigger: this._isTrigger,
-			collisionGroup: this._collisionGroup,
-			collisionMask: this._collisionMask,
-			center: this._center.toArray(),
-			rotation: this._rotation.toArray()
-		};
-
-	}
-
-	fromJSON( object ) {
-
-		object.center = new Vector3$1().fromArray( object.center );
-		object.rotation = new Euler().fromArray( object.rotation );
-
-		return object;
-
-	}
-
 }
 
 function contactCallback( contact, type ) {
@@ -53016,9 +52969,9 @@ function contactCallback( contact, type ) {
 		const collider1 = constraint.getShape1().collider;
 		const collider2 = constraint.getShape2().collider;
 
-		const binormal = new Vector3$1();
-		const normal = new Vector3$1();
-		const tangent = new Vector3$1();
+		const binormal = new Vector3();
+		const normal = new Vector3();
+		const tangent = new Vector3();
 		const manifold = contact.getManifold();
 		manifold.getBinormalTo( binormal );
 		manifold.getNormalTo( normal );
@@ -53027,7 +52980,7 @@ function contactCallback( contact, type ) {
 		const contacts = manifold.getPoints();
 		for ( let i = 0, len = contacts.length; i < len; i ++ ) {
 
-			const point = new Vector3$1();
+			const point = new Vector3();
 			const contact = contacts[ i ];
 			contact.getPosition1To( point );
 
@@ -53074,7 +53027,7 @@ function contactCallback( contact, type ) {
 
 }
 
-const vector$3 = new Vector3$1();
+const vector$3 = new Vector3();
 
 class BoxCollider extends Collider {
 
@@ -53099,26 +53052,6 @@ class BoxCollider extends Collider {
 		return new OIMO.BoxGeometry(
 			vector$3.copy( this._halfExtents ).multiply( scale )
 		);
-
-	}
-
-	toJSON() {
-
-		const object = super.toJSON();
-
-		object.halfExtents = this._halfExtents.toArray();
-
-		return object;
-
-	}
-
-	fromJSON( object ) {
-
-		object = super.fromJSON( object );
-
-		object.halfExtents = new Vector3$1().fromArray( object.halfExtents );
-
-		return object;
 
 	}
 
@@ -53149,17 +53082,6 @@ class CapsuleCollider extends Collider {
 
 	}
 
-	toJSON() {
-
-		const object = super.toJSON();
-
-		object.radius = this._radius;
-		object.halfHeight = this._halfHeight;
-
-		return object;
-
-	}
-
 }
 
 class ConeCollider extends Collider {
@@ -53184,17 +53106,6 @@ class ConeCollider extends Collider {
 			this._radius * max,
 			this._halfHeight * max
 		);
-
-	}
-
-	toJSON() {
-
-		const object = super.toJSON();
-
-		object.radius = this._radius;
-		object.halfHeight = this._halfHeight;
-
-		return object;
 
 	}
 
@@ -53225,17 +53136,6 @@ class CylinderCollider extends Collider {
 
 	}
 
-	toJSON() {
-
-		const object = super.toJSON();
-
-		object.radius = this._radius;
-		object.halfHeight = this._halfHeight;
-
-		return object;
-
-	}
-
 }
 
 /**
@@ -53247,7 +53147,7 @@ var ConvexHull = ( function () {
 	var Visible = 0;
 	var Deleted = 1;
 
-	var v1 = new Vector3$1();
+	var v1 = new Vector3();
 
 	function ConvexHull() {
 
@@ -53338,7 +53238,7 @@ var ConvexHull = ( function () {
 
 							for ( i = 0, l = attribute.count; i < l; i ++ ) {
 
-								point = new Vector3$1();
+								point = new Vector3();
 
 								point.fromBufferAttribute( attribute, i ).applyMatrix4( node.matrixWorld );
 
@@ -53666,8 +53566,8 @@ var ConvexHull = ( function () {
 
 		computeExtremes: function () {
 
-			var min = new Vector3$1();
-			var max = new Vector3$1();
+			var min = new Vector3();
+			var max = new Vector3();
 
 			var minVertices = [];
 			var maxVertices = [];
@@ -53745,7 +53645,7 @@ var ConvexHull = ( function () {
 
 					line3 = new Line3();
 					plane = new Plane();
-					closestPoint = new Vector3$1();
+					closestPoint = new Vector3();
 
 				}
 
@@ -54181,8 +54081,8 @@ var ConvexHull = ( function () {
 
 	function Face() {
 
-		this.normal = new Vector3$1();
-		this.midpoint = new Vector3$1();
+		this.normal = new Vector3();
+		this.midpoint = new Vector3();
 		this.area = 0;
 
 		this.constant = 0; // signed distance from face to the origin
@@ -54558,7 +54458,7 @@ class MeshCollider extends Collider {
 
 	start( data ) {
 
-		data.type = "mesh";
+		data.type = 'mesh';
 		super.start( data );
 
 	}
@@ -54583,41 +54483,11 @@ class MeshCollider extends Collider {
 
 		} else {
 
-			throw "MeshCollider: points or mesh must be provided";
+			throw 'MeshCollider: points or mesh must be provided';
 
 		}
 
 		return new OIMO.ConvexHullGeometry( this._points );
-
-	}
-
-	toJSON() {
-
-		const object = super.toJSON();
-
-		for ( let i = 0, len = this._points.length; i < len; i ++ ) {
-
-			this._points[ i ] = this._points[ i ].toArray();
-
-		}
-
-		object.points = this._points;
-
-		return object;
-
-	}
-
-	fromJSON( object ) {
-
-		object = super.fromJSON( object );
-
-		for ( let i = 0, len = object.points.length; i < len; i ++ ) {
-
-			object.points[ i ] = new Vector3().fromArray( object.points[ i ] );
-
-		}
-
-		return object;
 
 	}
 
@@ -54641,16 +54511,6 @@ class SphereCollider extends Collider {
 	_setGeometry( scale, max ) {
 
 		return new OIMO.SphereGeometry( this._radius * max );
-
-	}
-
-	toJSON() {
-
-		const object = super.toJSON();
-
-		object.radius = this._radius;
-
-		return object;
 
 	}
 
@@ -54681,8 +54541,8 @@ class Joint {
 		this._allowCollision = data.allowCollision === true;
 		this._breakForce = data.breakForce !== undefined && data.breakForce !== 0 ? data.breakForce : 0;
 		this._breakTorque = data.breakTorque !== undefined && data.breakTorque !== 0 ? data.breakTorque : 0;
-		this._anchor = data.anchor !== undefined ? data.anchor : new Vector3$1();
-		this._linkedAnchor = data.linkedAnchor !== undefined ? data.linkedAnchor : new Vector3$1();
+		this._anchor = data.anchor !== undefined ? data.anchor : new Vector3();
+		this._linkedAnchor = data.linkedAnchor !== undefined ? data.linkedAnchor : new Vector3();
 
 		this._addDerivedProperties( data );
 		this._setJoint();
@@ -54785,7 +54645,7 @@ class Joint {
 
 	get appliedForce() {
 
-		const vector = new Vector3$1();
+		const vector = new Vector3();
 		this._ref.getAppliedForceTo( vector );
 		return vector;
 
@@ -54793,7 +54653,7 @@ class Joint {
 
 	get appliedTorque() {
 
-		const vector = new Vector3$1();
+		const vector = new Vector3();
 		this._ref.getAppliedTorqueTo( vector );
 		return vector;
 
@@ -54952,28 +54812,6 @@ class Joint {
 
 	}
 
-	toJSON() {
-
-		return {
-			linkedEntity: this._bodyRef2.UUID,
-			breakForce: this._breakForce,
-			breakTorque: this._breakTorque,
-			anchor: this._anchor.toArray(),
-			linkedAnchor: this._linkedAnchor.toArray(),
-		};
-
-	}
-
-	fromJSON( object ) {
-
-		object.linkedEntity = this.scene.findById( object.linkedEntity );
-		object.anchor = new Vector3$1().fromArray( object.anchor );
-		object.linkedAnchor = new Vector3$1().fromArray( object.linkedAnchor );
-
-		return object;
-
-	}
-
 }
 
 class SpringDamper {
@@ -55027,26 +54865,6 @@ class BallJoint extends Joint {
 
 		config.springDamper = this.springDamper;
 		this._ref = new OIMO.SphericalJoint( config );
-
-	}
-
-	toJSON() {
-
-		const object = super.toJSON();
-
-		object.springDamper = this.springDamper;
-
-		return object;
-
-	}
-
-	fromJSON( object ) {
-
-		object = super.fromJSON( object );
-
-		object.springDamper = Object.create( SpringDamper, object.springDamper );
-
-		return object;
 
 	}
 
@@ -55119,9 +54937,9 @@ class CylindricalJoint extends Joint {
 
 	_addDerivedProperties( data ) {
 
-		this._axis = data.axis !== undefined ? data.axis : new Vector3$1( 1, 0, 0 );
+		this._axis = data.axis !== undefined ? data.axis : new Vector3( 1, 0, 0 );
 		this._linkedAxis =
-					data.linkedAxis !== undefined ? data.linkedAxis : new Vector3$1( 1, 0, 0 );
+					data.linkedAxis !== undefined ? data.linkedAxis : new Vector3( 1, 0, 0 );
 
 		this.linearLimit = data.linearLimit !== undefined
 			? data.linearLimit
@@ -55151,38 +54969,6 @@ class CylindricalJoint extends Joint {
 
 	}
 
-	toJSON() {
-
-		const object = super.toJSON();
-
-		object.axis = this._axis.toArray();
-		object.linkedAxis = this._linkedAxis.toArray();
-
-		object.linearLimit = this.linearLimit;
-		object.linearSpringDamper = this.linearSpringDamper;
-		object.angularLimit = this.angularLimit;
-		object.angularSpringDamper = this.angularSpringDamper;
-
-		return object;
-
-	}
-
-	fromJSON( object ) {
-
-		object = super.fromJSON( object );
-
-		object.axis = new Vector3$1().fromArray( object.axis );
-		object.linkedAxis = new Vector3$1().fromArray( object.linkedAxis );
-
-		object.linearLimit = Object.create( LinearLimit, object.linearLimit );
-		object.linearSpringDamper = Object.create( SpringDamper, object.linearSpringDamper );
-		object.angularLimit = Object.create( AngularLimit, object.angularLimit );
-		object.angularSpringDamper = Object.create( SpringDamper, object.angularSpringDamper );
-
-		return object;
-
-	}
-
 }
 
 class PrismaticJoint extends Joint {
@@ -55196,9 +54982,9 @@ class PrismaticJoint extends Joint {
 
 	_addDerivedProperties( data ) {
 
-		this._axis = data.axis !== undefined ? data.axis : new Vector3$1( 1, 0, 0 );
+		this._axis = data.axis !== undefined ? data.axis : new Vector3( 1, 0, 0 );
 		this._linkedAxis =
-					data.linkedAxis !== undefined ? data.linkedAxis : new Vector3$1( 1, 0, 0 );
+					data.linkedAxis !== undefined ? data.linkedAxis : new Vector3( 1, 0, 0 );
 
 		this.springDamper = data.springDamper !== undefined
 			? data.springDamper
@@ -55220,34 +55006,6 @@ class PrismaticJoint extends Joint {
 
 	}
 
-	toJSON() {
-
-		const object = super.toJSON();
-
-		object.axis = this._axis.toArray();
-		object.linkedAxis = this._linkedAxis.toArray();
-
-		object.springDamper = this.springDamper;
-		object.linearLimit = this.linearLimit;
-
-		return object;
-
-	}
-
-	fromJSON( object ) {
-
-		object = super.fromJSON( object );
-
-		object.axis = new Vector3$1().fromArray( object.axis );
-		object.linkedAxis = new Vector3$1().fromArray( object.linkedAxis );
-
-		object.springDamper = Object.create( SpringDamper, object.springDamper );
-		object.linearLimit = Object.create( LinearLimit, object.linearLimit );
-
-		return object;
-
-	}
-
 }
 
 class RagdollJoint extends Joint {
@@ -55261,9 +55019,9 @@ class RagdollJoint extends Joint {
 
 	_addDerivedProperties( data ) {
 
-		this._twistAxis = data.twistAxis !== undefined ? data.twistAxis : new Vector3$1( 1, 0, 0 );
-		this._linkedTwistAxis = data.linkedTwistAxis !== undefined ? data.linkedTwistAxis : new Vector3$1( 1, 0, 0 );
-		this._swingAxis = data.swingAxis !== undefined ? data.swingAxis : new Vector3$1( 0, 1, 0 );
+		this._twistAxis = data.twistAxis !== undefined ? data.twistAxis : new Vector3( 1, 0, 0 );
+		this._linkedTwistAxis = data.linkedTwistAxis !== undefined ? data.linkedTwistAxis : new Vector3( 1, 0, 0 );
+		this._swingAxis = data.swingAxis !== undefined ? data.swingAxis : new Vector3( 0, 1, 0 );
 		this._maxSwing = data.maxSwing !== undefined ? data.maxSwing : Math.PI;
 		this._linkedMaxSwing = data.linkedMaxSwing !== undefined ? data.linkedMaxSwing : Math.PI;
 		this.twistSpringDamper = data.twistSpringDamper !== undefined ? data.twistSpringDamper : new SpringDamper();
@@ -55286,41 +55044,6 @@ class RagdollJoint extends Joint {
 
 	}
 
-	toJSON() {
-
-		const object = super.toJSON();
-
-		object.twistAxis = this._twistAxis.toArray();
-		object.linkedTwistAxis = this._linkedTwistAxis.toArray();
-		object.swingAxis = this._swingAxis.toArray();
-
-		object.maxSwing = this._maxSwing;
-		object.linkedMaxSwing = this._linkedMaxSwing;
-
-		object.twistSpringDamper = this.twistSpringDamper;
-		object.swingSpringDamper = this.swingSpringDamper;
-		object.twistLimit = this.twistLimit;
-
-		return object;
-
-	}
-
-	fromJSON( object ) {
-
-		object = super.fromJSON( object );
-
-		object.twistAxis = new Vector3$1().fromArray( object.twistAxis );
-		object.linkedTwistAxis = new Vector3$1().fromArray( object.linkedTwistAxis );
-		object.swingAxis = new Vector3$1().fromArray( object.swingAxis );
-
-		object.twistSpringDamper = Object.create( SpringDamper, object.twistSpringDamper );
-		object.swingSpringDamper = Object.create( SpringDamper, object.swingSpringDamper );
-		object.twistLimit = Object.create( AngularLimit, object.twistLimit );
-
-		return object;
-
-	}
-
 }
 
 class HingeJoint extends Joint {
@@ -55334,8 +55057,8 @@ class HingeJoint extends Joint {
 
 	_addDerivedProperties( data ) {
 
-		this._axis = data.axis !== undefined ? data.axis : new Vector3$1( 1, 0, 0 );
-		this._linkedAxis = data.linkedAxis !== undefined ? data.linkedAxis : new Vector3$1( 1, 0, 0 );
+		this._axis = data.axis !== undefined ? data.axis : new Vector3( 1, 0, 0 );
+		this._linkedAxis = data.linkedAxis !== undefined ? data.linkedAxis : new Vector3( 1, 0, 0 );
 
 		this.springDamper = data.springDamper !== undefined
 			? data.springDamper
@@ -55357,34 +55080,6 @@ class HingeJoint extends Joint {
 
 	}
 
-	toJSON() {
-
-		const object = super.toJSON();
-
-		object.axis = this._axis.toArray();
-		object.linkedAxis = this._linkedAxis.toArray();
-
-		object.springDamper = this.springDamper;
-		object.angularLimit = this.angularLimit;
-
-		return object;
-
-	}
-
-	fromJSON( object ) {
-
-		object = super.fromJSON( object );
-
-		object.axis = new Vector3$1().fromArray( object.axis );
-		object.linkedAxis = new Vector3$1().fromArray( object.linkedAxis );
-
-		object.springDamper = Object.create( SpringDamper, object.springDamper );
-		object.angularLimit = Object.create( AngularLimit, object.angularLimit );
-
-		return object;
-
-	}
-
 }
 
 class UniversalJoint extends Joint {
@@ -55398,9 +55093,9 @@ class UniversalJoint extends Joint {
 
 	_addDerivedProperties( data ) {
 
-		this._axis = data.axis !== undefined ? data.axis : new Vector3$1( 1, 0, 0 );
+		this._axis = data.axis !== undefined ? data.axis : new Vector3( 1, 0, 0 );
 		this._linkedAxis =
-					data.linkedAxis !== undefined ? data.linkedAxis : new Vector3$1( 1, 0, 0 );
+					data.linkedAxis !== undefined ? data.linkedAxis : new Vector3( 1, 0, 0 );
 
 		this.springDamper = data.springDamper !== undefined
 			? data.springDamper
@@ -55430,47 +55125,13 @@ class UniversalJoint extends Joint {
 
 	}
 
-	toJSON() {
-
-		const object = super.toJSON();
-
-		object.axis = new Vector3$1().fromArray( object.axis );
-		object.linkedAxis = new Vector3$1().fromArray( object.linkedAxis );
-
-		object.springDamper = this.springDamper;
-		object.linkedSpringDamper = this.linkedSpringDamper;
-
-		object.angularLimit = this.angularLimit;
-		object.linkedAngularLimit = this.linkedAngularLimit;
-
-		return object;
-
-	}
-
-	fromJSON( object ) {
-
-		object = super.fromJSON( object );
-
-		object.axis = new Vector3$1().fromArray( object.axis );
-		object.linkedAxis = new Vector3$1().fromArray( object.linkedAxis );
-
-		object.springDamper = Object.create( SpringDamper, object.springDamper );
-		object.linkedSpringDamper = Object.create( SpringDamper, object.linkedSpringDamper );
-
-		object.angularLimit = Object.create( AngularLimit, object.angularLimit );
-		object.linkedAngularLimit = Object.create( AngularLimit, object.linkedAngularLimit );
-
-		return object;
-
-	}
-
 }
 
 class ComponentManager {
 
 	constructor() {
 
-		this._components = {};
+		this.components = {};
 		this.properties = {
 			componentType: { value: null },
 			_enabled: { value: true, writable: true },
@@ -55549,13 +55210,13 @@ class ComponentManager {
 
 	add( type, constructor, options = {} ) {
 
-		if ( type in this._components ) throw 'component ' + type + ' already exists';
+		if ( this.components.type !== undefined ) throw 'component ' + type + ' already exists';
 
 		this.properties.componentType.value = type;
 		Object.defineProperties( constructor.prototype, this.properties );
 		Object.assign( constructor.prototype, EventDispatcher.prototype );
 
-		this._components[ type ] = {
+		this.components[ type ] = {
 			constructor, options
 		};
 
@@ -55563,16 +55224,10 @@ class ComponentManager {
 
 	remove( type ) {
 
-		if ( type in this._components )
-			delete this._components[ type ];
+		if ( type in this.components )
+			delete this.components[ type ];
 		else
 			console.warn( 'component ' + type + ' does not exists' );
-
-	}
-
-	get( type ) {
-
-		return this._components[ type ];
 
 	}
 
@@ -55580,16 +55235,13 @@ class ComponentManager {
 
 // options: allowMultiple, requiredComponents, schema
 
-// schema can be an array of strings or an array of objects (containing value, type, etc)
-// ex: schema: ["velocity"]
-// ex: schema: [{name: "velocity", accessor: "_velocity"}]
+// schema is an array of objects
+// ex: schema: [{name: "velocity", type: "number", default}]
+// ex: schema: [{name: "velocity"}]
 
 class Application {
 
 	constructor( parameters = {} ) {
-
-		if ( typeof parameters.canvas === 'string' )
-			parameters.canvas = document.getElementById( parameters.canvas );
 
 		this.parameters = parameters;
 
@@ -55605,8 +55257,7 @@ class Application {
 		this._currentScene;
 		this.requestID;
 
-		if ( parameters.canvas === 'undefined' )
-			document.body.appendChild( this.renderer.domElement );
+		this.domElement = this.renderer.domElement;
 
 		Application.currentApp = this;
 
@@ -55844,7 +55495,7 @@ class Entity extends Group {
 
 	addComponent( type, data = {} ) {
 
-		const componentData = this.app.componentManager._components[ type ];
+		const componentData = this.app.componentManager.components[ type ];
 		const options = componentData.options;
 
 		if ( options.allowMultiple === false && this.getComponent( type ) !== undefined )
@@ -55877,7 +55528,7 @@ class Entity extends Group {
 
 		}
 
-		return type === 'Renderable' ? component.ref : component;
+		return component;
 
 	}
 
@@ -56118,425 +55769,4 @@ class PhysicMaterial {
 
 }
 
-class AppLoader extends ObjectLoader {
-
-	constructor( manager ) {
-
-		super( manager );
-
-		this._entity;
-
-	}
-
-	parse( json, onLoad ) {
-
-		const app = this._app = new Application( json.parameters );
-		const scenes = json.scenes;
-
-		for ( let i = 0, len = scenes.length; i < len; i ++ ) {
-
-			const scene = super.parse( scenes[ i ] );
-
-			if ( scene.uuid === json.currentScene ) {
-
-				app.setScene( scene );
-
-			}
-
-		}
-
-		if ( onLoad !== undefined ) onLoad( app );
-
-		return app;
-
-	}
-
-	parseObject( data, geometries, materials, animations ) {
-
-		let object;
-
-		function getGeometry( name ) {
-
-			if ( geometries[ name ] === undefined ) {
-
-				console.warn( 'TARO.AppLoader: Undefined geometry', name );
-
-			}
-
-			return geometries[ name ];
-
-		}
-
-		function getMaterial( name ) {
-
-			if ( name === undefined ) return undefined;
-
-			if ( Array.isArray( name ) ) {
-
-				const array = [];
-
-				for ( let i = 0, l = name.length; i < l; i ++ ) {
-
-					const uuid = name[ i ];
-
-					if ( materials[ uuid ] === undefined ) {
-
-						console.warn( 'TARO.AppLoader: Undefined material', uuid );
-
-					}
-
-					array.push( materials[ uuid ] );
-
-				}
-
-				return array;
-
-			}
-
-			if ( materials[ name ] === undefined ) {
-
-				console.warn( 'TARO.AppLoader: Undefined material', name );
-
-			}
-
-			return materials[ name ];
-
-		}
-
-		let geometry, material;
-
-		switch ( data.type ) {
-
-			case 'Scene':
-
-				object = new Scene$1();
-
-				this._app.addScene( object );
-
-				if ( data.background !== undefined ) {
-
-					if ( Number.isInteger( data.background ) ) {
-
-						object.background = new Color( data.background );
-
-					}
-
-				}
-
-				if ( data.fog !== undefined ) {
-
-					if ( data.fog.type === 'Fog' ) {
-
-						object.fog = new Fog( data.fog.color, data.fog.near, data.fog.far );
-
-					} else if ( data.fog.type === 'FogExp2' ) {
-
-						object.fog = new FogExp2( data.fog.color, data.fog.density );
-
-					}
-
-				}
-
-				break;
-
-			case 'PerspectiveCamera':
-				// modification
-				if ( data.component === true ) {
-
-					console.log( data );
-					ComponentManager._components[ 'PerspectiveCamera' ].constructor.prototype.fromJSON( data );
-
-					object = this._entity.addComponent( 'PerspectiveCamera', data );
-
-				} else {
-
-					object = new PerspectiveCamera( data.fov, data.aspect, data.near, data.far );
-
-				}
-
-				if ( data.focus !== undefined ) object.focus = data.focus;
-				if ( data.zoom !== undefined ) object.zoom = data.zoom;
-				if ( data.filmGauge !== undefined ) object.filmGauge = data.filmGauge;
-				if ( data.filmOffset !== undefined ) object.filmOffset = data.filmOffset;
-				if ( data.view !== undefined ) object.view = Object.assign( {}, data.view );
-
-				break;
-
-			case 'OrthographicCamera':
-				// modification
-				if ( data.component === true ) {
-
-					ComponentManager._components[ 'OrthographicCamera' ].constructor.prototype.fromJSON( data );
-
-					object = this._entity.addComponent( 'OrthographicCamera', data );
-
-				} else
-					object = new OrthographicCamera( data.left, data.right, data.top, data.bottom, data.near, data.far );
-
-				if ( data.zoom !== undefined ) object.zoom = data.zoom;
-				if ( data.view !== undefined ) object.view = Object.assign( {}, data.view );
-
-				break;
-
-			case 'AmbientLight':
-
-				object = new AmbientLight( data.color, data.intensity );
-
-				break;
-
-			case 'DirectionalLight':
-
-				object = new DirectionalLight( data.color, data.intensity );
-
-				break;
-
-			case 'PointLight':
-
-				object = new PointLight( data.color, data.intensity, data.distance, data.decay );
-
-				break;
-
-			case 'RectAreaLight':
-
-				object = new RectAreaLight( data.color, data.intensity, data.width, data.height );
-
-				break;
-
-			case 'SpotLight':
-
-				object = new SpotLight( data.color, data.intensity, data.distance, data.angle, data.penumbra, data.decay );
-
-				break;
-
-			case 'HemisphereLight':
-
-				object = new HemisphereLight( data.color, data.groundColor, data.intensity );
-
-				break;
-
-			case 'LightProbe':
-
-				object = new LightProbe().fromJSON( data );
-
-				break;
-
-			case 'SkinnedMesh':
-
-				geometry = getGeometry( data.geometry );
-			 	material = getMaterial( data.material );
-
-				object = new SkinnedMesh( geometry, material );
-
-				if ( data.bindMode !== undefined ) object.bindMode = data.bindMode;
-				if ( data.bindMatrix !== undefined ) object.bindMatrix.fromArray( data.bindMatrix );
-				if ( data.skeleton !== undefined ) object.skeleton = data.skeleton;
-
-				break;
-
-			case 'Mesh':
-
-				geometry = getGeometry( data.geometry );
-				material = getMaterial( data.material );
-
-				object = new Mesh( geometry, material );
-
-				break;
-
-			case 'InstancedMesh':
-
-				geometry = getGeometry( data.geometry );
-				material = getMaterial( data.material );
-				const count = data.count;
-				const instanceMatrix = data.instanceMatrix;
-
-				object = new InstancedMesh( geometry, material, count );
-				object.instanceMatrix = new BufferAttribute( new Float32Array( instanceMatrix.array ), 16 );
-
-				break;
-
-			case 'LOD':
-
-				object = new LOD();
-
-				break;
-
-			case 'Line':
-
-				object = new Line( getGeometry( data.geometry ), getMaterial( data.material ) );
-
-				break;
-
-			case 'LineLoop':
-
-				object = new LineLoop( getGeometry( data.geometry ), getMaterial( data.material ) );
-
-				break;
-
-			case 'LineSegments':
-
-				object = new LineSegments( getGeometry( data.geometry ), getMaterial( data.material ) );
-
-				break;
-
-			case 'PointCloud':
-			case 'Points':
-
-				object = new Points( getGeometry( data.geometry ), getMaterial( data.material ) );
-
-				break;
-
-			case 'Sprite':
-
-				object = new Sprite( getMaterial( data.material ) );
-
-				break;
-
-			case 'Group':
-				// modification
-				if ( data.isEntity === true ) {
-
-					this._entity = object = new Entity();
-
-					if ( data.tags !== undefined )
-						object.tags = data.tags;
-
-					object.enabled = data.enabled;
-
-					const components = data.components;
-					for ( let i = 0, len = components.length; i < len; i ++ ) {
-
-						let data = components[ i ].data;
-						const type = components[ i ].type;
-						const constructor = ComponentManager._components[ type ].constructor;
-
-						if ( constructor.prototype.fromJSON !== undefined )
-							constructor.prototype.fromJSON( data );
-
-						object.addComponent( type, data );
-
-					}
-
-				} else {
-
-					object = new Group();
-
-				}
-
-				break;
-
-			case 'Bone':
-
-				object = new Bone();
-
-				break;
-
-			default:
-
-				object = new Object3D();
-
-		}
-
-		object.uuid = data.uuid;
-
-		if ( data.name !== undefined ) object.name = data.name;
-
-		if ( data.matrix !== undefined ) {
-
-			object.matrix.fromArray( data.matrix );
-
-			if ( data.matrixAutoUpdate !== undefined ) object.matrixAutoUpdate = data.matrixAutoUpdate;
-			if ( object.matrixAutoUpdate ) object.matrix.decompose( object.position, object.quaternion, object.scale );
-
-		} else {
-
-			if ( data.position !== undefined ) object.position.fromArray( data.position );
-			if ( data.rotation !== undefined ) object.rotation.fromArray( data.rotation );
-			if ( data.quaternion !== undefined ) object.quaternion.fromArray( data.quaternion );
-			if ( data.scale !== undefined ) object.scale.fromArray( data.scale );
-
-		}
-
-		if ( data.castShadow !== undefined ) object.castShadow = data.castShadow;
-		if ( data.receiveShadow !== undefined ) object.receiveShadow = data.receiveShadow;
-
-		if ( data.shadow ) {
-
-			if ( data.shadow.bias !== undefined ) object.shadow.bias = data.shadow.bias;
-			if ( data.shadow.normalBias !== undefined ) object.shadow.normalBias = data.shadow.normalBias;
-			if ( data.shadow.radius !== undefined ) object.shadow.radius = data.shadow.radius;
-			if ( data.shadow.mapSize !== undefined ) object.shadow.mapSize.fromArray( data.shadow.mapSize );
-			if ( data.shadow.camera !== undefined ) object.shadow.camera = this.parseObject( data.shadow.camera );
-
-		}
-
-		if ( data.visible !== undefined ) object.visible = data.visible;
-		if ( data.frustumCulled !== undefined ) object.frustumCulled = data.frustumCulled;
-		if ( data.renderOrder !== undefined ) object.renderOrder = data.renderOrder;
-		if ( data.userData !== undefined ) object.userData = data.userData;
-		if ( data.layers !== undefined ) object.layers.mask = data.layers;
-
-		if ( data.children !== undefined ) {
-
-			const children = data.children;
-
-			for ( let i = 0; i < children.length; i ++ ) {
-
-				// modification
-				const child = this.parseObject( children[ i ], geometries, materials, animations );
-
-				if ( children[ i ].component === undefined ) {
-
-					object.add( child );
-
-				} else if ( child.isCamera === undefined ) {
-
-					object.addComponent( 'Renderable', child );
-
-				}
-
-			}
-
-		}
-
-		if ( data.animations !== undefined ) {
-
-			const objectAnimations = data.animations;
-
-			for ( let i = 0; i < objectAnimations.length; i ++ ) {
-
-				const uuid = objectAnimations[ i ];
-
-				object.animations.push( animations[ uuid ] );
-
-			}
-
-		}
-
-		if ( data.type === 'LOD' ) {
-
-			if ( data.autoUpdate !== undefined ) object.autoUpdate = data.autoUpdate;
-
-			const levels = data.levels;
-
-			for ( let l = 0; l < levels.length; l ++ ) {
-
-				const level = levels[ l ];
-				const child = object.getObjectByProperty( 'uuid', level.object );
-
-				if ( child !== undefined ) {
-
-					object.addLevel( child, level.distance );
-
-				}
-
-			}
-
-		}
-
-		return object;
-
-	}
-
-}
-
-export { ACESFilmicToneMapping, AddEquation, AddOperation, AdditiveAnimationBlendMode, AdditiveBlending, AlphaFormat, AlwaysDepth, AlwaysStencilFunc, AmbientLight, AmbientLightProbe, AngularLimit, AnimationClip, AnimationLoader, AnimationMixer, AnimationObjectGroup, AnimationUtils, AppLoader, Application, ArcCurve, ArrayCamera, ArrowHelper, Audio, AudioAnalyser, AudioContext, AudioListener, AudioLoader, AxesHelper, AxisHelper, BackSide, BasicDepthPacking, BasicShadowMap, BinaryTextureLoader, Bone, BooleanKeyframeTrack, BoundingBoxHelper, Box2, Box3, Box3Helper, BoxBufferGeometry, BoxGeometry, BoxHelper, BufferAttribute, BufferGeometry, BufferGeometryLoader, ByteType, Cache, Camera, CameraHelper, CanvasRenderer, CanvasTexture, CatmullRomCurve3, CineonToneMapping, CircleBufferGeometry, CircleGeometry, ClampToEdgeWrapping, Clock, ClosedSplineCurve3, Color, ColorKeyframeTrack, ComponentManager, CompressedTexture, CompressedTextureLoader, ConeBufferGeometry, ConeGeometry, CubeCamera, BoxGeometry as CubeGeometry, CubeReflectionMapping, CubeRefractionMapping, CubeTexture, CubeTextureLoader, CubeUVReflectionMapping, CubeUVRefractionMapping, CubicBezierCurve, CubicBezierCurve3, CubicInterpolant, CullFaceBack, CullFaceFront, CullFaceFrontBack, CullFaceNone, Curve, CurvePath, CustomBlending, CustomToneMapping, CylinderBufferGeometry, CylinderGeometry, Cylindrical, DataTexture, DataTexture2DArray, DataTexture3D, DataTextureLoader, DataUtils, DecrementStencilOp, DecrementWrapStencilOp, DefaultLoadingManager, DepthFormat, DepthStencilFormat, DepthTexture, DirectionalLight, DirectionalLightHelper, DiscreteInterpolant, DodecahedronBufferGeometry, DodecahedronGeometry, DoubleSide, DstAlphaFactor, DstColorFactor, DynamicBufferAttribute, DynamicCopyUsage, DynamicDrawUsage, DynamicReadUsage, EdgesGeometry, EdgesHelper, EllipseCurve, Entity, EqualDepth, EqualStencilFunc, EquirectangularReflectionMapping, EquirectangularRefractionMapping, Euler, EventDispatcher, ExtrudeBufferGeometry, ExtrudeGeometry, Face3, Face4, FaceColors, FileLoader, FlatShading, Float16BufferAttribute, Float32Attribute, Float32BufferAttribute, Float64Attribute, Float64BufferAttribute, FloatType, Fog, FogExp2, Font, FontLoader, FrontSide, Frustum, GLBufferAttribute, GLSL1, GLSL3, GammaEncoding, Geometry, GeometryUtils, GreaterDepth, GreaterEqualDepth, GreaterEqualStencilFunc, GreaterStencilFunc, GridHelper, Group, HalfFloatType, HemisphereLight, HemisphereLightHelper, HemisphereLightProbe, IcosahedronBufferGeometry, IcosahedronGeometry, ImageBitmapLoader, ImageLoader, ImageUtils, ImmediateRenderObject, IncrementStencilOp, IncrementWrapStencilOp, InstancedBufferAttribute, InstancedBufferGeometry, InstancedInterleavedBuffer, InstancedMesh, Int16Attribute, Int16BufferAttribute, Int32Attribute, Int32BufferAttribute, Int8Attribute, Int8BufferAttribute, IntType, InterleavedBuffer, InterleavedBufferAttribute, Interpolant, InterpolateDiscrete, InterpolateLinear, InterpolateSmooth, InvertStencilOp, JSONLoader, KeepStencilOp, KeyframeTrack, LOD, LatheBufferGeometry, LatheGeometry, Layers, LensFlare, LessDepth, LessEqualDepth, LessEqualStencilFunc, LessStencilFunc, Light, LightProbe, Line, Line3, LineBasicMaterial, LineCurve, LineCurve3, LineDashedMaterial, LineLoop, LinePieces, LineSegments, LineStrip, LinearEncoding, LinearFilter, LinearInterpolant, LinearLimit, LinearMipMapLinearFilter, LinearMipMapNearestFilter, LinearMipmapLinearFilter, LinearMipmapNearestFilter, LinearToneMapping, Loader, LoaderUtils, LoadingManager, LogLuvEncoding, LoopOnce, LoopPingPong, LoopRepeat, LuminanceAlphaFormat, LuminanceFormat, MOUSE, Material, MaterialLoader, MathUtils as Math, MathUtils, Matrix3, Matrix4, MaxEquation, Mesh, MeshBasicMaterial, MeshDepthMaterial, MeshDistanceMaterial, MeshFaceMaterial, MeshLambertMaterial, MeshMatcapMaterial, MeshNormalMaterial, MeshPhongMaterial, MeshPhysicalMaterial, MeshStandardMaterial, MeshToonMaterial, MinEquation, MirroredRepeatWrapping, MixOperation, MultiMaterial, MultiplyBlending, MultiplyOperation, NearestFilter, NearestMipMapLinearFilter, NearestMipMapNearestFilter, NearestMipmapLinearFilter, NearestMipmapNearestFilter, NeverDepth, NeverStencilFunc, NoBlending, NoColors, NoToneMapping, NormalAnimationBlendMode, NormalBlending, NotEqualDepth, NotEqualStencilFunc, NumberKeyframeTrack, Object3D, ObjectLoader, ObjectSpaceNormalMap, OctahedronBufferGeometry, OctahedronGeometry, OneFactor, OneMinusDstAlphaFactor, OneMinusDstColorFactor, OneMinusSrcAlphaFactor, OneMinusSrcColorFactor, OrthographicCamera, PCFShadowMap, PCFSoftShadowMap, PMREMGenerator, ParametricBufferGeometry, ParametricGeometry, Particle, ParticleBasicMaterial, ParticleSystem, ParticleSystemMaterial, Path, PerspectiveCamera, PhysicMaterial, Plane, PlaneBufferGeometry, PlaneGeometry, PlaneHelper, PointCloud, PointCloudMaterial, PointLight, PointLightHelper, Points, PointsMaterial, PolarGridHelper, PolyhedronBufferGeometry, PolyhedronGeometry, PositionalAudio, PropertyBinding, PropertyMixer, QuadraticBezierCurve, QuadraticBezierCurve3, Quaternion, QuaternionKeyframeTrack, QuaternionLinearInterpolant, REVISION, RGBADepthPacking, RGBAFormat, RGBAIntegerFormat, RGBA_ASTC_10x10_Format, RGBA_ASTC_10x5_Format, RGBA_ASTC_10x6_Format, RGBA_ASTC_10x8_Format, RGBA_ASTC_12x10_Format, RGBA_ASTC_12x12_Format, RGBA_ASTC_4x4_Format, RGBA_ASTC_5x4_Format, RGBA_ASTC_5x5_Format, RGBA_ASTC_6x5_Format, RGBA_ASTC_6x6_Format, RGBA_ASTC_8x5_Format, RGBA_ASTC_8x6_Format, RGBA_ASTC_8x8_Format, RGBA_BPTC_Format, RGBA_ETC2_EAC_Format, RGBA_PVRTC_2BPPV1_Format, RGBA_PVRTC_4BPPV1_Format, RGBA_S3TC_DXT1_Format, RGBA_S3TC_DXT3_Format, RGBA_S3TC_DXT5_Format, RGBDEncoding, RGBEEncoding, RGBEFormat, RGBFormat, RGBIntegerFormat, RGBM16Encoding, RGBM7Encoding, RGB_ETC1_Format, RGB_ETC2_Format, RGB_PVRTC_2BPPV1_Format, RGB_PVRTC_4BPPV1_Format, RGB_S3TC_DXT1_Format, RGFormat, RGIntegerFormat, RawShaderMaterial, Ray, Raycaster, RectAreaLight, RedFormat, RedIntegerFormat, ReinhardToneMapping, RepeatWrapping, ReplaceStencilOp, ReverseSubtractEquation, RingBufferGeometry, RingGeometry, SRGB8_ALPHA8_ASTC_10x10_Format, SRGB8_ALPHA8_ASTC_10x5_Format, SRGB8_ALPHA8_ASTC_10x6_Format, SRGB8_ALPHA8_ASTC_10x8_Format, SRGB8_ALPHA8_ASTC_12x10_Format, SRGB8_ALPHA8_ASTC_12x12_Format, SRGB8_ALPHA8_ASTC_4x4_Format, SRGB8_ALPHA8_ASTC_5x4_Format, SRGB8_ALPHA8_ASTC_5x5_Format, SRGB8_ALPHA8_ASTC_6x5_Format, SRGB8_ALPHA8_ASTC_6x6_Format, SRGB8_ALPHA8_ASTC_8x5_Format, SRGB8_ALPHA8_ASTC_8x6_Format, SRGB8_ALPHA8_ASTC_8x8_Format, Scene$1 as Scene, SceneUtils, ShaderChunk, ShaderLib, ShaderMaterial, ShadowMaterial, Shape, ShapeBufferGeometry, ShapeGeometry, ShapePath, ShapeUtils, ShortType, Skeleton, SkeletonHelper, SkinnedMesh, SmoothShading, Sphere, SphereBufferGeometry, SphereGeometry, Spherical, SphericalHarmonics3, Spline, SplineCurve, SplineCurve3, SpotLight, SpotLightHelper, SpringDamper, Sprite, SpriteMaterial, SrcAlphaFactor, SrcAlphaSaturateFactor, SrcColorFactor, StaticCopyUsage, StaticDrawUsage, StaticReadUsage, StereoCamera, StreamCopyUsage, StreamDrawUsage, StreamReadUsage, StringKeyframeTrack, SubtractEquation, SubtractiveBlending, TOUCH, TangentSpaceNormalMap, TetrahedronBufferGeometry, TetrahedronGeometry, TextBufferGeometry, TextGeometry, Texture, TextureLoader, TorusBufferGeometry, TorusGeometry, TorusKnotBufferGeometry, TorusKnotGeometry, Triangle, TriangleFanDrawMode, TriangleStripDrawMode, TrianglesDrawMode, TubeBufferGeometry, TubeGeometry, UVMapping, Uint16Attribute, Uint16BufferAttribute, Uint32Attribute, Uint32BufferAttribute, Uint8Attribute, Uint8BufferAttribute, Uint8ClampedAttribute, Uint8ClampedBufferAttribute, Uniform, UniformsLib, UniformsUtils, UnsignedByteType, UnsignedInt248Type, UnsignedIntType, UnsignedShort4444Type, UnsignedShort5551Type, UnsignedShort565Type, UnsignedShortType, VSMShadowMap, Vector2, Vector3$1 as Vector3, Vector4, VectorKeyframeTrack, Vertex, VertexColors, VideoTexture, WebGL1Renderer, WebGLCubeRenderTarget, WebGLMultisampleRenderTarget, WebGLRenderTarget, WebGLRenderTargetCube, WebGLRenderer, WebGLUtils, WireframeGeometry, WireframeHelper, WrapAroundEnding, XHRLoader, ZeroCurvatureEnding, ZeroFactor, ZeroSlopeEnding, ZeroStencilOp, sRGBEncoding };
+export { ACESFilmicToneMapping, AddEquation, AddOperation, AdditiveAnimationBlendMode, AdditiveBlending, AlphaFormat, AlwaysDepth, AlwaysStencilFunc, AmbientLight, AmbientLightProbe, AngularLimit, AnimationClip, AnimationLoader, AnimationMixer, AnimationObjectGroup, AnimationUtils, Application, ArcCurve, ArrayCamera, ArrowHelper, Audio, AudioAnalyser, AudioContext, AudioListener, AudioLoader, AxesHelper, AxisHelper, BackSide, BasicDepthPacking, BasicShadowMap, BinaryTextureLoader, Bone, BooleanKeyframeTrack, BoundingBoxHelper, Box2, Box3, Box3Helper, BoxBufferGeometry, BoxGeometry, BoxHelper, BufferAttribute, BufferGeometry, BufferGeometryLoader, ByteType, Cache, Camera, CameraHelper, CanvasRenderer, CanvasTexture, CatmullRomCurve3, CineonToneMapping, CircleBufferGeometry, CircleGeometry, ClampToEdgeWrapping, Clock, ClosedSplineCurve3, Color, ColorKeyframeTrack, ComponentManager, CompressedTexture, CompressedTextureLoader, ConeBufferGeometry, ConeGeometry, CubeCamera, BoxGeometry as CubeGeometry, CubeReflectionMapping, CubeRefractionMapping, CubeTexture, CubeTextureLoader, CubeUVReflectionMapping, CubeUVRefractionMapping, CubicBezierCurve, CubicBezierCurve3, CubicInterpolant, CullFaceBack, CullFaceFront, CullFaceFrontBack, CullFaceNone, Curve, CurvePath, CustomBlending, CustomToneMapping, CylinderBufferGeometry, CylinderGeometry, Cylindrical, DataTexture, DataTexture2DArray, DataTexture3D, DataTextureLoader, DataUtils, DecrementStencilOp, DecrementWrapStencilOp, DefaultLoadingManager, DepthFormat, DepthStencilFormat, DepthTexture, DirectionalLight, DirectionalLightHelper, DiscreteInterpolant, DodecahedronBufferGeometry, DodecahedronGeometry, DoubleSide, DstAlphaFactor, DstColorFactor, DynamicBufferAttribute, DynamicCopyUsage, DynamicDrawUsage, DynamicReadUsage, EdgesGeometry, EdgesHelper, EllipseCurve, Entity, EqualDepth, EqualStencilFunc, EquirectangularReflectionMapping, EquirectangularRefractionMapping, Euler, EventDispatcher, ExtrudeBufferGeometry, ExtrudeGeometry, Face3, Face4, FaceColors, FileLoader, FlatShading, Float16BufferAttribute, Float32Attribute, Float32BufferAttribute, Float64Attribute, Float64BufferAttribute, FloatType, Fog, FogExp2, Font, FontLoader, FrontSide, Frustum, GLBufferAttribute, GLSL1, GLSL3, GammaEncoding, Geometry, GeometryUtils, GreaterDepth, GreaterEqualDepth, GreaterEqualStencilFunc, GreaterStencilFunc, GridHelper, Group, HalfFloatType, HemisphereLight, HemisphereLightHelper, HemisphereLightProbe, IcosahedronBufferGeometry, IcosahedronGeometry, ImageBitmapLoader, ImageLoader, ImageUtils, ImmediateRenderObject, IncrementStencilOp, IncrementWrapStencilOp, InstancedBufferAttribute, InstancedBufferGeometry, InstancedInterleavedBuffer, InstancedMesh, Int16Attribute, Int16BufferAttribute, Int32Attribute, Int32BufferAttribute, Int8Attribute, Int8BufferAttribute, IntType, InterleavedBuffer, InterleavedBufferAttribute, Interpolant, InterpolateDiscrete, InterpolateLinear, InterpolateSmooth, InvertStencilOp, JSONLoader, KeepStencilOp, KeyframeTrack, LOD, LatheBufferGeometry, LatheGeometry, Layers, LensFlare, LessDepth, LessEqualDepth, LessEqualStencilFunc, LessStencilFunc, Light, LightProbe, Line, Line3, LineBasicMaterial, LineCurve, LineCurve3, LineDashedMaterial, LineLoop, LinePieces, LineSegments, LineStrip, LinearEncoding, LinearFilter, LinearInterpolant, LinearLimit, LinearMipMapLinearFilter, LinearMipMapNearestFilter, LinearMipmapLinearFilter, LinearMipmapNearestFilter, LinearToneMapping, Loader, LoaderUtils, LoadingManager, LogLuvEncoding, LoopOnce, LoopPingPong, LoopRepeat, LuminanceAlphaFormat, LuminanceFormat, MOUSE, Material, MaterialLoader, MathUtils as Math, MathUtils, Matrix3, Matrix4, MaxEquation, Mesh, MeshBasicMaterial, MeshDepthMaterial, MeshDistanceMaterial, MeshFaceMaterial, MeshLambertMaterial, MeshMatcapMaterial, MeshNormalMaterial, MeshPhongMaterial, MeshPhysicalMaterial, MeshStandardMaterial, MeshToonMaterial, MinEquation, MirroredRepeatWrapping, MixOperation, MultiMaterial, MultiplyBlending, MultiplyOperation, NearestFilter, NearestMipMapLinearFilter, NearestMipMapNearestFilter, NearestMipmapLinearFilter, NearestMipmapNearestFilter, NeverDepth, NeverStencilFunc, NoBlending, NoColors, NoToneMapping, NormalAnimationBlendMode, NormalBlending, NotEqualDepth, NotEqualStencilFunc, NumberKeyframeTrack, Object3D, ObjectLoader, ObjectSpaceNormalMap, OctahedronBufferGeometry, OctahedronGeometry, OneFactor, OneMinusDstAlphaFactor, OneMinusDstColorFactor, OneMinusSrcAlphaFactor, OneMinusSrcColorFactor, OrthographicCamera, PCFShadowMap, PCFSoftShadowMap, PMREMGenerator, ParametricBufferGeometry, ParametricGeometry, Particle, ParticleBasicMaterial, ParticleSystem, ParticleSystemMaterial, Path, PerspectiveCamera, PhysicMaterial, Plane, PlaneBufferGeometry, PlaneGeometry, PlaneHelper, PointCloud, PointCloudMaterial, PointLight, PointLightHelper, Points, PointsMaterial, PolarGridHelper, PolyhedronBufferGeometry, PolyhedronGeometry, PositionalAudio, PropertyBinding, PropertyMixer, QuadraticBezierCurve, QuadraticBezierCurve3, Quaternion, QuaternionKeyframeTrack, QuaternionLinearInterpolant, REVISION, RGBADepthPacking, RGBAFormat, RGBAIntegerFormat, RGBA_ASTC_10x10_Format, RGBA_ASTC_10x5_Format, RGBA_ASTC_10x6_Format, RGBA_ASTC_10x8_Format, RGBA_ASTC_12x10_Format, RGBA_ASTC_12x12_Format, RGBA_ASTC_4x4_Format, RGBA_ASTC_5x4_Format, RGBA_ASTC_5x5_Format, RGBA_ASTC_6x5_Format, RGBA_ASTC_6x6_Format, RGBA_ASTC_8x5_Format, RGBA_ASTC_8x6_Format, RGBA_ASTC_8x8_Format, RGBA_BPTC_Format, RGBA_ETC2_EAC_Format, RGBA_PVRTC_2BPPV1_Format, RGBA_PVRTC_4BPPV1_Format, RGBA_S3TC_DXT1_Format, RGBA_S3TC_DXT3_Format, RGBA_S3TC_DXT5_Format, RGBDEncoding, RGBEEncoding, RGBEFormat, RGBFormat, RGBIntegerFormat, RGBM16Encoding, RGBM7Encoding, RGB_ETC1_Format, RGB_ETC2_Format, RGB_PVRTC_2BPPV1_Format, RGB_PVRTC_4BPPV1_Format, RGB_S3TC_DXT1_Format, RGFormat, RGIntegerFormat, RawShaderMaterial, Ray, Raycaster, RectAreaLight, RedFormat, RedIntegerFormat, ReinhardToneMapping, RepeatWrapping, ReplaceStencilOp, ReverseSubtractEquation, RingBufferGeometry, RingGeometry, SRGB8_ALPHA8_ASTC_10x10_Format, SRGB8_ALPHA8_ASTC_10x5_Format, SRGB8_ALPHA8_ASTC_10x6_Format, SRGB8_ALPHA8_ASTC_10x8_Format, SRGB8_ALPHA8_ASTC_12x10_Format, SRGB8_ALPHA8_ASTC_12x12_Format, SRGB8_ALPHA8_ASTC_4x4_Format, SRGB8_ALPHA8_ASTC_5x4_Format, SRGB8_ALPHA8_ASTC_5x5_Format, SRGB8_ALPHA8_ASTC_6x5_Format, SRGB8_ALPHA8_ASTC_6x6_Format, SRGB8_ALPHA8_ASTC_8x5_Format, SRGB8_ALPHA8_ASTC_8x6_Format, SRGB8_ALPHA8_ASTC_8x8_Format, Scene$1 as Scene, SceneUtils, ShaderChunk, ShaderLib, ShaderMaterial, ShadowMaterial, Shape, ShapeBufferGeometry, ShapeGeometry, ShapePath, ShapeUtils, ShortType, Skeleton, SkeletonHelper, SkinnedMesh, SmoothShading, Sphere, SphereBufferGeometry, SphereGeometry, Spherical, SphericalHarmonics3, Spline, SplineCurve, SplineCurve3, SpotLight, SpotLightHelper, SpringDamper, Sprite, SpriteMaterial, SrcAlphaFactor, SrcAlphaSaturateFactor, SrcColorFactor, StaticCopyUsage, StaticDrawUsage, StaticReadUsage, StereoCamera, StreamCopyUsage, StreamDrawUsage, StreamReadUsage, StringKeyframeTrack, SubtractEquation, SubtractiveBlending, TOUCH, TangentSpaceNormalMap, TetrahedronBufferGeometry, TetrahedronGeometry, TextBufferGeometry, TextGeometry, Texture, TextureLoader, TorusBufferGeometry, TorusGeometry, TorusKnotBufferGeometry, TorusKnotGeometry, Triangle, TriangleFanDrawMode, TriangleStripDrawMode, TrianglesDrawMode, TubeBufferGeometry, TubeGeometry, UVMapping, Uint16Attribute, Uint16BufferAttribute, Uint32Attribute, Uint32BufferAttribute, Uint8Attribute, Uint8BufferAttribute, Uint8ClampedAttribute, Uint8ClampedBufferAttribute, Uniform, UniformsLib, UniformsUtils, UnsignedByteType, UnsignedInt248Type, UnsignedIntType, UnsignedShort4444Type, UnsignedShort5551Type, UnsignedShort565Type, UnsignedShortType, VSMShadowMap, Vector2, Vector3, Vector4, VectorKeyframeTrack, Vertex, VertexColors, VideoTexture, WebGL1Renderer, WebGLCubeRenderTarget, WebGLMultisampleRenderTarget, WebGLRenderTarget, WebGLRenderTargetCube, WebGLRenderer, WebGLUtils, WireframeGeometry, WireframeHelper, WrapAroundEnding, XHRLoader, ZeroCurvatureEnding, ZeroFactor, ZeroSlopeEnding, ZeroStencilOp, sRGBEncoding };
