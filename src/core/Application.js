@@ -8,10 +8,7 @@ import { ComponentManager } from './ComponentManager.js';
 export class Application {
 
 	constructor( parameters = {} ) {
-
-		if ( typeof parameters.canvas === 'string' )
-			parameters.canvas = document.getElementById( parameters.canvas );
-
+		
 		this.parameters = parameters;
 
 		this.renderer = new Renderer( parameters );
@@ -26,8 +23,9 @@ export class Application {
 		this._currentScene;
 		this.requestID;
 
-		if ( parameters.canvas === undefined )
-			document.body.appendChild( this.renderer.domElement );
+		const dom = document.createElement( 'div' );
+		dom.appendChild( renderer.domElement );
+		this.dom = dom;
 
 		Application.currentApp = this;
 
