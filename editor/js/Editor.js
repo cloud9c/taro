@@ -6,6 +6,8 @@ import { Toolbar } from './Toolbar.js';
 import { SidebarScene } from './Sidebar.Scene.js';
 import { SidebarInspector } from './Sidebar.Inspector.js';
 
+import './lib/Jsonify.js';
+
 function Editor() {
 
 	this.resizer = new Resizer();

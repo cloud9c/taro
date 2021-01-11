@@ -40,10 +40,10 @@ export class Player extends ObjectLoader {
 
 	}
 
-	load( json ) {
+	parse( json, onLoad ) {
 
-		const app = this.app = new Application( json.parameters );
-		this._componentManager = this.app.componentManager;
+		const app = this._app = new Application( json.parameters );
+		this._componentManager = this._app.componentManager;
 		const scenes = json.scenes;
 
 		for ( let i = 0, len = scenes.length; i < len; i ++ ) {
@@ -57,6 +57,8 @@ export class Player extends ObjectLoader {
 			}
 
 		}
+
+		if ( onLoad !== undefined ) onLoad( app );
 
 		return app;
 
@@ -122,7 +124,7 @@ export class Player extends ObjectLoader {
 
 				object = new Scene();
 
-				this.app.addScene( object );
+				this._app.addScene( object );
 
 				if ( data.background !== undefined ) {
 
