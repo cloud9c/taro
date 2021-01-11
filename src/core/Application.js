@@ -26,7 +26,7 @@ export class Application {
 		this._currentScene;
 		this.requestID;
 
-		if ( parameters.canvas === 'undefined' )
+		if ( parameters.canvas === undefined )
 			document.body.appendChild( this.renderer.domElement );
 
 		Application.currentApp = this;
