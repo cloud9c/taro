@@ -1,7 +1,6 @@
 import { Group } from '../lib/three.js';
 import { Scene } from './Scene.js';
 import { Application } from './Application.js';
-import { ComponentManager } from './ComponentManager.js';
 
 export class Entity extends Group {
 
