@@ -70,7 +70,7 @@ export function Viewport( editor ) {
 
 			this.classList.add( 'parent' );
 			this.dataset.opened = '';
-			currentDrag.style.paddingLeft = parseFloat( window.getComputedStyle( this, null ).getPropertyValue( 'padding-left' ) ) + 16 + 'px';
+			currentDrag.style.paddingLeft = parseFloat( window.getComputedStyle( this ).getPropertyValue( 'padding-left' ) ) + 16 + 'px';
 			thisObject.add( currentObject );
 
 		}

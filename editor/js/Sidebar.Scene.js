@@ -274,9 +274,9 @@ export function SidebarScene( editor ) {
 	function closeParent( target ) {
 
 		let sibling = target.nextElementSibling;
-		const targetPadding = parseFloat( window.getComputedStyle( target, null ).getPropertyValue( 'padding-left' ) );
+		const targetPadding = parseFloat( window.getComputedStyle( target ).getPropertyValue( 'padding-left' ) );
 
-		while ( sibling !== null && parseFloat( window.getComputedStyle( sibling, null ).getPropertyValue( 'padding-left' ) ) > targetPadding ) {
+		while ( sibling !== null && parseFloat( window.getComputedStyle( sibling ).getPropertyValue( 'padding-left' ) ) > targetPadding ) {
 
 			sibling.style.setProperty( 'display', 'none' );
 
@@ -314,7 +314,7 @@ export function SidebarScene( editor ) {
 
 		if ( event.isPrimary === true && target.tagName !== 'SECTION' ) {
 
-			if ( target.classList.contains( 'parent' ) && event.clientX - target.getBoundingClientRect().left < parseFloat( window.getComputedStyle( target, null ).getPropertyValue( 'padding-left' ) ) ) {
+			if ( target.classList.contains( 'parent' ) && event.clientX - target.getBoundingClientRect().left < parseFloat( window.getComputedStyle( target ).getPropertyValue( 'padding-left' ) ) ) {
 
 				if ( target.dataset.opened !== undefined ) closeParent( target );
 				else openParent( target );
