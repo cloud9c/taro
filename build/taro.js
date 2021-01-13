@@ -55580,7 +55580,7 @@ class Entity extends Group {
 
 		if ( value != this._enabled ) {
 
-			if ( value && ! this.parent._enabled )
+			if ( value && this.parent.isScene === undefined && ! this.parent._enabled )
 				return console.warn(
 					"TARO.Entity: Can't enable if an ancestor is disabled"
 				);
