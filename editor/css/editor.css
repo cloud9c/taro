@@ -1,7 +1,8 @@
 :root {
 	--white: rgba(255, 255, 255, 0.8);
-	--gray-1: #333;
-	--gray-2: #7d7d7d;
+	--black: #161616;
+	--gray-1: #393939;
+	--gray-2: #8d8d8d;
 	--gray-3: #ccc;
 	--gray-4: #dcdcdc;
 	--gray-5: #eee;
@@ -24,7 +25,7 @@ main {
 #menubar {
 	height: 32px;
 	width: 100%;
-	background: var(--gray-1);
+	background: var(--black);
 	display: flex;
 	align-items: center;
 }
@@ -36,14 +37,14 @@ main {
 	cursor: pointer;
 }
 
-.menu:focus {
-	background: #000;
-	color: #fff;
-}
-
 .menu .title {
 	line-height: 16px;
 	padding: 8px 12px;
+	transition: background .11s cubic-bezier(.2,0,.38,.9);
+}
+
+.menu:hover .title, .menu:focus .title {
+	background: var(--gray-1);
 }
 
 .menu:focus .options {
@@ -54,18 +55,18 @@ main {
 	display: none;
 	position: absolute;
 	width: 150px;
-	padding: 5px 0;
-	background: var(--gray-1);
+	background: var(--black);
 	z-index: 1;
+	box-shadow: 0 4px 8px 0 rgb(0 0 0 / 50%);
 }
 
 .option {
-	padding: 5px 10px;
+	padding: 8px 12px;
 	color: var(--white);
 }
 
 .option:hover {
-	background: var(--theme-color);
+	background: var(--gray-1);
 	color: #fff;
 }
 
@@ -132,20 +133,22 @@ aside section {
 }
 
 select {
-	border: 1px solid var(--border-color);
+	border: none;
+	border-bottom: 1px solid var(--gray-2);
 	font-family: inherit;
 	font-size: inherit;
 	color: inherit;
 	padding: 1px 0 1px 4px;
 	appearance: none;
-	background: url("../img/chevron-down.svg") no-repeat right 4px center;
+	background: url("../img/chevron-down.svg") no-repeat right 4px center, var(--gray-5);
 	background-size: 16px;
-	width: 120px;
+	height: 22px;
 	outline: 0;
 }
 
 input {
 	outline: 0;
+	font-family: inherit;
 }
 
 input[type="color"], select, .file-wrapper {
@@ -163,6 +166,7 @@ input[type="color"], .file-wrapper {
 input[type="color"]::-webkit-color-swatch-wrapper {
 	padding: 0;
 }
+
 input[type="color"]::-webkit-color-swatch {
 	border: none;
 }
@@ -175,18 +179,72 @@ input[type="number"] {
 	-moz-appearance: textfield;
 	height: 22px;
 	width: 44px;
-	border: 1px solid var(--border-color);
-}
-
-input[type="text"] {
-	height: 22px;
-	border: 1px solid var(--border-color);
+	border: none;
+	border-bottom: 1px solid var(--border-color);
+	background: var(--gray-5);
+	font-family: "IBM Plex Mono", monospace;
 }
 
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
 	-webkit-appearance: none;
 	margin: 0;
+}
+
+input[type="text"] {
+	height: 22px;
+	border: 1px solid var(--border-color);
+	border: none;
+	border-bottom: 1px solid var(--border-color);
+	background: var(--gray-5);
+	padding: 0 8px;
+}
+
+input[type="checkbox"] {
+	position: relative;
+	appearance: none;
+	margin: 0;
+}
+
+input[type="checkbox"]:before {
+	position: relative;
+	display: block;
+	width: 14px;
+	height: 14px;
+	content: "";
+	border: 1px solid var(--text-color);
+	border-radius: 0;
+}
+
+input[type="checkbox"]:checked:before {
+	background: var(--text-color);
+}
+
+input[type="checkbox"]:after {
+	position: absolute;
+    top: 2px;
+    left: 4px;
+    width: 7px;
+    height: 3px;
+    margin-top: -1px;
+    background: none;
+    border-bottom: 2px solid #fff;
+    border-left: 2px solid #fff;
+    transform: scale(0) rotate(-45deg);
+    transform-origin: bottom right;
+    content: "";
+}
+
+input[type="checkbox"]:checked:after {
+	transform: scale(1) rotate(-45deg);
+}
+
+.entity-section input[type="checkbox"] {
+	margin-right: 8px;
+}
+
+.entity-section input[type="text"] {
+	width: 100%;
 }
 
 .file-display {
@@ -204,10 +262,12 @@ input::-webkit-inner-spin-button {
 	margin-left: 8px;
 }
 
+#scene select {
+	width: 120px;
+}
+
 #fog-wrapper {
-
 	margin-bottom: 6px;
-
 }
 
 #linear-fog input, #exponential-fog input {
@@ -331,13 +391,14 @@ input::-webkit-inner-spin-button {
 .tool {
 	padding: 5px 8px;
 	border: none;
-	background: var(--gray-1);
+	background: #000;
 	outline: none;
 	cursor: pointer;
+	transition: background .11s cubic-bezier(.2,0,.38,.9);
 }
 
 .tool:hover {
-	background: #000;
+	background: var(--gray-1);
 }
 
 .tool[data-selected] {
@@ -347,10 +408,6 @@ input::-webkit-inner-spin-button {
 .tool svg {
 	fill: var(--white);
 	pointer-events: none;
-}
-
-.tool:hover svg {
-	fill: #fff;
 }
 
 .tool[data-selected] svg {

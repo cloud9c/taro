@@ -22,7 +22,7 @@ export function SidebarInspector( editor ) {
 		if ( currentEntity !== null ) this.detach();
 		currentEntity = entity;
 
-		inspector.appendChild( this.addDefaultUI() );
+		inspector.appendChild( this.addDefaultUI( entity ) );
 
 		const components = entity.componentData;
 
@@ -95,17 +95,30 @@ export function SidebarInspector( editor ) {
 
 	};
 
-	this.addDefaultUI = function () {
+	this.addDefaultUI = function ( entity ) {
 
 		const section = document.createElement( 'SECTION' );
+		section.classList.add( 'entity-section' );
 		let fieldset, enabled, name;
 
 		fieldset = document.createElement( 'FIELDSET' );
 
 		enabled = document.createElement( 'INPUT' );
 		enabled.type = 'checkbox';
+		enabled.title = 'Enabled';
+		if ( entity.enabled )
+			enabled.checked = true;
+
+		enabled.addEventListener( 'change', () => {
+
+			entity.enabled = enabled.checked;
+
+		} );
+
 		name = document.createElement( 'INPUT' );
 		name.type = 'text';
+		name.title = 'Name';
+		name.value = entity.name;
 
 		fieldset.appendChild( enabled );
 		fieldset.appendChild( name );
