@@ -112,6 +112,7 @@ export function SidebarInspector( editor ) {
 		enabled.addEventListener( 'change', () => {
 
 			entity.enabled = enabled.checked;
+			editor.render();
 
 		} );
 
