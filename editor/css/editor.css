@@ -178,6 +178,11 @@ input[type="number"] {
 	border: 1px solid var(--border-color);
 }
 
+input[type="text"] {
+	height: 22px;
+	border: 1px solid var(--border-color);
+}
+
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
 	-webkit-appearance: none;

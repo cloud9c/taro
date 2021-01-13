@@ -22,8 +22,7 @@ export function SidebarInspector( editor ) {
 		if ( currentEntity !== null ) this.detach();
 		currentEntity = entity;
 
-		for ( let i = 0, len = defaultSchema.length; i < len; i ++ )
-			this.addUI( defaultSchema[ i ] );
+		inspector.appendChild( this.addDefaultUI() );
 
 		const components = entity.componentData;
 
@@ -32,7 +31,7 @@ export function SidebarInspector( editor ) {
 
 				const schema = componentManager.components[ components[ i ].type ].options.schema;
 				if ( schema !== undefined )
-					this.addUI( schema, components[ i ] );
+					inspector.appendChild( this.addUI( schema, components[ i ] ) );
 
 			}
 
@@ -48,36 +47,72 @@ export function SidebarInspector( editor ) {
 
 	this.addUI = function ( schema, componentData ) {
 
-		const fieldset = document.createElement( 'FIELDSET' );
+		const section = document.createElement( 'SECTION' );
 
-		switch ( schema.type ) {
+		for ( let i = 0, len = schema.length; i < len; i ++ ) {
 
-			case 'string':
-				break;
-			case 'color':
-				break;
-			case 'vector2':
-				break;
-			case 'vector3':
-				break;
-			case 'vector4':
-				break;
-			case 'boolean':
-				break;
-			case 'slider':
-				break;
-			case 'number':
-				break;
-			case 'select':
-				break;
-			case 'asset':
-				break;
-			default:
-				return console.warn( 'SidebarInspector: Invalid schema type: ' + schema.type );
+			const fieldset = document.createElement( 'FIELDSET' );
+			const attribute = schema[ i ];
+
+			switch ( attribute.type ) {
+
+				case 'string':
+					const input = document.createElement( 'INPUT' );
+					const legend = document.createElement( 'LEGEND' );
+					input.type = 'text';
+					legend.textContent = attribute.label !== undefined ? attribute.label : attribute.name;
+					fieldset.appendChild( legend );
+					fieldset.appendChild( input );
+					break;
+				case 'color':
+					break;
+				case 'vector2':
+					break;
+				case 'vector3':
+					break;
+				case 'vector4':
+					break;
+				case 'boolean':
+					break;
+				case 'slider':
+					break;
+				case 'number':
+					break;
+				case 'select':
+					break;
+				case 'asset':
+					break;
+				default:
+					return console.warn( 'SidebarInspector: Invalid schema type: ' + schema.type );
+
+			}
+
+			section.appendChild( fieldset );
 
 		}
 
-		inspector.appendChild( fieldset );
+		return section;
+
+	};
+
+	this.addDefaultUI = function () {
+
+		const section = document.createElement( 'SECTION' );
+		let fieldset, enabled, name;
+
+		fieldset = document.createElement( 'FIELDSET' );
+
+		enabled = document.createElement( 'INPUT' );
+		enabled.type = 'checkbox';
+		name = document.createElement( 'INPUT' );
+		name.type = 'text';
+
+		fieldset.appendChild( enabled );
+		fieldset.appendChild( name );
+
+		section.appendChild( fieldset );
+
+		return section;
 
 	};
 
@@ -85,15 +120,16 @@ export function SidebarInspector( editor ) {
 
 		if ( currentEntity.componentData === undefined ) currentEntity.componentData = [];
 
-		const data = { type: type };
+		const component = { type, data: {} };
 		const schema = componentManager.components[ type ].options.schema;
 		if ( schema !== undefined )
 			for ( let i = 0, len = schema.length; i < len; i ++ ) {
 
-				const _default = schema[ i ].default;
+				const attribute = schema[ i ];
+				const _default = attribute.default;
 				let value;
 
-				switch ( schema[ i ].type ) {
+				switch ( attribute.type ) {
 
 					case 'string':
 						value = _default !== undefined ? _default : '';
@@ -126,15 +162,15 @@ export function SidebarInspector( editor ) {
 						value = _default !== undefined ? _default : null;
 						break;
 					default:
-						return console.warn( 'SidebarInspector: Invalid schema type: ' + schema.type );
+						return console.warn( 'SidebarInspector: Invalid schema type: ' + attribute.type );
 
 				}
 
-				data[ schema[ i ].name ] = value;
+				component.data[ attribute.name ] = value;
 
 			}
 
-		currentEntity.componentData.push( data );
+		currentEntity.componentData.push( component );
 		this.addUI();
 
 	};
