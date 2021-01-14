@@ -205,10 +205,18 @@ export function SidebarScene( editor ) {
 
 	} );
 
+	const fogOptions = document.querySelectorAll( '#fog-options input' );
+	const linearFog = document.getElementById( 'linear-fog' ).children;
+	const expFog = document.getElementById( 'exponential-fog' ).children;
+	const linearColor = document.getElementById( 'color-linear-fog' );
+	const expColor = document.getElementById( 'color-exp-fog' );
+
 	function resetFogInput() {
 
 		document.getElementById( 'linear-fog' ).style.removeProperty( 'display' );
+		linearColor.style.removeProperty( 'display' );
 		document.getElementById( 'exponential-fog' ).style.removeProperty( 'display' );
+		expColor.style.removeProperty( 'display' );
 
 	}
 
@@ -220,14 +228,19 @@ export function SidebarScene( editor ) {
 
 			case 'none':
 				scene.fog = null;
+				this.style.removeProperty( 'width' );
 				render();
 				break;
 			case 'linear':
 				document.getElementById( 'linear-fog' ).style.setProperty( 'display', 'flex' );
+				this.style.setProperty( 'width', '90px' );
+				linearColor.style.setProperty( 'display', 'inherit' );
 				setFog();
 				break;
 			case 'exponential':
 				document.getElementById( 'exponential-fog' ).style.setProperty( 'display', 'flex' );
+				this.style.setProperty( 'width', '90px' );
+				expColor.style.setProperty( 'display', 'inherit' );
 				setExpFog();
 				break;
 
@@ -235,15 +248,11 @@ export function SidebarScene( editor ) {
 
 	} );
 
-	const fogOptions = document.querySelectorAll( '#fog-options input' );
-	const linearFog = document.getElementById( 'linear-fog' ).children;
-	const expFog = document.getElementById( 'exponential-fog' ).children;
-
 	function setFog() {
 
-		fog.color.set( linearFog[ 0 ].value );
-		fog.near = parseFloat( linearFog[ 1 ].value );
-		fog.far = parseFloat( linearFog[ 2 ].value );
+		fog.color.set( linearColor.value );
+		fog.near = parseFloat( linearFog[ 0 ].value );
+		fog.far = parseFloat( linearFog[ 1 ].value );
 
 		scene.fog = fog;
 		render();
@@ -252,37 +261,49 @@ export function SidebarScene( editor ) {
 
 	function setExpFog() {
 
-		fogExp2.color.set( expFog[ 0 ].value );
-		fogExp2.density = parseFloat( expFog[ 1 ].value );
+		fogExp2.color.set( expColor.value );
+		fogExp2.density = parseFloat( expFog[ 0 ].value );
 
 		scene.fog = fogExp2;
 		render();
 
 	}
 
+	linearColor.addEventListener( 'input', setFog );
+	expColor.addEventListener( 'input', setExpFog );
+
 	for ( let i = 0, len = fogOptions.length; i < len; i ++ ) {
 
 		const option = fogOptions[ i ];
 
 		if ( option.parentElement.id === 'linear-fog' )
-			option.addEventListener( option.type === 'color' ? 'input' : 'change', setFog );
+			option.addEventListener( 'change', setFog );
 		else // exp fog
-			option.addEventListener( option.type === 'color' ? 'input' : 'change', setExpFog );
+			option.addEventListener( 'change', setExpFog );
 
 	}
 
 	function closeParent( target ) {
 
-		let sibling = target.nextElementSibling;
-		const targetPadding = parseFloat( window.getComputedStyle( target ).getPropertyValue( 'padding-left' ) );
+		const recursion = ( children ) => {
 
-		while ( sibling !== null && parseFloat( window.getComputedStyle( sibling ).getPropertyValue( 'padding-left' ) ) > targetPadding ) {
+			for ( let i = 0, len = children.length; i < len; i ++ ) {
 
-			sibling.style.setProperty( 'display', 'none' );
+				children[ i ].style.setProperty( 'display', 'none' );
 
-			sibling = sibling.nextElementSibling;
+				const grandChildren = document.querySelectorAll( '#scene-tree [data-parent="' + children[ i ].dataset.id + '"]' );
 
-		}
+				if ( grandChildren.length > 0 ) {
+
+					recursion( grandChildren );
+
+				}
+
+			}
+
+		};
+
+		recursion( document.querySelectorAll( '#scene-tree [data-parent="' + target.dataset.id + '"]' ) );
 
 		delete target.dataset.opened;
 
@@ -292,15 +313,29 @@ export function SidebarScene( editor ) {
 
 	function openParent( target ) {
 
-		let sibling = target.nextElementSibling;
+		const recursion = ( children ) => {
 
-		while ( sibling.style.getPropertyValue( 'display' ) === 'none' ) {
+			for ( let i = 0, len = children.length; i < len; i ++ ) {
 
-			sibling.style.removeProperty( 'display' );
+				children[ i ].style.removeProperty( 'display' );
 
-			sibling = sibling.nextElementSibling;
+				if ( children[ i ].dataset.opened !== undefined ) {
 
-		}
+					const grandChildren = document.querySelectorAll( '#scene-tree [data-parent="' + children[ i ].dataset.id + '"]' );
+
+					if ( grandChildren.length > 0 ) {
+
+						recursion( grandChildren );
+
+					}
+
+				}
+
+			}
+
+		};
+
+		recursion( document.querySelectorAll( '#scene-tree [data-parent="' + target.dataset.id + '"]' ) );
 
 		target.dataset.opened = '';
 

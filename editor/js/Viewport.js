@@ -44,38 +44,114 @@ export function Viewport( editor ) {
 
 	function onDrop( event ) {
 
-		if ( currentDrag === this ) return;
+		if ( currentDrag === this ) return this.classList.remove( 'drag-into', 'drag-above', 'drag-below' );
 
-		this.classList.remove( 'drag-into', 'drag-above', 'drag-below' );
+		let element = this;
+		while ( element.dataset.parent !== undefined ) {
+
+			 if ( element.dataset.parent === currentDrag.dataset.id ) return this.classList.remove( 'drag-into', 'drag-above', 'drag-below' );
+
+			element = document.querySelector( '#scene-tree [data-id="' + element.dataset.parent + '"]' );
+
+		}
+
+		if ( currentDrag.dataset.id === this.dataset.parent ) return;
 
 		const currentObject = scene.findById( parseInt( currentDrag.dataset.id ) );
 		const thisObject = scene.findById( parseInt( this.dataset.id ) );
 
-		if ( this.classList.contains( 'drag-above' ) ) {
+		if ( currentDrag.dataset.parent !== undefined ) {
+
+			const id = currentDrag.dataset.parent;
+			delete currentDrag.dataset.parent;
+
+			if ( document.querySelectorAll( '#scene-tree [data-parent="' + id + '"]' ).length === 0 ) {
+
+				const parent = document.querySelector( '#scene-tree [data-id="' + id + '"]' );
+				parent.classList.remove( 'parent' );
+				delete parent.dataset.opened;
+
+			}
+
+		}
+
+		if ( this.classList.contains( 'drag-above' ) || this.classList.contains( 'drag-below' ) ) {
+
+			if ( currentDrag.style.paddingLeft !== '' || currentDrag.style.paddingLeft !== '24px' )
+				currentDrag.style.paddingLeft = parseFloat( currentDrag.style.paddingLeft ) - 16 + 'px';
+
+			if ( this.classList.contains( 'drag-above' ) )
+				this.before( currentDrag );
+			else
+				this.after( currentDrag );
+
+			if ( this.dataset.parent !== undefined ) {
+
+				const parent = document.querySelector( '#scene-tree [data-id="' + this.dataset.parent + '"]' );
+				currentDrag.dataset.parent = parent.dataset.id;
+				currentDrag.style.paddingLeft = parseFloat( window.getComputedStyle( parent ).getPropertyValue( 'padding-left' ) ) + 16 + 'px';
+
+			} else if ( this.classList.contains( 'drag-below' ) && this.classList.contains( 'parent' ) ) {
+
+				currentDrag.style.paddingLeft = parseFloat( window.getComputedStyle( this ).getPropertyValue( 'padding-left' ) ) + 16 + 'px';
+				currentDrag.dataset.parent = this.dataset.id;
+				thisObject.add( currentObject );
+
+			}
 
 			thisObject.parent.add( currentObject );
-
-			this.before( currentDrag );
-
-		} else if ( this.classList.contains( 'drag-below' ) ) {
-
-			thisObject.parent.add( currentObject );
-
-			this.after( currentDrag );
 
 		} else {
 
-			editor.sidebarScene.openParent( this );
-			this.after( currentDrag );
+			const children = document.querySelectorAll( '#scene-tree [data-parent="' + this.dataset.id + '"]' );
+
+			if ( children.length > 0 ) {
+
+				editor.sidebarScene.openParent( this );
+				children[ children.length - 1 ].after( currentDrag );
+
+			} else {
+
+				this.after( currentDrag );
+
+			}
 
 			this.classList.add( 'parent' );
 			this.dataset.opened = '';
 			currentDrag.style.paddingLeft = parseFloat( window.getComputedStyle( this ).getPropertyValue( 'padding-left' ) ) + 16 + 'px';
+			currentDrag.dataset.parent = this.dataset.id;
+			console.log( thisObject.scene );
 			thisObject.add( currentObject );
 
 		}
 
+		const recursion = ( element ) => {
+
+			const children = document.querySelectorAll( '#scene-tree [data-parent="' + element.dataset.id + '"]' );
+
+			if ( children.length > 0 ) {
+
+				let prevChild = element;
+				const paddingLeft = parseFloat( window.getComputedStyle( element ).getPropertyValue( 'padding-left' ) );
+				for ( let i = 0, len = children.length; i < len; i ++ ) {
+
+					children[ i ].style.paddingLeft = paddingLeft + 16 + 'px';
+
+					prevChild.after( children[ i ] );
+					prevChild = children[ i ];
+
+					recursion( children[ i ] );
+
+				}
+
+			}
+
+		};
+
+		recursion( currentDrag );
+
 		render();
+		this.classList.remove( 'drag-into', 'drag-above', 'drag-below' );
 
 		event.preventDefault();
 
@@ -241,7 +317,7 @@ export function Viewport( editor ) {
 
 	let dragging = false;
 
-	dom.addEventListener( 'pointerup', function ( event ) {
+	function onPointerUp( event ) {
 
 		const firstIntersect = getIntersects( event.clientX, event.clientY )[ 0 ];
 		let rayObject;
@@ -288,6 +364,14 @@ export function Viewport( editor ) {
 		}
 
 		dragging = false;
+
+		dom.removeEventListener( 'pointerup', onPointerUp );
+
+	}
+
+	dom.addEventListener( 'pointerdown', function () {
+
+		dom.addEventListener( 'pointerup', onPointerUp );
 
 	} );
 

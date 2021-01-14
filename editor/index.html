@@ -83,20 +83,18 @@
 							<select name="fog" id="fog">
 								<option value="none">None</option>
 								<option value="linear">Linear</option>
-								<option value="exponential">Exponential</option>
+								<option value="exponential">Exp2</option>
 							</select>
+							<input type="color" id="color-linear-fog" value="#c4c4c4">
+							<input type="color" id="color-exp-fog" value="#c4c4c4">
 						</fieldset>
-						<div id="fog-options">
-							<fieldset id="linear-fog">
-								<input type="color" value="#c4c4c4">
-								<input type="number" placeholder="Near" value="0.1">
-								<input type="number" placeholder="Far" value="50">
-							</fieldset>
-							<fieldset id="exponential-fog" value="#c4c4c4">
-								<input type="color">
-								<input type="number" placeholder="Density" value="0.05">
-							</fieldset>
-						</div>
+						<fieldset id="linear-fog">
+							<input type="number" value="0.1">
+							<input type="number" value="50">
+						</fieldset>
+						<fieldset id="exponential-fog" value="#c4c4c4">
+							<input type="number" value="0.05">
+						</fieldset>
 						</section>
 						<section id="scene-tree">
 						</section>

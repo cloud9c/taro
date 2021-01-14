@@ -121,6 +121,14 @@ export function SidebarInspector( editor ) {
 		name.title = 'Name';
 		name.value = entity.name;
 
+		name.addEventListener( 'change', () => {
+
+			entity.name = name.value;
+			document.querySelector( '#scene-tree div[data-id="' + entity.id + '"' ).textContent = name.value;
+			editor.render();
+
+		} );
+
 		fieldset.appendChild( enabled );
 		fieldset.appendChild( name );
 

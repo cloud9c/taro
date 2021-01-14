@@ -176,19 +176,12 @@ input[type="file"] {
 }
 
 input[type="number"] {
-	-moz-appearance: textfield;
 	height: 22px;
 	width: 44px;
 	border: none;
 	border-bottom: 1px solid var(--border-color);
 	background: var(--gray-5);
 	font-family: "IBM Plex Mono", monospace;
-}
-
-input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
-	-webkit-appearance: none;
-	margin: 0;
 }
 
 input[type="text"] {
@@ -270,21 +263,29 @@ input[type="checkbox"]:checked:after {
 	margin-bottom: 6px;
 }
 
-#linear-fog input, #exponential-fog input {
-	margin-left: 5px;
-}
-
 #linear-fog input[type="number"], #exponential-fog[type="number"] {
 	padding: 1px 0 1px 4px;
 }
 
-
-#exponential-fog input[type="number"] {
-	width: 93px;
+#linear-fog input:first-child, #exponential-fog input {
+	margin-left: auto;
 }
 
-#linear-fog input[type="color"], #exponential-fog input[type="color"] {
-	margin-left: auto;
+#linear-fog input:first-child {
+	margin-right: 6px;
+}
+
+#linear-fog input {
+	width: 57px;
+}
+
+#exponential-fog input {
+	width: 120px;
+}
+
+#color-linear-fog, #color-exp-fog {
+	margin-left: 8px;
+	display: none;
 }
 
 #scene-tree {
