@@ -1,4 +1,4 @@
-export class Object3D {
+export class Renderable {
 
 	start( data ) {
 

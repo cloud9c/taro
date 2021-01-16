@@ -51924,7 +51924,7 @@ class Input {
 
 }
 
-class Object3D$1 {
+class Renderable {
 
 	start( data ) {
 
@@ -54916,7 +54916,7 @@ class ComponentManager {
 			}
 		};
 
-		this.add( 'object3D', Object3D$1 );
+		this.add( 'renderable', Renderable );
 		this.add( 'camera', Camera$1 );
 		this.add( 'rigidbody', Rigidbody );
 		this.add( 'collider', Collider );

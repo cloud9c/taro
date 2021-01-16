@@ -1,4 +1,4 @@
-import { Object3D } from '../components/Object3D.js';
+import { Renderable } from '../components/Renderable.js';
 import { Camera } from '../components/Camera.js';
 import { Rigidbody } from '../components/physics/Rigidbody.js';
 import { Collider } from '../components/physics/Collider.js';
@@ -64,7 +64,7 @@ export class ComponentManager {
 			}
 		};
 
-		this.add( 'object3D', Object3D );
+		this.add( 'renderable', Renderable );
 		this.add( 'camera', Camera );
 		this.add( 'rigidbody', Rigidbody );
 		this.add( 'collider', Collider );
