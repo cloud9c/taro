@@ -51924,7 +51924,7 @@ class Input {
 
 }
 
-class Renderable {
+class Object3D$1 {
 
 	start( data ) {
 
@@ -54916,7 +54916,7 @@ class ComponentManager {
 			}
 		};
 
-		this.add( 'renderable', Renderable );
+		this.add( 'object3D', Object3D$1 );
 		this.add( 'camera', Camera$1 );
 		this.add( 'rigidbody', Rigidbody );
 		this.add( 'collider', Collider );
@@ -55331,7 +55331,13 @@ class Entity extends Group {
 
 	}
 
-	find( name ) {
+	getEntityById( id ) {
+
+		return this.getObjectById( id );
+
+	}
+
+	getEntityByName( name ) {
 
 		let match;
 
@@ -55349,7 +55355,7 @@ class Entity extends Group {
 
 	}
 
-	findByTag( tag ) {
+	getEntityByTag( tag ) {
 
 		const matches = [];
 		this.traverse( ( child ) => {
@@ -55362,17 +55368,7 @@ class Entity extends Group {
 
 	}
 
-	findById( id ) {
 
-		return this.getObjectById( id );
-
-	}
-
-	findByProperty( name, value ) {
-
-		return this.getObjectByProperty( name, value );
-
-	}
 
 	get app() {
 
