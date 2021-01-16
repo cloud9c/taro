@@ -353,7 +353,7 @@ export function SidebarScene( editor ) {
 				if ( oldTarget !== null ) delete oldTarget.dataset.selected;
 				target.dataset.selected = '';
 
-				const entity = scene.findById( parseInt( target.dataset.id ) );
+				const entity = scene.getEntityById( parseInt( target.dataset.id ) );
 
 				viewport.control.enabled = true;
 				inspector.attach( entity );

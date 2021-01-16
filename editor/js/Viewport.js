@@ -57,8 +57,8 @@ export function Viewport( editor ) {
 
 		if ( currentDrag.dataset.id === this.dataset.parent ) return;
 
-		const currentObject = scene.findById( parseInt( currentDrag.dataset.id ) );
-		const thisObject = scene.findById( parseInt( this.dataset.id ) );
+		const currentObject = scene.getEntityById( parseInt( currentDrag.dataset.id ) );
+		const thisObject = scene.getEntityById( parseInt( this.dataset.id ) );
 
 		if ( currentDrag.dataset.parent !== undefined ) {
 
@@ -173,7 +173,7 @@ export function Viewport( editor ) {
 	this.addEntity = function ( name = 'Entity' ) {
 
 		let counter = 1;
-		while ( scene.find( name ) !== undefined ) {
+		while ( scene.getEntityByName( name ) !== undefined ) {
 
 			if ( counter > 1 )
 				name = name.slice( 0, - ( 3 + Math.ceil( Math.log10( counter ) ) ) );
@@ -201,21 +201,21 @@ export function Viewport( editor ) {
 
 	};
 
-	this.addEntity().addComponent( 'Renderable', new TARO.Mesh( new TARO.BoxGeometry(), new TARO.MeshPhongMaterial( { color: 0x00ff00 } ) ) );
-	this.addEntity().addComponent( 'Renderable', new TARO.Mesh( new TARO.BoxGeometry(), new TARO.MeshPhongMaterial( { color: 0x00ff00 } ) ) );
-	this.addEntity().addComponent( 'Renderable', new TARO.Mesh( new TARO.BoxGeometry(), new TARO.MeshPhongMaterial( { color: 0x00ff00 } ) ) );
-	this.addEntity().addComponent( 'Renderable', new TARO.Mesh( new TARO.BoxGeometry(), new TARO.MeshPhongMaterial( { color: 0x00ff00 } ) ) );
-	this.addEntity().addComponent( 'Renderable', new TARO.Mesh( new TARO.BoxGeometry(), new TARO.MeshPhongMaterial( { color: 0x00ff00 } ) ) );
-	this.addEntity().addComponent( 'Renderable', new TARO.Mesh( new TARO.BoxGeometry(), new TARO.MeshPhongMaterial( { color: 0x00ff00 } ) ) );
-	this.addEntity().addComponent( 'Renderable', new TARO.Mesh( new TARO.BoxGeometry(), new TARO.MeshPhongMaterial( { color: 0x00ff00 } ) ) );
-	this.addEntity().addComponent( 'Renderable', new TARO.Mesh( new TARO.BoxGeometry(), new TARO.MeshPhongMaterial( { color: 0x00ff00 } ) ) );
-	this.addEntity().addComponent( 'Renderable', new TARO.Mesh( new TARO.BoxGeometry(), new TARO.MeshPhongMaterial( { color: 0x00ff00 } ) ) );
-	this.addEntity().addComponent( 'Renderable', new TARO.Mesh( new TARO.BoxGeometry(), new TARO.MeshPhongMaterial( { color: 0x00ff00 } ) ) );
-	this.addEntity().addComponent( 'Renderable', new TARO.Mesh( new TARO.BoxGeometry(), new TARO.MeshPhongMaterial( { color: 0x00ff00 } ) ) );
-	this.addEntity().addComponent( 'Renderable', new TARO.Mesh( new TARO.BoxGeometry(), new TARO.MeshPhongMaterial( { color: 0x00ff00 } ) ) );
-	this.addEntity().addComponent( 'Renderable', new TARO.Mesh( new TARO.BoxGeometry(), new TARO.MeshPhongMaterial( { color: 0x00ff00 } ) ) );
-	this.addEntity().addComponent( 'Renderable', new TARO.Mesh( new TARO.BoxGeometry(), new TARO.MeshPhongMaterial( { color: 0x00ff00 } ) ) );
-	this.addEntity().addComponent( 'Renderable', new TARO.Mesh( new TARO.BoxGeometry(), new TARO.MeshPhongMaterial( { color: 0x00ff00 } ) ) );
+	this.addEntity().addComponent( 'renderable', new TARO.Mesh( new TARO.BoxGeometry(), new TARO.MeshPhongMaterial( { color: 0x00ff00 } ) ) );
+	this.addEntity().addComponent( 'renderable', new TARO.Mesh( new TARO.BoxGeometry(), new TARO.MeshPhongMaterial( { color: 0x00ff00 } ) ) );
+	this.addEntity().addComponent( 'renderable', new TARO.Mesh( new TARO.BoxGeometry(), new TARO.MeshPhongMaterial( { color: 0x00ff00 } ) ) );
+	this.addEntity().addComponent( 'renderable', new TARO.Mesh( new TARO.BoxGeometry(), new TARO.MeshPhongMaterial( { color: 0x00ff00 } ) ) );
+	this.addEntity().addComponent( 'renderable', new TARO.Mesh( new TARO.BoxGeometry(), new TARO.MeshPhongMaterial( { color: 0x00ff00 } ) ) );
+	this.addEntity().addComponent( 'renderable', new TARO.Mesh( new TARO.BoxGeometry(), new TARO.MeshPhongMaterial( { color: 0x00ff00 } ) ) );
+	this.addEntity().addComponent( 'renderable', new TARO.Mesh( new TARO.BoxGeometry(), new TARO.MeshPhongMaterial( { color: 0x00ff00 } ) ) );
+	this.addEntity().addComponent( 'renderable', new TARO.Mesh( new TARO.BoxGeometry(), new TARO.MeshPhongMaterial( { color: 0x00ff00 } ) ) );
+	this.addEntity().addComponent( 'renderable', new TARO.Mesh( new TARO.BoxGeometry(), new TARO.MeshPhongMaterial( { color: 0x00ff00 } ) ) );
+	this.addEntity().addComponent( 'renderable', new TARO.Mesh( new TARO.BoxGeometry(), new TARO.MeshPhongMaterial( { color: 0x00ff00 } ) ) );
+	this.addEntity().addComponent( 'renderable', new TARO.Mesh( new TARO.BoxGeometry(), new TARO.MeshPhongMaterial( { color: 0x00ff00 } ) ) );
+	this.addEntity().addComponent( 'renderable', new TARO.Mesh( new TARO.BoxGeometry(), new TARO.MeshPhongMaterial( { color: 0x00ff00 } ) ) );
+	this.addEntity().addComponent( 'renderable', new TARO.Mesh( new TARO.BoxGeometry(), new TARO.MeshPhongMaterial( { color: 0x00ff00 } ) ) );
+	this.addEntity().addComponent( 'renderable', new TARO.Mesh( new TARO.BoxGeometry(), new TARO.MeshPhongMaterial( { color: 0x00ff00 } ) ) );
+	this.addEntity().addComponent( 'renderable', new TARO.Mesh( new TARO.BoxGeometry(), new TARO.MeshPhongMaterial( { color: 0x00ff00 } ) ) );
 
 	const grid = new TARO.GridHelper( 30, 30 );
 
@@ -225,11 +225,11 @@ export function Viewport( editor ) {
 	const attribute = grid.geometry.attributes.color;
 	const array = attribute.array;
 
-	for ( var i = 0; i < array.length; i += 12 ) {
+	for ( let i = 0; i < array.length; i += 12 ) {
 
 		const color = ( i % ( 12 * 5 ) === 0 ) ? color1 : color2;
 
-		for ( var j = 0; j < 12; j += 3 ) {
+		for ( let j = 0; j < 12; j += 3 ) {
 
 			color.toArray( array, i + j );
 
@@ -314,7 +314,7 @@ export function Viewport( editor ) {
 
 		for ( let i = 0, len = inputs.length; i < len; i ++ ) {
 
-			inputs[ i ].value = entity[ inputs[ i ].dataset.translation ][ inputs[ i ].dataset.xyz ];
+			inputs[ i ].value = entity[ inputs[ i ].dataset.translation ][ inputs[ i ].dataset.xyz ].toFixed( 2 );
 
 		}
 
