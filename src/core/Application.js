@@ -98,7 +98,7 @@ export class Application {
 
 	}
 
-	findScene( name ) {
+	getSceneByName( name ) {
 
 		for ( let i = 0, len = this.scenes.length; i < len; i ++ ) {
 
@@ -109,21 +109,9 @@ export class Application {
 
 	}
 
-	findSceneById( id ) {
+	getSceneById( id ) {
 
 		return this.findSceneByProperty( 'id', id );
-
-
-	}
-
-	findSceneByProperty( name, value ) {
-
-		for ( let i = 0, len = this.scenes.length; i < len; i ++ ) {
-
-			if ( this.scenes[ i ][ name ] === value )
-				return this.scenes[ i ];
-
-		}
 
 
 	}
@@ -137,28 +125,6 @@ export class Application {
 	static getApplication( id ) {
 
 		return Application._apps[ id ];
-
-	}
-
-	toJSON() {
-
-		const data = {
-			metadata: {
-				type: 'App',
-				generator: 'Application.toJSON'
-			},
-			scenes: [],
-			currentScene: this.currentScene.uuid,
-			parameters: Object.assign( {}, this.parameters ),
-		};
-
-		for ( let i = 0, len = this.scenes.length; i < len; i ++ )
-			data.scenes[ i ] = this.scenes[ i ].toJSON();
-
-		if ( data.parameters.canvas.id !== undefined )
-			data.parameters.canvas = data.parameters.canvas.id;
-
-		return data;
 
 	}
 

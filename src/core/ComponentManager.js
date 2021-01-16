@@ -64,15 +64,15 @@ export class ComponentManager {
 			}
 		};
 
-		this.add( 'renderable', Renderable );
-		this.add( 'camera', Camera );
-		this.add( 'rigidbody', Rigidbody );
-		this.add( 'collider', Collider );
-		this.add( 'joint', Joint, { requiredComponents: [ 'rigidbody' ] } );
+		this.register( 'renderable', Renderable );
+		this.register( 'camera', Camera );
+		this.register( 'rigidbody', Rigidbody );
+		this.register( 'collider', Collider );
+		this.register( 'joint', Joint, { requiredComponents: [ 'rigidbody' ] } );
 
 	}
 
-	add( type, constructor, options = {} ) {
+	register( type, constructor, options = {} ) {
 
 		if ( this.components.type !== undefined ) throw 'component ' + type + ' already exists';
 
@@ -83,15 +83,6 @@ export class ComponentManager {
 		this.components[ type ] = {
 			constructor, options
 		};
-
-	}
-
-	remove( type ) {
-
-		if ( type in this.components )
-			delete this.components[ type ];
-		else
-			console.warn( 'component ' + type + ' does not exists' );
 
 	}
 
