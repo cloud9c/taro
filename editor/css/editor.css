@@ -146,6 +146,10 @@ select {
 	outline: 0;
 }
 
+label {
+	margin: 0 4px 0 8px;
+}
+
 input {
 	outline: 0;
 	font-family: inherit;
@@ -182,6 +186,15 @@ input[type="number"] {
 	border-bottom: 1px solid var(--border-color);
 	background: var(--gray-5);
 	font-family: "IBM Plex Mono", monospace;
+	padding: 1px 0 1px 4px;
+}
+
+input[type=number]:not(:hover)::-webkit-inner-spin-button {
+	display: none;
+}
+
+input[type=number]:not(:hover) {
+	-moz-appearance: textfield;
 }
 
 input[type="text"] {
@@ -232,11 +245,11 @@ input[type="checkbox"]:checked:after {
 	transform: scale(1) rotate(-45deg);
 }
 
-.entity-section input[type="checkbox"] {
+#entity-section input[type="checkbox"] {
 	margin-right: 8px;
 }
 
-.entity-section input[type="text"] {
+#entity-section input[type="text"] {
 	width: 100%;
 }
 
@@ -261,10 +274,6 @@ input[type="checkbox"]:checked:after {
 
 #fog-wrapper {
 	margin-bottom: 6px;
-}
-
-#linear-fog input[type="number"], #exponential-fog[type="number"] {
-	padding: 1px 0 1px 4px;
 }
 
 #linear-fog input:first-child, #exponential-fog input {

@@ -85,17 +85,17 @@ export function Viewport( editor ) {
 			else
 				this.after( currentDrag );
 
-			if ( this.dataset.parent !== undefined ) {
-
-				const parent = document.querySelector( '#scene-tree [data-id="' + this.dataset.parent + '"]' );
-				currentDrag.dataset.parent = parent.dataset.id;
-				currentDrag.style.paddingLeft = parseFloat( window.getComputedStyle( parent ).getPropertyValue( 'padding-left' ) ) + 16 + 'px';
-
-			} else if ( this.classList.contains( 'drag-below' ) && this.classList.contains( 'parent' ) ) {
+			if ( this.classList.contains( 'parent' ) && this.classList.contains( 'drag-below' ) ) {
 
 				currentDrag.style.paddingLeft = parseFloat( window.getComputedStyle( this ).getPropertyValue( 'padding-left' ) ) + 16 + 'px';
 				currentDrag.dataset.parent = this.dataset.id;
 				thisObject.add( currentObject );
+
+			} else if ( this.dataset.parent !== undefined ) {
+
+				const parent = document.querySelector( '#scene-tree [data-id="' + this.dataset.parent + '"]' );
+				currentDrag.dataset.parent = parent.dataset.id;
+				currentDrag.style.paddingLeft = parseFloat( window.getComputedStyle( parent ).getPropertyValue( 'padding-left' ) ) + 16 + 'px';
 
 			}
 
@@ -305,7 +305,22 @@ export function Viewport( editor ) {
 	const control = this.control = new TransformControls( camera, dom );
 	let onControl = false;
 
-	control.addEventListener( 'change', render );
+	control.addEventListener( 'change', function ( event ) {
+
+		const section = document.getElementById( 'entity-section' );
+		const entity = event.target.object;
+		if ( section === null || entity === undefined ) return;
+		const inputs = section.querySelectorAll( 'input[data-translation]' );
+
+		for ( let i = 0, len = inputs.length; i < len; i ++ ) {
+
+			inputs[ i ].value = entity[ inputs[ i ].dataset.translation ][ inputs[ i ].dataset.xyz ];
+
+		}
+
+		render();
+
+	} );
 	control.addEventListener( 'dragging-changed', function ( event ) {
 
 		onControl = event.value;
@@ -342,9 +357,9 @@ export function Viewport( editor ) {
 
 				if ( oldTarget !== null ) delete oldTarget.dataset.selected;
 
+				inspector.detach();
 				control.enabled = false;
 				control.detach();
-				inspector.detach();
 
 			} else if ( control.object !== rayObject && control !== rayObject ) {
 
@@ -353,9 +368,9 @@ export function Viewport( editor ) {
 				const newTarget = document.querySelector( '#scene-tree [data-id="' + rayObject.id + '"]' );
 				if ( newTarget !== null ) newTarget.dataset.selected = '';
 
+				inspector.attach( rayObject );
 				control.enabled = true;
 				control.attach( rayObject );
-				inspector.attach( rayObject );
 
 			}
 

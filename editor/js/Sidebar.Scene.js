@@ -250,6 +250,7 @@ export function SidebarScene( editor ) {
 
 	function setFog() {
 
+		console.log( 'here' );
 		fog.color.set( linearColor.value );
 		fog.near = parseFloat( linearFog[ 0 ].value );
 		fog.far = parseFloat( linearFog[ 1 ].value );
@@ -271,17 +272,9 @@ export function SidebarScene( editor ) {
 
 	linearColor.addEventListener( 'input', setFog );
 	expColor.addEventListener( 'input', setExpFog );
-
-	for ( let i = 0, len = fogOptions.length; i < len; i ++ ) {
-
-		const option = fogOptions[ i ];
-
-		if ( option.parentElement.id === 'linear-fog' )
-			option.addEventListener( 'change', setFog );
-		else // exp fog
-			option.addEventListener( 'change', setExpFog );
-
-	}
+	linearFog[ 0 ].addEventListener( 'input', setFog );
+	linearFog[ 1 ].addEventListener( 'input', setFog );
+	expFog[ 0 ].addEventListener( 'input', setExpFog );
 
 	function closeParent( target ) {
 
@@ -363,8 +356,8 @@ export function SidebarScene( editor ) {
 				const entity = scene.findById( parseInt( target.dataset.id ) );
 
 				viewport.control.enabled = true;
-				viewport.control.attach( entity );
 				inspector.attach( entity );
+				viewport.control.attach( entity );
 
 				editor.render();
 

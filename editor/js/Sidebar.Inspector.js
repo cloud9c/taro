@@ -52,16 +52,15 @@ export function SidebarInspector( editor ) {
 		for ( let i = 0, len = schema.length; i < len; i ++ ) {
 
 			const fieldset = document.createElement( 'FIELDSET' );
+			const legend = document.createElement( 'LEGEND' );
 			const attribute = schema[ i ];
 
 			switch ( attribute.type ) {
 
 				case 'string':
 					const input = document.createElement( 'INPUT' );
-					const legend = document.createElement( 'LEGEND' );
 					input.type = 'text';
 					legend.textContent = attribute.label !== undefined ? attribute.label : attribute.name;
-					fieldset.appendChild( legend );
 					fieldset.appendChild( input );
 					break;
 				case 'color':
@@ -87,6 +86,7 @@ export function SidebarInspector( editor ) {
 
 			}
 
+			fieldset.appendChild( legend );
 			section.appendChild( fieldset );
 
 		}
@@ -98,41 +98,71 @@ export function SidebarInspector( editor ) {
 	this.addDefaultUI = function ( entity ) {
 
 		const section = document.createElement( 'SECTION' );
-		section.classList.add( 'entity-section' );
-		let fieldset, enabled, name;
+		section.id = 'entity-section';
+		let fieldset, legend, x, y, z, label, input;
 
 		fieldset = document.createElement( 'FIELDSET' );
 
-		enabled = document.createElement( 'INPUT' );
+		const enabled = document.createElement( 'INPUT' );
 		enabled.type = 'checkbox';
 		enabled.title = 'Enabled';
 		if ( entity.enabled )
 			enabled.checked = true;
+		enabled.addEventListener( 'change', function () {
 
-		enabled.addEventListener( 'change', () => {
-
-			entity.enabled = enabled.checked;
+			entity.enabled = this.checked;
 			editor.render();
 
 		} );
+		fieldset.appendChild( enabled );
 
-		name = document.createElement( 'INPUT' );
+		const name = document.createElement( 'INPUT' );
 		name.type = 'text';
 		name.title = 'Name';
 		name.value = entity.name;
+		name.addEventListener( 'change', function () {
 
-		name.addEventListener( 'change', () => {
-
-			entity.name = name.value;
-			document.querySelector( '#scene-tree div[data-id="' + entity.id + '"' ).textContent = name.value;
+			entity.name = this.value;
+			document.querySelector( '#scene-tree div[data-id="' + entity.id + '"' ).textContent = this.value;
 			editor.render();
 
 		} );
-
-		fieldset.appendChild( enabled );
 		fieldset.appendChild( name );
-
 		section.appendChild( fieldset );
+		const xyz = [ 'x', 'y', 'z' ];
+		const translation = [ 'position', 'rotation', 'scale' ];
+
+		for ( let i = 0; i < 3; i ++ ) {
+
+			fieldset = document.createElement( 'FIELDSET' );
+
+			legend = document.createElement( 'LEGEND' );
+			legend.textContent = translation[ i ].charAt( 0 ).toUpperCase() + translation[ i ].slice( 1 );
+			fieldset.appendChild( legend );
+
+			for ( let j = 0; j < 3; j ++ ) {
+
+				input = document.createElement( 'INPUT' );
+				input.type = 'number';
+				input.value = entity[ translation[ i ] ][ xyz[ j ] ];
+				input.dataset.translation = translation[ i ];
+				input.dataset.xyz = xyz[ j ];
+				input.name = xyz[ j ];
+				input.style.width = '54px';
+				input.style.marginLeft = '8px';
+				input.addEventListener( 'input', function () {
+
+					entity[ translation[ i ] ][ xyz[ j ] ] = parseFloat( this.value );
+					editor.render();
+
+				} );
+				fieldset.appendChild( input );
+
+			}
+
+			section.appendChild( fieldset );
+
+		}
 
 		return section;
 
