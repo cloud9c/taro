@@ -107,7 +107,7 @@
 
 			// lighting
 			entity = new TARO.Entity();
-			const hemiLight = entity.addComponent("renderable", new TARO.HemisphereLight(0xffffff, 0xffffff, 0.6)).ref;
+			const hemiLight = entity.addComponent("object3D", new TARO.HemisphereLight(0xffffff, 0xffffff, 0.6)).ref;
 
 			hemiLight.color.setHSL(0.6, 1, 0.6);
 			hemiLight.groundColor.setHSL(0.095, 1, 0.75);
@@ -115,7 +115,7 @@
 			entity.position.set(0, 100, 0);
 
 			entity = new TARO.Entity();
-			const dirLight = entity.addComponent("renderable", new TARO.DirectionalLight(0xffffff, 1, 0.6)).ref;
+			const dirLight = entity.addComponent("object3D", new TARO.DirectionalLight(0xffffff, 1, 0.6)).ref;
 
 			dirLight.color.setHSL(0.1, 1, 0.95);
 
@@ -145,13 +145,13 @@
 			mesh.receiveShadow = true;
 
 			entity = new TARO.Entity("floor");
-			entity.addComponent("renderable", mesh);
+			entity.addComponent("object3D", mesh);
 			entity.addComponent("collider", {
 				halfExtents: new TARO.Vector3(100, 100, 0.01),
 			});
 			entity.rotation.set(-Math.PI / 2, 0, 0);
 
-			new TARO.Entity().addComponent("renderable",
+			new TARO.Entity().addComponent("object3D",
 				new TARO.GridHelper(200, 200, 0x0000ff, 0x808080)
 			);
 
@@ -160,7 +160,7 @@
 			mat = new TARO.MeshPhongMaterial({ color: 0xffff00 });
 			mesh = new TARO.Mesh(geo, mat);
 			entity = new TARO.Entity("ball");
-			entity.addComponent("renderable", mesh);
+			entity.addComponent("object3D", mesh);
 			entity.position.set(0, 5, 2);
 			entity.addComponent("rigidbody", {
 				mass: 1
@@ -184,7 +184,7 @@
 					for (let j = 0; j < 5; j++) {
 						entity = new TARO.Entity();
 						mesh = new TARO.Mesh(geo, mat);
-						entity.addComponent("renderable", mesh);
+						entity.addComponent("object3D", mesh);
 						entity.position.copy(position);
 						entity.addComponent("collider", {
 							halfExtents: new TARO.Vector3(0.5, 0.5, 0.5),
