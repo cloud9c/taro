@@ -54910,15 +54910,15 @@ class ComponentManager {
 			}
 		};
 
-		this.add( 'renderable', Renderable );
-		this.add( 'camera', Camera$1 );
-		this.add( 'rigidbody', Rigidbody );
-		this.add( 'collider', Collider );
-		this.add( 'joint', Joint, { requiredComponents: [ 'rigidbody' ] } );
+		this.register( 'renderable', Renderable );
+		this.register( 'camera', Camera$1 );
+		this.register( 'rigidbody', Rigidbody );
+		this.register( 'collider', Collider );
+		this.register( 'joint', Joint, { requiredComponents: [ 'rigidbody' ] } );
 
 	}
 
-	add( type, constructor, options = {} ) {
+	register( type, constructor, options = {} ) {
 
 		if ( this.components.type !== undefined ) throw 'component ' + type + ' already exists';
 
@@ -54929,15 +54929,6 @@ class ComponentManager {
 		this.components[ type ] = {
 			constructor, options
 		};
-
-	}
-
-	remove( type ) {
-
-		if ( type in this.components )
-			delete this.components[ type ];
-		else
-			console.warn( 'component ' + type + ' does not exists' );
 
 	}
 
@@ -55042,7 +55033,7 @@ class Application {
 
 	}
 
-	findScene( name ) {
+	getSceneByName( name ) {
 
 		for ( let i = 0, len = this.scenes.length; i < len; i ++ ) {
 
@@ -55053,21 +55044,9 @@ class Application {
 
 	}
 
-	findSceneById( id ) {
+	getSceneById( id ) {
 
 		return this.findSceneByProperty( 'id', id );
-
-
-	}
-
-	findSceneByProperty( name, value ) {
-
-		for ( let i = 0, len = this.scenes.length; i < len; i ++ ) {
-
-			if ( this.scenes[ i ][ name ] === value )
-				return this.scenes[ i ];
-
-		}
 
 
 	}
@@ -55081,28 +55060,6 @@ class Application {
 	static getApplication( id ) {
 
 		return Application._apps[ id ];
-
-	}
-
-	toJSON() {
-
-		const data = {
-			metadata: {
-				type: 'App',
-				generator: 'Application.toJSON'
-			},
-			scenes: [],
-			currentScene: this.currentScene.uuid,
-			parameters: Object.assign( {}, this.parameters ),
-		};
-
-		for ( let i = 0, len = this.scenes.length; i < len; i ++ )
-			data.scenes[ i ] = this.scenes[ i ].toJSON();
-
-		if ( data.parameters.canvas.id !== undefined )
-			data.parameters.canvas = data.parameters.canvas.id;
-
-		return data;
 
 	}
 
@@ -55365,70 +55322,6 @@ class Entity extends Group {
 	get app() {
 
 		return this.scene.app;
-
-	}
-
-	toJSON( meta ) {
-
-		const data = super.toJSON( meta );
-		const object = data.object;
-
-		const children = object.children;
-
-		for ( let i = 0, len = children.length; i < len; i ++ ) {
-
-			if ( children[ i ].isEntity === undefined ) {
-
-				children[ i ].component = true;
-
-			}
-
-		}
-
-		object.isEntity = true;
-		if ( this.tags.length !== 0 ) object.tags = this.tags;
-		object.enabled = this._enabled;
-
-		if ( this.components.length !== 0 ) {
-
-			object.components = [];
-
-			for ( let i = 0, len = this.components.length; i < len; i ++ ) {
-
-				const component = this.components[ i ];
-
-				if ( component.isObject3D || component.ref !== undefined && component.ref.isObject3D ) {
-
-					continue;
-
-				}
-
-				const type = component.componentType;
-				const meta = { type, data: {} };
-
-
-				if ( component.toJSON !== undefined ) {
-
-					meta.data = component.toJSON();
-
-				} else {
-
-					meta.data = Object.assign( {}, component );
-					delete meta.data._listeners;
-
-				}
-
-				meta.enabled = component._enabled;
-
-				object.components.push( meta );
-
-			}
-
-			this.components;
-
-		}
-
-		return data;
 
 	}
 
