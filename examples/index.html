@@ -35,7 +35,7 @@
 						this.direction = new TARO.Vector3();
 						this.input = this.entity.scene.app.input;
 						this.entity.rotation.order = "YXZ";
-						this.ball = this.entity.scene.find("ball");
+						this.ball = this.entity.scene.getEntityByName("ball");
 
 						window.addEventListener("mousedown", () => {
 							this.entity.app.renderer.domElement.requestPointerLock();

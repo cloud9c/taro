@@ -94,7 +94,13 @@ export class Scene extends TS {
 
 	}
 
-	find( name ) {
+	getEntityById( id ) {
+
+		return this.getObjectById( id );
+
+	}
+
+	getEntityByName( name ) {
 
 		let match;
 
@@ -112,7 +118,7 @@ export class Scene extends TS {
 
 	}
 
-	findByTag( tag ) {
+	getEntityByTag( tag ) {
 
 		const matches = [];
 		this.traverse( ( child ) => {
@@ -122,18 +128,6 @@ export class Scene extends TS {
 
 		} );
 		return matches;
-
-	}
-
-	findById( id ) {
-
-		return this.getObjectById( id );
-
-	}
-
-	findByProperty( name, value ) {
-
-		return this.getObjectByProperty( name, value );
 
 	}
 

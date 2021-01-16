@@ -255,8 +255,6 @@ export class Entity extends Group {
 
 	}
 
-
-
 	get app() {
 
 		return this.scene.app;
