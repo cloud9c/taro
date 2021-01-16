@@ -51553,7 +51553,13 @@ class Scene$1 extends Scene {
 
 	}
 
-	find( name ) {
+	getEntityById( id ) {
+
+		return this.getObjectById( id );
+
+	}
+
+	getEntityByName( name ) {
 
 		let match;
 
@@ -51571,7 +51577,7 @@ class Scene$1 extends Scene {
 
 	}
 
-	findByTag( tag ) {
+	getEntityByTag( tag ) {
 
 		const matches = [];
 		this.traverse( ( child ) => {
@@ -51581,18 +51587,6 @@ class Scene$1 extends Scene {
 
 		} );
 		return matches;
-
-	}
-
-	findById( id ) {
-
-		return this.getObjectById( id );
-
-	}
-
-	findByProperty( name, value ) {
-
-		return this.getObjectByProperty( name, value );
 
 	}
 
@@ -55367,8 +55361,6 @@ class Entity extends Group {
 		return matches;
 
 	}
-
-
 
 	get app() {
 
