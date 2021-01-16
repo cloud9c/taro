@@ -53,7 +53,7 @@ export class Physics {
 
 		this._world = scene._physicsWorld;
 		this._world.setGravity( this._gravity );
-		this.rigidbodies = scene._containers[ 'Rigidbody' ];
+		this.rigidbodies = scene._containers[ 'rigidbody' ];
 
 	}
 

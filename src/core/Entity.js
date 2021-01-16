@@ -102,7 +102,7 @@ export class Entity extends Group {
 		const options = componentData.options;
 
 		if ( options.allowMultiple === false && this.getComponent( type ) !== undefined )
-			return console.warn( 'TARO.Entity: allowMultiple Attribute is false' );
+			return console.warn( 'Entity: allowMultiple Attribute is false' );
 
 		if ( options.requireComponents !== undefined ) {
 
@@ -220,7 +220,19 @@ export class Entity extends Group {
 
 	find( name ) {
 
-		return this.getObjectByName( name );
+		let match;
+
+		this.traverse( ( child ) => {
+
+			if ( child.isEntity !== undefined && child.name === name ) {
+
+				match = child;
+
+			}
+
+		} );
+
+		return match;
 
 	}
 
@@ -229,11 +241,8 @@ export class Entity extends Group {
 		const matches = [];
 		this.traverse( ( child ) => {
 
-			if ( child.isEntity !== undefined && child.tags.includes( tag ) ) {
-
+			if ( child.isEntity !== undefined && child.tags.includes( tag ) )
 				matches.push( child );
-
-			}
 
 		} );
 		return matches;

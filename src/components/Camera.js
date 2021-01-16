@@ -1,24 +1,24 @@
-import { PerspectiveCamera as PC, Vector4 } from '../../lib/three.js';
+import { PerspectiveCamera, Vector4 } from '../lib/three.js';
 
-export class PerspectiveCamera extends PC {
+export class Camera extends PerspectiveCamera {
 
 	start( data ) {
 
-		this._region = new Vector4();
 		this.autoAspect = true;
-
 		if ( data.fov !== undefined ) this.fov = data.fov;
 		if ( data.near !== undefined ) this.near = data.near;
 		if ( data.far !== undefined ) this.far = data.far;
-
-		this.viewport = data.viewport !== undefined ? data.viewport : new Vector4( 0, 0, 1, 1 );
-
 		if ( data.aspect !== undefined ) this.aspect = data.aspect;
+
+		this._region = new Vector4();
+		this.viewport = data.viewport !== undefined ? data.viewport : new Vector4( 0, 0, 1, 1 );
 
 		this.updateProjectionMatrix();
 
 		this.addEventListener( 'enable', this.onEnable );
 		this.addEventListener( 'disable', this.onDisable );
+		this.addEventListener( 'sceneadd', this.onEnable );
+		this.addEventListener( 'sceneremove', this.onDisable );
 
 	}
 
@@ -42,15 +42,18 @@ export class PerspectiveCamera extends PC {
 	updateProjectionMatrix() {
 
 		super.updateProjectionMatrix();
+
 		if ( this.entity !== undefined )
 			this._updateRegion( this.app.renderer.domElement );
+
+		return null;
 
 	}
 
 	_updateRegion( canvas ) {
 
 		const view = this.viewport;
-		if ( this.autoAspect ) {
+		if ( this.autoAspect === true ) {
 
 			this._aspect = ( canvas.width * view.z ) / ( canvas.height * view.w );
 			super.updateProjectionMatrix();
@@ -83,21 +86,13 @@ export class PerspectiveCamera extends PC {
 
 		const data = super.toJSON( meta );
 		data.object.viewport = this.viewport.toArray();
-		if ( this.entity !== undefined && this.autoAspect ) {
+		if ( this.entity !== undefined && this.autoAspect === true ) {
 
 			delete data.object.aspect;
 
 		}
 
 		return data;
-
-	}
-
-	fromJSON( object ) {
-
-		object.viewport = new Vector4().fromArray( object.viewport );
-
-		return object;
 
 	}
 

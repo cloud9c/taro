@@ -8,7 +8,7 @@ export class Scene extends TS {
 		super();
 
 		this._cameras = [];
-		this._containers = { Rigidbody: [] };
+		this._containers = { rigidbody: [] };
 		this._physicsWorld = new OIMO.World( 2 );
 
 	}
@@ -96,7 +96,19 @@ export class Scene extends TS {
 
 	find( name ) {
 
-		return this.getObjectByName( name );
+		let match;
+
+		this.traverse( ( child ) => {
+
+			if ( child.isEntity !== undefined && child.name === name ) {
+
+				match = child;
+
+			}
+
+		} );
+
+		return match;
 
 	}
 
@@ -105,11 +117,8 @@ export class Scene extends TS {
 		const matches = [];
 		this.traverse( ( child ) => {
 
-			if ( child.isEntity !== undefined && child.tags.includes( tag ) ) {
-
+			if ( child.isEntity !== undefined && child.tags.includes( tag ) )
 				matches.push( child );
-
-			}
 
 		} );
 		return matches;

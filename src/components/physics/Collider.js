@@ -1,6 +1,7 @@
-import { OIMO } from '../../../lib/oimo.js';
-import { Vector3, Euler } from '../../../lib/three.js';
-import { Rigidbody } from '../Rigidbody.js';
+import { OIMO } from '../../lib/oimo.js';
+import { ConvexHull } from '../../physics/ConvexHull.js';
+import { Vector3, Euler } from '../../lib/three.js';
+import { Rigidbody } from './Rigidbody.js';
 
 const vector = new Vector3();
 const massData = new OIMO.MassData();
@@ -79,13 +80,38 @@ export class Collider {
 
 	start( data ) {
 
+		const type = this.type = data.type !== undefined ? data.type : 'box';
 		this._isTrigger = data.isTrigger !== undefined ? data.isTrigger : false;
 		this._collisionGroup = data.collisionGroup !== undefined ? data.collisionGroup : 1;
 		this._collisionMask = data.collisionMask !== undefined ? data.collisionMask : 1;
 		this._center = data.center !== undefined ? data.center : new Vector3( 0, 0, 0 );
 		this._rotation = data.rotation !== undefined ? data.rotation : new Euler( 0, 0, 0 );
 
-		this._addDerivedProperties( data );
+		switch ( type ) {
+
+			case 'box':
+				this._halfExtents =
+					data.halfExtents !== undefined
+						? data.halfExtents
+						: new Vector( 1, 1, 1 );
+				break;
+			case 'capsule':
+			case 'cone':
+			case 'cylinder':
+				this._radius = data.radius !== undefined ? data.radius : 0.5;
+				this._halfHeight = data.halfHeight !== undefined ? data.halfHeight : 1;
+				break;
+			case 'mesh':
+				this._mesh = data.mesh;
+				this._points = data.points;
+				break;
+			case 'sphere':
+				this._radius = data.radius !== undefined ? data.radius : 0.5;
+				break;
+			default:
+				throw new Error( 'Collider: invalid collider type ' + type );
+
+		}
 
 		if ( data.material !== undefined ) this._material = data.material;
 
@@ -224,6 +250,54 @@ export class Collider {
 				}
 
 			}
+
+		}
+
+	}
+
+	_setGeometry( scale, max ) {
+
+		switch ( this.type ) {
+
+			case 'box':
+				return new OIMO.BoxGeometry(
+					vector.copy( this._halfExtents ).multiply( scale )
+				);
+			case 'capsule':
+				return new OIMO.CapsuleGeometry(
+					this._radius * max,
+					this._halfHeight * max
+				);
+
+			case 'cone':
+				return new OIMO.ConeGeometry(
+					this._radius * max,
+					this._halfHeight * max
+				);
+			case 'cylinder':
+				return new OIMO.CylinderGeometry(
+					this._radius * max,
+					this._halfHeight * max
+				);
+			case 'mesh':
+				if ( this._points === undefined && this._mesh !== undefined ) {
+
+					this._points = convexHull.setFromObject( this._mesh ).vertices;
+					for ( let i = 0, len = this._points.length; i < len; i ++ ) {
+
+						this._points[ i ] = this._points[ i ].point.multiply( scale );
+
+					}
+
+				} else {
+
+					throw 'MeshCollider: points or mesh must be provided';
+
+				}
+
+				return new OIMO.ConvexHullGeometry( this._points );
+			case 'sphere':
+				return new OIMO.SphereGeometry( this._radius * max );
 
 		}
 
