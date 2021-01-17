@@ -20,7 +20,7 @@ const worldBody = new OIMO.RigidBody( rigidbodyConfig );
 
 export class Joint {
 
-	start( data ) {
+	init( data ) {
 
 		const type = this.type = data.type !== undefined ? data.type : 'universal';
 

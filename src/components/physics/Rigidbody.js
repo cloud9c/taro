@@ -10,7 +10,7 @@ const config = new OIMO.RigidBodyConfig();
 
 export class Rigidbody {
 
-	start( data ) {
+	init( data ) {
 
 		if ( '_physicsRef' in this.entity ) this._ref = this.entity._physicsRef;
 		else Rigidbody.createRigidbody( this, 0 );

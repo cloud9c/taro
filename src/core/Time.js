@@ -8,15 +8,20 @@ export class Time {
 
 		this.deltaTime = 0;
 		this.lastTimestamp = false;
+		this.scaledFixedTimestep = 0;
 
 	}
 	update( timestamp ) {
 
-		this.deltaTime =
-			( timestamp - ( this.lastTimestamp || timestamp ) ) * this.timeScale;
-		const maxDeltaTime = this.maxDeltaTime * this.timeScale;
-		if ( this.deltaTime > maxDeltaTime ) this.deltaTime = maxDeltaTime;
+		this.deltaTime = ( timestamp - this.lastTimestamp ) * this.timeScale;
+
+		const scaledMaxDeltaTime = this.maxDeltaTime * this.timeScale;
+		if ( this.deltaTime > scaledMaxDeltaTime ) this.deltaTime = scaledMaxDeltaTime;
+
 		this.lastTimestamp = timestamp;
+
+		this.scaledFixedTimestep = this.fixedTimestep * this.timeScale;
+
 		return this.deltaTime;
 
 	}

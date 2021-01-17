@@ -28,10 +28,10 @@
 			const loader = new GLTFLoader();
 			const app = new TARO.Application({canvas: document.getElementById("c")});
 
-			app.componentManager.add(
+			app.componentManager.register(
 				"cameraController",
 				class CameraController {
-					start() {
+					init() {
 						this.direction = new TARO.Vector3();
 						this.input = this.entity.scene.app.input;
 						this.entity.rotation.order = "YXZ";
@@ -107,7 +107,7 @@
 
 			// lighting
 			entity = new TARO.Entity();
-			const hemiLight = entity.addComponent("renderable", new TARO.HemisphereLight(0xffffff, 0xffffff, 0.6)).ref;
+			const hemiLight = entity.addComponent("light", {type: 'hemisphere', intensity: 0.6}).ref
 
 			hemiLight.color.setHSL(0.6, 1, 0.6);
 			hemiLight.groundColor.setHSL(0.095, 1, 0.75);
@@ -115,7 +115,7 @@
 			entity.position.set(0, 100, 0);
 
 			entity = new TARO.Entity();
-			const dirLight = entity.addComponent("renderable", new TARO.DirectionalLight(0xffffff, 1, 0.6)).ref;
+			const dirLight = entity.addComponent("light").ref;
 
 			dirLight.color.setHSL(0.1, 1, 0.95);
 
@@ -205,7 +205,7 @@
 			entity.addComponent("cameraController");
 			entity.position.set(0, 5, 10);
 
-			app.update();
+			app.start();
 		</script>
 	</body>
 </html>

@@ -63,8 +63,8 @@ export class Entity extends Group {
 
 		this.scene._containers[ type ].push( component );
 
-		if ( component.start !== undefined )
-			component.start( data );
+		if ( component.init !== undefined )
+			component.init( data );
 
 		component.dispatchEvent( { type: 'enable' } );
 
@@ -99,17 +99,17 @@ export class Entity extends Group {
 	addComponent( type, data = {} ) {
 
 		const componentData = this.app.componentManager.components[ type ];
-		const options = componentData.options;
+		const config = componentData.config;
 
-		if ( options.allowMultiple === false && this.getComponent( type ) !== undefined )
+		if ( config.allowMultiple === false && this.getComponent( type ) !== undefined )
 			return console.warn( 'Entity: allowMultiple Attribute is false' );
 
-		if ( options.requireComponents !== undefined ) {
+		if ( config.dependencies !== undefined ) {
 
-			const required = options.requireComponents;
-			for ( let i = 0, len = required.length; i < len; i ++ )
-				if ( this.getComponent( required[ i ] ) === undefined )
-					this.addComponent( required[ i ] );
+			const dependencies = config.dependencies;
+			for ( let i = 0, len = dependencies.length; i < len; i ++ )
+				if ( this.getComponent( dependencies[ i ] ) === undefined )
+					this.addComponent( dependencies[ i ] );
 
 		}
 

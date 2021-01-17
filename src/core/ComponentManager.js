@@ -1,8 +1,11 @@
-import { Renderable } from '../components/Renderable.js';
 import { Camera } from '../components/Camera.js';
-import { Rigidbody } from '../components/physics/Rigidbody.js';
+import { Light } from '../components/Light.js';
+import { Renderable } from '../components/Renderable.js';
+
 import { Collider } from '../components/physics/Collider.js';
 import { Joint } from '../components/physics/Joint.js';
+import { Rigidbody } from '../components/physics/Rigidbody.js';
+
 import { EventDispatcher } from '../lib/three.js';
 
 export class ComponentManager {
@@ -64,15 +67,16 @@ export class ComponentManager {
 			}
 		};
 
-		this.register( 'renderable', Renderable );
 		this.register( 'camera', Camera );
-		this.register( 'rigidbody', Rigidbody );
+		this.register( 'light', Light );
+		this.register( 'renderable', Renderable );
 		this.register( 'collider', Collider );
-		this.register( 'joint', Joint, { requiredComponents: [ 'rigidbody' ] } );
+		this.register( 'joint', Joint, { dependencies: [ 'rigidbody' ] } );
+		this.register( 'rigidbody', Rigidbody );
 
 	}
 
-	register( type, constructor, options = {} ) {
+	register( type, constructor, config = {} ) {
 
 		if ( this.components.type !== undefined ) throw 'component ' + type + ' already exists';
 
@@ -81,14 +85,14 @@ export class ComponentManager {
 		Object.assign( constructor.prototype, EventDispatcher.prototype );
 
 		this.components[ type ] = {
-			constructor, options
+			constructor, config
 		};
 
 	}
 
 }
 
-// options: allowMultiple, requiredComponents, schema
+// config: allowMultiple, dependencies, schema
 
 // schema is an array of objects
 // ex: schema: [{name: "velocity", type: "number", default}]

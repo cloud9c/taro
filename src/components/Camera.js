@@ -2,7 +2,7 @@ import { PerspectiveCamera, Vector4 } from '../lib/three.js';
 
 export class Camera extends PerspectiveCamera {
 
-	start( data ) {
+	init( data ) {
 
 		this.autoAspect = true;
 		if ( data.fov !== undefined ) this.fov = data.fov;

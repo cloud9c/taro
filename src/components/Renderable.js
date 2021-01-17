@@ -1,6 +1,6 @@
 export class Renderable {
 
-	start( data ) {
+	init( data ) {
 
 		this.ref = data;
 		this.addEventListener( 'enable', this.onEnable );

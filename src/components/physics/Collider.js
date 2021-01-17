@@ -78,7 +78,7 @@ const properties = {
 
 export class Collider {
 
-	start( data ) {
+	init( data ) {
 
 		const type = this.type = data.type !== undefined ? data.type : 'box';
 		this._isTrigger = data.isTrigger !== undefined ? data.isTrigger : false;

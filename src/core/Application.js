@@ -17,8 +17,6 @@ export class Application {
 		this.input = new Input();
 		this.componentManager = new ComponentManager();
 
-		this.autoUpdate = parameters.autoUpdate !== undefined ? parameters.autoUpdate : true;
-
 		this.scenes = [];
 		this._currentScene;
 		this.requestID;
@@ -29,35 +27,34 @@ export class Application {
 
 	}
 
-	update( timestamp = 0 ) {
+	start() {
 
-		const deltaTime = this.time.update( timestamp );
+		this.renderer.setAnimationLoop( ( t ) => this.update( t ) );
 
-		this.physics.update(
-			deltaTime,
-			this.time.fixedTimestep * this.time.timeScale
-		);
+	}
+
+	stop() {
+
+		this.renderer.setAnimationLoop( null );
+
+	}
+
+	update( timestamp = performance.now() ) {
+
+		const deltaTime = this.time.update( timestamp / 1000 );
+		this.physics.update( deltaTime, this.time.scaledFixedTimestep );
 
 		for ( const type in this._containers ) {
 
 			const container = this._containers[ type ];
-			if ( container[ 0 ] && container[ 0 ].update !== undefined ) {
-
-				for ( let j = 0, lenj = container.length; j < lenj; j ++ ) {
-
+			if ( container[ 0 ] !== undefined && container[ 0 ].update !== undefined )
+				for ( let j = 0, lenj = container.length; j < lenj; j ++ )
 					container[ j ].update( deltaTime );
-
-				}
-
-			}
 
 		}
 
 		this.renderer.update();
 		this.input.update();
-
-		if ( this.autoUpdate )
-			window.requestAnimationFrame( ( t ) => this.update( t / 1000 ) );
 
 	}
 
