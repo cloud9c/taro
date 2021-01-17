@@ -350,6 +350,7 @@ export function SidebarScene( editor ) {
 			} else {
 
 				const oldTarget = document.querySelector( '#scene-tree [data-selected]' );
+				if ( oldTarget === target ) return;
 				if ( oldTarget !== null ) delete oldTarget.dataset.selected;
 				target.dataset.selected = '';
 

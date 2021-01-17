@@ -314,7 +314,11 @@ export function Viewport( editor ) {
 
 		for ( let i = 0, len = inputs.length; i < len; i ++ ) {
 
-			inputs[ i ].value = entity[ inputs[ i ].dataset.translation ][ inputs[ i ].dataset.xyz ].toFixed( 2 );
+			const value = entity[ inputs[ i ].dataset.translation ][ inputs[ i ].dataset.xyz ];
+
+			inputs[ i ].value = value.toFixed( 3 );
+
+			if ( inputs[ i ].dataset.translation === 'rotation' ) inputs[ i ].value = TARO.MathUtils.radToDeg( value ).toFixed( 3 );
 
 		}
 

@@ -38,6 +38,7 @@ main {
 }
 
 .menu .title {
+	user-select: none;
 	line-height: 16px;
 	padding: 8px 12px;
 	transition: background .11s cubic-bezier(.2,0,.38,.9);
@@ -61,6 +62,7 @@ main {
 }
 
 .option {
+	user-select: none;
 	padding: 8px 12px;
 	color: var(--white);
 }
@@ -80,7 +82,6 @@ aside, #viewport {
 
 aside {
 	min-width: 4px;
-	width: 280px;
 	overflow: hidden;
 }
 
@@ -114,7 +115,7 @@ aside section {
 	margin: 0;
 }
 
-.panel fieldset {
+fieldset {
 	border: none;
 	padding: 0;
 	margin: 0;
@@ -123,12 +124,13 @@ aside section {
 	margin-bottom: 12px;
 }
 
-.panel legend {
+legend {
+	user-select: none;
 	padding: 0;
-	float:left;
+	float: left;
 }
 
-.panel legend {
+legend {
 	margin-right: auto;
 }
 
@@ -147,7 +149,7 @@ select {
 }
 
 label {
-	margin: 0 4px 0 8px;
+	margin: 0 8px 0 4px;
 }
 
 input {
@@ -186,7 +188,7 @@ input[type="number"] {
 	border-bottom: 1px solid var(--border-color);
 	background: var(--gray-5);
 	font-family: "IBM Plex Mono", monospace;
-	padding: 1px 0 1px 4px;
+	padding: 1px 4px;
 }
 
 input[type=number]:not(:hover)::-webkit-inner-spin-button {
@@ -245,14 +247,6 @@ input[type="checkbox"]:checked:after {
 	transform: scale(1) rotate(-45deg);
 }
 
-#entity-section input[type="checkbox"] {
-	margin-right: 8px;
-}
-
-#entity-section input[type="text"] {
-	width: 100%;
-}
-
 .file-display {
 	pointer-events: none;
 	width: 100%;
@@ -262,6 +256,8 @@ input[type="checkbox"]:checked:after {
 	background-size: 12px;
 	background-repeat: no-repeat;
 }
+
+/*scene*/
 
 #background-color, #background-texture, #background-equirect, #environment-texture {
 	display: none;
@@ -359,10 +355,12 @@ input[type="checkbox"]:checked:after {
 
 #left-sidebar {
 	border-right: 1px solid var(--border-color);
+	width: 280px;
 }
 
 #right-sidebar {
 	border-left: 1px solid var(--border-color);
+	width: 300px;
 }
 
 .resizer {

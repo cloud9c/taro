@@ -1,3 +1,5 @@
+import { MathUtils } from '../../build/taro.js';
+
 const defaultSchema = [
 	{
 		name: 'name',
@@ -99,13 +101,12 @@ export function SidebarInspector( editor ) {
 
 		const section = document.createElement( 'SECTION' );
 		section.id = 'entity-section';
-		let fieldset, legend, x, y, z, label, input;
+		let fieldset, legend, x, y, z, input, enabled, label;
 
 		fieldset = document.createElement( 'FIELDSET' );
 
-		const enabled = document.createElement( 'INPUT' );
+		enabled = document.createElement( 'INPUT' );
 		enabled.type = 'checkbox';
-		enabled.title = 'Enabled';
 		if ( entity.enabled )
 			enabled.checked = true;
 		enabled.addEventListener( 'change', function () {
@@ -118,8 +119,8 @@ export function SidebarInspector( editor ) {
 
 		const name = document.createElement( 'INPUT' );
 		name.type = 'text';
-		name.title = 'Name';
 		name.value = entity.name;
+		name.style = 'margin-left: 8px;width: 100%;';
 		name.addEventListener( 'change', function () {
 
 			entity.name = this.value;
@@ -144,18 +145,31 @@ export function SidebarInspector( editor ) {
 
 				input = document.createElement( 'INPUT' );
 				input.type = 'number';
-				input.value = entity[ translation[ i ] ][ xyz[ j ] ];
 				input.dataset.translation = translation[ i ];
 				input.dataset.xyz = xyz[ j ];
-				input.name = xyz[ j ];
-				input.style.width = '54px';
-				input.style.marginLeft = '8px';
-				input.addEventListener( 'input', function () {
+				input.style.width = '58px';
+				if ( xyz[ j ] === 'y' ) input.style.margin = '0 6px';
 
-					entity[ translation[ i ] ][ xyz[ j ] ] = parseFloat( this.value );
-					editor.render();
+				if ( translation[ i ] === 'rotation' ) {
 
-				} );
+					input.addEventListener( 'input', function () {
+
+						entity[ translation[ i ] ][ xyz[ j ] ] = MathUtils.degToRad( parseFloat( this.value ) );
+						editor.render();
+
+					} );
+
+				} else {
+
+					input.addEventListener( 'input', function () {
+
+						entity[ translation[ i ] ][ xyz[ j ] ] = parseFloat( this.value );
+						editor.render();
+
+					} );
+
+				}
+
 				fieldset.appendChild( input );
 
 			}
@@ -163,6 +177,71 @@ export function SidebarInspector( editor ) {
 			section.appendChild( fieldset );
 
 		}
+
+		fieldset = document.createElement( 'FIELDSET' );
+
+		legend = document.createElement( 'LEGEND' );
+		legend.textContent = 'Shadow';
+		fieldset.appendChild( legend );
+
+		const div = document.createElement( 'DIV' );
+		div.style = 'display:flex;align-items:center;width:186px';
+
+		enabled = document.createElement( 'INPUT' );
+		enabled.type = 'checkbox';
+		if ( entity.castShadow )
+			enabled.checked = true;
+		enabled.addEventListener( 'change', function () {
+
+			entity.castShadow = this.checked;
+			editor.render();
+
+		} );
+		div.appendChild( enabled );
+
+		label = document.createElement( 'LABEL' );
+		label.textContent = 'Cast';
+		label.style.marginRight = '16px';
+		div.appendChild( label );
+
+		enabled = document.createElement( 'INPUT' );
+		enabled.type = 'checkbox';
+		if ( entity.receiveShadow )
+			enabled.checked = true;
+		enabled.addEventListener( 'change', function () {
+
+			entity.receiveShadow = this.checked;
+			editor.render();
+
+		} );
+		div.appendChild( enabled );
+
+		label = document.createElement( 'LABEL' );
+		label.textContent = 'Receive';
+		div.appendChild( label );
+
+		fieldset.appendChild( div );
+		section.appendChild( fieldset );
+
+		fieldset = document.createElement( 'FIELDSET' );
+		legend = document.createElement( 'LEGEND' );
+
+		legend.textContent = 'Visible';
+		fieldset.appendChild( legend );
+
+		enabled = document.createElement( 'INPUT' );
+		enabled.type = 'checkbox';
+		enabled.style.width = '186px';
+		if ( entity.visible )
+			enabled.checked = true;
+		enabled.addEventListener( 'change', function () {
+
+			entity.visible = this.checked;
+			editor.render();
+
+		} );
+		fieldset.appendChild( enabled );
+		section.appendChild( fieldset );
 
 		return section;
 
