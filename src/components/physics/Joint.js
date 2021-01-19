@@ -1,3 +1,4 @@
+import { ComponentManager } from '../../core/ComponentManager.js';
 import { OIMO } from '../../lib/oimo.js';
 import { Vector3 } from '../../lib/three.js';
 
@@ -403,3 +404,33 @@ export class Joint {
 	}
 
 }
+
+ComponentManager.register( 'joint', Joint, {
+	dependencies: [ 'rigidbody' ],
+	schema: {
+		type: { default: 'universal' },
+		linkedEntity: { type: 'entity' },
+		allowCollision: { default: false },
+		breakForce: { default: 0 },
+		breakTorque: { default: 0 },
+		anchor: { type: 'vector3' },
+		linkedAnchor: { type: 'vector3' },
+		springDamper: { default: SpringDamper, if: { type: [ 'ball', 'hinge', 'prismatic', 'universal' ] } },
+		axis: { type: 'vector3', default: [ 1, 0, 0 ], if: { type: [ 'cylindrical', 'hinge', 'prismatic', 'universal' ] } },
+		linkedAxis: { type: 'vector3', default: [ 1, 0, 0 ], if: { type: [ 'cylindrical', 'hinge', 'prismatic', 'universal' ] } },
+		linearLimit: { default: LinearLimit, if: { type: [ 'cylindrical', 'prismatic' ] } },
+		linearSpringDamper: { default: SpringDamper, if: { type: [ 'cylindrical' ] } },
+		angularLimit: { default: AngularLimit, if: { type: [ 'cylindrical', 'hinge', 'universal' ] } },
+		angularSpringDamper: { default: SpringDamper, if: { type: [ 'cylindrical' ] } },
+		twistAxis: { type: 'vector3', default: [ 1, 0, 0 ], if: { type: [ 'ragdoll' ] } },
+		linkedTwistAxis: { type: 'vector3', default: [ 1, 0, 0 ], if: { type: [ 'ragdoll' ] } },
+		swingAxis: { type: 'vector3', default: [ 0, 1, 0 ], if: { type: [ 'ragdoll' ] } },
+		maxSwing: { default: Math.PI, if: { type: [ 'ragdoll' ] } },
+		linkedMaxSwing: { default: Math.PI, if: { type: [ 'ragdoll' ] } },
+		twistSpringDamper: { default: SpringDamper, if: { type: [ 'ragdoll' ] } },
+		swingSpringDamper: { default: SpringDamper, if: { type: [ 'ragdoll' ] } },
+		twistLimit: { default: AngularLimit, if: { type: [ 'ragdoll' ] } },
+		linkedSpringDamper: { default: SpringDamper, if: { type: [ 'universal' ] } },
+		linkedAngularLimit: { default: AngularLimit, if: { type: [ 'universal' ] } },
+	}
+} );

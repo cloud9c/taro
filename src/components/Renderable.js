@@ -1,3 +1,5 @@
+import { ComponentManager } from '../core/ComponentManager.js';
+
 export class Renderable {
 
 	init( data ) {
@@ -24,3 +26,5 @@ export class Renderable {
 	}
 
 }
+
+ComponentManager.register( 'renderable', Renderable );

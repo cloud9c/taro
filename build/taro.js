@@ -51590,6 +51590,24 @@ class Scene$1 extends Scene {
 
 	}
 
+	getEntityByProperty( name, value ) {
+
+		let match;
+
+		this.traverse( ( child ) => {
+
+			if ( child.isEntity !== undefined && child[ name ] === value ) {
+
+				match = child;
+
+			}
+
+		} );
+
+		return match;
+
+	}
+
 }
 
 const vector = new Vector3();
@@ -51778,15 +51796,20 @@ class Time {
 
 		this.deltaTime = 0;
 		this.lastTimestamp = false;
+		this.scaledFixedTimestep = 0;
 
 	}
 	update( timestamp ) {
 
-		this.deltaTime =
-			( timestamp - ( this.lastTimestamp || timestamp ) ) * this.timeScale;
-		const maxDeltaTime = this.maxDeltaTime * this.timeScale;
-		if ( this.deltaTime > maxDeltaTime ) this.deltaTime = maxDeltaTime;
+		this.deltaTime = ( timestamp - this.lastTimestamp ) * this.timeScale;
+
+		const scaledMaxDeltaTime = this.maxDeltaTime * this.timeScale;
+		if ( this.deltaTime > scaledMaxDeltaTime ) this.deltaTime = scaledMaxDeltaTime;
+
 		this.lastTimestamp = timestamp;
+
+		this.scaledFixedTimestep = this.fixedTimestep * this.timeScale;
+
 		return this.deltaTime;
 
 	}
@@ -51918,49 +51941,23 @@ class Input {
 
 }
 
-class Renderable {
-
-	start( data ) {
-
-		this.ref = data;
-		this.addEventListener( 'enable', this.onEnable );
-		this.addEventListener( 'disable', this.onDisable );
-
-	}
-
-	onEnable() {
-
-		this.entity.add( this.ref );
-
-	}
-
-	onDisable() {
-
-		this.entity.remove( this.ref );
-
-	}
-
-}
-
 class Camera$1 extends PerspectiveCamera {
 
-	start( data ) {
+	init( data ) {
 
-		this.autoAspect = true;
-		if ( data.fov !== undefined ) this.fov = data.fov;
-		if ( data.near !== undefined ) this.near = data.near;
-		if ( data.far !== undefined ) this.far = data.far;
-		if ( data.aspect !== undefined ) this.aspect = data.aspect;
+		this.autoAspect = data.autoAspect;
+		this.fov = data.fov;
+		this.near = data.near;
+		this.far = data.far;
+		this.aspect = data.aspect;
+		this.viewport = data.viewport;
 
 		this._region = new Vector4();
-		this.viewport = data.viewport !== undefined ? data.viewport : new Vector4( 0, 0, 1, 1 );
 
 		this.updateProjectionMatrix();
 
 		this.addEventListener( 'enable', this.onEnable );
 		this.addEventListener( 'disable', this.onDisable );
-		this.addEventListener( 'sceneadd', this.onEnable );
-		this.addEventListener( 'sceneremove', this.onDisable );
 
 	}
 
@@ -51983,12 +51980,10 @@ class Camera$1 extends PerspectiveCamera {
 
 	updateProjectionMatrix() {
 
-		super.updateProjectionMatrix();
-
 		if ( this.entity !== undefined )
 			this._updateRegion( this.app.renderer.domElement );
 
-		return null;
+		return super.updateProjectionMatrix();
 
 	}
 
@@ -51997,7 +51992,7 @@ class Camera$1 extends PerspectiveCamera {
 		const view = this.viewport;
 		if ( this.autoAspect === true ) {
 
-			this._aspect = ( canvas.width * view.z ) / ( canvas.height * view.w );
+			this.aspect = ( canvas.width * view.z ) / ( canvas.height * view.w );
 			super.updateProjectionMatrix();
 
 		}
@@ -52008,19 +52003,6 @@ class Camera$1 extends PerspectiveCamera {
 			canvas.width * view.z,
 			canvas.height * view.w
 		);
-
-	}
-
-	get aspect() {
-
-		return this._aspect;
-
-	}
-
-	set aspect( x ) {
-
-		this.autoAspect = false;
-		this._aspect = x;
 
 	}
 
@@ -52040,375 +52022,153 @@ class Camera$1 extends PerspectiveCamera {
 
 }
 
-const quat$1 = new Quaternion();
-const vector$1 = new Vector3();
-const vector2$1 = new Vector3();
-const massData = new OIMO.MassData();
-const config = new OIMO.RigidBodyConfig();
+class Geometry$1 {
 
-class Rigidbody {
+	init( data ) {
 
-	start( data ) {
+		const primitive = data.primitive;
 
-		if ( '_physicsRef' in this.entity ) this._ref = this.entity._physicsRef;
-		else Rigidbody.createRigidbody( this, 0 );
+		switch ( primitive ) {
 
-		if ( data.angularVelocity !== undefined )
-			this.setAngularVelocity( data.angularVelocity );
+			case 'box':
+				this.ref = new BoxBufferGeometry( data.width, data.height, data.depth, data.widthSegments, data.heightSegments, data.depthSegments );
+				break;
+			case 'cricle':
+				this.ref = new CircleBufferGeometry( data.radius, data.segments, data.thetaStart, data.thetaLength );
+				break;
+			case 'cone':
+				this.ref = new ConeBufferGeometry( data.radius, data.height, data.radialSegments, data.heightSegments, data.openEnded, data.thetaStart, data.thetaLength );
+				break;
+			case 'cylinder':
+				this.ref = new CylinderBufferGeometry( data.radiusTop, data.radiusBottom, data.height, data.radialSegments, data.heightSegments, data.openEnded, data.thetaStart, data.thetaLength );
+				break;
+			case 'dodecahedron':
+				this.ref = new DodecahedronBufferGeometry( data.radius, data.detail );
+				break;
+			case 'icosahedron':
+				this.ref = new IcosahedronBufferGeometry( data.radius, data.detail );
+				break;
+			case 'octahedron':
+				this.ref = new OctahedronBufferGeometry( data.radius, data.detail );
+				break;
+			case 'plane':
+				this.ref = new PlaneBufferGeometry( data.width, data.height, data.widthSegments, data.heightSegments );
+				break;
+			case 'ring':
+				this.ref = new RingBufferGeometry( data.innerRadius, data.outerRadius, data.thetaSegments, data.phiSegments, data.thetaStart, data.thetaLength );
+				break;
+			case 'sphere':
+				this.ref = new SphereBufferGeometry( data.radius, data.widthSegments, data.heightSegments, data.phiStart, data.phiLength, data.thetaStart, data.thetaLength );
+				break;
+			case 'tetrahedron':
+				this.ref = new TetrahedronBufferGeometry( data.radius, data.detail );
+				break;
+			case 'torus':
+				this.ref = new TorusBufferGeometry( data.radius, data.tube, data.radialSegments, data.tubularSegments, data.arc );
+				break;
+			case 'torusKnot':
+				this.ref = new TorusKnotBufferGeometry( data.radius, data.tube, data.tubularSegments, data.radialSegments, data.p, data.q );
+				break;
+			case 'custom':
+				this.ref = new BufferGeometry();
+				break;
+			default:
+				throw new Error( 'Geometry: invalid geometry primitive ' + primitive );
 
-		if ( data.angularDamping !== undefined )
-			this.angularDamping = data.angularDamping;
-
-		if ( data.linearVelocity !== undefined )
-			this.setLinearVelocity( data.linearVelocity );
-
-		if ( data.linearDamping !== undefined )
-			this.linearDamping = data.linearDamping;
-
-		if ( data.gravityScale !== undefined )
-			this.gravityScale = data.gravityScale;
-
-		if ( data.autoSleep !== undefined )
-			this.autoSleep = data.autoSleep;
-
-		this.isKinematic = data.isKinematic !== undefined ? data.isKinematic : false;
-
-		if ( data.rotationFactor !== undefined )
-			this.setRotationFactor( data.rotationFactor );
-
-		this._ref.mass = data.mass !== undefined ? data.mass : 1;
+		}
 
 		this.addEventListener( 'enable', this.onEnable );
 		this.addEventListener( 'disable', this.onDisable );
-		this.entity.addEventListener( 'scenechange', this.onSceneChange );
 
 	}
 
 	onEnable() {
 
-		if ( this._isKinematic ) {
-
-			this._ref.setType( 2 );
-
-		} else {
-
-			this._ref.setType( 0 );
-			this.mass = this._ref.mass;
-
-		}
-
-
-		if ( this._ref.getNumShapes() === 0 ) {
-
-			this.scene._physicsWorld.addRigidBody( this._ref );
-
-		}
+		// this.entity.add( this.ref );
 
 	}
 
 	onDisable() {
 
-		if ( this._ref.getNumShapes() > 0 ) {
-
-			this._ref.setType( 1 );
-
-		} else {
-
-			this.scene._physicsWorld.removeRigidBody( this._ref );
-
-		}
-
-	}
-
-	onSceneChange( event ) {
-
-		// need to test
-		if ( this._enabled ) {
-
-			event.oldScene._physicsWorld.removeRigidBody( this._ref );
-			event.newScene._physicsWorld.addRigidBody( this._ref );
-
-		}
-
-	}
-
-	addAngularVelocity( v ) {
-
-		this._ref.addAngularVelocity( v );
-
-	}
-	addLinearVelocity( v ) {
-
-		this._ref.addAngularVelocity( v );
-
-	}
-	applyAngularImpulse( v ) {
-
-		this._ref.applyAngularImpulse( v );
-
-	}
-	applyForce( v, w ) {
-
-		this._ref.applyForce( v, w );
-
-	}
-	applyForceToCenter( v ) {
-
-		this._ref.applyForceToCenter( v );
-
-	}
-	applyImpulse( v, w ) {
-
-		this._ref.applyImpulse( v, w );
-
-	}
-	applyLinearImpulse( v ) {
-
-		this._ref.applyLinearImpulse( v );
-
-	}
-	applyTorque( v ) {
-
-		this._ref.applyTorque( v );
-
-	}
-	get angularDamping() {
-
-		return this._ref.getAngularDamping();
-
-	}
-	getAngularVelocity() {
-
-		const vector = new Vector3();
-		this._ref.getAngularVelocityTo( vector );
-		return vector;
-
-	}
-	get gravityScale() {
-
-		return this._ref.getGravityScale();
-
-	}
-	get linearDamping() {
-
-		return this._ref.getLinearDamping();
-
-	}
-	getLinearVelocity() {
-
-		const vector = new Vector3();
-		this._ref.getLinearVelocityTo( vector );
-		return vector;
-
-	}
-	get localInertia() {
-
-		const v = this._ref.getLocalInertia();
-		return new Matrix3().set(
-			v.e00,
-			v.e01,
-			v.e02,
-			v.e10,
-			v.e11,
-			v.e12,
-			v.e20,
-			v.e21,
-			v.e22
-		);
-
-	}
-	get mass() {
-
-		return this._ref.mass;
-
-	}
-	get sleepTime() {
-
-		return this._ref.getSleepTime();
-
-	}
-	get isKinematic() {
-
-		return this._isKinematic;
-
-	}
-	set isKinematic( v ) {
-
-		this._isKinematic = v;
-
-		this._ref.setType( v ? 2 : 0 );
-
-	}
-	get isSleeping() {
-
-		return this._ref.isSleeping();
-
-	}
-	set isSleeping( sleep ) {
-
-		if ( sleep ) {
-
-			this._ref.sleep();
-
-		} else {
-
-			this._ref.wakeUp();
-
-		}
-
-	}
-	rotate( v ) {
-
-		this._ref.rotateXyz( v );
-
-	}
-	set angularDamping( v ) {
-
-		this._ref.setAngularDamping( v );
-
-	}
-	setAngularVelocity( v ) {
-
-		this._ref.setAngularVelocity( v );
-
-	}
-	get autoSleep() {
-
-		return this._autoSleep !== undefined ? this._autoSleep : true;
-
-	}
-	set autoSleep( v ) {
-
-		this._autoSleep = v;
-		this._ref.setAutoSleep( v );
-
-	}
-	set gravityScale( v ) {
-
-		this._ref.setGravityScale( v );
-
-	}
-	set linearDamping( v ) {
-
-		this._ref.setLinearDamping( v );
-
-	}
-	setLinearVelocity( v ) {
-
-		this._ref.setLinearVelocity( v );
-
-	}
-	set mass( mass ) {
-
-		this._ref.getMassDataTo( massData );
-		massData.mass = mass;
-		this._ref.setMassData( massData );
-
-	}
-	getRotationFactor() {
-
-		return new Vector3().copy( this._ref.getRotationFactor() );
-
-	}
-	setRotationFactor( vector ) {
-
-		this._ref.setRotationFactor( vector );
-
-	}
-
-	static createRigidbody( self, type ) {
-
-		const entity = self.entity;
-		entity.updateWorldMatrix();
-		entity.matrixWorld.decompose( vector$1, quat$1, vector2$1 );
-		config.position = vector$1;
-		config.rotation.fromQuat( quat$1 );
-		config.type = type;
-		entity._physicsRef = self._ref = new OIMO.RigidBody( config );
-		self._ref.component = self;
-		self._ref.entity = entity;
-
-		const position = entity.position;
-		position._entity = entity;
-		posProps._x.value = position.x;
-		posProps._y.value = position.y;
-		posProps._z.value = position.z;
-		Object.defineProperties( position, posProps );
-
-		const quaternion = entity.quaternion;
-		const rotation = entity.rotation;
-
-		quaternion._rotation = rotation;
-		rotation._quaternion = quaternion;
-		rotation._entity = quaternion._entity = entity;
-		quaternion._onChange( onQuaternionChange );
-		rotation._onChange( onRotationChange );
+		// this.entity.remove( this.ref );
 
 	}
 
 }
 
-const posProps = {
-	_x: { value: 0, writable: true },
-	_y: { value: 0, writable: true },
-	_z: { value: 0, writable: true },
-	x: {
-		get() {
+class Light$1 {
 
-			return this._x;
+	init( data ) {
 
-		},
-		set( value ) {
+		const type = data.type;
+		const color = data.color;
+		const intensity = data.intensity;
 
-			this._x = value;
-			this._entity.getWorldPosition( vector$1 );
-			this._entity._physicsRef.setPosition( vector$1 );
+		switch ( type ) {
 
-		},
-	},
-	y: {
-		get() {
+			case 'ambient':
+				this.ref = new AmbientLight( color, intensity );
+				break;
+			case 'directional':
+				this.ref = new DirectionalLight( color, intensity );
+				break;
+			case 'hemisphere':
+				this.ref = new HemisphereLight( data.skyColor, data.groundColor, intensity );
+				break;
+			case 'point':
+				this.ref = new PointLight( color, intensity, data.distance, data.decay );
+				break;
+			case 'spot':
+				this.ref = new SpotLight( color, intensity, data.distance, data.angle, data.penumbra, data.decay );
+				break;
+			default:
+				throw new Error( 'Light: invalid light type ' + type );
 
-			return this._y;
+		}
 
-		},
-		set( value ) {
+		this.addEventListener( 'enable', this.onEnable );
+		this.addEventListener( 'disable', this.onDisable );
 
-			this._y = value;
-			this._entity.getWorldPosition( vector$1 );
-			this._entity._physicsRef.setPosition( vector$1 );
+	}
 
-		},
-	},
-	z: {
-		get() {
+	onEnable() {
 
-			return this._z;
+		this.entity.add( this.ref );
 
-		},
-		set( value ) {
+	}
 
-			this._z = value;
-			this._entity.getWorldPosition( vector$1 );
-			this._entity._physicsRef.setPosition( vector$1 );
+	onDisable() {
 
-		},
-	},
-};
+		this.entity.remove( this.ref );
 
-function onQuaternionChange() {
-
-	this._rotation.setFromQuaternion( this, undefined, false );
-	this._entity.getWorldQuaternion( quat$1 );
-	this._entity._physicsRef.setOrientation( quat$1 );
+	}
 
 }
 
-function onRotationChange() {
+class Renderable {
 
-	this._quaternion.setFromEuler( this, false );
-	this._entity.getWorldQuaternion( quat$1 );
-	this._entity._physicsRef.setOrientation( quat$1 );
+	init( data ) {
+
+		if ( data.isObject3D === undefined )
+			throw Error( 'Renderable must be an instance of Object3D' );
+
+		this.ref = data;
+		this.addEventListener( 'enable', this.onEnable );
+		this.addEventListener( 'disable', this.onDisable );
+
+	}
+
+	onEnable() {
+
+		this.entity.add( this.ref );
+
+	}
+
+	onDisable() {
+
+		this.entity.remove( this.ref );
+
+	}
 
 }
 
@@ -53726,6 +53486,358 @@ var ConvexHull = ( function () {
 
 } )();
 
+const quat$1 = new Quaternion();
+const vector$1 = new Vector3();
+const vector2$1 = new Vector3();
+const massData = new OIMO.MassData();
+const config = new OIMO.RigidBodyConfig();
+
+class Rigidbody {
+
+	init( data ) {
+
+		if ( '_physicsRef' in this.entity ) this._ref = this.entity._physicsRef;
+		else Rigidbody.createRigidbody( this, 0 );
+
+		this.setAngularVelocity( data.angularVelocity );
+		this.angularDamping = data.angularDamping;
+		this.setLinearVelocity( data.linearVelocity );
+		this.linearDamping = data.linearDamping;
+		this.gravityScale = data.gravityScale;
+		this.autoSleep = data.autoSleep;
+		this.isKinematic = data.isKinematic;
+		this.setRotationFactor( data.rotationFactor );
+		this._ref.mass = data.mass;
+
+		this.addEventListener( 'enable', this.onEnable );
+		this.addEventListener( 'disable', this.onDisable );
+		this.entity.addEventListener( 'scenechange', this.onSceneChange );
+
+	}
+
+	onEnable() {
+
+		if ( this._isKinematic ) {
+
+			this._ref.setType( 2 );
+
+		} else {
+
+			this._ref.setType( 0 );
+			this.mass = this._ref.mass;
+
+		}
+
+
+		if ( this._ref.getNumShapes() === 0 ) {
+
+			this.scene._physicsWorld.addRigidBody( this._ref );
+
+		}
+
+	}
+
+	onDisable() {
+
+		if ( this._ref.getNumShapes() > 0 ) {
+
+			this._ref.setType( 1 );
+
+		} else {
+
+			this.scene._physicsWorld.removeRigidBody( this._ref );
+
+		}
+
+	}
+
+	onSceneChange( event ) {
+
+		// need to test
+		if ( this._enabled ) {
+
+			event.oldScene._physicsWorld.removeRigidBody( this._ref );
+			event.newScene._physicsWorld.addRigidBody( this._ref );
+
+		}
+
+	}
+
+	addAngularVelocity( v ) {
+
+		this._ref.addAngularVelocity( v );
+
+	}
+	addLinearVelocity( v ) {
+
+		this._ref.addAngularVelocity( v );
+
+	}
+	applyAngularImpulse( v ) {
+
+		this._ref.applyAngularImpulse( v );
+
+	}
+	applyForce( v, w ) {
+
+		this._ref.applyForce( v, w );
+
+	}
+	applyForceToCenter( v ) {
+
+		this._ref.applyForceToCenter( v );
+
+	}
+	applyImpulse( v, w ) {
+
+		this._ref.applyImpulse( v, w );
+
+	}
+	applyLinearImpulse( v ) {
+
+		this._ref.applyLinearImpulse( v );
+
+	}
+	applyTorque( v ) {
+
+		this._ref.applyTorque( v );
+
+	}
+	get angularDamping() {
+
+		return this._ref.getAngularDamping();
+
+	}
+	getAngularVelocity() {
+
+		const vector = new Vector3();
+		this._ref.getAngularVelocityTo( vector );
+		return vector;
+
+	}
+	get gravityScale() {
+
+		return this._ref.getGravityScale();
+
+	}
+	get linearDamping() {
+
+		return this._ref.getLinearDamping();
+
+	}
+	getLinearVelocity() {
+
+		const vector = new Vector3();
+		this._ref.getLinearVelocityTo( vector );
+		return vector;
+
+	}
+	get localInertia() {
+
+		const v = this._ref.getLocalInertia();
+		return new Matrix3().set(
+			v.e00,
+			v.e01,
+			v.e02,
+			v.e10,
+			v.e11,
+			v.e12,
+			v.e20,
+			v.e21,
+			v.e22
+		);
+
+	}
+	get mass() {
+
+		return this._ref.mass;
+
+	}
+	get sleepTime() {
+
+		return this._ref.getSleepTime();
+
+	}
+	get isKinematic() {
+
+		return this._isKinematic;
+
+	}
+	set isKinematic( v ) {
+
+		this._isKinematic = v;
+
+		this._ref.setType( v ? 2 : 0 );
+
+	}
+	get isSleeping() {
+
+		return this._ref.isSleeping();
+
+	}
+	set isSleeping( sleep ) {
+
+		if ( sleep ) {
+
+			this._ref.sleep();
+
+		} else {
+
+			this._ref.wakeUp();
+
+		}
+
+	}
+	set angularDamping( v ) {
+
+		this._ref.setAngularDamping( v );
+
+	}
+	setAngularVelocity( v ) {
+
+		this._ref.setAngularVelocity( v );
+
+	}
+	get autoSleep() {
+
+		return this._autoSleep !== undefined ? this._autoSleep : true;
+
+	}
+	set autoSleep( v ) {
+
+		this._autoSleep = v;
+		this._ref.setAutoSleep( v );
+
+	}
+	set gravityScale( v ) {
+
+		this._ref.setGravityScale( v );
+
+	}
+	set linearDamping( v ) {
+
+		this._ref.setLinearDamping( v );
+
+	}
+	setLinearVelocity( v ) {
+
+		this._ref.setLinearVelocity( v );
+
+	}
+	set mass( mass ) {
+
+		this._ref.getMassDataTo( massData );
+		massData.mass = mass;
+		this._ref.setMassData( massData );
+
+	}
+	getRotationFactor() {
+
+		return new Vector3().copy( this._ref.getRotationFactor() );
+
+	}
+	setRotationFactor( vector ) {
+
+		this._ref.setRotationFactor( vector );
+
+	}
+
+	static createRigidbody( self, type ) {
+
+		const entity = self.entity;
+		entity.updateWorldMatrix();
+		entity.matrixWorld.decompose( vector$1, quat$1, vector2$1 );
+		config.position = vector$1;
+		config.rotation.fromQuat( quat$1 );
+		config.type = type;
+		entity._physicsRef = self._ref = new OIMO.RigidBody( config );
+		self._ref.component = self;
+		self._ref.entity = entity;
+
+		const position = entity.position;
+		position._entity = entity;
+		posProps._x.value = position.x;
+		posProps._y.value = position.y;
+		posProps._z.value = position.z;
+		Object.defineProperties( position, posProps );
+
+		const quaternion = entity.quaternion;
+		const rotation = entity.rotation;
+
+		quaternion._rotation = rotation;
+		rotation._quaternion = quaternion;
+		rotation._entity = quaternion._entity = entity;
+		quaternion._onChange( onQuaternionChange );
+		rotation._onChange( onRotationChange );
+
+	}
+
+}
+
+const posProps = {
+	_x: { value: 0, writable: true },
+	_y: { value: 0, writable: true },
+	_z: { value: 0, writable: true },
+	x: {
+		get() {
+
+			return this._x;
+
+		},
+		set( value ) {
+
+			this._x = value;
+			this._entity.getWorldPosition( vector$1 );
+			this._entity._physicsRef.setPosition( vector$1 );
+
+		},
+	},
+	y: {
+		get() {
+
+			return this._y;
+
+		},
+		set( value ) {
+
+			this._y = value;
+			this._entity.getWorldPosition( vector$1 );
+			this._entity._physicsRef.setPosition( vector$1 );
+
+		},
+	},
+	z: {
+		get() {
+
+			return this._z;
+
+		},
+		set( value ) {
+
+			this._z = value;
+			this._entity.getWorldPosition( vector$1 );
+			this._entity._physicsRef.setPosition( vector$1 );
+
+		},
+	},
+};
+
+function onQuaternionChange() {
+
+	this._rotation.setFromQuaternion( this, undefined, false );
+	this._entity.getWorldQuaternion( quat$1 );
+	this._entity._physicsRef.setOrientation( quat$1 );
+
+}
+
+function onRotationChange() {
+
+	this._quaternion.setFromEuler( this, false );
+	this._entity.getWorldQuaternion( quat$1 );
+	this._entity._physicsRef.setOrientation( quat$1 );
+
+}
+
 const vector$2 = new Vector3();
 const massData$1 = new OIMO.MassData();
 const transform = new OIMO.Transform();
@@ -53801,42 +53913,40 @@ const properties = {
 
 class Collider {
 
-	start( data ) {
+	init( data ) {
 
-		const type = this.type = data.type !== undefined ? data.type : 'box';
-		this._isTrigger = data.isTrigger !== undefined ? data.isTrigger : false;
-		this._collisionGroup = data.collisionGroup !== undefined ? data.collisionGroup : 1;
-		this._collisionMask = data.collisionMask !== undefined ? data.collisionMask : 1;
-		this._center = data.center !== undefined ? data.center : new Vector3( 0, 0, 0 );
-		this._rotation = data.rotation !== undefined ? data.rotation : new Euler( 0, 0, 0 );
+		this.type = data.type;
+		this._isTrigger = data.isTrigger;
+		this._collisionGroup = data.collisionGroup;
+		this._collisionMask = data.collisionMask;
+		this._center = data.center;
+		this._rotation = new Euler().setFromVector3( data.rotation );
 
-		switch ( type ) {
+		switch ( this.type ) {
 
 			case 'box':
-				this._halfExtents =
-					data.halfExtents !== undefined
-						? data.halfExtents
-						: new Vector( 1, 1, 1 );
+				this._halfExtents = data.halfExtents;
 				break;
 			case 'capsule':
 			case 'cone':
 			case 'cylinder':
-				this._radius = data.radius !== undefined ? data.radius : 0.5;
-				this._halfHeight = data.halfHeight !== undefined ? data.halfHeight : 1;
+				this._radius = data.radius;
+				this._halfHeight = data.halfHeight;
 				break;
 			case 'mesh':
 				this._mesh = data.mesh;
 				this._points = data.points;
 				break;
 			case 'sphere':
-				this._radius = data.radius !== undefined ? data.radius : 0.5;
+				this._radius = data.radius;
 				break;
 			default:
-				throw new Error( 'Collider: invalid collider type ' + type );
+				throw new Error( 'Collider: invalid collider type ' + this.type );
 
 		}
 
-		if ( data.material !== undefined ) this._material = data.material;
+		this._friction = data.friction;
+		this._restitution = data.friction;
 
 		this._setShape();
 
@@ -54003,18 +54113,17 @@ class Collider {
 					this._halfHeight * max
 				);
 			case 'mesh':
-				if ( this._points === undefined && this._mesh !== undefined ) {
+				if ( this._points === undefined && this._mesh === undefined ) throw 'MeshCollider: points or mesh must be provided';
+
+				if ( this._mesh !== undefined ) {
 
 					this._points = convexHull.setFromObject( this._mesh ).vertices;
-					for ( let i = 0, len = this._points.length; i < len; i ++ ) {
 
-						this._points[ i ] = this._points[ i ].point.multiply( scale );
+				}
 
-					}
+				for ( let i = 0, len = this._points.length; i < len; i ++ ) {
 
-				} else {
-
-					throw 'MeshCollider: points or mesh must be provided';
+					this._points[ i ] = this._points[ i ].point.multiply( scale );
 
 				}
 
@@ -54036,6 +54145,8 @@ class Collider {
 		shapeConfig.collisionMask = this._collisionMask;
 		shapeConfig.position = this._center;
 		shapeConfig.rotation.fromEulerXyz( this._rotation );
+		shapeConfig.friction = this._friction;
+		shapeConfig.restitution = this._restitution;
 
 		if ( this._shapeRef !== undefined && this._enabled ) {
 
@@ -54065,8 +54176,6 @@ class Collider {
 
 		this._shapeRef.entity = this.entity;
 		this._shapeRef.collider = this;
-
-		if ( this._material !== undefined ) this.material = this._material;
 
 	}
 
@@ -54114,32 +54223,29 @@ class Collider {
 
 	}
 
-	get material() {
+	get restitution() {
 
-		return this._material;
+		return this._restitution;
 
 	}
 
-	set material( material ) {
+	set restitution( restitution ) {
 
-		if ( material === null ) {
+		this._restitution = restitution;
+		this._shapeRef.setRestitution( restitution );
 
-			this._shapeRef.setFriction( 0.2 );
-			this._shapeRef.setRestitution( 0.2 );
+	}
 
-		}
+	get friction() {
 
-		if ( this._material !== undefined ) {
+		return this._friction;
 
-			const colliders = this._material._colliders;
-			colliders.splice( colliders.indexOf( this._shapeRef ), 1 );
+	}
 
-		}
+	set friction( friction ) {
 
-		material._colliders.push( this._shapeRef );
-		this._shapeRef.setFriction( material._friction );
-		this._shapeRef.setRestitution( material._restitution );
-		this._material = material;
+		this._friction = friction;
+		this._shapeRef.setFriction( friction );
 
 	}
 
@@ -54433,101 +54539,67 @@ const worldBody = new OIMO.RigidBody( rigidbodyConfig );
 
 class Joint {
 
-	start( data ) {
+	init( data ) {
 
-		const type = this.type = data.type !== undefined ? data.type : 'universal';
+		const type = this.type = data.type;
 
 		configs[ type ].rigidBody1 = this.entity._physicsRef;
 
-		this._bodyRef2 = data.linkedEntity !== undefined && data.linkedEntity !== null ? data.linkedEntity._physicsRef : worldBody;
-		this._allowCollision = data.allowCollision === true;
-		this._breakForce = data.breakForce !== undefined && data.breakForce !== 0 ? data.breakForce : 0;
-		this._breakTorque = data.breakTorque !== undefined && data.breakTorque !== 0 ? data.breakTorque : 0;
-		this._anchor = data.anchor !== undefined ? data.anchor : new Vector3();
-		this._linkedAnchor = data.linkedAnchor !== undefined ? data.linkedAnchor : new Vector3();
+		this._bodyRef2 = data.linkedEntity !== null ? this.entity.scene.getEntityByProperty( 'uuid', data.linkedEntity )._physicsRef : worldBody;
+		this._allowCollision = data.allowCollision;
+		this._breakForce = data.breakForce;
+		this._breakTorque = data.breakTorque;
+		this._anchor = data.anchor;
+		this._linkedAnchor = data.linkedAnchor;
 
 		switch ( type ) {
 
 			case 'ball':
-				this.springDamper = data.springDamper !== undefined
-					? data.springDamper
-					: new SpringDamper();
+				this.springDamper = data.springDamper;
 				break;
 			case 'cylindrical':
-				this._axis = data.axis !== undefined ? data.axis : new Vector3( 1, 0, 0 );
-				this._linkedAxis =
-							data.linkedAxis !== undefined ? data.linkedAxis : new Vector3( 1, 0, 0 );
-
-				this.linearLimit = data.linearLimit !== undefined
-					? data.linearLimit
-					: new LinearLimit();
-				this.linearSpringDamper = data.linearSpringDamper !== undefined
-					? data.linearSpringDamper
-					: new SpringDamper();
-				this.angularLimit = data.angularLimit !== undefined
-					? data.angularLimit
-					: new AngularLimit();
-				this.angularSpringDamper = data.angularSpringDamper !== undefined
-					? data.angularSpringDamper
-					: new SpringDamper();
+				this._axis = data.axis;
+				this._linkedAxis = data.linkedAxis;
+				this.linearLimit = data.linearLimit;
+				this.linearSpringDamper = data.linearSpringDamper;
+				this.angularLimit = data.angularLimit;
+				this.angularSpringDamper = data.angularSpringDamper;
 				break;
 			case 'hinge':
-				this._axis = data.axis !== undefined ? data.axis : new Vector3( 1, 0, 0 );
-				this._linkedAxis = data.linkedAxis !== undefined ? data.linkedAxis : new Vector3( 1, 0, 0 );
-
-				this.springDamper = data.springDamper !== undefined
-					? data.springDamper
-					: new SpringDamper();
-				this.angularLimit = data.angularLimit !== undefined
-					? data.angularLimit
-					: new AngularLimit();
+				this._axis = data.axis;
+				this._linkedAxis = data.linkedAxis;
+				this.springDamper = data.springDamper;
+				this.angularLimit = data.angularLimit;
 				break;
 			case 'prismatic':
-				this._axis = data.axis !== undefined ? data.axis : new Vector3( 1, 0, 0 );
-				this._linkedAxis =
-							data.linkedAxis !== undefined ? data.linkedAxis : new Vector3( 1, 0, 0 );
-
-				this.springDamper = data.springDamper !== undefined
-					? data.springDamper
-					: new SpringDamper();
-				this.linearLimit = data.linearLimit !== undefined
-					? data.linearLimit
-					: new LinearLimit();
+				this._axis = data.axis;
+				this._linkedAxis = data.linkedAxis;
+				this.springDamper = data.springDamper;
+				this.linearLimit = data.linearLimit;
 				break;
 			case 'ragdoll':
-				this._twistAxis = data.twistAxis !== undefined ? data.twistAxis : new Vector3( 1, 0, 0 );
-				this._linkedTwistAxis = data.linkedTwistAxis !== undefined ? data.linkedTwistAxis : new Vector3( 1, 0, 0 );
-				this._swingAxis = data.swingAxis !== undefined ? data.swingAxis : new Vector3( 0, 1, 0 );
-				this._maxSwing = data.maxSwing !== undefined ? data.maxSwing : Math.PI;
-				this._linkedMaxSwing = data.linkedMaxSwing !== undefined ? data.linkedMaxSwing : Math.PI;
-				this.twistSpringDamper = data.twistSpringDamper !== undefined ? data.twistSpringDamper : new SpringDamper();
-				this.swingSpringDamper = data.swingSpringDamper !== undefined ? data.swingSpringDamper : new SpringDamper();
-				this.twistLimit = data.twistLimit !== undefined ? data.twistLimit : new AngularLimit();
+				this._twistAxis = data.twistAxis;
+				this._linkedTwistAxis = data.linkedTwistAxis;
+				this._swingAxis = data.swingAxis;
+				this._maxSwing = data.maxSwing;
+				this._linkedMaxSwing = data.linkedMaxSwing;
+				this.twistSpringDamper = data.twistSpringDamper;
+				this.swingSpringDamper = data.swingSpringDamper;
+				this.twistLimit = data.twistLimit;
 				break;
 			case 'universal':
-				this._axis = data.axis !== undefined ? data.axis : new Vector3( 1, 0, 0 );
-				this._linkedAxis =
-							data.linkedAxis !== undefined ? data.linkedAxis : new Vector3( 1, 0, 0 );
-
-				this.springDamper = data.springDamper !== undefined
-					? data.springDamper
-					: new SpringDamper();
-				this.linkedSpringDamper = data.linkedSpringDamper !== undefined
-					? data.linkedSpringDamper
-					: new SpringDamper();
-				this.angularLimit = data.angularLimit !== undefined
-					? data.angularLimit
-					: new AngularLimit();
-				this.linkedAngularLimit = data.linkedAngularLimit !== undefined
-					? data.linkedAngularLimit
-					: new AngularLimit();
+				this._axis = data.axis;
+				this._linkedAxis = data.linkedAxis;
+				this.springDamper = data.springDamper;
+				this.linkedSpringDamper = data.linkedSpringDamper;
+				this.angularLimit = data.angularLimit;
+				this.linkedAngularLimit = data.linkedAngularLimit;
 				break;
 			default:
 				throw new Error( 'Joint: invalid joint type ' + type );
 
 		}
 
-		this._addDerivedProperties( data );
 		this._setJoint();
 
 		this.addEventListener( 'enable', this.onEnable );
@@ -54910,31 +54982,244 @@ class ComponentManager {
 			}
 		};
 
+		this.register( 'camera', Camera$1, {
+			schema: {
+				autoAspect: { default: true },
+				fov: { default: 50 },
+				near: { default: 0.1 },
+				far: { default: 2000 },
+				aspect: { default: 1 },
+				viewport: { type: 'vector4', default: [ 0, 0, 1, 1 ] }
+			}
+		} );
+		this.register( 'geometry', Geometry$1, {
+			schema: {
+				primitive: { default: 'box' },
+
+				depth: { default: 1, min: 0, if: { type: [ 'box' ] } },
+				height: { default: 1, min: 0, if: { type: [ 'box', 'cone', 'cylinder', 'plane' ] } },
+				width: { default: 1, min: 0, if: { type: [ 'box', 'plane' ] } },
+				heightSegments: { default: 1, min: 1, max: 20, type: 'int', if: { type: [ 'box', 'plane' ] } },
+				widthSegments: { default: 1, min: 1, max: 20, type: 'int', if: { type: [ 'box', 'plane' ] } },
+				depthSegments: { default: 1, min: 1, max: 20, type: 'int', if: { type: [ 'box' ] } },
+
+				radius: { default: 1, min: 0, if: { type: [ 'circle', 'cone', 'cylinder', 'dodecahedron', 'icosahedron', 'octahedron', 'sphere', 'tetrahedron', 'torus', 'torusKnot' ] } },
+				segments: { default: 32, min: 3, type: 'int', if: { type: [ 'circle' ] } },
+				thetaLength: { default: 360, min: 0, if: { type: [ 'circle', 'cone', 'cylinder', 'ring' ] } },
+				thetaStart: { default: 0, if: { type: [ 'circle', 'cone', 'cylinder', 'ring', 'sphere' ] } },
+
+				openEnded: { default: false, if: { type: [ 'cone', 'cylinder' ] } },
+				heightSegments: { default: 18, min: 1, type: 'int', if: { type: [ 'cone', 'cylinder' ] } },
+				radialSegments: { default: 36, min: 3, type: 'int', if: { type: [ 'cone', 'cylinder' ] } },
+
+				detail: { default: 0, min: 0, max: 5, type: 'int', if: { type: [ 'dodecahedron', 'icosahedron', 'octahedron', 'tetrahedron' ] } },
+
+				innerRadius: { default: 0.8, min: 0, if: { type: [ 'ring' ] } },
+				outerRadius: { default: 1.2, min: 0, if: { type: [ 'ring' ] } },
+				phiSegments: { default: 10, min: 1, type: 'int', if: { type: [ 'ring' ] } },
+				thetaSegments: { default: 32, min: 3, type: 'int', if: { type: [ 'ring' ] } },
+
+				phiLength: { default: 360, if: { type: [ 'sphere' ] } },
+				phiStart: { default: 0, min: 0, if: { type: [ 'sphere' ] } },
+				thetaLength: { default: 180, min: 0, if: { type: [ 'sphere' ] } },
+				heightSegments: { default: 18, min: 2, type: 'int', if: { type: [ 'sphere' ] } },
+				widthSegments: { default: 36, min: 3, type: 'int', if: { type: [ 'sphere' ] } },
+
+				tube: { default: 0.2, min: 0, if: { type: [ 'torus', 'torusKnot' ] } },
+				radialSegments: { default: 36, min: 2, type: 'int', if: { type: [ 'torus' ] } },
+				tubularSegments: { default: 32, min: 3, type: 'int', if: { type: [ 'torus' ] } },
+				arc: { default: 360, if: { type: [ 'torus' ] } },
+
+				p: { default: 2, min: 1, if: { type: [ 'torusKnot' ] } },
+				q: { default: 3, min: 1, if: { type: [ 'torusKnot' ] } },
+				radialSegments: { default: 8, min: 3, type: 'int', if: { type: [ 'torusKnot' ] } },
+				tubularSegments: { default: 64, min: 3, type: 'int', if: { type: [ 'torusKnot' ] } },
+			}
+		} );
+		this.register( 'light', Light$1, {
+			schema: {
+				type: { default: 'directional' },
+				color: { default: '#ffffff' },
+				intensity: { default: 1 },
+				skyColor: { default: '#ffffff', if: { type: [ 'hemisphere' ] } },
+				groundColor: { default: '#ffffff', if: { type: [ 'hemisphere' ] } },
+				distance: { default: 0, if: { type: [ 'point', 'spot' ] } },
+				decay: { default: 1, if: { type: [ 'point', 'spot' ] } },
+				angle: { default: Math.PI / 3, if: { type: [ 'spot' ] } },
+				penumbra: { default: 0, if: { type: [ 'spot' ] } }
+			}
+		} );
 		this.register( 'renderable', Renderable );
-		this.register( 'camera', Camera$1 );
-		this.register( 'rigidbody', Rigidbody );
-		this.register( 'collider', Collider );
-		this.register( 'joint', Joint, { requiredComponents: [ 'rigidbody' ] } );
+		this.register( 'collider', Collider, {
+			schema: {
+				type: { default: 'box' },
+				isTrigger: { default: false },
+				collisionGroup: { type: 'int', default: 1 },
+				collisionMask: { type: 'int', default: 1 },
+				center: { type: 'vector3' },
+				rotation: { type: 'vector3' },
+				friction: { default: 0.2 },
+				restitution: { default: 0.2 },
+				halfExtents: { type: 'vector3', default: [ 1, 1, 1 ], if: { type: [ 'box' ] } },
+				radius: { default: 0.5, if: { type: [ 'capsule', 'cone', 'cylinder', 'sphere' ] } },
+				halfHeight: { default: 1, if: { type: [ 'capsule', 'cone', 'cylinder' ] } },
+				mesh: { type: 'asset', if: { type: [ 'mesh' ] } },
+			}
+		} );
+		this.register( 'joint', Joint, {
+			dependencies: [ 'rigidbody' ],
+			schema: {
+				type: { default: 'universal' },
+				linkedEntity: { type: 'entity' },
+				allowCollision: { default: false },
+				breakForce: { default: 0 },
+				breakTorque: { default: 0 },
+				anchor: { type: 'vector3' },
+				linkedAnchor: { type: 'vector3' },
+				springDamper: { default: SpringDamper, if: { type: [ 'ball', 'hinge', 'prismatic', 'universal' ] } },
+				axis: { type: 'vector3', default: [ 1, 0, 0 ], if: { type: [ 'cylindrical', 'hinge', 'prismatic', 'universal' ] } },
+				linkedAxis: { type: 'vector3', default: [ 1, 0, 0 ], if: { type: [ 'cylindrical', 'hinge', 'prismatic', 'universal' ] } },
+				linearLimit: { default: LinearLimit, if: { type: [ 'cylindrical', 'prismatic' ] } },
+				linearSpringDamper: { default: SpringDamper, if: { type: [ 'cylindrical' ] } },
+				angularLimit: { default: AngularLimit, if: { type: [ 'cylindrical', 'hinge', 'universal' ] } },
+				angularSpringDamper: { default: SpringDamper, if: { type: [ 'cylindrical' ] } },
+				twistAxis: { type: 'vector3', default: [ 1, 0, 0 ], if: { type: [ 'ragdoll' ] } },
+				linkedTwistAxis: { type: 'vector3', default: [ 1, 0, 0 ], if: { type: [ 'ragdoll' ] } },
+				swingAxis: { type: 'vector3', default: [ 0, 1, 0 ], if: { type: [ 'ragdoll' ] } },
+				maxSwing: { default: Math.PI, if: { type: [ 'ragdoll' ] } },
+				linkedMaxSwing: { default: Math.PI, if: { type: [ 'ragdoll' ] } },
+				twistSpringDamper: { default: SpringDamper, if: { type: [ 'ragdoll' ] } },
+				swingSpringDamper: { default: SpringDamper, if: { type: [ 'ragdoll' ] } },
+				twistLimit: { default: AngularLimit, if: { type: [ 'ragdoll' ] } },
+				linkedSpringDamper: { default: SpringDamper, if: { type: [ 'universal' ] } },
+				linkedAngularLimit: { default: AngularLimit, if: { type: [ 'universal' ] } },
+			}
+		} );
+		this.register( 'rigidbody', Rigidbody, {
+			schema: {
+				angularVelocity: { type: 'vector3' },
+				angularDamping: { default: 0 },
+				linearVelocity: { type: 'vector3' },
+				linearDamping: { default: 0 },
+				gravityScale: { default: 1 },
+				autoSleep: { default: true },
+				isKinematic: { default: false },
+				rotationFactor: { type: 'vector3', default: [ 1, 1, 1 ] },
+				mass: { default: 1 }
+			}
+		} );
 
 	}
 
-	register( type, constructor, options = {} ) {
+	register( type, constructor, config = {} ) {
 
 		if ( this.components.type !== undefined ) throw 'component ' + type + ' already exists';
+
+		if ( config.schema !== undefined ) {
+
+			for ( const name in config.schema ) {
+
+				const prop = config.schema[ name ];
+
+				if ( prop.default === undefined && prop.type === undefined ) {
+
+					throw Error( 'ComponentManager: schema property requires a type or default value' );
+
+				} else if ( prop.default === undefined ) {
+
+					switch ( prop.type ) {
+
+						case 'string':
+						case 'asset':
+							prop.default = '';
+							break;
+						case 'color':
+							prop.default = '#000000';
+							break;
+						case 'vector2':
+							prop.default = [ 0, 0 ];
+							break;
+						case 'vector3':
+							prop.default = [ 0, 0, 0 ];
+							break;
+						case 'vector4':
+							prop.default = [ 0, 0, 0, 0 ];
+							break;
+						case 'boolean':
+							prop.default = false;
+							break;
+						case 'slider':
+						case 'number':
+						case 'int':
+							prop.default = 0;
+							break;
+						case 'select':
+							prop.default = prop.select[ 0 ];
+							break;
+						case 'entity':
+							prop.default = null; // uuid of entity
+							break;
+						case 'class':
+							prop.default = {};
+						default:
+							throw Error( 'ComponentManager: invalid schema property type ' + typeof prop.type );
+
+					}
+
+				} else if ( prop.type === undefined ) {
+
+					switch ( typeof prop.default ) {
+
+						case 'number':
+							if ( Number.isInteger( prop.default ) )
+								prop.type = 'int';
+							else
+								prop.type = 'number';
+							break;
+						case 'string':
+							if ( prop.default.length < 10 && prop.default.length > 0 && prop.default[ 0 ] === '#' )
+								prop.type = 'string';
+							break;
+						case 'boolean':
+							prop.type = 'boolean';
+							break;
+						case 'object':
+							if ( Array.isArray( prop.default ) )
+								prop.type = 'array';
+							else throw Error( 'ComponentManager: could not infer property type from default ' + prop.default );
+							break;
+						case 'function':
+							prop.type = 'class';
+							break;
+						default:
+							throw Error( 'ComponentManager: could not infer property type from default ' + prop.default );
+
+					}
+
+				}
+
+				if ( prop.type === 'vector4' )
+					prop.default = new Vector4().fromArray( prop.default );
+				else if ( prop.type === 'vector3' )
+					prop.default = new Vector3().fromArray( prop.default );
+				else if ( prop.type === 'vector2' )
+					prop.default = new Vector2().fromArray( prop.default );
+
+			}
+
+		}
 
 		this.properties.componentType.value = type;
 		Object.defineProperties( constructor.prototype, this.properties );
 		Object.assign( constructor.prototype, EventDispatcher.prototype );
 
-		this.components[ type ] = {
-			constructor, options
-		};
+		this.components[ type ] = { constructor, config };
 
 	}
 
 }
 
-// options: allowMultiple, requiredComponents, schema
+// config: allowMultiple, dependencies, schema
 
 // schema is an array of objects
 // ex: schema: [{name: "velocity", type: "number", default}]
@@ -54952,8 +55237,6 @@ class Application {
 		this.input = new Input();
 		this.componentManager = new ComponentManager();
 
-		this.autoUpdate = parameters.autoUpdate !== undefined ? parameters.autoUpdate : true;
-
 		this.scenes = [];
 		this._currentScene;
 		this.requestID;
@@ -54964,35 +55247,34 @@ class Application {
 
 	}
 
-	update( timestamp = 0 ) {
+	start() {
 
-		const deltaTime = this.time.update( timestamp );
+		this.renderer.setAnimationLoop( ( t ) => this.update( t ) );
 
-		this.physics.update(
-			deltaTime,
-			this.time.fixedTimestep * this.time.timeScale
-		);
+	}
+
+	stop() {
+
+		this.renderer.setAnimationLoop( null );
+
+	}
+
+	update( timestamp = performance.now() ) {
+
+		const deltaTime = this.time.update( timestamp / 1000 );
+		this.physics.update( deltaTime, this.time.scaledFixedTimestep );
 
 		for ( const type in this._containers ) {
 
 			const container = this._containers[ type ];
-			if ( container[ 0 ] && container[ 0 ].update !== undefined ) {
-
-				for ( let j = 0, lenj = container.length; j < lenj; j ++ ) {
-
+			if ( container[ 0 ] !== undefined && container[ 0 ].update !== undefined )
+				for ( let j = 0, lenj = container.length; j < lenj; j ++ )
 					container[ j ].update( deltaTime );
-
-				}
-
-			}
 
 		}
 
 		this.renderer.update();
 		this.input.update();
-
-		if ( this.autoUpdate )
-			window.requestAnimationFrame( ( t ) => this.update( t / 1000 ) );
 
 	}
 
@@ -55127,8 +55409,8 @@ class Entity extends Group {
 
 		this.scene._containers[ type ].push( component );
 
-		if ( component.start !== undefined )
-			component.start( data );
+		if ( component.init !== undefined )
+			component.init( data );
 
 		component.dispatchEvent( { type: 'enable' } );
 
@@ -55163,37 +55445,93 @@ class Entity extends Group {
 	addComponent( type, data = {} ) {
 
 		const componentData = this.app.componentManager.components[ type ];
-		const options = componentData.options;
+		const config = componentData.config;
 
-		if ( options.allowMultiple === false && this.getComponent( type ) !== undefined )
+		if ( config.allowMultiple === false && this.getComponent( type ) !== undefined )
 			return console.warn( 'Entity: allowMultiple Attribute is false' );
 
-		if ( options.requireComponents !== undefined ) {
+		if ( config.dependencies !== undefined ) {
 
-			const required = options.requireComponents;
-			for ( let i = 0, len = required.length; i < len; i ++ )
-				if ( this.getComponent( required[ i ] ) === undefined )
-					this.addComponent( required[ i ] );
+			const dependencies = config.dependencies;
+			for ( let i = 0, len = dependencies.length; i < len; i ++ )
+				if ( this.getComponent( dependencies[ i ] ) === undefined )
+					this.addComponent( dependencies[ i ] );
+
+		}
+
+		if ( config.schema !== undefined ) {
+
+			// reversing to optimize the inner while loop (which goes backwards)
+			const schema = Object.keys( config.schema ).reverse();
+
+			while ( schema.length > 0 ) {
+
+				let i = schema.length;
+
+				while ( i -- ) {
+
+					const name = schema[ i ];
+
+					if ( data[ name ] === undefined ) {
+
+						const dependencies = config.schema[ name ].if;
+
+						if ( dependencies !== undefined ) {
+
+							let tryAgain = false;
+
+							for ( const d in dependencies ) {
+
+								if ( schema.includes( d ) ) {
+
+									tryAgain = true;
+
+								} else if ( ! dependencies[ d ].includes( data[ d ] ) ) {
+
+									schema.splice( i, 1 );
+									tryAgain = true;
+
+								}
+
+							}
+
+							if ( tryAgain ) continue;
+
+						}
+
+						switch ( config.schema[ name ].type ) {
+
+							case 'class':
+								data[ name ] = new config.schema[ name ].default();
+								break;
+							case 'vector2':
+							case 'vector3':
+							case 'vector4':
+								data[ name ] = config.schema[ name ].default.clone();
+								break;
+							default:
+								data[ name ] = config.schema[ name ].default;
+
+						}
+
+					}
+
+					schema.splice( i, 1 );
+
+				}
+
+			}
 
 		}
 
 		const component = new componentData.constructor();
 
-		Object.defineProperty( component, 'entity', {
-			value: this,
-		} );
+		Object.defineProperty( component, 'entity', { value: this } );
 
 		this.components.push( component );
 
-		if ( this.scene !== undefined ) {
-
-			this._activateComponent( type, component, data );
-
-		} else {
-
-			this.queue.push( { type, component, data } );
-
-		}
+		if ( this.scene !== undefined ) this._activateComponent( type, component, data );
+		else this.queue.push( { type, component, data } );
 
 		return component;
 
@@ -55319,6 +55657,24 @@ class Entity extends Group {
 
 	}
 
+	getEntityByProperty( name, value ) {
+
+		let match;
+
+		this.traverse( ( child ) => {
+
+			if ( child.isEntity !== undefined && child[ name ] === value ) {
+
+				match = child;
+
+			}
+
+		} );
+
+		return match;
+
+	}
+
 	get app() {
 
 		return this.scene.app;
@@ -55329,50 +55685,4 @@ class Entity extends Group {
 
 Entity.prototype.isEntity = true;
 
-class PhysicMaterial {
-
-	constructor( friction, restitution ) {
-
-		this._friction = friction;
-		this._restitution = restitution;
-		this._colliders = [];
-
-	}
-
-	get friction() {
-
-		return this._friction;
-
-	}
-
-	get restitution() {
-
-		return this._restitution;
-
-	}
-
-	set friction( v ) {
-
-		this._friction = v;
-		for ( let i = 0, len = this._colliders.length; i < len; i ++ ) {
-
-			this._colliders[ i ].setFriction( v );
-
-		}
-
-	}
-
-	set restitution( v ) {
-
-		this._restitution = v;
-		for ( let i = 0, len = this._colliders.length; i < len; i ++ ) {
-
-			this._colliders[ i ].setRestitution( v );
-
-		}
-
-	}
-
-}
-
-export { ACESFilmicToneMapping, AddEquation, AddOperation, AdditiveAnimationBlendMode, AdditiveBlending, AlphaFormat, AlwaysDepth, AlwaysStencilFunc, AmbientLight, AmbientLightProbe, AngularLimit, AnimationClip, AnimationLoader, AnimationMixer, AnimationObjectGroup, AnimationUtils, Application, ArcCurve, ArrayCamera, ArrowHelper, Audio, AudioAnalyser, AudioContext, AudioListener, AudioLoader, AxesHelper, AxisHelper, BackSide, BasicDepthPacking, BasicShadowMap, BinaryTextureLoader, Bone, BooleanKeyframeTrack, BoundingBoxHelper, Box2, Box3, Box3Helper, BoxBufferGeometry, BoxGeometry, BoxHelper, BufferAttribute, BufferGeometry, BufferGeometryLoader, ByteType, Cache, Camera, CameraHelper, CanvasRenderer, CanvasTexture, CatmullRomCurve3, CineonToneMapping, CircleBufferGeometry, CircleGeometry, ClampToEdgeWrapping, Clock, ClosedSplineCurve3, Color, ColorKeyframeTrack, ComponentManager, CompressedTexture, CompressedTextureLoader, ConeBufferGeometry, ConeGeometry, CubeCamera, BoxGeometry as CubeGeometry, CubeReflectionMapping, CubeRefractionMapping, CubeTexture, CubeTextureLoader, CubeUVReflectionMapping, CubeUVRefractionMapping, CubicBezierCurve, CubicBezierCurve3, CubicInterpolant, CullFaceBack, CullFaceFront, CullFaceFrontBack, CullFaceNone, Curve, CurvePath, CustomBlending, CustomToneMapping, CylinderBufferGeometry, CylinderGeometry, Cylindrical, DataTexture, DataTexture2DArray, DataTexture3D, DataTextureLoader, DataUtils, DecrementStencilOp, DecrementWrapStencilOp, DefaultLoadingManager, DepthFormat, DepthStencilFormat, DepthTexture, DirectionalLight, DirectionalLightHelper, DiscreteInterpolant, DodecahedronBufferGeometry, DodecahedronGeometry, DoubleSide, DstAlphaFactor, DstColorFactor, DynamicBufferAttribute, DynamicCopyUsage, DynamicDrawUsage, DynamicReadUsage, EdgesGeometry, EdgesHelper, EllipseCurve, Entity, EqualDepth, EqualStencilFunc, EquirectangularReflectionMapping, EquirectangularRefractionMapping, Euler, EventDispatcher, ExtrudeBufferGeometry, ExtrudeGeometry, Face3, Face4, FaceColors, FileLoader, FlatShading, Float16BufferAttribute, Float32Attribute, Float32BufferAttribute, Float64Attribute, Float64BufferAttribute, FloatType, Fog, FogExp2, Font, FontLoader, FrontSide, Frustum, GLBufferAttribute, GLSL1, GLSL3, GammaEncoding, Geometry, GeometryUtils, GreaterDepth, GreaterEqualDepth, GreaterEqualStencilFunc, GreaterStencilFunc, GridHelper, Group, HalfFloatType, HemisphereLight, HemisphereLightHelper, HemisphereLightProbe, IcosahedronBufferGeometry, IcosahedronGeometry, ImageBitmapLoader, ImageLoader, ImageUtils, ImmediateRenderObject, IncrementStencilOp, IncrementWrapStencilOp, InstancedBufferAttribute, InstancedBufferGeometry, InstancedInterleavedBuffer, InstancedMesh, Int16Attribute, Int16BufferAttribute, Int32Attribute, Int32BufferAttribute, Int8Attribute, Int8BufferAttribute, IntType, InterleavedBuffer, InterleavedBufferAttribute, Interpolant, InterpolateDiscrete, InterpolateLinear, InterpolateSmooth, InvertStencilOp, JSONLoader, KeepStencilOp, KeyframeTrack, LOD, LatheBufferGeometry, LatheGeometry, Layers, LensFlare, LessDepth, LessEqualDepth, LessEqualStencilFunc, LessStencilFunc, Light, LightProbe, Line, Line3, LineBasicMaterial, LineCurve, LineCurve3, LineDashedMaterial, LineLoop, LinePieces, LineSegments, LineStrip, LinearEncoding, LinearFilter, LinearInterpolant, LinearLimit, LinearMipMapLinearFilter, LinearMipMapNearestFilter, LinearMipmapLinearFilter, LinearMipmapNearestFilter, LinearToneMapping, Loader, LoaderUtils, LoadingManager, LogLuvEncoding, LoopOnce, LoopPingPong, LoopRepeat, LuminanceAlphaFormat, LuminanceFormat, MOUSE, Material, MaterialLoader, MathUtils as Math, MathUtils, Matrix3, Matrix4, MaxEquation, Mesh, MeshBasicMaterial, MeshDepthMaterial, MeshDistanceMaterial, MeshFaceMaterial, MeshLambertMaterial, MeshMatcapMaterial, MeshNormalMaterial, MeshPhongMaterial, MeshPhysicalMaterial, MeshStandardMaterial, MeshToonMaterial, MinEquation, MirroredRepeatWrapping, MixOperation, MultiMaterial, MultiplyBlending, MultiplyOperation, NearestFilter, NearestMipMapLinearFilter, NearestMipMapNearestFilter, NearestMipmapLinearFilter, NearestMipmapNearestFilter, NeverDepth, NeverStencilFunc, NoBlending, NoColors, NoToneMapping, NormalAnimationBlendMode, NormalBlending, NotEqualDepth, NotEqualStencilFunc, NumberKeyframeTrack, Object3D, ObjectLoader, ObjectSpaceNormalMap, OctahedronBufferGeometry, OctahedronGeometry, OneFactor, OneMinusDstAlphaFactor, OneMinusDstColorFactor, OneMinusSrcAlphaFactor, OneMinusSrcColorFactor, OrthographicCamera, PCFShadowMap, PCFSoftShadowMap, PMREMGenerator, ParametricBufferGeometry, ParametricGeometry, Particle, ParticleBasicMaterial, ParticleSystem, ParticleSystemMaterial, Path, PerspectiveCamera, PhysicMaterial, Plane, PlaneBufferGeometry, PlaneGeometry, PlaneHelper, PointCloud, PointCloudMaterial, PointLight, PointLightHelper, Points, PointsMaterial, PolarGridHelper, PolyhedronBufferGeometry, PolyhedronGeometry, PositionalAudio, PropertyBinding, PropertyMixer, QuadraticBezierCurve, QuadraticBezierCurve3, Quaternion, QuaternionKeyframeTrack, QuaternionLinearInterpolant, REVISION, RGBADepthPacking, RGBAFormat, RGBAIntegerFormat, RGBA_ASTC_10x10_Format, RGBA_ASTC_10x5_Format, RGBA_ASTC_10x6_Format, RGBA_ASTC_10x8_Format, RGBA_ASTC_12x10_Format, RGBA_ASTC_12x12_Format, RGBA_ASTC_4x4_Format, RGBA_ASTC_5x4_Format, RGBA_ASTC_5x5_Format, RGBA_ASTC_6x5_Format, RGBA_ASTC_6x6_Format, RGBA_ASTC_8x5_Format, RGBA_ASTC_8x6_Format, RGBA_ASTC_8x8_Format, RGBA_BPTC_Format, RGBA_ETC2_EAC_Format, RGBA_PVRTC_2BPPV1_Format, RGBA_PVRTC_4BPPV1_Format, RGBA_S3TC_DXT1_Format, RGBA_S3TC_DXT3_Format, RGBA_S3TC_DXT5_Format, RGBDEncoding, RGBEEncoding, RGBEFormat, RGBFormat, RGBIntegerFormat, RGBM16Encoding, RGBM7Encoding, RGB_ETC1_Format, RGB_ETC2_Format, RGB_PVRTC_2BPPV1_Format, RGB_PVRTC_4BPPV1_Format, RGB_S3TC_DXT1_Format, RGFormat, RGIntegerFormat, RawShaderMaterial, Ray, Raycaster, RectAreaLight, RedFormat, RedIntegerFormat, ReinhardToneMapping, RepeatWrapping, ReplaceStencilOp, ReverseSubtractEquation, RingBufferGeometry, RingGeometry, SRGB8_ALPHA8_ASTC_10x10_Format, SRGB8_ALPHA8_ASTC_10x5_Format, SRGB8_ALPHA8_ASTC_10x6_Format, SRGB8_ALPHA8_ASTC_10x8_Format, SRGB8_ALPHA8_ASTC_12x10_Format, SRGB8_ALPHA8_ASTC_12x12_Format, SRGB8_ALPHA8_ASTC_4x4_Format, SRGB8_ALPHA8_ASTC_5x4_Format, SRGB8_ALPHA8_ASTC_5x5_Format, SRGB8_ALPHA8_ASTC_6x5_Format, SRGB8_ALPHA8_ASTC_6x6_Format, SRGB8_ALPHA8_ASTC_8x5_Format, SRGB8_ALPHA8_ASTC_8x6_Format, SRGB8_ALPHA8_ASTC_8x8_Format, Scene$1 as Scene, SceneUtils, ShaderChunk, ShaderLib, ShaderMaterial, ShadowMaterial, Shape, ShapeBufferGeometry, ShapeGeometry, ShapePath, ShapeUtils, ShortType, Skeleton, SkeletonHelper, SkinnedMesh, SmoothShading, Sphere, SphereBufferGeometry, SphereGeometry, Spherical, SphericalHarmonics3, Spline, SplineCurve, SplineCurve3, SpotLight, SpotLightHelper, SpringDamper, Sprite, SpriteMaterial, SrcAlphaFactor, SrcAlphaSaturateFactor, SrcColorFactor, StaticCopyUsage, StaticDrawUsage, StaticReadUsage, StereoCamera, StreamCopyUsage, StreamDrawUsage, StreamReadUsage, StringKeyframeTrack, SubtractEquation, SubtractiveBlending, TOUCH, TangentSpaceNormalMap, TetrahedronBufferGeometry, TetrahedronGeometry, TextBufferGeometry, TextGeometry, Texture, TextureLoader, TorusBufferGeometry, TorusGeometry, TorusKnotBufferGeometry, TorusKnotGeometry, Triangle, TriangleFanDrawMode, TriangleStripDrawMode, TrianglesDrawMode, TubeBufferGeometry, TubeGeometry, UVMapping, Uint16Attribute, Uint16BufferAttribute, Uint32Attribute, Uint32BufferAttribute, Uint8Attribute, Uint8BufferAttribute, Uint8ClampedAttribute, Uint8ClampedBufferAttribute, Uniform, UniformsLib, UniformsUtils, UnsignedByteType, UnsignedInt248Type, UnsignedIntType, UnsignedShort4444Type, UnsignedShort5551Type, UnsignedShort565Type, UnsignedShortType, VSMShadowMap, Vector2, Vector3, Vector4, VectorKeyframeTrack, Vertex, VertexColors, VideoTexture, WebGL1Renderer, WebGLCubeRenderTarget, WebGLMultisampleRenderTarget, WebGLRenderTarget, WebGLRenderTargetCube, WebGLRenderer, WebGLUtils, WireframeGeometry, WireframeHelper, WrapAroundEnding, XHRLoader, ZeroCurvatureEnding, ZeroFactor, ZeroSlopeEnding, ZeroStencilOp, sRGBEncoding };
+export { ACESFilmicToneMapping, AddEquation, AddOperation, AdditiveAnimationBlendMode, AdditiveBlending, AlphaFormat, AlwaysDepth, AlwaysStencilFunc, AmbientLight, AmbientLightProbe, AngularLimit, AnimationClip, AnimationLoader, AnimationMixer, AnimationObjectGroup, AnimationUtils, Application, ArcCurve, ArrayCamera, ArrowHelper, Audio, AudioAnalyser, AudioContext, AudioListener, AudioLoader, AxesHelper, AxisHelper, BackSide, BasicDepthPacking, BasicShadowMap, BinaryTextureLoader, Bone, BooleanKeyframeTrack, BoundingBoxHelper, Box2, Box3, Box3Helper, BoxBufferGeometry, BoxGeometry, BoxHelper, BufferAttribute, BufferGeometry, BufferGeometryLoader, ByteType, Cache, Camera, CameraHelper, CanvasRenderer, CanvasTexture, CatmullRomCurve3, CineonToneMapping, CircleBufferGeometry, CircleGeometry, ClampToEdgeWrapping, Clock, ClosedSplineCurve3, Color, ColorKeyframeTrack, ComponentManager, CompressedTexture, CompressedTextureLoader, ConeBufferGeometry, ConeGeometry, CubeCamera, BoxGeometry as CubeGeometry, CubeReflectionMapping, CubeRefractionMapping, CubeTexture, CubeTextureLoader, CubeUVReflectionMapping, CubeUVRefractionMapping, CubicBezierCurve, CubicBezierCurve3, CubicInterpolant, CullFaceBack, CullFaceFront, CullFaceFrontBack, CullFaceNone, Curve, CurvePath, CustomBlending, CustomToneMapping, CylinderBufferGeometry, CylinderGeometry, Cylindrical, DataTexture, DataTexture2DArray, DataTexture3D, DataTextureLoader, DataUtils, DecrementStencilOp, DecrementWrapStencilOp, DefaultLoadingManager, DepthFormat, DepthStencilFormat, DepthTexture, DirectionalLight, DirectionalLightHelper, DiscreteInterpolant, DodecahedronBufferGeometry, DodecahedronGeometry, DoubleSide, DstAlphaFactor, DstColorFactor, DynamicBufferAttribute, DynamicCopyUsage, DynamicDrawUsage, DynamicReadUsage, EdgesGeometry, EdgesHelper, EllipseCurve, Entity, EqualDepth, EqualStencilFunc, EquirectangularReflectionMapping, EquirectangularRefractionMapping, Euler, EventDispatcher, ExtrudeBufferGeometry, ExtrudeGeometry, Face3, Face4, FaceColors, FileLoader, FlatShading, Float16BufferAttribute, Float32Attribute, Float32BufferAttribute, Float64Attribute, Float64BufferAttribute, FloatType, Fog, FogExp2, Font, FontLoader, FrontSide, Frustum, GLBufferAttribute, GLSL1, GLSL3, GammaEncoding, Geometry, GeometryUtils, GreaterDepth, GreaterEqualDepth, GreaterEqualStencilFunc, GreaterStencilFunc, GridHelper, Group, HalfFloatType, HemisphereLight, HemisphereLightHelper, HemisphereLightProbe, IcosahedronBufferGeometry, IcosahedronGeometry, ImageBitmapLoader, ImageLoader, ImageUtils, ImmediateRenderObject, IncrementStencilOp, IncrementWrapStencilOp, InstancedBufferAttribute, InstancedBufferGeometry, InstancedInterleavedBuffer, InstancedMesh, Int16Attribute, Int16BufferAttribute, Int32Attribute, Int32BufferAttribute, Int8Attribute, Int8BufferAttribute, IntType, InterleavedBuffer, InterleavedBufferAttribute, Interpolant, InterpolateDiscrete, InterpolateLinear, InterpolateSmooth, InvertStencilOp, JSONLoader, KeepStencilOp, KeyframeTrack, LOD, LatheBufferGeometry, LatheGeometry, Layers, LensFlare, LessDepth, LessEqualDepth, LessEqualStencilFunc, LessStencilFunc, Light, LightProbe, Line, Line3, LineBasicMaterial, LineCurve, LineCurve3, LineDashedMaterial, LineLoop, LinePieces, LineSegments, LineStrip, LinearEncoding, LinearFilter, LinearInterpolant, LinearLimit, LinearMipMapLinearFilter, LinearMipMapNearestFilter, LinearMipmapLinearFilter, LinearMipmapNearestFilter, LinearToneMapping, Loader, LoaderUtils, LoadingManager, LogLuvEncoding, LoopOnce, LoopPingPong, LoopRepeat, LuminanceAlphaFormat, LuminanceFormat, MOUSE, Material, MaterialLoader, MathUtils as Math, MathUtils, Matrix3, Matrix4, MaxEquation, Mesh, MeshBasicMaterial, MeshDepthMaterial, MeshDistanceMaterial, MeshFaceMaterial, MeshLambertMaterial, MeshMatcapMaterial, MeshNormalMaterial, MeshPhongMaterial, MeshPhysicalMaterial, MeshStandardMaterial, MeshToonMaterial, MinEquation, MirroredRepeatWrapping, MixOperation, MultiMaterial, MultiplyBlending, MultiplyOperation, NearestFilter, NearestMipMapLinearFilter, NearestMipMapNearestFilter, NearestMipmapLinearFilter, NearestMipmapNearestFilter, NeverDepth, NeverStencilFunc, NoBlending, NoColors, NoToneMapping, NormalAnimationBlendMode, NormalBlending, NotEqualDepth, NotEqualStencilFunc, NumberKeyframeTrack, Object3D, ObjectLoader, ObjectSpaceNormalMap, OctahedronBufferGeometry, OctahedronGeometry, OneFactor, OneMinusDstAlphaFactor, OneMinusDstColorFactor, OneMinusSrcAlphaFactor, OneMinusSrcColorFactor, OrthographicCamera, PCFShadowMap, PCFSoftShadowMap, PMREMGenerator, ParametricBufferGeometry, ParametricGeometry, Particle, ParticleBasicMaterial, ParticleSystem, ParticleSystemMaterial, Path, PerspectiveCamera, Plane, PlaneBufferGeometry, PlaneGeometry, PlaneHelper, PointCloud, PointCloudMaterial, PointLight, PointLightHelper, Points, PointsMaterial, PolarGridHelper, PolyhedronBufferGeometry, PolyhedronGeometry, PositionalAudio, PropertyBinding, PropertyMixer, QuadraticBezierCurve, QuadraticBezierCurve3, Quaternion, QuaternionKeyframeTrack, QuaternionLinearInterpolant, REVISION, RGBADepthPacking, RGBAFormat, RGBAIntegerFormat, RGBA_ASTC_10x10_Format, RGBA_ASTC_10x5_Format, RGBA_ASTC_10x6_Format, RGBA_ASTC_10x8_Format, RGBA_ASTC_12x10_Format, RGBA_ASTC_12x12_Format, RGBA_ASTC_4x4_Format, RGBA_ASTC_5x4_Format, RGBA_ASTC_5x5_Format, RGBA_ASTC_6x5_Format, RGBA_ASTC_6x6_Format, RGBA_ASTC_8x5_Format, RGBA_ASTC_8x6_Format, RGBA_ASTC_8x8_Format, RGBA_BPTC_Format, RGBA_ETC2_EAC_Format, RGBA_PVRTC_2BPPV1_Format, RGBA_PVRTC_4BPPV1_Format, RGBA_S3TC_DXT1_Format, RGBA_S3TC_DXT3_Format, RGBA_S3TC_DXT5_Format, RGBDEncoding, RGBEEncoding, RGBEFormat, RGBFormat, RGBIntegerFormat, RGBM16Encoding, RGBM7Encoding, RGB_ETC1_Format, RGB_ETC2_Format, RGB_PVRTC_2BPPV1_Format, RGB_PVRTC_4BPPV1_Format, RGB_S3TC_DXT1_Format, RGFormat, RGIntegerFormat, RawShaderMaterial, Ray, Raycaster, RectAreaLight, RedFormat, RedIntegerFormat, ReinhardToneMapping, RepeatWrapping, ReplaceStencilOp, ReverseSubtractEquation, RingBufferGeometry, RingGeometry, SRGB8_ALPHA8_ASTC_10x10_Format, SRGB8_ALPHA8_ASTC_10x5_Format, SRGB8_ALPHA8_ASTC_10x6_Format, SRGB8_ALPHA8_ASTC_10x8_Format, SRGB8_ALPHA8_ASTC_12x10_Format, SRGB8_ALPHA8_ASTC_12x12_Format, SRGB8_ALPHA8_ASTC_4x4_Format, SRGB8_ALPHA8_ASTC_5x4_Format, SRGB8_ALPHA8_ASTC_5x5_Format, SRGB8_ALPHA8_ASTC_6x5_Format, SRGB8_ALPHA8_ASTC_6x6_Format, SRGB8_ALPHA8_ASTC_8x5_Format, SRGB8_ALPHA8_ASTC_8x6_Format, SRGB8_ALPHA8_ASTC_8x8_Format, Scene$1 as Scene, SceneUtils, ShaderChunk, ShaderLib, ShaderMaterial, ShadowMaterial, Shape, ShapeBufferGeometry, ShapeGeometry, ShapePath, ShapeUtils, ShortType, Skeleton, SkeletonHelper, SkinnedMesh, SmoothShading, Sphere, SphereBufferGeometry, SphereGeometry, Spherical, SphericalHarmonics3, Spline, SplineCurve, SplineCurve3, SpotLight, SpotLightHelper, SpringDamper, Sprite, SpriteMaterial, SrcAlphaFactor, SrcAlphaSaturateFactor, SrcColorFactor, StaticCopyUsage, StaticDrawUsage, StaticReadUsage, StereoCamera, StreamCopyUsage, StreamDrawUsage, StreamReadUsage, StringKeyframeTrack, SubtractEquation, SubtractiveBlending, TOUCH, TangentSpaceNormalMap, TetrahedronBufferGeometry, TetrahedronGeometry, TextBufferGeometry, TextGeometry, Texture, TextureLoader, TorusBufferGeometry, TorusGeometry, TorusKnotBufferGeometry, TorusKnotGeometry, Triangle, TriangleFanDrawMode, TriangleStripDrawMode, TrianglesDrawMode, TubeBufferGeometry, TubeGeometry, UVMapping, Uint16Attribute, Uint16BufferAttribute, Uint32Attribute, Uint32BufferAttribute, Uint8Attribute, Uint8BufferAttribute, Uint8ClampedAttribute, Uint8ClampedBufferAttribute, Uniform, UniformsLib, UniformsUtils, UnsignedByteType, UnsignedInt248Type, UnsignedIntType, UnsignedShort4444Type, UnsignedShort5551Type, UnsignedShort565Type, UnsignedShortType, VSMShadowMap, Vector2, Vector3, Vector4, VectorKeyframeTrack, Vertex, VertexColors, VideoTexture, WebGL1Renderer, WebGLCubeRenderTarget, WebGLMultisampleRenderTarget, WebGLRenderTarget, WebGLRenderTargetCube, WebGLRenderer, WebGLUtils, WireframeGeometry, WireframeHelper, WrapAroundEnding, XHRLoader, ZeroCurvatureEnding, ZeroFactor, ZeroSlopeEnding, ZeroStencilOp, sRGBEncoding };

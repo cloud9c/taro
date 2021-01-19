@@ -1,6 +1,7 @@
 import { Group } from '../lib/three.js';
 import { Scene } from './Scene.js';
 import { Application } from './Application.js';
+import { ComponentManager } from './ComponentManager.js';
 
 export class Entity extends Group {
 
@@ -98,7 +99,7 @@ export class Entity extends Group {
 
 	addComponent( type, data = {} ) {
 
-		const componentData = this.app.componentManager.components[ type ];
+		const componentData = ComponentManager.components[ type ];
 		const config = componentData.config;
 
 		if ( config.allowMultiple === false && this.getComponent( type ) !== undefined )

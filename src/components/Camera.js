@@ -1,3 +1,4 @@
+import { ComponentManager } from '../core/ComponentManager.js';
 import { PerspectiveCamera, Vector4 } from '../lib/three.js';
 
 export class Camera extends PerspectiveCamera {
@@ -80,3 +81,14 @@ export class Camera extends PerspectiveCamera {
 	}
 
 }
+
+ComponentManager.register( 'camera', Camera, {
+	schema: {
+		autoAspect: { default: true },
+		fov: { default: 50 },
+		near: { default: 0.1 },
+		far: { default: 2000 },
+		aspect: { default: 1 },
+		viewport: { type: 'vector4', default: [ 0, 0, 1, 1 ] }
+	}
+} );

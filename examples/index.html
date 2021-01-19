@@ -28,7 +28,7 @@
 			const loader = new GLTFLoader();
 			const app = new TARO.Application({canvas: document.getElementById("c")});
 
-			app.componentManager.register(
+			TARO.ComponentManager.register(
 				"cameraController",
 				class CameraController {
 					init() {
@@ -174,7 +174,8 @@
 				isTrigger: true,
 				radius: 2,
 			});
-			entity.addComponent('geometry', {primitive: 'custom'})
+			entity.addComponent('geometry')
+			entity.addComponent('material')
 
 			// blocks
 			const position = new TARO.Vector3(-2, 1, -5);

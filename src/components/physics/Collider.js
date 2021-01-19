@@ -1,3 +1,4 @@
+import { ComponentManager } from '../../core/ComponentManager.js';
 import { OIMO } from '../../lib/oimo.js';
 import { ConvexHull } from '../../physics/ConvexHull.js';
 import { Vector3, Euler } from '../../lib/three.js';
@@ -278,9 +279,9 @@ export class Collider {
 					this._halfHeight * max
 				);
 			case 'mesh':
-				if ( this._points === undefined && this._mesh === undefined ) throw 'MeshCollider: points or mesh must be provided';
+				if ( this._points === undefined && this._mesh === null ) throw 'MeshCollider: points or mesh must be provided';
 
-				if ( this._mesh !== undefined ) {
+				if ( this._mesh !== null ) {
 
 					this._points = convexHull.setFromObject( this._mesh ).vertices;
 
@@ -602,3 +603,20 @@ function contactCallback( contact, type ) {
 	}
 
 }
+
+ComponentManager.register( 'collider', Collider, {
+	schema: {
+		type: { default: 'box' },
+		isTrigger: { default: false },
+		collisionGroup: { type: 'int', default: 1 },
+		collisionMask: { type: 'int', default: 1 },
+		center: { type: 'vector3' },
+		rotation: { type: 'vector3' },
+		friction: { default: 0.2 },
+		restitution: { default: 0.2 },
+		halfExtents: { type: 'vector3', default: [ 1, 1, 1 ], if: { type: [ 'box' ] } },
+		radius: { default: 0.5, if: { type: [ 'capsule', 'cone', 'cylinder', 'sphere' ] } },
+		halfHeight: { default: 1, if: { type: [ 'capsule', 'cone', 'cylinder' ] } },
+		mesh: { default: null, type: 'asset', if: { type: [ 'mesh' ] } },
+	}
+} );

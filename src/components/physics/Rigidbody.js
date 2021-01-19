@@ -1,3 +1,4 @@
+import { ComponentManager } from '../../core/ComponentManager.js';
 import { OIMO } from '../../lib/oimo.js';
 import { Physics } from '../../core/Physics.js';
 import { Vector3, Matrix3, Quaternion } from '../../lib/three.js';
@@ -353,3 +354,17 @@ function onRotationChange() {
 	this._entity._physicsRef.setOrientation( quat );
 
 }
+
+ComponentManager.register( 'rigidbody', Rigidbody, {
+	schema: {
+		angularVelocity: { type: 'vector3' },
+		angularDamping: { default: 0 },
+		linearVelocity: { type: 'vector3' },
+		linearDamping: { default: 0 },
+		gravityScale: { default: 1 },
+		autoSleep: { default: true },
+		isKinematic: { default: false },
+		rotationFactor: { type: 'vector3', default: [ 1, 1, 1 ] },
+		mass: { default: 1 }
+	}
+} );

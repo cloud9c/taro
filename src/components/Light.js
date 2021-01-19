@@ -1,3 +1,4 @@
+import { ComponentManager } from '../core/ComponentManager.js';
 import { AmbientLight, DirectionalLight, HemisphereLight, PointLight, SpotLight } from '../lib/three.js';
 
 export class Light {
@@ -48,3 +49,17 @@ export class Light {
 	}
 
 }
+
+ComponentManager.register( 'light', Light, {
+	schema: {
+		type: { default: 'directional' },
+		color: { default: '#ffffff' },
+		intensity: { default: 1 },
+		skyColor: { default: '#ffffff', if: { type: [ 'hemisphere' ] } },
+		groundColor: { default: '#ffffff', if: { type: [ 'hemisphere' ] } },
+		distance: { default: 0, if: { type: [ 'point', 'spot' ] } },
+		decay: { default: 1, if: { type: [ 'point', 'spot' ] } },
+		angle: { default: Math.PI / 3, if: { type: [ 'spot' ] } },
+		penumbra: { default: 0, if: { type: [ 'spot' ] } }
+	}
+} );

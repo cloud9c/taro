@@ -1,3 +1,4 @@
+import { ComponentManager } from '../core/ComponentManager.js';
 import { BufferGeometry, BoxBufferGeometry, CircleBufferGeometry, ConeBufferGeometry, CylinderBufferGeometry, DodecahedronBufferGeometry, ExtrudeBufferGeometry, IcosahedronBufferGeometry, LatheBufferGeometry, OctahedronBufferGeometry, ParametricBufferGeometry, PlaneBufferGeometry, PolyhedronBufferGeometry, RingBufferGeometry, ShapeBufferGeometry, SphereBufferGeometry, TetrahedronBufferGeometry, TextBufferGeometry, TorusBufferGeometry, TorusKnotBufferGeometry, TubeBufferGeometry } from '../lib/three.js';
 
 export class Geometry {
@@ -73,3 +74,49 @@ export class Geometry {
 	}
 
 }
+
+ComponentManager.register( 'geometry', Geometry, {
+	schema: {
+		primitive: { default: 'box' },
+
+		depth: { default: 1, min: 0, if: { type: [ 'box' ] } },
+		height: { default: 1, min: 0, if: { type: [ 'box', 'cone', 'cylinder', 'plane' ] } },
+		width: { default: 1, min: 0, if: { type: [ 'box', 'plane' ] } },
+		heightSegments: { default: 1, min: 1, max: 20, type: 'int', if: { type: [ 'box', 'plane' ] } },
+		widthSegments: { default: 1, min: 1, max: 20, type: 'int', if: { type: [ 'box', 'plane' ] } },
+		depthSegments: { default: 1, min: 1, max: 20, type: 'int', if: { type: [ 'box' ] } },
+
+		radius: { default: 1, min: 0, if: { type: [ 'circle', 'cone', 'cylinder', 'dodecahedron', 'icosahedron', 'octahedron', 'sphere', 'tetrahedron', 'torus', 'torusKnot' ] } },
+		segments: { default: 32, min: 3, type: 'int', if: { type: [ 'circle' ] } },
+		thetaLength: { default: 360, min: 0, if: { type: [ 'circle', 'cone', 'cylinder', 'ring' ] } },
+		thetaStart: { default: 0, if: { type: [ 'circle', 'cone', 'cylinder', 'ring', 'sphere' ] } },
+
+		openEnded: { default: false, if: { type: [ 'cone', 'cylinder' ] } },
+		heightSegments: { default: 18, min: 1, type: 'int', if: { type: [ 'cone', 'cylinder' ] } },
+		radialSegments: { default: 36, min: 3, type: 'int', if: { type: [ 'cone', 'cylinder' ] } },
+
+		detail: { default: 0, min: 0, max: 5, type: 'int', if: { type: [ 'dodecahedron', 'icosahedron', 'octahedron', 'tetrahedron' ] } },
+
+		innerRadius: { default: 0.8, min: 0, if: { type: [ 'ring' ] } },
+		outerRadius: { default: 1.2, min: 0, if: { type: [ 'ring' ] } },
+		phiSegments: { default: 10, min: 1, type: 'int', if: { type: [ 'ring' ] } },
+		thetaSegments: { default: 32, min: 3, type: 'int', if: { type: [ 'ring' ] } },
+
+		phiLength: { default: 360, if: { type: [ 'sphere' ] } },
+		phiStart: { default: 0, min: 0, if: { type: [ 'sphere' ] } },
+		thetaLength: { default: 180, min: 0, if: { type: [ 'sphere' ] } },
+		heightSegments: { default: 18, min: 2, type: 'int', if: { type: [ 'sphere' ] } },
+		widthSegments: { default: 36, min: 3, type: 'int', if: { type: [ 'sphere' ] } },
+
+		tube: { default: 0.2, min: 0, if: { type: [ 'torus', 'torusKnot' ] } },
+		radialSegments: { default: 36, min: 2, type: 'int', if: { type: [ 'torus' ] } },
+		tubularSegments: { default: 32, min: 3, type: 'int', if: { type: [ 'torus' ] } },
+		arc: { default: 360, if: { type: [ 'torus' ] } },
+
+		p: { default: 2, min: 1, if: { type: [ 'torusKnot' ] } },
+		q: { default: 3, min: 1, if: { type: [ 'torusKnot' ] } },
+		radialSegments: { default: 8, min: 3, type: 'int', if: { type: [ 'torusKnot' ] } },
+		tubularSegments: { default: 64, min: 3, type: 'int', if: { type: [ 'torusKnot' ] } },
+	},
+	allowMultiple: false,
+} );
