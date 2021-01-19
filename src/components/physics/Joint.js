@@ -22,99 +22,65 @@ export class Joint {
 
 	init( data ) {
 
-		const type = this.type = data.type !== undefined ? data.type : 'universal';
+		const type = this.type = data.type;
 
 		configs[ type ].rigidBody1 = this.entity._physicsRef;
 
-		this._bodyRef2 = data.linkedEntity !== undefined && data.linkedEntity !== null ? data.linkedEntity._physicsRef : worldBody;
-		this._allowCollision = data.allowCollision === true;
-		this._breakForce = data.breakForce !== undefined && data.breakForce !== 0 ? data.breakForce : 0;
-		this._breakTorque = data.breakTorque !== undefined && data.breakTorque !== 0 ? data.breakTorque : 0;
-		this._anchor = data.anchor !== undefined ? data.anchor : new Vector3();
-		this._linkedAnchor = data.linkedAnchor !== undefined ? data.linkedAnchor : new Vector3();
+		this._bodyRef2 = data.linkedEntity !== null ? this.entity.scene.getEntityByProperty( 'uuid', data.linkedEntity )._physicsRef : worldBody;
+		this._allowCollision = data.allowCollision;
+		this._breakForce = data.breakForce;
+		this._breakTorque = data.breakTorque;
+		this._anchor = data.anchor;
+		this._linkedAnchor = data.linkedAnchor;
 
 		switch ( type ) {
 
 			case 'ball':
-				this.springDamper = data.springDamper !== undefined
-					? data.springDamper
-					: new SpringDamper();
+				this.springDamper = data.springDamper;
 				break;
 			case 'cylindrical':
-				this._axis = data.axis !== undefined ? data.axis : new Vector3( 1, 0, 0 );
-				this._linkedAxis =
-							data.linkedAxis !== undefined ? data.linkedAxis : new Vector3( 1, 0, 0 );
-
-				this.linearLimit = data.linearLimit !== undefined
-					? data.linearLimit
-					: new LinearLimit();
-				this.linearSpringDamper = data.linearSpringDamper !== undefined
-					? data.linearSpringDamper
-					: new SpringDamper();
-				this.angularLimit = data.angularLimit !== undefined
-					? data.angularLimit
-					: new AngularLimit();
-				this.angularSpringDamper = data.angularSpringDamper !== undefined
-					? data.angularSpringDamper
-					: new SpringDamper();
+				this._axis = data.axis;
+				this._linkedAxis = data.linkedAxis;
+				this.linearLimit = data.linearLimit;
+				this.linearSpringDamper = data.linearSpringDamper;
+				this.angularLimit = data.angularLimit;
+				this.angularSpringDamper = data.angularSpringDamper;
 				break;
 			case 'hinge':
-				this._axis = data.axis !== undefined ? data.axis : new Vector3( 1, 0, 0 );
-				this._linkedAxis = data.linkedAxis !== undefined ? data.linkedAxis : new Vector3( 1, 0, 0 );
-
-				this.springDamper = data.springDamper !== undefined
-					? data.springDamper
-					: new SpringDamper();
-				this.angularLimit = data.angularLimit !== undefined
-					? data.angularLimit
-					: new AngularLimit();
+				this._axis = data.axis;
+				this._linkedAxis = data.linkedAxis;
+				this.springDamper = data.springDamper;
+				this.angularLimit = data.angularLimit;
 				break;
 			case 'prismatic':
-				this._axis = data.axis !== undefined ? data.axis : new Vector3( 1, 0, 0 );
-				this._linkedAxis =
-							data.linkedAxis !== undefined ? data.linkedAxis : new Vector3( 1, 0, 0 );
-
-				this.springDamper = data.springDamper !== undefined
-					? data.springDamper
-					: new SpringDamper();
-				this.linearLimit = data.linearLimit !== undefined
-					? data.linearLimit
-					: new LinearLimit();
+				this._axis = data.axis;
+				this._linkedAxis = data.linkedAxis;
+				this.springDamper = data.springDamper;
+				this.linearLimit = data.linearLimit;
 				break;
 			case 'ragdoll':
-				this._twistAxis = data.twistAxis !== undefined ? data.twistAxis : new Vector3( 1, 0, 0 );
-				this._linkedTwistAxis = data.linkedTwistAxis !== undefined ? data.linkedTwistAxis : new Vector3( 1, 0, 0 );
-				this._swingAxis = data.swingAxis !== undefined ? data.swingAxis : new Vector3( 0, 1, 0 );
-				this._maxSwing = data.maxSwing !== undefined ? data.maxSwing : Math.PI;
-				this._linkedMaxSwing = data.linkedMaxSwing !== undefined ? data.linkedMaxSwing : Math.PI;
-				this.twistSpringDamper = data.twistSpringDamper !== undefined ? data.twistSpringDamper : new SpringDamper();
-				this.swingSpringDamper = data.swingSpringDamper !== undefined ? data.swingSpringDamper : new SpringDamper();
-				this.twistLimit = data.twistLimit !== undefined ? data.twistLimit : new AngularLimit();
+				this._twistAxis = data.twistAxis;
+				this._linkedTwistAxis = data.linkedTwistAxis;
+				this._swingAxis = data.swingAxis;
+				this._maxSwing = data.maxSwing;
+				this._linkedMaxSwing = data.linkedMaxSwing;
+				this.twistSpringDamper = data.twistSpringDamper;
+				this.swingSpringDamper = data.swingSpringDamper;
+				this.twistLimit = data.twistLimit;
 				break;
 			case 'universal':
-				this._axis = data.axis !== undefined ? data.axis : new Vector3( 1, 0, 0 );
-				this._linkedAxis =
-							data.linkedAxis !== undefined ? data.linkedAxis : new Vector3( 1, 0, 0 );
-
-				this.springDamper = data.springDamper !== undefined
-					? data.springDamper
-					: new SpringDamper();
-				this.linkedSpringDamper = data.linkedSpringDamper !== undefined
-					? data.linkedSpringDamper
-					: new SpringDamper();
-				this.angularLimit = data.angularLimit !== undefined
-					? data.angularLimit
-					: new AngularLimit();
-				this.linkedAngularLimit = data.linkedAngularLimit !== undefined
-					? data.linkedAngularLimit
-					: new AngularLimit();
+				this._axis = data.axis;
+				this._linkedAxis = data.linkedAxis;
+				this.springDamper = data.springDamper;
+				this.linkedSpringDamper = data.linkedSpringDamper;
+				this.angularLimit = data.angularLimit;
+				this.linkedAngularLimit = data.linkedAngularLimit;
 				break;
 			default:
 				throw new Error( 'Joint: invalid joint type ' + type );
 
 		}
 
-		this._addDerivedProperties( data );
 		this._setJoint();
 
 		this.addEventListener( 'enable', this.onEnable );

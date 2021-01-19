@@ -80,40 +80,38 @@ export class Collider {
 
 	init( data ) {
 
-		const type = this.type = data.type !== undefined ? data.type : 'box';
-		this._isTrigger = data.isTrigger !== undefined ? data.isTrigger : false;
-		this._collisionGroup = data.collisionGroup !== undefined ? data.collisionGroup : 1;
-		this._collisionMask = data.collisionMask !== undefined ? data.collisionMask : 1;
-		this._center = data.center !== undefined ? data.center : new Vector3( 0, 0, 0 );
-		this._rotation = data.rotation !== undefined ? data.rotation : new Euler( 0, 0, 0 );
+		this.type = data.type;
+		this._isTrigger = data.isTrigger;
+		this._collisionGroup = data.collisionGroup;
+		this._collisionMask = data.collisionMask;
+		this._center = data.center;
+		this._rotation = new Euler().setFromVector3( data.rotation );
 
-		switch ( type ) {
+		switch ( this.type ) {
 
 			case 'box':
-				this._halfExtents =
-					data.halfExtents !== undefined
-						? data.halfExtents
-						: new Vector( 1, 1, 1 );
+				this._halfExtents = data.halfExtents;
 				break;
 			case 'capsule':
 			case 'cone':
 			case 'cylinder':
-				this._radius = data.radius !== undefined ? data.radius : 0.5;
-				this._halfHeight = data.halfHeight !== undefined ? data.halfHeight : 1;
+				this._radius = data.radius;
+				this._halfHeight = data.halfHeight;
 				break;
 			case 'mesh':
 				this._mesh = data.mesh;
 				this._points = data.points;
 				break;
 			case 'sphere':
-				this._radius = data.radius !== undefined ? data.radius : 0.5;
+				this._radius = data.radius;
 				break;
 			default:
-				throw new Error( 'Collider: invalid collider type ' + type );
+				throw new Error( 'Collider: invalid collider type ' + this.type );
 
 		}
 
-		if ( data.material !== undefined ) this._material = data.material;
+		this._friction = data.friction;
+		this._restitution = data.friction;
 
 		this._setShape();
 
@@ -280,18 +278,17 @@ export class Collider {
 					this._halfHeight * max
 				);
 			case 'mesh':
-				if ( this._points === undefined && this._mesh !== undefined ) {
+				if ( this._points === undefined && this._mesh === undefined ) throw 'MeshCollider: points or mesh must be provided';
+
+				if ( this._mesh !== undefined ) {
 
 					this._points = convexHull.setFromObject( this._mesh ).vertices;
-					for ( let i = 0, len = this._points.length; i < len; i ++ ) {
 
-						this._points[ i ] = this._points[ i ].point.multiply( scale );
+				}
 
-					}
+				for ( let i = 0, len = this._points.length; i < len; i ++ ) {
 
-				} else {
-
-					throw 'MeshCollider: points or mesh must be provided';
+					this._points[ i ] = this._points[ i ].point.multiply( scale );
 
 				}
 
@@ -313,6 +310,8 @@ export class Collider {
 		shapeConfig.collisionMask = this._collisionMask;
 		shapeConfig.position = this._center;
 		shapeConfig.rotation.fromEulerXyz( this._rotation );
+		shapeConfig.friction = this._friction;
+		shapeConfig.restitution = this._restitution;
 
 		if ( this._shapeRef !== undefined && this._enabled ) {
 
@@ -342,8 +341,6 @@ export class Collider {
 
 		this._shapeRef.entity = this.entity;
 		this._shapeRef.collider = this;
-
-		if ( this._material !== undefined ) this.material = this._material;
 
 	}
 
@@ -391,32 +388,29 @@ export class Collider {
 
 	}
 
-	get material() {
+	get restitution() {
 
-		return this._material;
+		return this._restitution;
 
 	}
 
-	set material( material ) {
+	set restitution( restitution ) {
 
-		if ( material === null ) {
+		this._restitution = restitution;
+		this._shapeRef.setRestitution( restitution );
 
-			this._shapeRef.setFriction( 0.2 );
-			this._shapeRef.setRestitution( 0.2 );
+	}
 
-		}
+	get friction() {
 
-		if ( this._material !== undefined ) {
+		return this._friction;
 
-			const colliders = this._material._colliders;
-			colliders.splice( colliders.indexOf( this._shapeRef ), 1 );
+	}
 
-		}
+	set friction( friction ) {
 
-		material._colliders.push( this._shapeRef );
-		this._shapeRef.setFriction( material._friction );
-		this._shapeRef.setRestitution( material._restitution );
-		this._material = material;
+		this._friction = friction;
+		this._shapeRef.setFriction( friction );
 
 	}
 

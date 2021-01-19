@@ -153,7 +153,20 @@ export class Entity extends Group {
 
 						}
 
-						data[ name ] = config.schema[ name ].default;
+						switch ( config.schema[ name ].type ) {
+
+							case 'class':
+								data[ name ] = new config.schema[ name ].default();
+								break;
+							case 'vector2':
+							case 'vector3':
+							case 'vector4':
+								data[ name ] = config.schema[ name ].default.clone();
+								break;
+							default:
+								data[ name ] = config.schema[ name ].default;
+
+						}
 
 					}
 
@@ -295,6 +308,24 @@ export class Entity extends Group {
 
 		} );
 		return matches;
+
+	}
+
+	getEntityByProperty( name, value ) {
+
+		let match;
+
+		this.traverse( ( child ) => {
+
+			if ( child.isEntity !== undefined && child[ name ] === value ) {
+
+				match = child;
+
+			}
+
+		} );
+
+		return match;
 
 	}
 

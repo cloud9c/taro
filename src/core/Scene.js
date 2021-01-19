@@ -131,4 +131,22 @@ export class Scene extends TS {
 
 	}
 
+	getEntityByProperty( name, value ) {
+
+		let match;
+
+		this.traverse( ( child ) => {
+
+			if ( child.isEntity !== undefined && child[ name ] === value ) {
+
+				match = child;
+
+			}
+
+		} );
+
+		return match;
+
+	}
+
 }
