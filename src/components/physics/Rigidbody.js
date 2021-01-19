@@ -219,11 +219,6 @@ export class Rigidbody {
 		}
 
 	}
-	rotate( v ) {
-
-		this._ref.rotateXyz( v );
-
-	}
 	set angularDamping( v ) {
 
 		this._ref.setAngularDamping( v );

@@ -1,4 +1,5 @@
 import { Camera } from '../components/Camera.js';
+import { Geometry } from '../components/Geometry.js';
 import { Light } from '../components/Light.js';
 import { Renderable } from '../components/Renderable.js';
 
@@ -6,7 +7,7 @@ import { Collider } from '../components/physics/Collider.js';
 import { Joint } from '../components/physics/Joint.js';
 import { Rigidbody } from '../components/physics/Rigidbody.js';
 
-import { EventDispatcher } from '../lib/three.js';
+import { EventDispatcher, Vector4, Vector3, Vector2 } from '../lib/three.js';
 
 export class ComponentManager {
 
@@ -67,8 +68,30 @@ export class ComponentManager {
 			}
 		};
 
-		this.register( 'camera', Camera );
-		this.register( 'light', Light );
+		this.register( 'camera', Camera, {
+			schema: {
+				autoAspect: { default: true },
+				fov: { default: 50 },
+				near: { default: 0.1 },
+				far: { default: 2000 },
+				aspect: { default: 1 },
+				viewport: { type: 'vector4', default: [ 0, 0, 1, 1 ] }
+			}
+		} );
+		this.register( 'geometry', Geometry );
+		this.register( 'light', Light, {
+			schema: {
+				type: { default: 'directional' },
+				color: { default: '#ffffff' },
+				intensity: { default: 1 },
+				skyColor: { default: '#ffffff', if: { type: [ 'hemisphere' ] } },
+				groundColor: { default: '#ffffff', if: { type: [ 'hemisphere' ] } },
+				distance: { default: 0, if: { type: [ 'point', 'spot' ] } },
+				decay: { default: 1, if: { type: [ 'point', 'spot' ] } },
+				angle: { default: Math.PI / 3, if: { type: [ 'spot' ] } },
+				penumbra: { default: 0, if: { type: [ 'spot' ] } }
+			}
+		} );
 		this.register( 'renderable', Renderable );
 		this.register( 'collider', Collider );
 		this.register( 'joint', Joint, { dependencies: [ 'rigidbody' ] } );
@@ -80,13 +103,98 @@ export class ComponentManager {
 
 		if ( this.components.type !== undefined ) throw 'component ' + type + ' already exists';
 
+		if ( config.schema !== undefined ) {
+
+			for ( const name in config.schema ) {
+
+				const prop = config.schema[ name ];
+
+				if ( prop.default === undefined && prop.type === undefined ) {
+
+					throw Error( 'ComponentManager: schema property requires a type or default value' );
+
+				} else if ( prop.default === undefined ) {
+
+					switch ( typeof prop.type ) {
+
+						case 'string':
+						case 'asset':
+							prop.default = '';
+							break;
+						case 'color':
+							prop.default = '#000000';
+							break;
+						case 'vector2':
+							prop.default = [ 0, 0 ];
+							break;
+						case 'vector3':
+							prop.default = [ 0, 0, 0 ];
+							break;
+						case 'vector4':
+							prop.default = [ 0, 0, 0, 0 ];
+							break;
+						case 'boolean':
+							prop.default = false;
+							break;
+						case 'slider':
+						case 'number':
+						case 'int':
+							prop.default = 0;
+							break;
+						case 'select':
+							prop.default = prop.select[ 0 ];
+							break;
+						default:
+							throw Error( 'ComponentManager: invalid schema property type ' + typeof prop.type );
+
+					}
+
+				} else if ( prop.type === undefined ) {
+
+					switch ( typeof prop.default ) {
+
+						case 'number':
+							if ( Number.isInteger( prop.default ) )
+								prop.type = 'int';
+							else
+								prop.type = 'number';
+							break;
+						case 'string':
+							if ( prop.default.length < 10 && prop.default.length > 0 && prop.default[ 0 ] === '#' )
+								prop.type = 'string';
+							break;
+						case 'boolean':
+							prop.type = 'boolean';
+							break;
+						case 'object':
+							if ( Array.isArray( prop.default ) )
+								prop.type = 'array';
+							else
+								throw Error( 'ComponentManager: could not infer property type from default ' + prop.default );
+							break;
+						default:
+							throw Error( 'ComponentManager: could not infer property type from default ' + prop.default );
+
+					}
+
+				}
+
+				if ( prop.type === 'vector4' )
+					prop.default = new Vector4().fromArray( prop.default );
+				else if ( prop.type === 'vector3' )
+					prop.default = new Vector3().fromArray( prop.default );
+				else if ( prop.type === 'vector2' )
+					prop.default = new Vector2().fromArray( prop.default );
+
+			}
+
+		}
+
 		this.properties.componentType.value = type;
 		Object.defineProperties( constructor.prototype, this.properties );
 		Object.assign( constructor.prototype, EventDispatcher.prototype );
 
-		this.components[ type ] = {
-			constructor, config
-		};
+		this.components[ type ] = { constructor, config };
 
 	}
 

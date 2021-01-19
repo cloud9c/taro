@@ -4,21 +4,19 @@ export class Camera extends PerspectiveCamera {
 
 	init( data ) {
 
-		this.autoAspect = true;
-		if ( data.fov !== undefined ) this.fov = data.fov;
-		if ( data.near !== undefined ) this.near = data.near;
-		if ( data.far !== undefined ) this.far = data.far;
-		if ( data.aspect !== undefined ) this.aspect = data.aspect;
+		this.autoAspect = data.autoAspect;
+		this.fov = data.fov;
+		this.near = data.near;
+		this.far = data.far;
+		this.aspect = data.aspect;
+		this.viewport = data.viewport;
 
 		this._region = new Vector4();
-		this.viewport = data.viewport !== undefined ? data.viewport : new Vector4( 0, 0, 1, 1 );
 
 		this.updateProjectionMatrix();
 
 		this.addEventListener( 'enable', this.onEnable );
 		this.addEventListener( 'disable', this.onDisable );
-		this.addEventListener( 'sceneadd', this.onEnable );
-		this.addEventListener( 'sceneremove', this.onDisable );
 
 	}
 
@@ -41,12 +39,10 @@ export class Camera extends PerspectiveCamera {
 
 	updateProjectionMatrix() {
 
-		super.updateProjectionMatrix();
-
 		if ( this.entity !== undefined )
 			this._updateRegion( this.app.renderer.domElement );
 
-		return null;
+		return super.updateProjectionMatrix();
 
 	}
 
@@ -55,7 +51,7 @@ export class Camera extends PerspectiveCamera {
 		const view = this.viewport;
 		if ( this.autoAspect === true ) {
 
-			this._aspect = ( canvas.width * view.z ) / ( canvas.height * view.w );
+			this.aspect = ( canvas.width * view.z ) / ( canvas.height * view.w );
 			super.updateProjectionMatrix();
 
 		}
@@ -66,19 +62,6 @@ export class Camera extends PerspectiveCamera {
 			canvas.width * view.z,
 			canvas.height * view.w
 		);
-
-	}
-
-	get aspect() {
-
-		return this._aspect;
-
-	}
-
-	set aspect( x ) {
-
-		this.autoAspect = false;
-		this._aspect = x;
 
 	}
 

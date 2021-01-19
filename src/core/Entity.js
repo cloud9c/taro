@@ -113,23 +113,66 @@ export class Entity extends Group {
 
 		}
 
+		if ( config.schema !== undefined ) {
+
+			// reversing to optimize the inner while loop (which goes backwards)
+			const schema = Object.keys( config.schema ).reverse();
+
+			while ( schema.length > 0 ) {
+
+				let i = schema.length;
+
+				while ( i -- ) {
+
+					const name = schema[ i ];
+
+					if ( data[ name ] === undefined ) {
+
+						const dependencies = config.schema[ name ].if;
+
+						if ( dependencies !== undefined ) {
+
+							let tryAgain = false;
+
+							for ( const d in dependencies ) {
+
+								if ( schema.includes( d ) ) {
+
+									tryAgain = true;
+
+								} else if ( ! dependencies[ d ].includes( data[ d ] ) ) {
+
+									schema.splice( i, 1 );
+									tryAgain = true;
+
+								}
+
+							}
+
+							if ( tryAgain ) continue;
+
+						}
+
+						data[ name ] = config.schema[ name ].default;
+
+					}
+
+					schema.splice( i, 1 );
+
+				}
+
+			}
+
+		}
+
 		const component = new componentData.constructor();
 
-		Object.defineProperty( component, 'entity', {
-			value: this,
-		} );
+		Object.defineProperty( component, 'entity', { value: this } );
 
 		this.components.push( component );
 
-		if ( this.scene !== undefined ) {
-
-			this._activateComponent( type, component, data );
-
-		} else {
-
-			this.queue.push( { type, component, data } );
-
-		}
+		if ( this.scene !== undefined ) this._activateComponent( type, component, data );
+		else this.queue.push( { type, component, data } );
 
 		return component;
 
