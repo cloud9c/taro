@@ -1,5 +1,5 @@
 import { ComponentManager } from '../core/ComponentManager.js';
-import { BufferGeometry, BoxBufferGeometry, CircleBufferGeometry, ConeBufferGeometry, CylinderBufferGeometry, DodecahedronBufferGeometry, ExtrudeBufferGeometry, IcosahedronBufferGeometry, LatheBufferGeometry, OctahedronBufferGeometry, ParametricBufferGeometry, PlaneBufferGeometry, PolyhedronBufferGeometry, RingBufferGeometry, ShapeBufferGeometry, SphereBufferGeometry, TetrahedronBufferGeometry, TextBufferGeometry, TorusBufferGeometry, TorusKnotBufferGeometry, TubeBufferGeometry } from '../lib/three.js';
+import { Mesh, BufferGeometry, BoxBufferGeometry, CircleBufferGeometry, ConeBufferGeometry, CylinderBufferGeometry, DodecahedronBufferGeometry, ExtrudeBufferGeometry, IcosahedronBufferGeometry, LatheBufferGeometry, OctahedronBufferGeometry, ParametricBufferGeometry, PlaneBufferGeometry, PolyhedronBufferGeometry, RingBufferGeometry, ShapeBufferGeometry, SphereBufferGeometry, TetrahedronBufferGeometry, TextBufferGeometry, TorusBufferGeometry, TorusKnotBufferGeometry, TubeBufferGeometry } from '../lib/three.js';
 
 export class Geometry {
 
@@ -63,13 +63,26 @@ export class Geometry {
 
 	onEnable() {
 
-		// this.entity.add( this.ref );
+		const material = this.entity.getComponent( 'material' );
+		if ( this.mesh === undefined && material !== undefined && material._enabled ) {
+
+			material.mesh = this.mesh = new Mesh( this.ref, material.ref );
+			this.entity.add( this.mesh );
+
+		}
 
 	}
 
 	onDisable() {
 
-		// this.entity.remove( this.ref );
+		const material = this.entity.getComponent( 'material' );
+		if ( material !== undefined && material._enabled ) {
+
+			this.entity.remove( this.mesh );
+			delete this.mesh;
+			delete material.mesh;
+
+		}
 
 	}
 

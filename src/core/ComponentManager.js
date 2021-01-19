@@ -74,11 +74,13 @@ export const ComponentManager = {
 					switch ( prop.type ) {
 
 						case 'string':
-						case 'asset':
 							prop.default = '';
 							break;
+						case 'asset':
+							prop.default = null;
+							break;
 						case 'color':
-							prop.default = '#000000';
+							prop.default = '#ffffff';
 							break;
 						case 'vector2':
 							prop.default = [ 0, 0 ];
@@ -115,10 +117,7 @@ export const ComponentManager = {
 					switch ( typeof prop.default ) {
 
 						case 'number':
-							if ( Number.isInteger( prop.default ) )
-								prop.type = 'int';
-							else
-								prop.type = 'number';
+							prop.type = 'number';
 							break;
 						case 'string':
 							if ( prop.default.length < 10 && prop.default.length > 0 && prop.default[ 0 ] === '#' )

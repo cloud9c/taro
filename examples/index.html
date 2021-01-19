@@ -174,8 +174,13 @@
 				isTrigger: true,
 				radius: 2,
 			});
-			entity.addComponent('geometry')
-			entity.addComponent('material')
+			entity.addComponent('material', {
+				type: 'toon'
+			})
+			entity.addComponent('geometry', {
+				type: 'box',
+				width: 10
+			});
 
 			// blocks
 			const position = new TARO.Vector3(-2, 1, -5);

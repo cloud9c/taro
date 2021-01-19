@@ -617,6 +617,6 @@ ComponentManager.register( 'collider', Collider, {
 		halfExtents: { type: 'vector3', default: [ 1, 1, 1 ], if: { type: [ 'box' ] } },
 		radius: { default: 0.5, if: { type: [ 'capsule', 'cone', 'cylinder', 'sphere' ] } },
 		halfHeight: { default: 1, if: { type: [ 'capsule', 'cone', 'cylinder' ] } },
-		mesh: { default: null, type: 'asset', if: { type: [ 'mesh' ] } },
+		mesh: { type: 'asset', if: { type: [ 'mesh' ] } },
 	}
 } );
