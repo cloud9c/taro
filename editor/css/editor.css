@@ -85,10 +85,6 @@ aside {
 	overflow: hidden;
 }
 
-aside section {
-	border-bottom: 1px solid var(--border-color);
-}
-
 .tabs {
 	padding: 0 4px;
 	display: flex;
@@ -97,7 +93,7 @@ aside section {
 .tab {
 	margin: 0;
 	font-weight: 500;
-	padding: 12px 8px;
+	padding: 12px 8px 0 8px;
 	color: var(--secondary-text-color);
 	cursor: pointer;
 	user-select: none;
@@ -109,6 +105,9 @@ aside section {
 
 .panel section {
 	padding: 12px;
+	border-bottom: 1px solid var(--border-color);
+	display: flex;
+	flex-direction: column;
 }
 
 .panel h1 {
@@ -136,7 +135,7 @@ legend {
 
 select {
 	border: none;
-	border-bottom: 1px solid var(--gray-2);
+	border-bottom: 1px solid var(--border-color);
 	font-family: inherit;
 	font-size: inherit;
 	color: inherit;
@@ -352,6 +351,45 @@ input[type="checkbox"]:checked:after {
 	display: none;
 }
 
+/*inspector*/
+
+#component-wrapper {
+	position: relative;
+}
+
+#component-selector {
+	margin: 0 auto;
+	height: initial;
+	padding: 6px 8px;
+	background: url(../img/chevron-down.svg) no-repeat right 8px center, var(--gray-5);
+	width: 169px;
+}
+
+#component-list {
+	position: absolute;
+	top: 43px;
+	width: 169px;
+	margin-left: auto;
+	margin-right: auto;
+	left: 0;
+	right: 0;
+	background: var(--gray-5);
+	box-shadow: 0 2px 6px rgb(0 0 0 / 20%);
+	max-height: 0;
+	overflow-y: auto;
+	transition: max-height .11s cubic-bezier(.2,0,.38,.9);
+}
+
+#component-list div {
+	padding: 4px 0 4px 8px;
+	cursor: pointer;
+}
+
+#component-list div:hover {
+	background: var(--gray-4);
+}
+
+/*general*/
 
 #left-sidebar {
 	border-right: 1px solid var(--border-color);

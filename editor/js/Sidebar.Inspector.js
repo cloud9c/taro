@@ -1,17 +1,4 @@
-import { MathUtils } from '../../build/taro.js';
-
-const defaultSchema = [
-	{
-		name: 'name',
-		label: 'Name',
-		type: 'string',
-		onChange: function ( event, entity ) {
-
-			entity.name = event.target;
-
-		}
-	}
-];
+import { MathUtils, ComponentManager } from '../../build/taro.js';
 
 export function SidebarInspector( editor ) {
 
@@ -24,11 +11,12 @@ export function SidebarInspector( editor ) {
 		if ( currentEntity !== null ) this.detach();
 		currentEntity = entity;
 
-		inspector.appendChild( this.addDefaultUI( entity ) );
+		this.addDefaultUI( entity );
 
 		const components = entity.componentData;
 
-		if ( components !== undefined )
+		if ( components !== undefined ) {
+
 			for ( let i = 0, len = components.length; i < len; i ++ ) {
 
 				const schema = componentManager.components[ components[ i ].type ].options.schema;
@@ -37,13 +25,15 @@ export function SidebarInspector( editor ) {
 
 			}
 
+		}
+
 	};
 
 	this.detach = function () {
 
 		currentEntity = null;
 
-		while ( inspector.firstChild ) inspector.removeChild( inspector.lastChild );
+		while ( inspector.firstChild !== null ) inspector.removeChild( inspector.lastChild );
 
 	};
 
@@ -99,7 +89,7 @@ export function SidebarInspector( editor ) {
 
 	this.addDefaultUI = function ( entity ) {
 
-		const section = document.createElement( 'SECTION' );
+		let section = document.createElement( 'SECTION' );
 		section.id = 'entity-section';
 		let fieldset, legend, x, y, z, input, enabled, label;
 
@@ -243,7 +233,69 @@ export function SidebarInspector( editor ) {
 		fieldset.appendChild( enabled );
 		section.appendChild( fieldset );
 
-		return section;
+		inspector.appendChild( section );
+
+		section = document.createElement( 'SECTION' );
+		section.id = 'component-wrapper';
+
+		const componentSelector = document.createElement( 'INPUT' );
+		componentSelector.type = 'text';
+		componentSelector.placeholder = 'Add Component...';
+		componentSelector.id = 'component-selector';
+
+		const componentList = document.createElement( 'DIV' );
+		componentList.id = 'component-list';
+
+		componentSelector.addEventListener( 'focus', () => {
+
+			const components = ComponentManager.components;
+			for ( const type in components ) {
+
+				const component = document.createElement( 'DIV' );
+				component.textContent = type;
+				componentList.appendChild( component );
+
+			}
+
+			componentList.style.maxHeight = '400px';
+
+		} );
+
+		componentSelector.addEventListener( 'focusout', () => {
+
+			componentList.style.maxHeight = 0;
+			while ( componentList.firstChild !== null ) componentList.removeChild( componentList.lastChild );
+
+		} );
+
+		componentSelector.addEventListener( 'input', () => {
+
+			const components = componentList.children;
+			const text = componentSelector.value;
+
+			for ( let i = 0, len = components.length; i < len; i ++ ) {
+
+				if ( components[ i ].textContent.includes( text ) )
+					components[ i ].style.display = '';
+				else
+					components[ i ].style.display = 'none';
+
+			}
+
+			componentSelector.value;
+
+		} );
+
+		componentList.addEventListener( 'pointerdown', ( event ) => {
+
+			this.addComponent( event.target.textContent );
+
+		} );
+
+		section.appendChild( componentSelector );
+		section.appendChild( componentList );
+
+		inspector.appendChild( section );
 
 	};
 
@@ -252,54 +304,7 @@ export function SidebarInspector( editor ) {
 		if ( currentEntity.componentData === undefined ) currentEntity.componentData = [];
 
 		const component = { type, data: {} };
-		const schema = componentManager.components[ type ].options.schema;
-		if ( schema !== undefined )
-			for ( let i = 0, len = schema.length; i < len; i ++ ) {
-
-				const attribute = schema[ i ];
-				const _default = attribute.default;
-				let value;
-
-				switch ( attribute.type ) {
-
-					case 'string':
-						value = _default !== undefined ? _default : '';
-						break;
-					case 'color':
-						value = _default !== undefined ? _default : 0x000000;
-						break;
-					case 'vector2':
-						value = _default !== undefined ? _default : { x: 0, y: 0 };
-						break;
-					case 'vector3':
-						value = _default !== undefined ? _default : { x: 0, y: 0, z: 0 };
-						break;
-					case 'vector4':
-						value = _default !== undefined ? _default : { x: 0, y: 0, z: 0, w: 0 };
-						break;
-					case 'boolean':
-						value = _default !== undefined ? _default : false;
-						break;
-					case 'slider':
-						value = _default !== undefined ? _default : 0;
-						break;
-					case 'number':
-						value = _default !== undefined ? _default : 0;
-						break;
-					case 'select':
-						value = _default !== undefined ? _default : [];
-						break;
-					case 'asset':
-						value = _default !== undefined ? _default : null;
-						break;
-					default:
-						return console.warn( 'SidebarInspector: Invalid schema type: ' + attribute.type );
-
-				}
-
-				component.data[ attribute.name ] = value;
-
-			}
+		const schema = componentManager.components[ type ].config.schema;
 
 		currentEntity.componentData.push( component );
 		this.addUI();
