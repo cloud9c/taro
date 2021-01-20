@@ -52350,7 +52350,7 @@ class Geometry$1 {
 
 ComponentManager.register( 'geometry', Geometry$1, {
 	schema: {
-		primitive: { default: 'box' },
+		primitive: { type: 'select', default: 'box', select: [ 'box', 'circle', 'cone', 'cylinder', 'dodecahedron', 'icosahedron', 'octahedron', 'plane', 'ring', 'sphere', 'tetrahedron', 'torus', 'torusKnot', 'custom' ] },
 
 		depth: { default: 1, min: 0, if: { type: [ 'box' ] } },
 		height: { default: 1, min: 0, if: { type: [ 'box', 'cone', 'cylinder', 'plane' ] } },
@@ -52445,7 +52445,7 @@ class Light$1 {
 
 ComponentManager.register( 'light', Light$1, {
 	schema: {
-		type: { default: 'directional' },
+		type: { type: 'select', default: 'directional', select: [ 'ambient', 'directional', 'hemisphere', 'point', 'spot' ] },
 		color: { type: 'color' },
 		intensity: { default: 1 },
 		skyColor: { type: 'color', if: { type: [ 'hemisphere' ] } },
@@ -52551,7 +52551,7 @@ const sourceFactors = [ 'ZeroFactor', 'OneFactor', 'SrcColorFactor', 'OneMinusSr
 const destinationFactors = [ 'ZeroFactor', 'OneFactor', 'SrcColorFactor', 'OneMinusSrcColorFactor', 'SrcAlphaFactor', 'OneMinusSrcAlphaFactor', 'DstAlphaFactor', 'OneMinusDstAlphaFactor', 'DstColorFactor', 'OneMinusDstColorFactor' ];
 const sides = [ 'FrontSide', 'BackSide', 'DoubleSide' ];
 const schema = {
-	type: { default: 'basic' },
+	type: { type: 'select', default: 'basic', select: [ 'basic', 'depth', 'distance', 'lambert', 'matcap', 'normal', 'phong', 'physical', 'standard', 'toon' ] },
 	// material
 	alphaTest: { default: 0 },
 	blending: { type: 'select', default: 'NormalBlending', select: blendingModes },
@@ -55110,7 +55110,7 @@ function contactCallback( contact, type ) {
 
 ComponentManager.register( 'collider', Collider, {
 	schema: {
-		type: { default: 'box' },
+		type: { type: 'select', default: 'box', select: [ 'box', 'capsule', 'cone', 'cylinder', 'sphere', 'mesh' ] },
 		isTrigger: { default: false },
 		collisionGroup: { type: 'int', default: 1 },
 		collisionMask: { type: 'int', default: 1 },
@@ -55613,7 +55613,7 @@ class Joint {
 ComponentManager.register( 'joint', Joint, {
 	dependencies: [ 'rigidbody' ],
 	schema: {
-		type: { default: 'universal' },
+		type: { type: 'select', default: 'universal', select: [ 'ball', 'cylindrical', 'hinge', 'prismatic', 'ragdoll', 'universal' ] },
 		linkedEntity: { type: 'entity' },
 		allowCollision: { default: false },
 		breakForce: { default: 0 },
