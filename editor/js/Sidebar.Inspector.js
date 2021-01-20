@@ -340,8 +340,7 @@ export function SidebarInspector( editor ) {
 
 		if ( schema !== undefined ) {
 
-			for ( name in schema ) component.data[ name ] = schema[ name ].default;
-
+			ComponentManager.sanitizeData( component.data, schema );
 			inspector.appendChild( this.addUI( config, component ) );
 
 		}
