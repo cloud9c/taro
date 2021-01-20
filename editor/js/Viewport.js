@@ -202,6 +202,8 @@ export function Viewport( editor ) {
 	};
 
 	this.addEntity();
+	this.addEntity();
+	this.addEntity();
 
 	const grid = new TARO.GridHelper( 30, 30 );
 
@@ -249,6 +251,17 @@ export function Viewport( editor ) {
 
 	const render = this.render = function () {
 
+		const deltaTime = app.time.update( performance.now() / 1000 );
+
+		for ( const type in app._containers ) {
+
+			const container = app._containers[ type ];
+			if ( container[ 0 ] !== undefined && container[ 0 ].update !== undefined )
+				for ( let j = 0, lenj = container.length; j < lenj; j ++ )
+					container[ j ].update( deltaTime );
+
+		}
+
 		scene.add( grid );
 		renderer.render( scene, camera );
 		scene.remove( grid );
@@ -256,6 +269,8 @@ export function Viewport( editor ) {
 		renderer.autoClear = false;
 		renderer.render( sceneHelper, camera );
 		renderer.autoClear = true;
+
+		app.input.update();
 
 	};
 

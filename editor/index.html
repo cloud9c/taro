@@ -12,30 +12,46 @@
 			<div class="menu" tabindex="0">
 				<div class="title">File</div>
 				<div class="options">
-					<div class="option">New</div>
-					<div class="option">New</div>
+					<div class="option" data-line>Manage Scenes</div>
+					<div class="option" data-line>New App</div>
+					<div class="option">Import</div>
+					<div class="option" data-line>Export GLTF</div>
+					<div class="option">Publish</div>
 				</div>
 			</div>
 			<div class="menu" tabindex="0">
 				<div class="title">Edit</div>
 				<div class="options">
-					<div class="option">New</div>
+					<div class="option">Undo (Ctrl+Z)</div>
+					<div class="option">Redo (Ctrl+Shift+Z)</div>
+					<div class="option" data-line>Clear History</div>
+					<div class="option">Clone</div>
+					<div class="option">Delete (Del)</div>
 				</div>
 			</div>
 			<div class="menu" tabindex="0">
-				<div class="title">Assets</div>
-			</div>
-			<div class="menu" tabindex="0">
 				<div class="title">Entity</div>
-			</div>
-			<div class="menu" tabindex="0">
-				<div class="title">Component</div>
+				<div class="options">
+					<div class="option" data-line>Empty</div>
+					<div class="option">Box</div>
+					<div class="option">Sphere</div>
+					<div class="option">Capsule</div>
+					<div class="option">Con</div>
+					<div class="option" data-line>Cylinder</div>
+					<div class="option">Mesh</div>
+					<div class="option">Light</div>
+					<div class="option">Camera</div>
+				</div>
 			</div>
 			<div class="menu" tabindex="0">
 				<div class="title">Play</div>
 			</div>
 			<div class="menu" tabindex="0">
 				<div class="title">Help</div>
+				<div class="options">
+					<div class="option">Documentation</div>
+					<div class="option">Source Code</div>
+				</div>
 			</div>
 		</nav>
 		<main>
@@ -44,7 +60,7 @@
 				<section class="tabs">
 					<div class="tab" data-tab="scene" data-selected>Scene</div>
 					<div class="tab" data-tab="app">App</div>
-					<div class="tab" data-tab="settings">Settings</div>
+					<div class="tab" data-tab="assets">Assets</div>
 				</section>
 				<div class="panel">
 					<div id="scene" style="display: inherit;">
@@ -100,7 +116,7 @@
 						</section>
 					</div>
 					<div id="app">2</div>
-					<div id="settings">3</div>
+					<div id="assets">3</div>
 				</div>
 			</aside>
 			<div id="viewport">

@@ -3,7 +3,6 @@ import { MathUtils, ComponentManager } from '../../build/taro.js';
 export function SidebarInspector( editor ) {
 
 	const inspector = document.getElementById( 'inspector' );
-	const componentManager = editor.app.componentManager;
 	let currentEntity = null;
 
 	this.attach = function ( entity ) {
@@ -19,9 +18,8 @@ export function SidebarInspector( editor ) {
 
 			for ( let i = 0, len = components.length; i < len; i ++ ) {
 
-				const schema = componentManager.components[ components[ i ].type ].options.schema;
-				if ( schema !== undefined )
-					inspector.appendChild( this.addUI( schema, components[ i ] ) );
+				const config = ComponentManager.components[ components[ i ].type ].config;
+				inspector.appendChild( this.addUI( config, components[ i ] ) );
 
 			}
 
@@ -37,22 +35,31 @@ export function SidebarInspector( editor ) {
 
 	};
 
-	this.addUI = function ( schema, componentData ) {
+	this.addUI = function ( config, componentData ) {
 
 		const section = document.createElement( 'SECTION' );
+		section.classList.add( 'component' );
 
-		for ( let i = 0, len = schema.length; i < len; i ++ ) {
+		const title = document.createElement( 'H1' );
+		title.textContent = componentData.type;
+		section.appendChild( title );
+
+		const schema = config.schema;
+		console.log( schema );
+		for ( name in schema ) {
 
 			const fieldset = document.createElement( 'FIELDSET' );
 			const legend = document.createElement( 'LEGEND' );
-			const attribute = schema[ i ];
+			const attribute = schema[ name ];
+
+			console.log( attribute );
 
 			switch ( attribute.type ) {
 
 				case 'string':
 					const input = document.createElement( 'INPUT' );
 					input.type = 'text';
-					legend.textContent = attribute.label !== undefined ? attribute.label : attribute.name;
+					legend.textContent = attribute.label !== undefined ? attribute.label : name;
 					fieldset.appendChild( input );
 					break;
 				case 'color':
@@ -74,7 +81,7 @@ export function SidebarInspector( editor ) {
 				case 'asset':
 					break;
 				default:
-					return console.warn( 'SidebarInspector: Invalid schema type: ' + schema.type );
+					return console.warn( 'SidebarInspector: Invalid schema type: ' + attribute.type );
 
 			}
 
@@ -251,8 +258,29 @@ export function SidebarInspector( editor ) {
 			const components = ComponentManager.components;
 			for ( const type in components ) {
 
+				const allowMultiple = ComponentManager.components[ type ].config.allowMultiple;
+				const componentData = entity.componentData;
+				if ( allowMultiple === false && componentData !== undefined ) {
+
+					let disabled = false;
+					for ( let i = 0, len = componentData.length; i < len; i ++ ) {
+
+						if ( componentData[ i ].type === type ) {
+
+							disabled = true;
+							break;
+
+						}
+
+					}
+
+					if ( disabled ) continue;
+
+				}
+
 				const component = document.createElement( 'DIV' );
 				component.textContent = type;
+
 				componentList.appendChild( component );
 
 			}
@@ -304,10 +332,22 @@ export function SidebarInspector( editor ) {
 		if ( currentEntity.componentData === undefined ) currentEntity.componentData = [];
 
 		const component = { type, data: {} };
-		const schema = componentManager.components[ type ].config.schema;
+		const config = ComponentManager.components[ type ].config;
+		const schema = config.schema;
+		const runInEditor = config.runInEditor === true;
+
+		if ( schema !== undefined ) {
+
+			for ( name in schema ) component.data[ name ] = schema[ name ].default;
+
+			inspector.appendChild( this.addUI( config, component ) );
+
+		}
+
+		if ( runInEditor ) currentEntity.addComponent( type, component.data );
 
 		currentEntity.componentData.push( component );
-		this.addUI();
+		editor.render();
 
 	};
 

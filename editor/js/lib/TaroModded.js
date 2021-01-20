@@ -49,3 +49,8 @@ Entity.prototype.toJSON = function ( meta ) {
 	return data;
 
 };
+
+const runners = [ 'camera', 'geometry', 'light', 'material', 'renderable' ];
+
+for ( let i = 0, len = runners.length; i < len; i ++ )
+	ComponentManager.components[ runners[ i ] ].config.runInEditor = true;

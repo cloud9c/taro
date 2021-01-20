@@ -63,13 +63,17 @@ main {
 
 .option {
 	user-select: none;
-	padding: 8px 12px;
+	padding: 6px 12px;
 	color: var(--white);
 }
 
 .option:hover {
 	background: var(--gray-1);
 	color: #fff;
+}
+
+.option[data-line] {
+	border-bottom: 1px solid var(--gray-1);
 }
 
 main {
