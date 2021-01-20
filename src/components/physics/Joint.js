@@ -408,7 +408,7 @@ export class Joint {
 ComponentManager.register( 'joint', Joint, {
 	dependencies: [ 'rigidbody' ],
 	schema: {
-		type: { default: 'universal' },
+		type: { type: 'select', default: 'universal', select: [ 'ball', 'cylindrical', 'hinge', 'prismatic', 'ragdoll', 'universal' ] },
 		linkedEntity: { type: 'entity' },
 		allowCollision: { default: false },
 		breakForce: { default: 0 },

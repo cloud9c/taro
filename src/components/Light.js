@@ -52,7 +52,7 @@ export class Light {
 
 ComponentManager.register( 'light', Light, {
 	schema: {
-		type: { default: 'directional' },
+		type: { type: 'select', default: 'directional', select: [ 'ambient', 'directional', 'hemisphere', 'point', 'spot' ] },
 		color: { type: 'color' },
 		intensity: { default: 1 },
 		skyColor: { type: 'color', if: { type: [ 'hemisphere' ] } },

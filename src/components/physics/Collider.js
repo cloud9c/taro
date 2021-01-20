@@ -606,7 +606,7 @@ function contactCallback( contact, type ) {
 
 ComponentManager.register( 'collider', Collider, {
 	schema: {
-		type: { default: 'box' },
+		type: { type: 'select', default: 'box', select: [ 'box', 'capsule', 'cone', 'cylinder', 'sphere', 'mesh' ] },
 		isTrigger: { default: false },
 		collisionGroup: { type: 'int', default: 1 },
 		collisionMask: { type: 'int', default: 1 },

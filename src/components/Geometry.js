@@ -90,7 +90,7 @@ export class Geometry {
 
 ComponentManager.register( 'geometry', Geometry, {
 	schema: {
-		primitive: { default: 'box' },
+		primitive: { type: 'select', default: 'box', select: [ 'box', 'circle', 'cone', 'cylinder', 'dodecahedron', 'icosahedron', 'octahedron', 'plane', 'ring', 'sphere', 'tetrahedron', 'torus', 'torusKnot', 'custom' ] },
 
 		depth: { default: 1, min: 0, if: { type: [ 'box' ] } },
 		height: { default: 1, min: 0, if: { type: [ 'box', 'cone', 'cylinder', 'plane' ] } },

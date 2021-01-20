@@ -95,7 +95,7 @@ const sourceFactors = [ 'ZeroFactor', 'OneFactor', 'SrcColorFactor', 'OneMinusSr
 const destinationFactors = [ 'ZeroFactor', 'OneFactor', 'SrcColorFactor', 'OneMinusSrcColorFactor', 'SrcAlphaFactor', 'OneMinusSrcAlphaFactor', 'DstAlphaFactor', 'OneMinusDstAlphaFactor', 'DstColorFactor', 'OneMinusDstColorFactor' ];
 const sides = [ 'FrontSide', 'BackSide', 'DoubleSide' ];
 const schema = {
-	type: { default: 'basic' },
+	type: { type: 'select', default: 'basic', select: [ 'basic', 'depth', 'distance', 'lambert', 'matcap', 'normal', 'phong', 'physical', 'standard', 'toon' ] },
 	// material
 	alphaTest: { default: 0 },
 	blending: { type: 'select', default: 'NormalBlending', select: blendingModes },
