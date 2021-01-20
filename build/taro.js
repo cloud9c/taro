@@ -54506,7 +54506,8 @@ ComponentManager.register( 'rigidbody', Rigidbody, {
 		isKinematic: { default: false },
 		rotationFactor: { type: 'vector3', default: [ 1, 1, 1 ] },
 		mass: { default: 1 }
-	}
+	},
+	allowMultiple: false
 } );
 
 const vector$2 = new Vector3();
