@@ -37,6 +37,8 @@ export function SidebarInspector( editor ) {
 
 	this.addUI = function ( config, componentData ) {
 
+		const data = componentData.data;
+
 		const section = document.createElement( 'SECTION' );
 		section.classList.add( 'component' );
 
@@ -45,14 +47,15 @@ export function SidebarInspector( editor ) {
 		section.appendChild( title );
 
 		const schema = config.schema;
-		console.log( schema );
-		for ( name in schema ) {
+
+		console.log( data );
+
+		for ( name in data ) {
 
 			const fieldset = document.createElement( 'FIELDSET' );
 			const legend = document.createElement( 'LEGEND' );
+			fieldset.appendChild( legend );
 			const attribute = schema[ name ];
-
-			console.log( attribute );
 
 			switch ( attribute.type ) {
 
@@ -82,12 +85,15 @@ export function SidebarInspector( editor ) {
 					break;
 				case 'asset':
 					break;
+				case 'class':
+					break;
+				case 'entity':
+					break;
 				default:
 					return console.warn( 'SidebarInspector: Invalid schema type: ' + attribute.type );
 
 			}
 
-			fieldset.appendChild( legend );
 			section.appendChild( fieldset );
 
 		}
