@@ -116,8 +116,17 @@ export class Entity extends Group {
 
 		if ( config.schema !== undefined ) {
 
-			// reversing to optimize the inner while loop (which goes backwards)
-			const schema = Object.keys( config.schema ).reverse();
+			const schema = Object.keys( config.schema );
+			// sorting array to place non-if attributes last
+			schema.sort( ( a, b ) => {
+
+				if ( a.if === undefined )
+					return - 1;
+				else if ( b.if === undefined )
+					return 1;
+				return 0;
+
+			} );
 
 			while ( schema.length > 0 ) {
 

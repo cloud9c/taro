@@ -52050,6 +52050,8 @@ const ComponentManager = {
 							break;
 						case 'string':
 							if ( prop.default.length < 10 && prop.default.length > 0 && prop.default[ 0 ] === '#' )
+								prop.type = 'color';
+							else
 								prop.type = 'string';
 							break;
 						case 'boolean':
@@ -52387,12 +52389,11 @@ class Material$1 {
 	init( data ) {
 
 		const type = data.type;
-		console.log( data );
+
 		delete data.type;
 
 		for ( const name in data ) {
 
-			console.log( name, schema );
 			if ( schema[ name ].type === 'select' && data[ name ] !== null && data[ name ][ 0 ] === data[ name ][ 0 ].toUpperCase() )
 				data[ name ] = THREE[ data[ name ] ];
 
@@ -52434,8 +52435,6 @@ class Material$1 {
 				throw new Error( 'Geometry: invalid material type ' + type );
 
 		}
-
-		console.log( this.ref );
 
 		this.addEventListener( 'enable', this.onEnable );
 		this.addEventListener( 'disable', this.onDisable );
@@ -56157,8 +56156,17 @@ class Entity extends Group {
 
 		if ( config.schema !== undefined ) {
 
-			// reversing to optimize the inner while loop (which goes backwards)
-			const schema = Object.keys( config.schema ).reverse();
+			const schema = Object.keys( config.schema );
+			// sorting array to place non-if attributes last
+			schema.sort( ( a, b ) => {
+
+				if ( a.if === undefined )
+					return - 1;
+				else if ( b.if === undefined )
+					return 1;
+				return 0;
+
+			} );
 
 			while ( schema.length > 0 ) {
 

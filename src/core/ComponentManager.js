@@ -121,6 +121,8 @@ export const ComponentManager = {
 							break;
 						case 'string':
 							if ( prop.default.length < 10 && prop.default.length > 0 && prop.default[ 0 ] === '#' )
+								prop.type = 'color';
+							else
 								prop.type = 'string';
 							break;
 						case 'boolean':

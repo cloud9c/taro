@@ -6,12 +6,11 @@ export class Material {
 	init( data ) {
 
 		const type = data.type;
-		console.log( data );
+
 		delete data.type;
 
 		for ( const name in data ) {
 
-			console.log( name, schema );
 			if ( schema[ name ].type === 'select' && data[ name ] !== null && data[ name ][ 0 ] === data[ name ][ 0 ].toUpperCase() )
 				data[ name ] = THREE[ data[ name ] ];
 
@@ -53,8 +52,6 @@ export class Material {
 				throw new Error( 'Geometry: invalid material type ' + type );
 
 		}
-
-		console.log( this.ref );
 
 		this.addEventListener( 'enable', this.onEnable );
 		this.addEventListener( 'disable', this.onDisable );
