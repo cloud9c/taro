@@ -86,7 +86,8 @@ aside, #viewport {
 
 aside {
 	min-width: 4px;
-	overflow: hidden;
+	display: flex;
+	flex-direction: column;
 }
 
 .tabs {
@@ -97,7 +98,7 @@ aside {
 .tab {
 	margin: 0;
 	font-weight: 500;
-	padding: 12px 8px 0 8px;
+	padding: 12px 8px 12px 8px;
 	color: var(--secondary-text-color);
 	cursor: pointer;
 	user-select: none;
@@ -105,6 +106,15 @@ aside {
 
 .tab[data-selected] {
 	color: var(--text-color);
+}
+
+.panel section:first-child {
+	padding-top: 0;
+}
+
+.panel {
+	overflow-y: auto;
+	flex-grow: 1;
 }
 
 .panel section {
@@ -391,6 +401,11 @@ input[type="checkbox"]:checked:after {
 
 #component-list div:hover {
 	background: var(--gray-4);
+}
+
+.component h1 {
+	font-weight: 500;
+	font-size: 14px;
 }
 
 /*general*/
