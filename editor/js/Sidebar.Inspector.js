@@ -76,6 +76,8 @@ export function SidebarInspector( editor ) {
 					break;
 				case 'number':
 					break;
+				case 'int':
+					break;
 				case 'select':
 					break;
 				case 'asset':
