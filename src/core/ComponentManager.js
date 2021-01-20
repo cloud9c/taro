@@ -160,6 +160,79 @@ export const ComponentManager = {
 
 		this.components[ type ] = { constructor, config };
 
+	},
+	sanitizeData: function ( data, schema ) {
+
+		const array = Object.keys( schema );
+		// sorting array to place non-if attributes last
+		array.sort( ( a, b ) => {
+
+			if ( a.if === undefined )
+				return - 1;
+			else if ( b.if === undefined )
+				return 1;
+			return 0;
+
+		} );
+
+		while ( array.length > 0 ) {
+
+			let i = array.length;
+
+			while ( i -- ) {
+
+				const name = array[ i ];
+
+				if ( data[ name ] === undefined ) {
+
+					const dependencies = schema[ name ].if;
+
+					if ( dependencies !== undefined ) {
+
+						let tryAgain = false;
+
+						for ( const d in dependencies ) {
+
+							if ( array.includes( d ) ) {
+
+								tryAgain = true;
+
+							} else if ( ! dependencies[ d ].includes( data[ d ] ) ) {
+
+								array.splice( i, 1 );
+								tryAgain = true;
+
+							}
+
+						}
+
+						if ( tryAgain ) continue;
+
+					}
+
+					switch ( schema[ name ].type ) {
+
+						case 'class':
+							data[ name ] = new schema[ name ].default();
+							break;
+						case 'vector2':
+						case 'vector3':
+						case 'vector4':
+							data[ name ] = schema[ name ].default.clone();
+							break;
+						default:
+							data[ name ] = schema[ name ].default;
+
+					}
+
+				}
+
+				array.splice( i, 1 );
+
+			}
+
+		}
+
 	}
 };
 
