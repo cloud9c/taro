@@ -44,6 +44,7 @@ export function SidebarInspector( editor ) {
 
 		const title = document.createElement( 'H1' );
 		title.textContent = componentData.type;
+		title.dataset.opened = '';
 		section.appendChild( title );
 
 		const schema = config.schema;
@@ -52,26 +53,38 @@ export function SidebarInspector( editor ) {
 
 		for ( name in data ) {
 
+			const attribute = schema[ name ];
 			const fieldset = document.createElement( 'FIELDSET' );
 			const legend = document.createElement( 'LEGEND' );
+			legend.textContent = attribute.label !== undefined ? attribute.label : name;
 			fieldset.appendChild( legend );
-			const attribute = schema[ name ];
+
+			let input;
 
 			switch ( attribute.type ) {
 
 				case 'string':
-					const input = document.createElement( 'INPUT' );
+					input = document.createElement( 'INPUT' );
 					input.type = 'text';
-					legend.textContent = attribute.label !== undefined ? attribute.label : name;
 					fieldset.appendChild( input );
 					break;
 				case 'color':
+					input = document.createElement( 'INPUT' );
+					input.type = 'color';
+					fieldset.appendChild( input );
 					break;
 				case 'vector2':
-					break;
 				case 'vector3':
-					break;
 				case 'vector4':
+					const len = parseFloat( attribute.type.charAt( 6 ) );
+					for ( let i = 0; i < len; i ++ ) {
+
+						input = document.createElement( 'INPUT' );
+						input.type = 'number';
+						fieldset.appendChild( input );
+
+					}
+
 					break;
 				case 'boolean':
 					break;
@@ -152,7 +165,6 @@ export function SidebarInspector( editor ) {
 				input.type = 'number';
 				input.dataset.translation = translation[ i ];
 				input.dataset.xyz = xyz[ j ];
-				input.style.width = '58px';
 				if ( xyz[ j ] === 'y' ) input.style.margin = '0 6px';
 
 				if ( translation[ i ] === 'rotation' ) {
@@ -190,7 +202,7 @@ export function SidebarInspector( editor ) {
 		fieldset.appendChild( legend );
 
 		const div = document.createElement( 'DIV' );
-		div.style = 'display:flex;align-items:center;width:186px';
+		div.style = 'display:flex;align-items:center';
 
 		enabled = document.createElement( 'INPUT' );
 		enabled.type = 'checkbox';
@@ -236,7 +248,6 @@ export function SidebarInspector( editor ) {
 
 		enabled = document.createElement( 'INPUT' );
 		enabled.type = 'checkbox';
-		enabled.style.width = '186px';
 		if ( entity.visible )
 			enabled.checked = true;
 		enabled.addEventListener( 'change', function () {

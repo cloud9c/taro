@@ -6,6 +6,7 @@
 	--gray-3: #ccc;
 	--gray-4: #dcdcdc;
 	--gray-5: #eee;
+	--gray-6: #f3f3f3;
 }
 
 html,
@@ -141,10 +142,10 @@ legend {
 	user-select: none;
 	padding: 0;
 	float: left;
-}
-
-legend {
-	margin-right: auto;
+	width: 89px;
+	white-space: initial;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 select {
@@ -159,10 +160,13 @@ select {
 	background-size: 16px;
 	height: 22px;
 	outline: 0;
+	width: 120px;
+	margin-left: auto;
 }
 
 label {
 	margin: 0 8px 0 4px;
+	user-select: none;
 }
 
 input {
@@ -174,9 +178,15 @@ input[type="color"], select, .file-wrapper {
 	cursor: pointer;
 }
 
-input[type="color"], .file-wrapper {
+#left-sidebar input[type="color"], #left-sidebar .file-wrapper {
 	width: 22px;
 	height: 22px;
+	border: 1px solid var(--border-color);
+	background-color: transparent;
+	padding: 0;
+}
+
+input[type="color"], .file-wrapper {
 	border: 1px solid var(--border-color);
 	background-color: transparent;
 	padding: 0;
@@ -196,7 +206,7 @@ input[type="file"] {
 
 input[type="number"] {
 	height: 22px;
-	width: 44px;
+	width: 58px;
 	border: none;
 	border-bottom: 1px solid var(--border-color);
 	background: var(--gray-5);
@@ -275,10 +285,6 @@ input[type="checkbox"]:checked:after {
 #background-color, #background-texture, #background-equirect, #environment-texture {
 	display: none;
 	margin-left: 8px;
-}
-
-#scene select {
-	width: 120px;
 }
 
 #fog-wrapper {
@@ -369,6 +375,7 @@ input[type="checkbox"]:checked:after {
 
 #component-wrapper {
 	position: relative;
+	user-select: none;
 }
 
 #component-selector {
@@ -392,6 +399,7 @@ input[type="checkbox"]:checked:after {
 	max-height: 0;
 	overflow-y: auto;
 	transition: max-height .11s cubic-bezier(.2,0,.38,.9);
+	z-index: 1
 }
 
 #component-list div {
@@ -403,9 +411,49 @@ input[type="checkbox"]:checked:after {
 	background: var(--gray-4);
 }
 
+section.component {
+	padding: 0;
+	user-select: none;
+}
+
+.component fieldset {
+	padding: 0 12px;
+}
+
 .component h1 {
 	font-weight: 500;
 	font-size: 14px;
+	padding: 6px 0 6px 28px;
+	text-transform: uppercase;
+	position: relative;
+	background: var(--gray-6);
+	margin-bottom: 12px;
+	cursor: pointer;
+}
+
+.component h1[data-opened]:before {
+	transform: rotate(90deg)
+}
+
+.component h1:before {
+    content: "";
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    background-image: url("../img/caret.svg");
+    background-repeat: no-repeat;
+    position: absolute;
+    margin-left: -20px;
+    top: 7px;
+}
+
+.component h1:hover {
+	background: var(--gray-5);
+}
+
+.component input[type="color"] {
+	width: 60px;
+	margin-right: auto;
 }
 
 /*general*/
