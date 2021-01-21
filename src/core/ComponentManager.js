@@ -1,4 +1,4 @@
-import { EventDispatcher, Vector4, Vector3, Vector2 } from '../lib/three.js';
+import { EventDispatcher, Vector4, Vector3, Vector2, Color } from '../lib/three.js';
 
 export const ComponentManager = {
 	components: {},
@@ -143,13 +143,6 @@ export const ComponentManager = {
 
 				}
 
-				if ( prop.type === 'vector4' )
-					prop.default = new Vector4().fromArray( prop.default );
-				else if ( prop.type === 'vector3' )
-					prop.default = new Vector3().fromArray( prop.default );
-				else if ( prop.type === 'vector2' )
-					prop.default = new Vector2().fromArray( prop.default );
-
 			}
 
 		}
@@ -216,10 +209,16 @@ export const ComponentManager = {
 							data[ name ] = new schema[ name ].default();
 							break;
 						case 'vector2':
-						case 'vector3':
-						case 'vector4':
-							data[ name ] = schema[ name ].default.clone();
+							data[ name ] = new Vector2().fromArray( prop.default );
 							break;
+						case 'vector3':
+							data[ name ] = new Vector3().fromArray( prop.default );
+							break;
+						case 'vector4':
+							data[ name ] = new Vector4().fromArray( prop.default );
+							break;
+						case 'color':
+							data[ name ] = new Color( prop.default );
 						default:
 							data[ name ] = schema[ name ].default;
 
