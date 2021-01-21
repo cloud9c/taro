@@ -206,16 +206,16 @@ export const ComponentManager = {
 					switch ( schema[ name ].type ) {
 
 						case 'vector2':
-							data[ name ] = new Vector2( ...schema[ name ] );
+							data[ name ] = new Vector2( ...schema[ name ].default );
 							break;
 						case 'vector3':
-							data[ name ] = new Vector3( ...schema[ name ] );
+							data[ name ] = new Vector3( ...schema[ name ].default );
 							break;
 						case 'vector4':
-							data[ name ] = new Vector4( ...schema[ name ] );
+							data[ name ] = new Vector4( ...schema[ name ].default );
 							break;
 						case 'color':
-							data[ name ] = new Color( schema[ name ] );
+							data[ name ] = new Color( schema[ name ].default );
 							break;
 						case 'class':
 							data[ name ] = new schema[ name ].default();
