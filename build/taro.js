@@ -52072,13 +52072,6 @@ const ComponentManager = {
 
 				}
 
-				if ( prop.type === 'vector4' )
-					prop.default = new Vector4().fromArray( prop.default );
-				else if ( prop.type === 'vector3' )
-					prop.default = new Vector3().fromArray( prop.default );
-				else if ( prop.type === 'vector2' )
-					prop.default = new Vector2().fromArray( prop.default );
-
 			}
 
 		}
@@ -52141,13 +52134,20 @@ const ComponentManager = {
 
 					switch ( schema[ name ].type ) {
 
+						case 'vector2':
+							data[ name ] = new Vector2( ...prop.default );
+							break;
+						case 'vector3':
+							data[ name ] = new Vector3( ...prop.default );
+							break;
+						case 'vector4':
+							data[ name ] = new Vector4( ...prop.default );
+							break;
+						case 'color':
+							data[ name ] = new Color( prop.default );
+							break;
 						case 'class':
 							data[ name ] = new schema[ name ].default();
-							break;
-						case 'vector2':
-						case 'vector3':
-						case 'vector4':
-							data[ name ] = schema[ name ].default.clone();
 							break;
 						default:
 							data[ name ] = schema[ name ].default;
