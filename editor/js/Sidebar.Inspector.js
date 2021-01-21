@@ -1,4 +1,4 @@
-import { MathUtils, ComponentManager } from '../../build/taro.js';
+import { MathUtils, ComponentManager, Vector4, Vector3, Vector2, Color } from '../../build/taro.js';
 
 export function SidebarInspector( editor ) {
 
@@ -74,10 +74,10 @@ export function SidebarInspector( editor ) {
 				case 'color':
 					input = document.createElement( 'INPUT' );
 					input.type = 'color';
-					input.value = value;
+					input.value = '#' + value.getHexString();
 					input.addEventListener( 'input', () => {
 
-						data[ currentName ] = input.value;
+						data[ currentName ] = new Color( input.value );
 
 					} );
 					fieldset.appendChild( input );
@@ -88,6 +88,7 @@ export function SidebarInspector( editor ) {
 						input = document.createElement( 'INPUT' );
 						input.style.width = '87px';
 						input.type = 'number';
+						input.value = value.getComponent( i );
 
 						if ( i == 1 ) input.style.marginLeft = '6px';
 
@@ -101,6 +102,7 @@ export function SidebarInspector( editor ) {
 
 						input = document.createElement( 'INPUT' );
 						input.type = 'number';
+						input.value = value.getComponent( i );
 
 						if ( i == 1 )
 							input.style.margin = '0px 6px';
@@ -117,6 +119,7 @@ export function SidebarInspector( editor ) {
 
 						input = document.createElement( 'INPUT' );
 						input.type = 'number';
+						input.value = value.getComponent( i );
 
 						if ( i == 0 || i == 1 )
 							input.style.marginBottom = '4px';
