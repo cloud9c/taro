@@ -114,6 +114,7 @@ aside {
 }
 
 .panel {
+	overflow-x: hidden;
 	overflow-y: auto;
 	flex-grow: 1;
 }
@@ -141,11 +142,16 @@ fieldset {
 legend {
 	user-select: none;
 	padding: 0;
+	width: 95px;
+	padding-right: 6px;
 	float: left;
-	width: 89px;
 	white-space: initial;
 	overflow: hidden;
 	text-overflow: ellipsis;
+}
+
+#left-sidebar legend {
+	margin-right: auto;
 }
 
 select {
@@ -161,7 +167,6 @@ select {
 	height: 22px;
 	outline: 0;
 	width: 120px;
-	margin-left: auto;
 }
 
 label {
@@ -205,21 +210,19 @@ input[type="file"] {
 }
 
 input[type="number"] {
+	font-size: 13px;
 	height: 22px;
-	width: 58px;
+	width: 54px;
 	border: none;
 	border-bottom: 1px solid var(--border-color);
 	background: var(--gray-5);
 	font-family: "IBM Plex Mono", monospace;
-	padding: 1px 4px;
-}
-
-input[type=number]:not(:hover)::-webkit-inner-spin-button {
-	display: none;
-}
-
-input[type=number]:not(:hover) {
 	-moz-appearance: textfield;
+	padding-left: 4px;
+}
+
+input[type=number]::-webkit-inner-spin-button {
+	display: none;
 }
 
 input[type="text"] {
@@ -235,6 +238,7 @@ input[type="checkbox"] {
 	position: relative;
 	appearance: none;
 	margin: 0;
+	cursor: pointer;
 }
 
 input[type="checkbox"]:before {
@@ -301,10 +305,12 @@ input[type="checkbox"]:checked:after {
 
 #linear-fog input {
 	width: 57px;
+	padding-left: 4px;
 }
 
 #exponential-fog input {
 	width: 120px;
+	padding-left: 4px;
 }
 
 #color-linear-fog, #color-exp-fog {
@@ -460,28 +466,12 @@ section.component {
 
 #left-sidebar {
 	border-right: 1px solid var(--border-color);
-	width: 280px;
+	width: 240px;
 }
 
 #right-sidebar {
 	border-left: 1px solid var(--border-color);
-	width: 300px;
-}
-
-.resizer {
-	position: absolute;
-	width: 7px;
-	height: 100%;
-	cursor: e-resize;
-	z-index: 1;
-}
-
-#left-resizer {
-	right: -4px;
-}
-
-#right-resizer {
-	left: -4px;
+	min-width: 300px;
 }
 
 #viewport {

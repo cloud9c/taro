@@ -54,49 +54,146 @@ export function SidebarInspector( editor ) {
 		for ( name in data ) {
 
 			const attribute = schema[ name ];
+			const value = data[ name ];
+			const currentName = name;
 			const fieldset = document.createElement( 'FIELDSET' );
 			const legend = document.createElement( 'LEGEND' );
 			legend.textContent = attribute.label !== undefined ? attribute.label : name;
 			fieldset.appendChild( legend );
 
-			let input;
+			let input, div, vector;
 
 			switch ( attribute.type ) {
 
 				case 'string':
 					input = document.createElement( 'INPUT' );
 					input.type = 'text';
+					input.value = value;
 					fieldset.appendChild( input );
 					break;
 				case 'color':
 					input = document.createElement( 'INPUT' );
 					input.type = 'color';
+					input.value = value;
+					input.addEventListener( 'input', () => {
+
+						data[ currentName ] = input.value;
+
+					} );
 					fieldset.appendChild( input );
 					break;
 				case 'vector2':
-				case 'vector3':
-				case 'vector4':
-					const len = parseFloat( attribute.type.charAt( 6 ) );
-					for ( let i = 0; i < len; i ++ ) {
+					for ( let i = 0; i < 2; i ++ ) {
 
 						input = document.createElement( 'INPUT' );
+						input.style.width = '87px';
 						input.type = 'number';
+
+						if ( i == 1 ) input.style.marginLeft = '6px';
+
 						fieldset.appendChild( input );
 
 					}
 
 					break;
-				case 'boolean':
+				case 'vector3':
+					for ( let i = 0; i < 3; i ++ ) {
+
+						input = document.createElement( 'INPUT' );
+						input.type = 'number';
+
+						if ( i == 1 )
+							input.style.margin = '0px 6px';
+
+						fieldset.appendChild( input );
+
+					}
+
 					break;
-				case 'slider':
+				case 'vector4':
+					div = document.createElement( 'DIV' );
+					div.style = 'display: flex;flex-wrap: wrap;width:174px';
+					for ( let i = 0; i < 4; i ++ ) {
+
+						input = document.createElement( 'INPUT' );
+						input.type = 'number';
+
+						if ( i == 0 || i == 1 )
+							input.style.marginBottom = '4px';
+
+						if ( i == 1 || i == 3 ) {
+
+							input.style.marginLeft = '4px';
+							input.style.width = 'calc(50% - 4px)';
+
+						} else {
+
+							input.style.width = '50%';
+
+						}
+
+						div.appendChild( input );
+
+					}
+
+					fieldset.appendChild( div );
+
+					break;
+				case 'boolean':
+					input = document.createElement( 'INPUT' );
+					input.type = 'checkbox';
+					input.style.width = '174px';
+					// if ( entity.enabled )
+					// 	input.checked = true;
+					// input.addEventListener( 'change', function () {
+
+					// 	entity.enabled = this.checked;
+					// 	editor.render();
+
+					// } );
+					fieldset.appendChild( input );
+					break;
+				case 'slider': // TODO
+					input = document.createElement( 'INPUT' );
+					input.type = 'range';
+					fieldset.appendChild( input );
 					break;
 				case 'number':
-					break;
 				case 'int':
+					input = document.createElement( 'INPUT' );
+					input.type = 'number';
+					input.style.width = '114px';
+					fieldset.appendChild( input );
 					break;
 				case 'select':
+					input = document.createElement( 'SELECT' );
+					const options = attribute.select;
+					if ( attribute.default === null ) {
+
+						const option = document.createElement( 'OPTION' );
+						option.selected = '';
+
+						input.appendChild( option );
+
+					}
+
+					for ( let i = 0, len = options.length; i < len; i ++ ) {
+
+						const option = document.createElement( 'OPTION' );
+						option.value = options[ i ];
+						option.textContent = options[ i ];
+						input.appendChild( option );
+
+						if ( options[ i ] === attribute.default ) option.selected = '';
+
+					}
+
+					fieldset.appendChild( input );
 					break;
 				case 'asset':
+					input = document.createElement( 'INPUT' );
+					input.type = 'file';
+					fieldset.appendChild( input );
 					break;
 				case 'class':
 					break;
@@ -202,7 +299,7 @@ export function SidebarInspector( editor ) {
 		fieldset.appendChild( legend );
 
 		const div = document.createElement( 'DIV' );
-		div.style = 'display:flex;align-items:center';
+		div.style = 'display:flex;align-items:center;width:174px';
 
 		enabled = document.createElement( 'INPUT' );
 		enabled.type = 'checkbox';
@@ -248,6 +345,7 @@ export function SidebarInspector( editor ) {
 
 		enabled = document.createElement( 'INPUT' );
 		enabled.type = 'checkbox';
+		enabled.style.width = '174px';
 		if ( entity.visible )
 			enabled.checked = true;
 		enabled.addEventListener( 'change', function () {
