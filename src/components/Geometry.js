@@ -5,9 +5,9 @@ export class Geometry {
 
 	init( data ) {
 
-		const primitive = data.primitive;
+		const type = data.type;
 
-		switch ( primitive ) {
+		switch ( type ) {
 
 			case 'box':
 				this.ref = new BoxBufferGeometry( data.width, data.height, data.depth, data.widthSegments, data.heightSegments, data.depthSegments );
@@ -52,7 +52,7 @@ export class Geometry {
 				this.ref = new BufferGeometry();
 				break;
 			default:
-				throw new Error( 'Geometry: invalid geometry primitive ' + primitive );
+				throw new Error( 'Geometry: invalid geometry type ' + type );
 
 		}
 
@@ -90,39 +90,46 @@ export class Geometry {
 
 ComponentManager.register( 'geometry', Geometry, {
 	schema: {
-		primitive: { type: 'select', default: 'box', select: [ 'box', 'circle', 'cone', 'cylinder', 'dodecahedron', 'icosahedron', 'octahedron', 'plane', 'ring', 'sphere', 'tetrahedron', 'torus', 'torusKnot', 'custom' ] },
+		type: { type: 'select', default: 'box', select: [ 'box', 'circle', 'cone', 'cylinder', 'dodecahedron', 'icosahedron', 'octahedron', 'plane', 'ring', 'sphere', 'tetrahedron', 'torus', 'torusKnot', 'custom' ] },
 
-		depth: { default: 1, min: 0, if: { primitive: [ 'box' ] } },
-		height: { default: 1, min: 0, if: { primitive: [ 'box', 'cone', 'cylinder', 'plane' ] } },
-		width: { default: 1, min: 0, if: { primitive: [ 'box', 'plane' ] } },
-		heightSegments: { default: 18, min: 1, type: 'int', if: { primitive: [ 'box', 'plane', 'cone', 'cylinder', 'sphere' ] } },
-		widthSegments: { default: 36, min: 1, max: 20, type: 'int', if: { primitive: [ 'box', 'plane', 'sphere' ] } },
-		depthSegments: { default: 1, min: 1, max: 20, type: 'int', if: { primitive: [ 'box' ] } },
+		depth: { default: 1, min: 0, if: { type: [ 'box' ] } },
+		height: { default: 1, min: 0, if: { type: [ 'box', 'cone', 'cylinder', 'plane' ] } },
+		width: { default: 1, min: 0, if: { type: [ 'box', 'plane' ] } },
+		heightSegments: [ { default: 1, min: 1, max: 20, type: 'int', if: { type: [ 'box', 'plane' ] } },
+						 { default: 18, min: 1, type: 'int', if: { type: [ 'cone', 'cylinder' ] } },
+						 { default: 18, min: 2, type: 'int', if: { type: [ 'sphere' ] } } ],
+		widthSegments: [ { default: 1, min: 1, max: 20, type: 'int', if: { type: [ 'box', 'plane' ] } },
+			{ default: 36, min: 3, type: 'int', if: { type: [ 'sphere' ] } } ],
+		depthSegments: { default: 1, min: 1, max: 20, type: 'int', if: { type: [ 'box' ] } },
 
-		radius: { default: 1, min: 0, if: { primitive: [ 'circle', 'cone', 'cylinder', 'dodecahedron', 'icosahedron', 'octahedron', 'sphere', 'tetrahedron', 'torus', 'torusKnot' ] } },
-		segments: { default: 32, min: 3, type: 'int', if: { primitive: [ 'circle' ] } },
-		thetaLength: { default: 360, min: 0, if: { primitive: [ 'circle', 'cone', 'cylinder', 'ring', 'sphere' ] } },
-		thetaStart: { default: 0, if: { primitive: [ 'circle', 'cone', 'cylinder', 'ring', 'sphere' ] } },
+		radius: { default: 1, min: 0, if: { type: [ 'circle', 'cone', 'cylinder', 'dodecahedron', 'icosahedron', 'octahedron', 'sphere', 'tetrahedron', 'torus', 'torusKnot' ] } },
+		segments: { default: 32, min: 3, type: 'int', if: { type: [ 'circle' ] } },
+		thetaLength: [ { default: 360, min: 0, if: { type: [ 'circle', 'cone', 'cylinder', 'ring' ] } },
+					  { default: 180, min: 0, if: { type: [ 'sphere' ] } } ],
+		thetaStart: { default: 0, if: { type: [ 'circle', 'cone', 'cylinder', 'ring', 'sphere' ] } },
 
-		openEnded: { default: false, if: { primitive: [ 'cone', 'cylinder' ] } },
-		radialSegments: { default: 36, min: 3, type: 'int', if: { primitive: [ 'cone', 'cylinder', 'torus', 'torusKnot' ] } },
+		openEnded: { default: false, if: { type: [ 'cone', 'cylinder' ] } },
+		radialSegments: [ { default: 36, min: 3, type: 'int', if: { type: [ 'cone', 'cylinder' ] } },
+						 { default: 36, min: 2, type: 'int', if: { type: [ 'torus' ] } },
+						 { default: 8, min: 3, type: 'int', if: { type: [ 'torusKnot' ] } } ],
 
-		detail: { default: 0, min: 0, max: 5, type: 'int', if: { primitive: [ 'dodecahedron', 'icosahedron', 'octahedron', 'tetrahedron' ] } },
+		detail: { default: 0, min: 0, max: 5, type: 'int', if: { type: [ 'dodecahedron', 'icosahedron', 'octahedron', 'tetrahedron' ] } },
 
-		innerRadius: { default: 0.8, min: 0, if: { primitive: [ 'ring' ] } },
-		outerRadius: { default: 1.2, min: 0, if: { primitive: [ 'ring' ] } },
-		phiSegments: { default: 10, min: 1, type: 'int', if: { primitive: [ 'ring' ] } },
-		thetaSegments: { default: 32, min: 3, type: 'int', if: { primitive: [ 'ring' ] } },
+		innerRadius: { default: 0.8, min: 0, if: { type: [ 'ring' ] } },
+		outerRadius: { default: 1.2, min: 0, if: { type: [ 'ring' ] } },
+		phiSegments: { default: 10, min: 1, type: 'int', if: { type: [ 'ring' ] } },
+		thetaSegments: { default: 32, min: 3, type: 'int', if: { type: [ 'ring' ] } },
 
-		phiLength: { default: 360, if: { primitive: [ 'sphere' ] } },
-		phiStart: { default: 0, min: 0, if: { primitive: [ 'sphere' ] } },
+		phiLength: { default: 360, if: { type: [ 'sphere' ] } },
+		phiStart: { default: 0, min: 0, if: { type: [ 'sphere' ] } },
 
-		tube: { default: 0.2, min: 0, if: { primitive: [ 'torus', 'torusKnot' ] } },
-		tubularSegments: { default: 64, min: 3, type: 'int', if: { primitive: [ 'torus', 'torusKnot' ] } },
-		arc: { default: 360, if: { primitive: [ 'torus' ] } },
+		tube: { default: 0.2, min: 0, if: { type: [ 'torus', 'torusKnot' ] } },
+		tubularSegments: [ { default: 32, min: 3, type: 'int', if: { type: [ 'torus' ] } },
+						  { default: 64, min: 3, type: 'int', if: { type: [ 'torusKnot' ] } } ],
+		arc: { default: 360, if: { type: [ 'torus' ] } },
 
-		p: { default: 2, min: 1, if: { primitive: [ 'torusKnot' ] } },
-		q: { default: 3, min: 1, if: { primitive: [ 'torusKnot' ] } },
+		p: { default: 2, min: 1, if: { type: [ 'torusKnot' ] } },
+		q: { default: 3, min: 1, if: { type: [ 'torusKnot' ] } },
 	},
 	allowMultiple: false,
 } );
