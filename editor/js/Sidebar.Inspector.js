@@ -69,6 +69,11 @@ export function SidebarInspector( editor ) {
 					input = document.createElement( 'INPUT' );
 					input.type = 'text';
 					input.value = value;
+					input.addEventListener( 'change', () => {
+
+						data[ currentName ] = input.value;
+
+					} );
 					fieldset.appendChild( input );
 					break;
 				case 'color':
@@ -77,7 +82,7 @@ export function SidebarInspector( editor ) {
 					input.value = '#' + value.getHexString();
 					input.addEventListener( 'input', () => {
 
-						data[ currentName ] = new Color( input.value );
+						data[ currentName ].set( input.value );
 
 					} );
 					fieldset.appendChild( input );
@@ -85,12 +90,26 @@ export function SidebarInspector( editor ) {
 				case 'vector2':
 					for ( let i = 0; i < 2; i ++ ) {
 
-						input = document.createElement( 'INPUT' );
+						const input = document.createElement( 'INPUT' );
 						input.style.width = '87px';
 						input.type = 'number';
-						input.value = value.getComponent( i );
 
 						if ( i == 1 ) input.style.marginLeft = '6px';
+
+						input.value = value.getComponent( i );
+						const index = i;
+						input.addEventListener( 'change', () => {
+
+							let value = parseFloat( input.value );
+
+							if ( attribute.min !== undefined ) value = Math.max( attribute.min, value );
+							if ( attribute.max !== undefined ) value = Math.min( attribute.min, value );
+							if ( attribute.type === 'int' ) value = Math.round( value );
+							input.value = value;
+
+							data[ currentName ].setComponent( index, value );
+
+						} );
 
 						fieldset.appendChild( input );
 
@@ -100,12 +119,26 @@ export function SidebarInspector( editor ) {
 				case 'vector3':
 					for ( let i = 0; i < 3; i ++ ) {
 
-						input = document.createElement( 'INPUT' );
+						const input = document.createElement( 'INPUT' );
 						input.type = 'number';
-						input.value = value.getComponent( i );
 
 						if ( i == 1 )
 							input.style.margin = '0px 6px';
+
+						input.value = value.getComponent( i );
+						const index = i;
+						input.addEventListener( 'change', () => {
+
+							let value = parseFloat( input.value );
+
+							if ( attribute.min !== undefined ) value = Math.max( attribute.min, value );
+							if ( attribute.max !== undefined ) value = Math.min( attribute.min, value );
+							if ( attribute.type === 'int' ) value = Math.round( value );
+							input.value = value;
+
+							data[ currentName ].setComponent( index, value );
+
+						} );
 
 						fieldset.appendChild( input );
 
@@ -117,9 +150,8 @@ export function SidebarInspector( editor ) {
 					div.style = 'display: flex;flex-wrap: wrap;width:174px';
 					for ( let i = 0; i < 4; i ++ ) {
 
-						input = document.createElement( 'INPUT' );
+						const input = document.createElement( 'INPUT' );
 						input.type = 'number';
-						input.value = value.getComponent( i );
 
 						if ( i == 0 || i == 1 )
 							input.style.marginBottom = '4px';
@@ -135,6 +167,21 @@ export function SidebarInspector( editor ) {
 
 						}
 
+						input.value = value.getComponent( i );
+						const index = i;
+						input.addEventListener( 'change', () => {
+
+							let value = parseFloat( input.value );
+
+							if ( attribute.min !== undefined ) value = Math.max( attribute.min, value );
+							if ( attribute.max !== undefined ) value = Math.min( attribute.min, value );
+							if ( attribute.type === 'int' ) value = Math.round( value );
+							input.value = value;
+
+							data[ currentName ].setComponent( index, value );
+
+						} );
+
 						div.appendChild( input );
 
 					}
@@ -146,19 +193,12 @@ export function SidebarInspector( editor ) {
 					input = document.createElement( 'INPUT' );
 					input.type = 'checkbox';
 					input.style.width = '174px';
-					// if ( entity.enabled )
-					// 	input.checked = true;
-					// input.addEventListener( 'change', function () {
+					if ( value ) input.checked = true;
+					input.addEventListener( 'change', () => {
 
-					// 	entity.enabled = this.checked;
-					// 	editor.render();
+						data[ currentName ] = input.checked;
 
-					// } );
-					fieldset.appendChild( input );
-					break;
-				case 'slider': // TODO
-					input = document.createElement( 'INPUT' );
-					input.type = 'range';
+					} );
 					fieldset.appendChild( input );
 					break;
 				case 'number':
@@ -166,30 +206,44 @@ export function SidebarInspector( editor ) {
 					input = document.createElement( 'INPUT' );
 					input.type = 'number';
 					input.style.width = '114px';
+					input.value = value;
+					input.addEventListener( 'change', () => {
+
+						let value = parseFloat( input.value );
+
+						if ( attribute.min !== undefined ) value = Math.max( attribute.min, value );
+						if ( attribute.max !== undefined ) value = Math.min( attribute.min, value );
+						if ( attribute.type === 'int' ) value = Math.round( value );
+						input.value = value;
+
+						data[ currentName ] = value;
+
+					} );
 					fieldset.appendChild( input );
 					break;
 				case 'select':
 					input = document.createElement( 'SELECT' );
 					const options = attribute.select;
-					if ( attribute.default === null ) {
-
-						const option = document.createElement( 'OPTION' );
-						option.selected = '';
-
-						input.appendChild( option );
-
-					}
 
 					for ( let i = 0, len = options.length; i < len; i ++ ) {
 
 						const option = document.createElement( 'OPTION' );
 						option.value = options[ i ];
 						option.textContent = options[ i ];
+
+						if ( options[ i ] === value )
+							option.selected = true;
+
+
 						input.appendChild( option );
 
-						if ( options[ i ] === attribute.default ) option.selected = '';
-
 					}
+
+					input.addEventListener( 'change', () => {
+
+						data[ currentName ] = input.value;
+
+					} );
 
 					fieldset.appendChild( input );
 					break;
@@ -269,7 +323,7 @@ export function SidebarInspector( editor ) {
 
 				if ( translation[ i ] === 'rotation' ) {
 
-					input.addEventListener( 'input', function () {
+					input.addEventListener( 'change', function () {
 
 						entity[ translation[ i ] ][ xyz[ j ] ] = MathUtils.degToRad( parseFloat( this.value ) );
 						editor.render();
@@ -278,7 +332,7 @@ export function SidebarInspector( editor ) {
 
 				} else {
 
-					input.addEventListener( 'input', function () {
+					input.addEventListener( 'change', function () {
 
 						entity[ translation[ i ] ][ xyz[ j ] ] = parseFloat( this.value );
 						editor.render();
