@@ -52,6 +52,8 @@ export class Material {
 				throw new Error( 'Geometry: invalid material type ' + type );
 
 		}
+		
+		data.type = type;
 
 		this.addEventListener( 'enable', this.onEnable );
 		this.addEventListener( 'disable', this.onDisable );
