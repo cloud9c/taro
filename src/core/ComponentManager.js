@@ -94,7 +94,6 @@ export const ComponentManager = {
 						case 'boolean':
 							prop.default = false;
 							break;
-						case 'slider':
 						case 'number':
 						case 'int':
 							prop.default = 0;
