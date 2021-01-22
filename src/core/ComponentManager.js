@@ -99,7 +99,7 @@ export const ComponentManager = {
 							prop.default = 0;
 							break;
 						case 'select':
-							prop.default = prop.select[ 0 ];
+							prop.default = null;
 							break;
 						case 'entity':
 							prop.default = null; // uuid of entity

@@ -107,7 +107,7 @@ const schema = {
 	vertexColors: { default: false },
 	vertexTangents: { default: false, if: { type: [ 'standard', 'physical' ] } },
 
-	depthPacking: { type: 'select', default: 'BasicDepthPacking', select: ['BasicDepthPacking', 'RGBADepthPacking'], if: { type: ['depth']}}
+	depthPacking: { type: 'select', default: 'BasicDepthPacking', select: [ 'BasicDepthPacking', 'RGBADepthPacking' ], if: { type: [ 'depth' ] } },
 	skinning: { default: false, if: { type: [ 'basic', 'depth', 'lambert', 'matcap', 'normal', 'phong', 'standard', 'physical', 'toon' ] } },
 
 	map: { type: 'asset', if: { type: [ 'basic', 'depth', 'lambert', 'matcap', 'phong', 'standard', 'physical', 'toon' ] } },
