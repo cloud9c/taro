@@ -6,7 +6,7 @@ import { SidebarScene } from './Sidebar.Scene.js';
 import { SidebarInspector } from './Sidebar.Inspector.js';
 
 import './lib/TaroModded.js';
-import { Player } from './Player.js';
+import { Player } from './lib/Player.js';
 
 function Editor() {
 

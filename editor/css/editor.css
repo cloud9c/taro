@@ -166,7 +166,7 @@ select {
 	background-size: 16px;
 	height: 22px;
 	outline: 0;
-	width: 120px;
+	min-width: 120px;
 }
 
 label {

@@ -53,7 +53,38 @@ export function SidebarInspector( editor ) {
 
 		for ( name in data ) {
 
-			const attribute = schema[ name ];
+			let attribute = schema[ name ];
+
+			if ( Array.isArray( attribute ) ) {
+
+				for ( let i = 0, len = attribute.length; i < len; i ++ ) {
+
+					const dependencies = attribute.if;
+					if ( dependencies !== undefined ) {
+
+						let exit = false;
+						for ( d in dependencies ) {
+
+							if ( ! dependencies[ d ].includes( data[ d ] ) ) {
+
+								exit = true;
+								break;
+
+							}
+
+						}
+
+						if ( exit ) continue;
+
+					}
+
+					attribute = schema[ name ][ i ];
+					break;
+
+				}
+
+			}
+
 			const value = data[ name ];
 			const currentName = name;
 			const fieldset = document.createElement( 'FIELDSET' );

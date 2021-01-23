@@ -28,15 +28,13 @@ import {
 	Application,
 	Entity,
 	Scene
-} from '../../build/taro.js';
+} from '../../../build/taro.js';
 
 export class Player extends ObjectLoader {
 
 	constructor( manager ) {
 
 		super( manager );
-
-		this._entity;
 
 	}
 
