@@ -1,14 +1,20 @@
 import { Sidebar } from './Sidebar.js';
-import { Application } from '../../build/taro.js';
+import { Application, ComponentManager } from '../../build/taro.js';
 import { Viewport } from './Viewport.js';
 import { Toolbar } from './Toolbar.js';
 import { SidebarScene } from './Sidebar.Scene.js';
 import { SidebarInspector } from './Sidebar.Inspector.js';
+import { Navbar } from './Navbar.js';
 
-import './lib/TaroModded.js';
-import { Player } from './lib/Player.js';
+import { applicationToJSON } from './lib/Jsonify.js';
+
+window.applicationToJSON = applicationToJSON;
 
 function Editor() {
+
+	const runners = [ 'camera', 'geometry', 'light', 'material', 'renderable' ];
+	for ( let i = 0, len = runners.length; i < len; i ++ )
+		ComponentManager.components[ runners[ i ] ].config.runInEditor = true;
 
 	this.sidebar = new Sidebar();
 
@@ -19,6 +25,10 @@ function Editor() {
 
 	this.toolbar = new Toolbar( this );
 	this.sidebarScene = new SidebarScene( this );
+
+	this.navbar = new Navbar( this );
+
+	console.log( this.app );
 
 	this.render();
 

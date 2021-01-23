@@ -49,9 +49,9 @@ export function SidebarInspector( editor ) {
 
 		const schema = config.schema;
 
-		console.log( data );
-
 		for ( name in data ) {
+
+			if ( schema === undefined ) continue;
 
 			let attribute = schema[ name ];
 

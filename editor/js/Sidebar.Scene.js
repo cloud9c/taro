@@ -152,23 +152,23 @@ export function SidebarScene( editor ) {
 
 			case 'none':
 				scene.background = null;
-				this.style.removeProperty( 'width' );
+				this.style.removeProperty( 'min-width' );
 				render();
 				break;
 			case 'color':
 				document.getElementById( 'background-color' ).style.setProperty( 'display', 'inherit' );
 				onColorOption( event.target );
-				this.style.setProperty( 'width', '90px' );
+				this.style.setProperty( 'min-width', '90px' );
 				break;
 			case 'texture':
 				document.getElementById( 'background-texture' ).style.setProperty( 'display', 'inherit' );
 				onTextureOption();
-				this.style.setProperty( 'width', '90px' );
+				this.style.setProperty( 'min-width', '90px' );
 				break;
 			case 'equirect':
 				document.getElementById( 'background-equirect' ).style.setProperty( 'display', 'inherit' );
 				onEquirectOption();
-				this.style.setProperty( 'width', '90px' );
+				this.style.setProperty( 'min-width', '90px' );
 
 		}
 
@@ -193,12 +193,12 @@ export function SidebarScene( editor ) {
 				document.getElementById( 'environment-texture' ).style.removeProperty( 'display' );
 				scene.environment = null;
 				render();
-				this.style.removeProperty( 'width' );
+				this.style.removeProperty( 'min-width' );
 				break;
 			case 'texture':
 				document.getElementById( 'environment-texture' ).style.setProperty( 'display', 'inherit' );
 				onEnvironmentOption();
-				this.style.setProperty( 'width', '90px' );
+				this.style.setProperty( 'min-width', '90px' );
 				break;
 
 		}
@@ -228,18 +228,18 @@ export function SidebarScene( editor ) {
 
 			case 'none':
 				scene.fog = null;
-				this.style.removeProperty( 'width' );
+				this.style.removeProperty( 'min-width' );
 				render();
 				break;
 			case 'linear':
 				document.getElementById( 'linear-fog' ).style.setProperty( 'display', 'flex' );
-				this.style.setProperty( 'width', '90px' );
+				this.style.setProperty( 'min-width', '90px' );
 				linearColor.style.setProperty( 'display', 'inherit' );
 				setFog();
 				break;
 			case 'exponential':
 				document.getElementById( 'exponential-fog' ).style.setProperty( 'display', 'flex' );
-				this.style.setProperty( 'width', '90px' );
+				this.style.setProperty( 'min-width', '90px' );
 				expColor.style.setProperty( 'display', 'inherit' );
 				setExpFog();
 				break;
