@@ -52273,20 +52273,6 @@ class Camera$1 extends PerspectiveCamera {
 
 	}
 
-	toJSON( meta ) {
-
-		const data = super.toJSON( meta );
-		data.object.viewport = this.viewport.toArray();
-		if ( this.entity !== undefined && this.autoAspect === true ) {
-
-			delete data.object.aspect;
-
-		}
-
-		return data;
-
-	}
-
 }
 
 ComponentManager.register( 'camera', Camera$1, {
@@ -55711,6 +55697,12 @@ class Scene$1 extends Scene {
 
 	}
 
+	getEntities() {
+
+		return this.children;
+
+	}
+
 	getEntityById( id ) {
 
 		return this.getObjectById( id );
@@ -56269,16 +56261,14 @@ class Entity extends Group {
 		if ( value != this._enabled ) {
 
 			if ( value && this.parent.isScene === undefined && ! this.parent._enabled )
-				return console.warn(
-					"TARO.Entity: Can't enable if an ancestor is disabled"
-				);
+				return console.warn( "TARO.Entity: Can't enable if an ancestor is disabled" );
 			this._enabled = value;
 
 			const components = this.components;
 			for ( let i = 0, len = components.length; i < len; i ++ )
 				components[ i ].enabled = value;
 
-			const children = this.getChildren();
+			const children = this.getEntities();
 			for ( let i = 0, len = children.length; i < len; i ++ )
 				children[ i ].enabled = value;
 
@@ -56288,7 +56278,7 @@ class Entity extends Group {
 
 	}
 
-	getChildren() {
+	getEntities() {
 
 		const filteredChildren = [];
 		const children = this.children;
