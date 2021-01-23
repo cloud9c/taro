@@ -65,80 +65,14 @@ export const ComponentManager = {
 
 				const prop = config.schema[ name ];
 
-				if ( prop.default === undefined && prop.type === undefined ) {
+				if ( Array.isArray( prop ) ) {
 
-					throw Error( 'ComponentManager: schema property requires a type or default value' );
+					for ( let i = 0, len = prop.length; i < len; i ++ )
+						this.sanitizeSchema( prop[ i ] );
 
-				} else if ( prop.default === undefined ) {
+				} else {
 
-					switch ( prop.type ) {
-
-						case 'string':
-							prop.default = '';
-							break;
-						case 'asset':
-							prop.default = null;
-							break;
-						case 'color':
-							prop.default = '#ffffff';
-							break;
-						case 'vector2':
-							prop.default = [ 0, 0 ];
-							break;
-						case 'vector3':
-							prop.default = [ 0, 0, 0 ];
-							break;
-						case 'vector4':
-							prop.default = [ 0, 0, 0, 0 ];
-							break;
-						case 'boolean':
-							prop.default = false;
-							break;
-						case 'number':
-						case 'int':
-							prop.default = 0;
-							break;
-						case 'select':
-							prop.default = null;
-							break;
-						case 'entity':
-							prop.default = null; // uuid of entity
-							break;
-						case 'class':
-							prop.default = {};
-						default:
-							throw Error( 'ComponentManager: invalid schema property type ' + typeof prop.type );
-
-					}
-
-				} else if ( prop.type === undefined ) {
-
-					switch ( typeof prop.default ) {
-
-						case 'number':
-							prop.type = 'number';
-							break;
-						case 'string':
-							if ( prop.default.length < 10 && prop.default.length > 0 && prop.default[ 0 ] === '#' )
-								prop.type = 'color';
-							else
-								prop.type = 'string';
-							break;
-						case 'boolean':
-							prop.type = 'boolean';
-							break;
-						case 'object':
-							if ( Array.isArray( prop.default ) )
-								prop.type = 'select';
-							else throw Error( 'ComponentManager: could not infer property type from default ' + prop.default );
-							break;
-						case 'function':
-							prop.type = 'class';
-							break;
-						default:
-							throw Error( 'ComponentManager: could not infer property type from default ' + prop.default );
-
-					}
+					this.sanitizeSchema( prop );
 
 				}
 
@@ -151,6 +85,86 @@ export const ComponentManager = {
 		Object.assign( constructor.prototype, EventDispatcher.prototype );
 
 		this.components[ type ] = { constructor, config };
+
+	},
+	sanitizeSchema: function ( prop ) {
+
+		if ( prop.default === undefined && prop.type === undefined ) {
+
+			throw Error( 'ComponentManager: schema property requires a type or default value' );
+
+		} else if ( prop.default === undefined ) {
+
+			switch ( prop.type ) {
+
+				case 'string':
+					prop.default = '';
+					break;
+				case 'asset':
+					prop.default = null;
+					break;
+				case 'color':
+					prop.default = '#ffffff';
+					break;
+				case 'vector2':
+					prop.default = [ 0, 0 ];
+					break;
+				case 'vector3':
+					prop.default = [ 0, 0, 0 ];
+					break;
+				case 'vector4':
+					prop.default = [ 0, 0, 0, 0 ];
+					break;
+				case 'boolean':
+					prop.default = false;
+					break;
+				case 'number':
+				case 'int':
+					prop.default = 0;
+					break;
+				case 'select':
+					prop.default = null;
+					break;
+				case 'entity':
+					prop.default = null; // uuid of entity
+					break;
+				case 'class':
+					prop.default = {};
+				default:
+					throw Error( 'ComponentManager: invalid schema property type ' + typeof prop.type );
+
+			}
+
+		} else if ( prop.type === undefined ) {
+
+			switch ( typeof prop.default ) {
+
+				case 'number':
+					prop.type = 'number';
+					break;
+				case 'string':
+					if ( prop.default.length < 10 && prop.default.length > 0 && prop.default[ 0 ] === '#' )
+						prop.type = 'color';
+					else
+						prop.type = 'string';
+					break;
+				case 'boolean':
+					prop.type = 'boolean';
+					break;
+				case 'object':
+					if ( Array.isArray( prop.default ) )
+						prop.type = 'select';
+					else throw Error( 'ComponentManager: could not infer property type from default ' + prop.default );
+					break;
+				case 'function':
+					prop.type = 'class';
+					break;
+				default:
+					throw Error( 'ComponentManager: could not infer property type from default ' + prop.default );
+
+			}
+
+		}
 
 	},
 	sanitizeData: function ( data, schema ) {
@@ -174,61 +188,87 @@ export const ComponentManager = {
 			while ( i -- ) {
 
 				const name = array[ i ];
+				let object = schema[ name ];
 
 				if ( data[ name ] === undefined ) {
 
-					const dependencies = schema[ name ].if;
+					if ( Array.isArray( object ) ) {
 
-					if ( dependencies !== undefined ) {
+						let index = - 1;
+						for ( let j = 0, len = object.length; j < len; j ++ ) {
 
-						let tryAgain = false;
-
-						for ( const d in dependencies ) {
-
-							if ( array.includes( d ) ) {
-
-								tryAgain = true;
-
-							} else if ( ! dependencies[ d ].includes( data[ d ] ) ) {
-
-								array.splice( i, 1 );
-								tryAgain = true;
-
-							}
+							if ( ! this.loopDependency( array, data, object[ j ].if, i ) ) index = j;
 
 						}
 
-						if ( tryAgain ) continue;
+						if ( index > - 1 ) object = object[ index ];
+						else continue;
+
+					} else {
+
+						if ( this.loopDependency( array, data, object.if, i ) ) continue;
 
 					}
 
-					switch ( schema[ name ].type ) {
-
-						case 'vector2':
-							data[ name ] = new Vector2( ...schema[ name ].default );
-							break;
-						case 'vector3':
-							data[ name ] = new Vector3( ...schema[ name ].default );
-							break;
-						case 'vector4':
-							data[ name ] = new Vector4( ...schema[ name ].default );
-							break;
-						case 'color':
-							data[ name ] = new Color( schema[ name ].default );
-							break;
-						case 'class':
-							data[ name ] = new schema[ name ].default();
-							break;
-						default:
-							data[ name ] = schema[ name ].default;
-
-					}
+					this.addDefault( object.type, object.default, data, name );
 
 				}
 
 				array.splice( i, 1 );
 
 			}
+
+		}
+
+	},
+	loopDependency: function ( array, data, dependencies, i ) {
+
+		let exit = false;
+		if ( dependencies !== undefined ) {
+
+			for ( const d in dependencies ) {
+
+				if ( array.includes( d ) ) {
+
+					exit = true;
+					break;
+
+				} else if ( ! dependencies[ d ].includes( data[ d ] ) ) {
+
+					array.splice( i, 1 );
+					exit = true;
+					break;
+
+				}
+
+			}
+
+		}
+
+		return exit;
+
+	},
+	addDefault: function ( type, _default, data, name ) {
+
+		switch ( type ) {
+
+			case 'vector2':
+				data[ name ] = new Vector2( ..._default );
+				break;
+			case 'vector3':
+				data[ name ] = new Vector3( ..._default );
+				break;
+			case 'vector4':
+				data[ name ] = new Vector4( ..._default );
+				break;
+			case 'color':
+				data[ name ] = new Color( _default );
+				break;
+			case 'class':
+				data[ name ] = new _default();
+				break;
+			default:
+				data[ name ] = _default;
 
 		}
 
