@@ -66,20 +66,6 @@ export class Camera extends PerspectiveCamera {
 
 	}
 
-	toJSON( meta ) {
-
-		const data = super.toJSON( meta );
-		data.object.viewport = this.viewport.toArray();
-		if ( this.entity !== undefined && this.autoAspect === true ) {
-
-			delete data.object.aspect;
-
-		}
-
-		return data;
-
-	}
-
 }
 
 ComponentManager.register( 'camera', Camera, {
