@@ -94,6 +94,12 @@ export class Scene extends TS {
 
 	}
 
+	getEntities() {
+
+		return this.children;
+
+	}
+
 	getEntityById( id ) {
 
 		return this.getObjectById( id );

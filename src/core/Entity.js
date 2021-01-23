@@ -178,16 +178,14 @@ export class Entity extends Group {
 		if ( value != this._enabled ) {
 
 			if ( value && this.parent.isScene === undefined && ! this.parent._enabled )
-				return console.warn(
-					"TARO.Entity: Can't enable if an ancestor is disabled"
-				);
+				return console.warn( "TARO.Entity: Can't enable if an ancestor is disabled" );
 			this._enabled = value;
 
 			const components = this.components;
 			for ( let i = 0, len = components.length; i < len; i ++ )
 				components[ i ].enabled = value;
 
-			const children = this.getChildren();
+			const children = this.getEntities();
 			for ( let i = 0, len = children.length; i < len; i ++ )
 				children[ i ].enabled = value;
 
@@ -197,7 +195,7 @@ export class Entity extends Group {
 
 	}
 
-	getChildren() {
+	getEntities() {
 
 		const filteredChildren = [];
 		const children = this.children;
