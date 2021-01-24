@@ -56058,6 +56058,7 @@ class Application {
 	dispose() {
 
 		this.renderer.dispose();
+		this.input.dispose();
 
 	}
 
