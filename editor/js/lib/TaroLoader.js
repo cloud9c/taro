@@ -55,6 +55,8 @@ export class TaroLoader extends Loader {
 
 		}
 
+		onLoad( app );
+
 		return app;
 
 	}
@@ -62,6 +64,8 @@ export class TaroLoader extends Loader {
 	parseScene( data ) {
 
 		const object = new Scene();
+
+		object.uuid = data.uuid;
 
 		if ( data.background !== undefined ) {
 
@@ -86,6 +90,19 @@ export class TaroLoader extends Loader {
 			}
 
 		}
+
+		if ( data.children !== undefined ) {
+
+			const children = data.children;
+			for ( let i = 0, len = children.length; i < len; i ++ ) {
+
+				object.add( this.parseEntity( children[ i ] ) );
+
+			}
+
+		}
+
+		return object;
 
 	}
 
@@ -119,11 +136,13 @@ export class TaroLoader extends Loader {
 			const children = data.children;
 			for ( let i = 0, len = children.length; i < len; i ++ ) {
 
-				object.add( parseEntity( children[ i ] ) );
+				object.add( this.parseEntity( children[ i ] ) );
 
 			}
 
 		}
+
+		return object;
 
 	}
 

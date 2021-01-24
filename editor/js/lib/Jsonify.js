@@ -21,6 +21,7 @@ function sceneToJSON( scene ) {
 
 	const data = {};
 
+	data.uuid = scene.uuid;
 	if ( scene.background !== null ) data.background = scene.background.toJSON();
 	if ( scene.environment !== null ) data.environment = scene.environment.toJSON();
 	if ( scene.fog !== null ) data.fog = scene.fog.toJSON();
