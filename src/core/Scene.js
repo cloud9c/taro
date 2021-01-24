@@ -58,8 +58,16 @@ export class Scene extends TS {
 			const oldScene = object.scene;
 			object.scene = this;
 
-			if ( oldScene === undefined )
+			if ( oldScene === undefined ) {
+
 				object.dispatchEvent( { type: 'sceneadd' } );
+				object.traverseEntities( ( child ) => {
+
+					child.dispatchEvent( { type: 'sceneadd' } );
+
+				} );
+
+			}
 
 		}
 
@@ -73,6 +81,11 @@ export class Scene extends TS {
 			delete object.scene;
 
 			object.dispatchEvent( { type: 'sceneremove' } );
+			object.traverseEntities( ( child ) => {
+
+				child.dispatchEvent( { type: 'sceneremove' } );
+
+			} );
 
 		}
 

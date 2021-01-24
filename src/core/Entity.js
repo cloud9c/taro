@@ -195,6 +195,17 @@ export class Entity extends Group {
 
 	}
 
+	traverseEntities( callback ) {
+
+		this.traverse( child => {
+
+			if ( child.isEntity !== undefined )
+				callback( child );
+
+		} );
+
+	}
+
 	getEntities() {
 
 		const filteredChildren = [];
@@ -220,9 +231,9 @@ export class Entity extends Group {
 
 		let match;
 
-		this.traverse( ( child ) => {
+		this.traverseEntities( ( child ) => {
 
-			if ( child.isEntity !== undefined && child.name === name ) {
+			if ( child.name === name ) {
 
 				match = child;
 
@@ -237,9 +248,9 @@ export class Entity extends Group {
 	getEntityByTag( tag ) {
 
 		const matches = [];
-		this.traverse( ( child ) => {
+		this.traverseEntities( ( child ) => {
 
-			if ( child.isEntity !== undefined && child.tags.includes( tag ) )
+			if ( child.tags.includes( tag ) )
 				matches.push( child );
 
 		} );
@@ -251,9 +262,9 @@ export class Entity extends Group {
 
 		let match;
 
-		this.traverse( ( child ) => {
+		this.traverseEntities( ( child ) => {
 
-			if ( child.isEntity !== undefined && child[ name ] === value ) {
+			if ( child[ name ] === value ) {
 
 				match = child;
 
