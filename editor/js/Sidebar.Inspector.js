@@ -19,7 +19,7 @@ export function SidebarInspector( editor ) {
 			for ( let i = 0, len = components.length; i < len; i ++ ) {
 
 				const config = ComponentManager.components[ components[ i ].type ].config;
-				inspector.appendChild( this.addSection( config, components[ i ] ) );
+				inspector.appendChild( this.addSection( components[ i ], config ) );
 
 			}
 
@@ -35,8 +35,8 @@ export function SidebarInspector( editor ) {
 
 	};
 
-	this.onInspectorChange = function ( fieldset, data, type, schema ) {
-
+	this.onInspectorChange = function ( fieldset, type, data, config) {
+		const schema = config.schema;
 		const section = fieldset.parentElement;
 
 		for (const name in schema) {
@@ -59,7 +59,7 @@ export function SidebarInspector( editor ) {
 					if (attribute.if[type].includes(data[type]) && data[name] === undefined) {
 						// add attribute to data
 						data[name] = ComponentManager.addDefault(attribute.type, attribute.default);
-						section.appendChild(this.addFieldset(schema, name, data));
+						section.appendChild(this.addFieldset(name, data, config));
 					} else if (data[name] !== undefined) {
 						// remove attribute from data
 						delete data[name];
@@ -70,9 +70,16 @@ export function SidebarInspector( editor ) {
 
 		}
 
+		if (config.runInEditor === true && config.onValueChanged !== undefined) {
+			config.onValueChanged.bind(this, type, value, data)
+		}
+
+		onValueChanged.bind()
+
 	};
 
-	this.addFieldset = function(schema, type, data) {
+	this.addFieldset = function(type, data, config) {
+		const schema = config.schema;
 		let attribute = schema[ type ];
 
 		if ( Array.isArray( attribute ) ) {
@@ -124,7 +131,7 @@ export function SidebarInspector( editor ) {
 				input.addEventListener( 'change', () => {
 
 					data[ currentType ] = input.value;
-					this.onInspectorChange( fieldset, data, type, schema );
+					this.onInspectorChange( fieldset, type, data, config );
 
 				} );
 				fieldset.appendChild( input );
@@ -136,7 +143,7 @@ export function SidebarInspector( editor ) {
 				input.addEventListener( 'input', () => {
 
 					data[ currentType ].set( input.value );
-					this.onInspectorChange( fieldset, data, type, schema );
+					this.onInspectorChange( fieldset, type, data, config );
 
 				} );
 				fieldset.appendChild( input );
@@ -162,7 +169,7 @@ export function SidebarInspector( editor ) {
 						input.value = value;
 
 						data[ currentType ].setComponent( index, value );
-						this.onInspectorChange( fieldset, data, type, schema );
+						this.onInspectorChange( fieldset, type, data, config );
 
 					} );
 
@@ -192,7 +199,7 @@ export function SidebarInspector( editor ) {
 						input.value = value;
 
 						data[ currentType ].setComponent( index, value );
-						this.onInspectorChange( fieldset, data, type, schema );
+						this.onInspectorChange( fieldset, type, data, config );
 
 					} );
 
@@ -235,7 +242,7 @@ export function SidebarInspector( editor ) {
 						input.value = value;
 
 						data[ currentType ].setComponent( index, value );
-						this.onInspectorChange( fieldset, data, type, schema );
+						this.onInspectorChange( fieldset, type, data, config );
 
 					} );
 
@@ -254,7 +261,7 @@ export function SidebarInspector( editor ) {
 				input.addEventListener( 'change', () => {
 
 					data[ currentType ] = input.checked;
-					this.onInspectorChange( fieldset, data, type, schema );
+					this.onInspectorChange( fieldset, type, data, config );
 
 				} );
 				fieldset.appendChild( input );
@@ -275,7 +282,7 @@ export function SidebarInspector( editor ) {
 					input.value = value;
 
 					data[ currentType ] = value;
-					this.onInspectorChange( fieldset, data, type, schema );
+					this.onInspectorChange( fieldset, type, data, config );
 
 				} );
 				fieldset.appendChild( input );
@@ -301,7 +308,7 @@ export function SidebarInspector( editor ) {
 				input.addEventListener( 'change', () => {
 
 					data[ currentType ] = input.value;
-					this.onInspectorChange( fieldset, data, type, schema );
+					this.onInspectorChange( fieldset, type, data, config );
 
 				} );
 
@@ -325,15 +332,15 @@ export function SidebarInspector( editor ) {
 
 	}
 
-	this.addSection = function ( config, componentData ) {
+	this.addSection = function ( component, config ) {
 
-		const data = componentData.data;
+		const data = component.data;
 
 		const section = document.createElement( 'SECTION' );
 		section.classList.add( 'component' );
 
 		const title = document.createElement( 'H1' );
-		title.textContent = componentData.type;
+		title.textContent = component.type;
 		title.dataset.opened = '';
 		section.appendChild( title );
 
@@ -343,7 +350,7 @@ export function SidebarInspector( editor ) {
 
 			for ( const type in data ) {
 
-				section.appendChild( this.addFieldset(schema, type, data));
+				section.appendChild( this.addFieldset(type, data, config));
 
 			}
 
@@ -597,7 +604,7 @@ export function SidebarInspector( editor ) {
 		if ( schema !== undefined ) {
 
 			ComponentManager.sanitizeData( component.data, schema );
-			inspector.appendChild( this.addSection( config, component ) );
+			inspector.appendChild( this.addSection( component, config) );
 
 		}
 
