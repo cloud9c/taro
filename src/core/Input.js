@@ -4,65 +4,71 @@ export class Input {
 
 	constructor() {
 
-		this.mousePosition = new Vector2();
-		this.mouseDelta = new Vector2();
+		this.pointerPosition = new Vector2();
+		this.pointerDelta = new Vector2();
 		this.wheelDelta = new Vector2();
-		this._mouse = [];
-		this._mouseDown = [];
-		this._mouseUp = [];
+		this._pointer = [];
+		this._pointerDown = [];
+		this._pointerUp = [];
 		this._key = {};
 		this._keyDown = {};
 		this._keyUp = {};
 
-		window.addEventListener( 'blur', () => {
+		this.onBlur = () => {
 
 			this.update();
 
-		} );
+		};
 
-		document.addEventListener( 'fullscreenchange', () => {
+		this.onPointerMove = ( e ) => {
 
-			this.update();
+			this.pointerDelta.set( e.movementX, e.movementY );
+			this.pointerPosition.set( e.clientX, e.clientY );
 
-		} );
+		};
 
-		document.addEventListener( 'mousemove', ( e ) => {
+		this.onPointerDown = ( e ) => {
 
-			this.mouseDelta.set( e.movementX, e.movementY );
-			this.mousePosition.set( e.clientX, e.clientY );
+			this._pointer[ e.button ] = true;
+			this._pointerDown[ e.button ] = true;
 
-		} );
-		document.addEventListener( 'mousedown', ( e ) => {
+		};
 
-			this._mouse[ e.button ] = true;
-			this._mouseDown[ e.button ] = true;
+		this.onPointerUp = ( e ) => {
 
-		} );
-		document.addEventListener( 'mouseup', ( e ) => {
+			this._pointer[ e.button ] = false;
+			this._pointerUp[ e.button ] = true;
 
-			this._mouse[ e.button ] = false;
-			this._mouseUp[ e.button ] = true;
+		};
 
-		} );
-
-		document.addEventListener( 'wheel', ( e ) => {
+		this.onWheel = ( e ) => {
 
 			this.wheelDelta.set( e.deltaX, e.deltaY );
 
-		} );
+		};
 
-		document.addEventListener( 'keydown', () => {
+		this.onKeyDown = () => {
 
 			this._key[ event.code ] = true;
 			if ( ! event.repeat ) this._keyDown[ event.code ] = true;
 
-		} );
-		document.addEventListener( 'keyup', () => {
+		};
+
+		this.onKeyUp = () => {
 
 			this._key[ event.code ] = false;
 			this._keyUp[ event.code ] = true;
 
-		} );
+		};
+
+		window.addEventListener( 'blur', this.onBlur );
+		document.addEventListener( 'fullscreenchange', this.onBlur );
+		document.addEventListener( 'pointermove', this.onPointerMove );
+		document.addEventListener( 'pointerdown', this.onPointerDown );
+		document.addEventListener( 'pointerup', this.onPointerUp );
+		document.addEventListener( 'wheel', this.onWheel );
+		document.addEventListener( 'keydown', this.onKeyDown );
+		document.addEventListener( 'keyup', this.onKeyUp );
 
 	}
 
@@ -80,46 +86,59 @@ export class Input {
 
 		}
 
-		this._mouseDown.length = 0;
-		this._mouseUp.length = 0;
-		this.mouseDelta.set( 0, 0 );
+		this._pointerDown.length = 0;
+		this._pointerUp.length = 0;
+		this.pointerDelta.set( 0, 0 );
 		this.wheelDelta.set( 0, 0 );
 
 	}
 
-	getKey( v ) {
+	getKey( key ) {
 
-		return Boolean( this._key[ v ] );
-
-	}
-
-	getKeyDown( v ) {
-
-		return v in this._keyDown;
+		return this._key[ key ] === true;
 
 	}
 
-	getKeyUp( v ) {
+	isKeyDown( key ) {
 
-		return v in this._keyUp;
-
-	}
-
-	getMouse( v ) {
-
-		return Boolean( this._mouse[ v ] );
+		return key in this._keyDown;
 
 	}
 
-	getMouseDown( v ) {
+	isKeyUp( key ) {
 
-		return Boolean( this._mouseDown[ v ] );
+		return key in this._keyUp;
 
 	}
 
-	getMouseUp( v ) {
+	getPointer( button ) {
 
-		return Boolean( this._mouseUp[ v ] );
+		return this._pointer[ button ] === true;
+
+	}
+
+	isPointerDown( button ) {
+
+		return this._pointerDown[ button ] === true;
+
+	}
+
+	isPointerUp( button ) {
+
+		return this._pointerUp[ button ] === true;
+
+	}
+
+	dispose() {
+
+		window.removeEventListener( 'blur', this.onBlur );
+		document.removeEventListener( 'fullscreenchange', this.onBlur );
+		document.removeEventListener( 'pointermove', this.onPointerMove );
+		document.removeEventListener( 'pointerdown', this.onPointerDown );
+		document.removeEventListener( 'pointerup', this.onPointerUp );
+		document.removeEventListener( 'wheel', this.onWheel );
+		document.removeEventListener( 'keydown', this.onKeyDown );
+		document.removeEventListener( 'keyup', this.onKeyUp );
 
 	}
 

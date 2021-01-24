@@ -56,6 +56,12 @@ export class Application {
 
 	}
 
+	dispose() {
+
+		this.renderer.dispose();
+
+	}
+
 	addScene( scene ) {
 
 		scene.app = this;

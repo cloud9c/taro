@@ -47,4 +47,11 @@ export class Renderer extends WebGLRenderer {
 
 	}
 
+	dispose() {
+
+		super.dispose();
+		this.observer.disconnect();
+
+	}
+
 }
