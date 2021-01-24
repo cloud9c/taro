@@ -59,7 +59,7 @@ export function SidebarInspector( editor ) {
 					if (attribute.if[type].includes(data[type]) && data[name] === undefined) {
 						// add attribute to data
 						data[name] = ComponentManager.addDefault(attribute.type, attribute.default);
-
+						section.appendChild(this.addFieldset(schema, name, data));
 					} else if (data[name] !== undefined) {
 						// remove attribute from data
 						delete data[name];
