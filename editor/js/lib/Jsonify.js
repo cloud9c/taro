@@ -5,8 +5,10 @@ export function applicationToJSON( app ) {
 	const data = {
 		scenes: [],
 		currentScene: app.currentScene.uuid,
-		parameters: Object.assign( {}, app.parameters ),
+		parameters: app.parameters
 	};
+
+	delete app.parameters.canvas;
 
 	for ( let i = 0, len = app.scenes.length; i < len; i ++ )
 		data.scenes[ i ] = sceneToJSON( app.scenes[ i ] );

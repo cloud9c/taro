@@ -1,28 +1,43 @@
-export function Navbar() {
+import { applicationToJSON } from './lib/Jsonify.js';
+import { TaroLoader } from './lib/TaroLoader.js';
 
-	// function onPointerDown( event ) {
+export function Navbar( editor ) {
 
-	// 	const target = event.target;
+	const canvas = document.getElementById( 'canvas' );
+	const player = document.getElementById( 'player' );
+	const playMenu = document.getElementsByClassName( 'menu' )[ 3 ];
+	const taroLoader = new TaroLoader();
+	let app;
 
-	// 	if ( event.isPrimary === false || target.classList.contains( 'tabs' ) || target.dataset.selected !== undefined ) return;
+	let isPlaying = false;
+	playMenu.addEventListener( 'pointerdown', function () {
 
-	// 	const tabs = target.parentElement;
+		if ( isPlaying ) { // stop it
 
-	// 	const oldTarget = tabs.querySelector( '[data-selected]' );
-	// 	delete oldTarget.dataset.selected;
-	// 	document.getElementById( oldTarget.dataset.tab ).style.removeProperty( 'display' );
+			canvas.style.display = '';
+			player.style.display = '';
 
+			app.stop();
+			app = undefined;
 
-	// 	target.dataset.selected = '';
-	// 	document.getElementById( target.dataset.tab ).style.setProperty( 'display', 'inherit' );
+		} else { // start it
 
-	// }
+			const appJSON = applicationToJSON( editor.app );
+			appJSON.parameters.canvas = player;
+			taroLoader.parse( appJSON, function ( newApp ) {
 
-	// const tabs = document.getElementsByClassName( 'tabs' );
-	// for ( let i = 0, len = tabs.length; i < len; i ++ ) {
+				canvas.style.display = 'none';
+				player.style.display = 'initial';
 
-	// 	tabs[ i ].addEventListener( 'pointerdown', onPointerDown );
+				app = newApp;
+				app.start();
 
-	// }
+			} );
+
+		}
+
+		isPlaying = ! isPlaying;
+
+	} );
 
 }

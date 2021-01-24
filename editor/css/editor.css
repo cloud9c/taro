@@ -478,10 +478,14 @@ section.component {
 	flex: 1;
 }
 
-#canvas {
+#canvas, #player {
 	width: 100%;
 	height: 100%;
 	outline: none;
+}
+
+#player {
+	display: none;
 }
 
 #toolbar {

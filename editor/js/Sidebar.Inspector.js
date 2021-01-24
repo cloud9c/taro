@@ -35,6 +35,13 @@ export function SidebarInspector( editor ) {
 
 	};
 
+	this.onInspectorChange = function ( section, data, config ) {
+
+		const type = config.type;
+		const schema = config.schema;
+
+	};
+
 	this.addUI = function ( config, componentData ) {
 
 		const data = componentData.data;
@@ -49,157 +56,202 @@ export function SidebarInspector( editor ) {
 
 		const schema = config.schema;
 
-		for ( name in data ) {
+		if ( schema !== undefined ) {
 
-			if ( schema === undefined ) continue;
+			for ( name in data ) {
 
-			let attribute = schema[ name ];
+				let attribute = schema[ name ];
 
-			if ( Array.isArray( attribute ) ) {
+				if ( Array.isArray( attribute ) ) {
 
-				for ( let i = 0, len = attribute.length; i < len; i ++ ) {
+					for ( let i = 0, len = attribute.length; i < len; i ++ ) {
 
-					const dependencies = attribute.if;
-					if ( dependencies !== undefined ) {
+						const dependencies = attribute.if;
+						if ( dependencies !== undefined ) {
 
-						let exit = false;
-						for ( d in dependencies ) {
+							let exit = false;
+							for ( d in dependencies ) {
 
-							if ( ! dependencies[ d ].includes( data[ d ] ) ) {
+								if ( ! dependencies[ d ].includes( data[ d ] ) ) {
 
-								exit = true;
-								break;
+									exit = true;
+									break;
+
+								}
 
 							}
 
+							if ( exit ) continue;
+
 						}
 
-						if ( exit ) continue;
+						attribute = schema[ name ][ i ];
+						break;
 
 					}
-
-					attribute = schema[ name ][ i ];
-					break;
 
 				}
 
-			}
+				const value = data[ name ];
+				const currentName = name;
+				const fieldset = document.createElement( 'FIELDSET' );
+				fieldset.dataset.name = name;
+				const legend = document.createElement( 'LEGEND' );
+				legend.textContent = attribute.label !== undefined ? attribute.label : name;
+				fieldset.appendChild( legend );
 
-			const value = data[ name ];
-			const currentName = name;
-			const fieldset = document.createElement( 'FIELDSET' );
-			const legend = document.createElement( 'LEGEND' );
-			legend.textContent = attribute.label !== undefined ? attribute.label : name;
-			fieldset.appendChild( legend );
+				let input, div, vector;
 
-			let input, div, vector;
+				switch ( attribute.type ) {
 
-			switch ( attribute.type ) {
-
-				case 'string':
-					input = document.createElement( 'INPUT' );
-					input.type = 'text';
-					input.value = value;
-					input.addEventListener( 'change', () => {
-
-						data[ currentName ] = input.value;
-
-					} );
-					fieldset.appendChild( input );
-					break;
-				case 'color':
-					input = document.createElement( 'INPUT' );
-					input.type = 'color';
-					input.value = '#' + value.getHexString();
-					input.addEventListener( 'input', () => {
-
-						data[ currentName ].set( input.value );
-
-					} );
-					fieldset.appendChild( input );
-					break;
-				case 'vector2':
-					for ( let i = 0; i < 2; i ++ ) {
-
-						const input = document.createElement( 'INPUT' );
-						input.style.width = '87px';
-						input.type = 'number';
-
-						if ( i == 1 ) input.style.marginLeft = '6px';
-
-						input.value = value.getComponent( i );
-						const index = i;
+					case 'string':
+						input = document.createElement( 'INPUT' );
+						input.type = 'text';
+						input.value = value;
 						input.addEventListener( 'change', () => {
 
-							let value = parseFloat( input.value );
-
-							if ( attribute.min !== undefined ) value = Math.max( attribute.min, value );
-							if ( attribute.max !== undefined ) value = Math.min( attribute.min, value );
-							if ( attribute.type === 'int' ) value = Math.round( value );
-							input.value = value;
-
-							data[ currentName ].setComponent( index, value );
+							data[ currentName ] = input.value;
+							this.onInspectorChange( section, data, config );
 
 						} );
-
 						fieldset.appendChild( input );
+						break;
+					case 'color':
+						input = document.createElement( 'INPUT' );
+						input.type = 'color';
+						input.value = '#' + value.getHexString();
+						input.addEventListener( 'input', () => {
 
-					}
-
-					break;
-				case 'vector3':
-					for ( let i = 0; i < 3; i ++ ) {
-
-						const input = document.createElement( 'INPUT' );
-						input.type = 'number';
-
-						if ( i == 1 )
-							input.style.margin = '0px 6px';
-
-						input.value = value.getComponent( i );
-						const index = i;
-						input.addEventListener( 'change', () => {
-
-							let value = parseFloat( input.value );
-
-							if ( attribute.min !== undefined ) value = Math.max( attribute.min, value );
-							if ( attribute.max !== undefined ) value = Math.min( attribute.min, value );
-							if ( attribute.type === 'int' ) value = Math.round( value );
-							input.value = value;
-
-							data[ currentName ].setComponent( index, value );
+							data[ currentName ].set( input.value );
+							this.onInspectorChange( section, data, config );
 
 						} );
-
 						fieldset.appendChild( input );
+						break;
+					case 'vector2':
+						for ( let i = 0; i < 2; i ++ ) {
 
-					}
+							const input = document.createElement( 'INPUT' );
+							input.style.width = '87px';
+							input.type = 'number';
 
-					break;
-				case 'vector4':
-					div = document.createElement( 'DIV' );
-					div.style = 'display: flex;flex-wrap: wrap;width:174px';
-					for ( let i = 0; i < 4; i ++ ) {
+							if ( i == 1 ) input.style.marginLeft = '6px';
 
-						const input = document.createElement( 'INPUT' );
-						input.type = 'number';
+							input.value = value.getComponent( i );
+							const index = i;
+							input.addEventListener( 'change', () => {
 
-						if ( i == 0 || i == 1 )
-							input.style.marginBottom = '4px';
+								let value = parseFloat( input.value );
 
-						if ( i == 1 || i == 3 ) {
+								if ( attribute.min !== undefined ) value = Math.max( attribute.min, value );
+								if ( attribute.max !== undefined ) value = Math.min( attribute.min, value );
+								if ( attribute.type === 'int' ) value = Math.round( value );
+								input.value = value;
 
-							input.style.marginLeft = '4px';
-							input.style.width = 'calc(50% - 4px)';
+								data[ currentName ].setComponent( index, value );
+								this.onInspectorChange( section, data, config );
 
-						} else {
+							} );
 
-							input.style.width = '50%';
+							fieldset.appendChild( input );
 
 						}
 
-						input.value = value.getComponent( i );
-						const index = i;
+						break;
+					case 'vector3':
+						for ( let i = 0; i < 3; i ++ ) {
+
+							const input = document.createElement( 'INPUT' );
+							input.type = 'number';
+
+							if ( i == 1 )
+								input.style.margin = '0px 6px';
+
+							input.value = value.getComponent( i );
+							const index = i;
+							input.addEventListener( 'change', () => {
+
+								let value = parseFloat( input.value );
+
+								if ( attribute.min !== undefined ) value = Math.max( attribute.min, value );
+								if ( attribute.max !== undefined ) value = Math.min( attribute.min, value );
+								if ( attribute.type === 'int' ) value = Math.round( value );
+								input.value = value;
+
+								data[ currentName ].setComponent( index, value );
+								this.onInspectorChange( section, data, config );
+
+							} );
+
+							fieldset.appendChild( input );
+
+						}
+
+						break;
+					case 'vector4':
+						div = document.createElement( 'DIV' );
+						div.style = 'display: flex;flex-wrap: wrap;width:174px';
+						for ( let i = 0; i < 4; i ++ ) {
+
+							const input = document.createElement( 'INPUT' );
+							input.type = 'number';
+
+							if ( i == 0 || i == 1 )
+								input.style.marginBottom = '4px';
+
+							if ( i == 1 || i == 3 ) {
+
+								input.style.marginLeft = '4px';
+								input.style.width = 'calc(50% - 4px)';
+
+							} else {
+
+								input.style.width = '50%';
+
+							}
+
+							input.value = value.getComponent( i );
+							const index = i;
+							input.addEventListener( 'change', () => {
+
+								let value = parseFloat( input.value );
+
+								if ( attribute.min !== undefined ) value = Math.max( attribute.min, value );
+								if ( attribute.max !== undefined ) value = Math.min( attribute.min, value );
+								if ( attribute.type === 'int' ) value = Math.round( value );
+								input.value = value;
+
+								data[ currentName ].setComponent( index, value );
+								this.onInspectorChange( section, data, config );
+
+							} );
+
+							div.appendChild( input );
+
+						}
+
+						fieldset.appendChild( div );
+
+						break;
+					case 'boolean':
+						input = document.createElement( 'INPUT' );
+						input.type = 'checkbox';
+						input.style.width = '174px';
+						if ( value ) input.checked = true;
+						input.addEventListener( 'change', () => {
+
+							data[ currentName ] = input.checked;
+							this.onInspectorChange( section, data, config );
+
+						} );
+						fieldset.appendChild( input );
+						break;
+					case 'number':
+					case 'int':
+						input = document.createElement( 'INPUT' );
+						input.type = 'number';
+						input.style.width = '114px';
+						input.value = value;
 						input.addEventListener( 'change', () => {
 
 							let value = parseFloat( input.value );
@@ -209,90 +261,56 @@ export function SidebarInspector( editor ) {
 							if ( attribute.type === 'int' ) value = Math.round( value );
 							input.value = value;
 
-							data[ currentName ].setComponent( index, value );
+							data[ currentName ] = value;
+							this.onInspectorChange( section, data, config );
+
+						} );
+						fieldset.appendChild( input );
+						break;
+					case 'select':
+						input = document.createElement( 'SELECT' );
+						const options = attribute.select;
+
+						for ( let i = 0, len = options.length; i < len; i ++ ) {
+
+							const option = document.createElement( 'OPTION' );
+							option.value = options[ i ];
+							option.textContent = options[ i ];
+
+							if ( options[ i ] === value )
+								option.selected = true;
+
+
+							input.appendChild( option );
+
+						}
+
+						input.addEventListener( 'change', () => {
+
+							data[ currentName ] = input.value;
+							this.onInspectorChange( section, data, config );
 
 						} );
 
-						div.appendChild( input );
+						fieldset.appendChild( input );
+						break;
+					case 'asset': // TODO
+						input = document.createElement( 'INPUT' );
+						input.type = 'file';
+						fieldset.appendChild( input );
+						break;
+					case 'class': // REWORK
+						break;
+					case 'entity': // TODO
+						break;
+					default:
+						return console.warn( 'SidebarInspector: Invalid schema type: ' + attribute.type );
 
-					}
+				}
 
-					fieldset.appendChild( div );
-
-					break;
-				case 'boolean':
-					input = document.createElement( 'INPUT' );
-					input.type = 'checkbox';
-					input.style.width = '174px';
-					if ( value ) input.checked = true;
-					input.addEventListener( 'change', () => {
-
-						data[ currentName ] = input.checked;
-
-					} );
-					fieldset.appendChild( input );
-					break;
-				case 'number':
-				case 'int':
-					input = document.createElement( 'INPUT' );
-					input.type = 'number';
-					input.style.width = '114px';
-					input.value = value;
-					input.addEventListener( 'change', () => {
-
-						let value = parseFloat( input.value );
-
-						if ( attribute.min !== undefined ) value = Math.max( attribute.min, value );
-						if ( attribute.max !== undefined ) value = Math.min( attribute.min, value );
-						if ( attribute.type === 'int' ) value = Math.round( value );
-						input.value = value;
-
-						data[ currentName ] = value;
-
-					} );
-					fieldset.appendChild( input );
-					break;
-				case 'select':
-					input = document.createElement( 'SELECT' );
-					const options = attribute.select;
-
-					for ( let i = 0, len = options.length; i < len; i ++ ) {
-
-						const option = document.createElement( 'OPTION' );
-						option.value = options[ i ];
-						option.textContent = options[ i ];
-
-						if ( options[ i ] === value )
-							option.selected = true;
-
-
-						input.appendChild( option );
-
-					}
-
-					input.addEventListener( 'change', () => {
-
-						data[ currentName ] = input.value;
-
-					} );
-
-					fieldset.appendChild( input );
-					break;
-				case 'asset':
-					input = document.createElement( 'INPUT' );
-					input.type = 'file';
-					fieldset.appendChild( input );
-					break;
-				case 'class':
-					break;
-				case 'entity':
-					break;
-				default:
-					return console.warn( 'SidebarInspector: Invalid schema type: ' + attribute.type );
+				section.appendChild( fieldset );
 
 			}
-
-			section.appendChild( fieldset );
 
 		}
 
