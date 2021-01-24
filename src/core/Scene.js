@@ -62,7 +62,7 @@ export class Scene extends TS {
 
 				object.dispatchEvent( { type: 'sceneadd' } );
 				object.traverseEntities( ( child ) => {
-
+					child.scene = this;
 					child.dispatchEvent( { type: 'sceneadd' } );
 
 				} );
@@ -82,7 +82,7 @@ export class Scene extends TS {
 
 			object.dispatchEvent( { type: 'sceneremove' } );
 			object.traverseEntities( ( child ) => {
-
+				delete child.scene;
 				child.dispatchEvent( { type: 'sceneremove' } );
 
 			} );
