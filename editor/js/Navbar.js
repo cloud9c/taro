@@ -14,26 +14,36 @@ export function Navbar( editor ) {
 
 		if ( isPlaying ) { // stop it
 
+			// dispose old app
+			app.stop();
+			app.dispose();
+			app.renderer.forceContextLoss();
+			app = undefined;
+
+			// clear webgl context
+			const newPlayer = player.cloneNode( true );
+			console.log( newPlayer, player );
+			player.parentNode.replaceChild( newPlayer, player );
+			player = newPlayer;
+
 			canvas.style.display = '';
 			player.style.display = '';
 			playMenu.firstElementChild.textContent = 'Play';
 
-			app.stop();
-			app.dispose();
-			app = undefined;
-
 		} else { // start it
+
+			canvas.style.display = 'none';
+			player.style.display = 'initial';
 
 			const appJSON = applicationToJSON( editor.app );
 			appJSON.parameters.canvas = player;
 			taroLoader.parse( appJSON, function ( newApp ) {
 
-				canvas.style.display = 'none';
-				player.style.display = 'initial';
 				playMenu.firstElementChild.textContent = 'Stop';
 
 				app = newApp;
 				app.start();
+				// console.log( app.currentScene );
 
 			} );
 

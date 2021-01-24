@@ -6,10 +6,6 @@ import { SidebarScene } from './Sidebar.Scene.js';
 import { SidebarInspector } from './Sidebar.Inspector.js';
 import { Navbar } from './Navbar.js';
 
-import { applicationToJSON } from './lib/Jsonify.js';
-
-window.applicationToJSON = applicationToJSON;
-
 function Editor() {
 
 	const runners = [ 'camera', 'geometry', 'light', 'material', 'renderable' ];

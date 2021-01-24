@@ -1,4 +1,4 @@
-import { Application, Entity, Scene, Loader } from '../../../build/taro.js';
+import { Application, Entity, Scene, Loader, Color, Fog, FogExp2 } from '../../../build/taro.js';
 
 export class TaroLoader extends Loader {
 
@@ -45,13 +45,11 @@ export class TaroLoader extends Loader {
 
 		for ( let i = 0, len = scenes.length; i < len; i ++ ) {
 
-			const scene = this.parseScene( scenes[ i ] );
+			const scene = this.parseScene( scenes[ i ], app );
 
-			if ( scene.uuid === json.currentScene ) {
-
+			if ( scene.uuid === json.currentScene )
 				app.setScene( scene );
 
-			}
 
 		}
 
@@ -61,9 +59,11 @@ export class TaroLoader extends Loader {
 
 	}
 
-	parseScene( data ) {
+	parseScene( data, app ) {
 
 		const object = new Scene();
+
+		app.addScene( object );
 
 		object.uuid = data.uuid;
 
@@ -112,6 +112,7 @@ export class TaroLoader extends Loader {
 
 		object.uuid = data.uuid;
 		object.matrix.fromArray( data.matrix );
+		object.matrix.decompose( object.position, object.quaternion, object.scale );
 
 		if ( data.tags !== undefined ) object.tags = data.tags;
 		if ( data.name !== undefined ) object.name = data.name;
