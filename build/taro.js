@@ -52139,7 +52139,7 @@ const ComponentManager = {
 
 					}
 
-					this.addDefault( object.type, object.default, data, name );
+					data[name] = this.addDefault( object.type, object.default );
 
 				}
 
@@ -52177,27 +52177,22 @@ const ComponentManager = {
 		return exit;
 
 	},
-	addDefault: function ( type, _default, data, name ) {
+	addDefault: function ( type, _default ) {
 
 		switch ( type ) {
 
 			case 'vector2':
-				data[ name ] = new Vector2( ..._default );
-				break;
+				return new Vector2( ..._default );
 			case 'vector3':
-				data[ name ] = new Vector3( ..._default );
-				break;
+				return new Vector3( ..._default );
 			case 'vector4':
-				data[ name ] = new Vector4( ..._default );
-				break;
+				return new Vector4( ..._default );
 			case 'color':
-				data[ name ] = new Color( _default );
-				break;
+				return new Color( _default );
 			case 'class':
-				data[ name ] = new _default();
-				break;
+				return new _default();
 			default:
-				data[ name ] = _default;
+				return _default;
 
 		}
 
@@ -55665,7 +55660,7 @@ class Scene$1 extends Scene {
 
 				object.dispatchEvent( { type: 'sceneadd' } );
 				object.traverseEntities( ( child ) => {
-
+					child.scene = this;
 					child.dispatchEvent( { type: 'sceneadd' } );
 
 				} );
@@ -55685,7 +55680,7 @@ class Scene$1 extends Scene {
 
 			object.dispatchEvent( { type: 'sceneremove' } );
 			object.traverseEntities( ( child ) => {
-
+				delete child.scene;
 				child.dispatchEvent( { type: 'sceneremove' } );
 
 			} );
