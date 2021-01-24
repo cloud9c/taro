@@ -37,7 +37,7 @@
 						this.entity.rotation.order = "YXZ";
 						this.ball = this.entity.scene.getEntityByName("ball");
 
-						window.addEventListener("mousedown", () => {
+						window.addEventListener("pointerdown", () => {
 							this.entity.app.renderer.domElement.requestPointerLock();
 						});
 						// this.ball.addEventListener("collisionenter", function (
@@ -48,26 +48,26 @@
 					}
 					update() {
 						const ball = this.ball;
-						if (this.input.getKeyDown("KeyG")) {
+						if (this.input.isKeyDown("KeyG")) {
 							console.log(this.ball.toJSON())
 						}
 
-						if (this.input.getKeyDown("ArrowUp")) {
+						if (this.input.isKeyDown("ArrowUp")) {
 							ball.getComponent("rigidbody").applyForceToCenter(
 								new TARO.Vector3(0, 0, -200)
 							);
 						}
-						if (this.input.getKeyDown("ArrowDown")) {
+						if (this.input.isKeyDown("ArrowDown")) {
 							ball.getComponent("rigidbody").applyForceToCenter(
 								new TARO.Vector3(0, 0, 200)
 							);
 						}
-						if (this.input.getKeyDown("ArrowLeft")) {
+						if (this.input.isKeyDown("ArrowLeft")) {
 							ball.getComponent("rigidbody").applyForceToCenter(
 								new TARO.Vector3(-200, 0, 0)
 							);
 						}
-						if (this.input.getKeyDown("ArrowRight")) {
+						if (this.input.isKeyDown("ArrowRight")) {
 							ball.getComponent("rigidbody").applyForceToCenter(
 								new TARO.Vector3(200, 0, 0)
 							);
@@ -92,9 +92,9 @@
 							this.entity.translateY(-0.1);
 						}
 						this.entity.rotation.x -=
-							this.input.mouseDelta.y * 0.001;
+							this.input.pointerDelta.y * 0.001;
 						this.entity.rotation.y -=
-							this.input.mouseDelta.x * 0.001;
+							this.input.pointerDelta.x * 0.001;
 					}
 				}
 			);
