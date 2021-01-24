@@ -6,11 +6,9 @@ import { SidebarScene } from './Sidebar.Scene.js';
 import { SidebarInspector } from './Sidebar.Inspector.js';
 import { Navbar } from './Navbar.js';
 
-function Editor() {
+import './lib/EditorComponents.js'
 
-	const runners = [ 'camera', 'geometry', 'light', 'material', 'renderable' ];
-	for ( let i = 0, len = runners.length; i < len; i ++ )
-		ComponentManager.components[ runners[ i ] ].config.runInEditor = true;
+function Editor() {
 
 	this.sidebar = new Sidebar();
 

@@ -126,8 +126,8 @@ export class TaroLoader extends Loader {
 			const components = data.components;
 			for ( let i = 0, len = components.length; i < len; i ++ ) {
 
-				object.addComponent( components[ i ].type, components[ i ].data );
-
+				const component = object.addComponent( components[ i ].type, components[ i ].data );
+				component.uuid = components[ i ].uuid;
 			}
 
 		}

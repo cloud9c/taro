@@ -71,10 +71,19 @@ export function SidebarInspector( editor ) {
 		}
 
 		if (config.runInEditor === true && config.onValueChanged !== undefined) {
-			config.onValueChanged.bind(this, type, value, data)
-		}
 
-		onValueChanged.bind()
+			const components = currentEntity.components;
+			let component;
+			for (let i = 0, len = components.length; i < len; i++) {
+				console.log(components[i], section.dataset.uuid)
+				if (components[i].uuid === section.dataset.uuid) {
+					component = components[i];
+					break;
+				}
+			}
+
+			config.onValueChanged.bind(component, type, data);
+		}
 
 	};
 
@@ -337,6 +346,7 @@ export function SidebarInspector( editor ) {
 		const data = component.data;
 
 		const section = document.createElement( 'SECTION' );
+		section.dataset.uuid = component.uuid;
 		section.classList.add( 'component' );
 
 		const title = document.createElement( 'H1' );
@@ -596,7 +606,7 @@ export function SidebarInspector( editor ) {
 
 		if ( currentEntity.componentData === undefined ) currentEntity.componentData = [];
 
-		const component = { type, data: {} };
+		const component = { type, data: {}, uuid: MathUtils.generateUUID() };
 		const config = ComponentManager.components[ type ].config;
 		const schema = config.schema;
 		const runInEditor = config.runInEditor === true;
