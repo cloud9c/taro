@@ -55661,8 +55661,16 @@ class Scene$1 extends Scene {
 			const oldScene = object.scene;
 			object.scene = this;
 
-			if ( oldScene === undefined )
+			if ( oldScene === undefined ) {
+
 				object.dispatchEvent( { type: 'sceneadd' } );
+				object.traverseEntities( ( child ) => {
+
+					child.dispatchEvent( { type: 'sceneadd' } );
+
+				} );
+
+			}
 
 		}
 
@@ -55676,6 +55684,11 @@ class Scene$1 extends Scene {
 			delete object.scene;
 
 			object.dispatchEvent( { type: 'sceneremove' } );
+			object.traverseEntities( ( child ) => {
+
+				child.dispatchEvent( { type: 'sceneremove' } );
+
+			} );
 
 		}
 
@@ -56278,6 +56291,17 @@ class Entity extends Group {
 
 	}
 
+	traverseEntities( callback ) {
+
+		this.traverse( child => {
+
+			if ( child.isEntity !== undefined )
+				callback( child );
+
+		} );
+
+	}
+
 	getEntities() {
 
 		const filteredChildren = [];
@@ -56303,9 +56327,9 @@ class Entity extends Group {
 
 		let match;
 
-		this.traverse( ( child ) => {
+		this.traverseEntities( ( child ) => {
 
-			if ( child.isEntity !== undefined && child.name === name ) {
+			if ( child.name === name ) {
 
 				match = child;
 
@@ -56320,9 +56344,9 @@ class Entity extends Group {
 	getEntityByTag( tag ) {
 
 		const matches = [];
-		this.traverse( ( child ) => {
+		this.traverseEntities( ( child ) => {
 
-			if ( child.isEntity !== undefined && child.tags.includes( tag ) )
+			if ( child.tags.includes( tag ) )
 				matches.push( child );
 
 		} );
@@ -56334,9 +56358,9 @@ class Entity extends Group {
 
 		let match;
 
-		this.traverse( ( child ) => {
+		this.traverseEntities( ( child ) => {
 
-			if ( child.isEntity !== undefined && child[ name ] === value ) {
+			if ( child[ name ] === value ) {
 
 				match = child;
 
