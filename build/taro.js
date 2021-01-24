@@ -56242,7 +56242,8 @@ class Entity extends Group {
 
 		const component = new componentData.constructor();
 
-		Object.defineProperty( component, 'entity', { value: this } );
+		component.entity = this;
+		component.uuid = MathUtils.generateUUID();
 
 		this.components.push( component );
 
