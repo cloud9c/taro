@@ -1,4 +1,4 @@
-import { Group } from '../lib/three.js';
+import { Group, MathUtils } from '../lib/three.js';
 import { Scene } from './Scene.js';
 import { Application } from './Application.js';
 import { ComponentManager } from './ComponentManager.js';
@@ -118,7 +118,8 @@ export class Entity extends Group {
 
 		const component = new componentData.constructor();
 
-		Object.defineProperty( component, 'entity', { value: this } );
+		component.entity = this;
+		component.uuid = MathUtils.generateUUID();
 
 		this.components.push( component );
 
