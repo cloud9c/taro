@@ -66,8 +66,6 @@ export function SidebarInspector( editor ) {
 
 						}
 
-						console.log( name, oldExit, newExit );
-
 						if ( oldExit && ! newExit ) {
 
 							// add
@@ -91,7 +89,6 @@ export function SidebarInspector( editor ) {
 
 					// remove
 					delete data[ name ];
-					console.log( section, name );
 					section.querySelector( 'fieldset[data-type="' + name + '"]' ).remove();
 
 				}
@@ -112,7 +109,6 @@ export function SidebarInspector( editor ) {
 
 					} else if ( data[ name ] !== undefined ) {
 
-						console.log( name );
 						// remove attribute from data
 						delete data[ name ];
 						section.querySelector( 'fieldset[data-type="' + name + '"]' ).remove();
