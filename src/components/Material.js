@@ -60,7 +60,7 @@ export class Material {
 	onEnable() {
 
 		const geometry = this.entity.getComponent( 'geometry' );
-		if ( this.mesh === undefined && geometry !== undefined && geometry._enabled ) {
+		if ( geometry !== undefined && geometry.enabled ) {
 
 			geometry.mesh = this.mesh = new THREE.Mesh( geometry.ref, this.ref );
 			this.entity.add( this.mesh );
@@ -72,7 +72,7 @@ export class Material {
 	onDisable() {
 
 		const geometry = this.entity.getComponent( 'geometry' );
-		if ( geometry !== undefined && geometry._enabled ) {
+		if ( geometry !== undefined && geometry.enabled ) {
 
 			this.entity.remove( this.mesh );
 			delete this.mesh;
