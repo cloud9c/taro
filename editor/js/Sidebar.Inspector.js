@@ -75,14 +75,15 @@ export function SidebarInspector( editor ) {
 			const components = currentEntity.components;
 			let component;
 			for (let i = 0, len = components.length; i < len; i++) {
-				console.log(components[i], section.dataset.uuid)
+
 				if (components[i].uuid === section.dataset.uuid) {
 					component = components[i];
 					break;
 				}
 			}
 
-			config.onValueChanged.bind(component, type, data);
+			console.log(config.onValueChanged)
+			config.onValueChanged.call(component, type, data);
 		}
 
 	};
@@ -530,8 +531,9 @@ export function SidebarInspector( editor ) {
 
 		componentSelector.addEventListener( 'focus', () => {
 
-			const components = ComponentManager.components;
-			for ( const type in components ) {
+			const components = Object.keys(ComponentManager.components).sort();
+			for ( let i = 0, len = components.length; i < len; i++ ) {
+				const type = components[i];
 
 				const allowMultiple = ComponentManager.components[ type ].config.allowMultiple;
 				const componentData = entity.componentData;
@@ -618,7 +620,10 @@ export function SidebarInspector( editor ) {
 
 		}
 
-		if ( runInEditor ) currentEntity.addComponent( type, component.data );
+		if ( runInEditor ) {
+			const _component = currentEntity.addComponent( type, component.data );
+			_component.uuid = component.uuid;
+		}
 
 		currentEntity.componentData.push( component );
 		editor.render();

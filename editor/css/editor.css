@@ -160,7 +160,7 @@ select {
 	font-family: inherit;
 	font-size: inherit;
 	color: inherit;
-	padding: 1px 0 1px 4px;
+	padding: 1px 24px 1px 4px;
 	appearance: none;
 	background: url("../img/chevron-down.svg") no-repeat right 4px center, var(--gray-5);
 	background-size: 16px;

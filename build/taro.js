@@ -52295,7 +52295,7 @@ class Geometry$1 {
 			case 'box':
 				this.ref = new BoxBufferGeometry( data.width, data.height, data.depth, data.widthSegments, data.heightSegments, data.depthSegments );
 				break;
-			case 'cricle':
+			case 'circle':
 				this.ref = new CircleBufferGeometry( data.radius, data.segments, data.thetaStart, data.thetaLength );
 				break;
 			case 'cone':
