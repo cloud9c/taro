@@ -22,7 +22,6 @@ export function Navbar( editor ) {
 
 			// clear webgl context
 			const newPlayer = player.cloneNode( true );
-			console.log( newPlayer, player );
 			player.parentNode.replaceChild( newPlayer, player );
 			player = newPlayer;
 

@@ -35,60 +35,131 @@ export function SidebarInspector( editor ) {
 
 	};
 
-	this.onInspectorChange = function ( fieldset, type, data, config) {
+	this.onInspectorChange = function ( fieldset, type, data, oldValue, config ) {
+
 		const schema = config.schema;
 		const section = fieldset.parentElement;
 
-		for (const name in schema) {
+		for ( const name in schema ) {
 
-			let attribute = schema[name];
-			if (Array.isArray(attribute)) {
-				let index = -1;
-				for (let i = 0, len = attribute.length; i < len; i++) {
-					if (attribute[i].if !== undefined && attribute[i].if[type] !== undefined) {
-						index = i;
-						break;
+			let attribute = schema[ name ];
+			if ( Array.isArray( attribute ) ) {
+
+				let currentAttribute;
+				let matchFound = false;
+
+				for ( let i = 0, len = attribute.length; i < len; i ++ ) {
+
+					if ( attribute[ i ].if !== undefined && attribute[ i ].if[ type ] !== undefined ) {
+
+						const dependencies = attribute[ i ].if;
+
+						let oldExit = false;
+						let newExit = false;
+
+						for ( const d in dependencies ) {
+
+							if ( ! dependencies[ d ].includes( oldValue ) ) oldExit = true;
+							if ( ! dependencies[ d ].includes( data[ type ] ) ) newExit = true;
+
+							if ( oldExit && newExit ) break;
+
+						}
+
+						console.log( name, oldExit, newExit );
+
+						if ( oldExit && ! newExit ) {
+
+							// add
+							data[ name ] = ComponentManager.addDefault( attribute[ i ].type, attribute[ i ].default );
+							section.appendChild( this.addFieldset( name, data, config ) );
+							matchFound = true;
+							break;
+
+						} else if ( ! oldExit && ! newExit ) {
+
+							matchFound = true;
+							break;
+
+						}
+
 					}
-				}
-				if (index > -1) {
-					
 
 				}
+
+				if ( ! matchFound && data[ name ] !== undefined ) {
+
+					// remove
+					delete data[ name ];
+					console.log( section, name );
+					section.querySelector( 'fieldset[data-type="' + name + '"]' ).remove();
+
+				}
+
 			} else {
-				if (attribute.if !== undefined && attribute.if[type] !== undefined) {
-					if (attribute.if[type].includes(data[type]) && data[name] === undefined) {
-						// add attribute to data
-						data[name] = ComponentManager.addDefault(attribute.type, attribute.default);
-						section.appendChild(this.addFieldset(name, data, config));
-					} else if (data[name] !== undefined) {
+
+				if ( attribute.if !== undefined && attribute.if[ type ] !== undefined ) {
+
+					if ( attribute.if[ type ].includes( data[ type ] ) ) {
+
+						if ( data[ name ] === undefined ) {
+
+							// add attribute to data
+							data[ name ] = ComponentManager.addDefault( attribute.type, attribute.default );
+							section.appendChild( this.addFieldset( name, data, config ) );
+
+						}
+
+					} else if ( data[ name ] !== undefined ) {
+
+						console.log( name );
 						// remove attribute from data
-						delete data[name];
-						section.querySelector('fieldset[data-type="' + name + '"]').remove();
+						delete data[ name ];
+						section.querySelector( 'fieldset[data-type="' + name + '"]' ).remove();
+
 					}
+
 				}
+
 			}
 
 		}
 
-		if (config.runInEditor === true && config.onValueChanged !== undefined) {
+		if ( config.runInEditor === true ) {
 
 			const components = currentEntity.components;
 			let component;
-			for (let i = 0, len = components.length; i < len; i++) {
+			for ( let i = 0, len = components.length; i < len; i ++ ) {
 
-				if (components[i].uuid === section.dataset.uuid) {
-					component = components[i];
+				if ( components[ i ].uuid === section.dataset.uuid ) {
+
+					component = components[ i ];
 					break;
+
 				}
+
 			}
 
-			console.log(config.onValueChanged)
-			config.onValueChanged.call(component, type, data);
+			if ( config.onValueChanged !== undefined ) {
+
+				config.onValueChanged.call( component, type, data );
+
+			} else {
+
+				component.enabled = false;
+				component.init( data );
+				component.enabled = true;
+
+			}
+
+			editor.render();
+
 		}
 
 	};
 
-	this.addFieldset = function(type, data, config) {
+	this.addFieldset = function ( type, data, config ) {
+
 		const schema = config.schema;
 		let attribute = schema[ type ];
 
@@ -140,8 +211,9 @@ export function SidebarInspector( editor ) {
 				input.value = value;
 				input.addEventListener( 'change', () => {
 
+					const oldValue = data[ currentType ];
 					data[ currentType ] = input.value;
-					this.onInspectorChange( fieldset, type, data, config );
+					this.onInspectorChange( fieldset, type, data, oldValue, config );
 
 				} );
 				fieldset.appendChild( input );
@@ -152,8 +224,9 @@ export function SidebarInspector( editor ) {
 				input.value = '#' + value.getHexString();
 				input.addEventListener( 'input', () => {
 
+					const oldValue = data[ currentType ];
 					data[ currentType ].set( input.value );
-					this.onInspectorChange( fieldset, type, data, config );
+					this.onInspectorChange( fieldset, type, data, oldValue, config );
 
 				} );
 				fieldset.appendChild( input );
@@ -171,15 +244,16 @@ export function SidebarInspector( editor ) {
 					const index = i;
 					input.addEventListener( 'change', () => {
 
+						const oldValue = data[ currentType ];
 						let value = parseFloat( input.value );
 
 						if ( attribute.min !== undefined ) value = Math.max( attribute.min, value );
-						if ( attribute.max !== undefined ) value = Math.min( attribute.min, value );
+						if ( attribute.max !== undefined ) value = Math.min( attribute.max, value );
 						if ( attribute.type === 'int' ) value = Math.round( value );
 						input.value = value;
 
 						data[ currentType ].setComponent( index, value );
-						this.onInspectorChange( fieldset, type, data, config );
+						this.onInspectorChange( fieldset, type, data, oldValue, config );
 
 					} );
 
@@ -201,15 +275,16 @@ export function SidebarInspector( editor ) {
 					const index = i;
 					input.addEventListener( 'change', () => {
 
+						const oldValue = data[ currentType ];
 						let value = parseFloat( input.value );
 
 						if ( attribute.min !== undefined ) value = Math.max( attribute.min, value );
-						if ( attribute.max !== undefined ) value = Math.min( attribute.min, value );
+						if ( attribute.max !== undefined ) value = Math.min( attribute.max, value );
 						if ( attribute.type === 'int' ) value = Math.round( value );
 						input.value = value;
 
 						data[ currentType ].setComponent( index, value );
-						this.onInspectorChange( fieldset, type, data, config );
+						this.onInspectorChange( fieldset, type, data, oldValue, config );
 
 					} );
 
@@ -244,15 +319,16 @@ export function SidebarInspector( editor ) {
 					const index = i;
 					input.addEventListener( 'change', () => {
 
+						const oldValue = data[ currentType ];
 						let value = parseFloat( input.value );
 
 						if ( attribute.min !== undefined ) value = Math.max( attribute.min, value );
-						if ( attribute.max !== undefined ) value = Math.min( attribute.min, value );
+						if ( attribute.max !== undefined ) value = Math.min( attribute.max, value );
 						if ( attribute.type === 'int' ) value = Math.round( value );
 						input.value = value;
 
 						data[ currentType ].setComponent( index, value );
-						this.onInspectorChange( fieldset, type, data, config );
+						this.onInspectorChange( fieldset, type, data, oldValue, config );
 
 					} );
 
@@ -270,8 +346,9 @@ export function SidebarInspector( editor ) {
 				if ( value ) input.checked = true;
 				input.addEventListener( 'change', () => {
 
+					const oldValue = data[ currentType ];
 					data[ currentType ] = input.checked;
-					this.onInspectorChange( fieldset, type, data, config );
+					this.onInspectorChange( fieldset, type, data, oldValue, config );
 
 				} );
 				fieldset.appendChild( input );
@@ -284,15 +361,16 @@ export function SidebarInspector( editor ) {
 				input.value = value;
 				input.addEventListener( 'change', () => {
 
+					const oldValue = data[ currentType ];
 					let value = parseFloat( input.value );
 
 					if ( attribute.min !== undefined ) value = Math.max( attribute.min, value );
-					if ( attribute.max !== undefined ) value = Math.min( attribute.min, value );
+					if ( attribute.max !== undefined ) value = Math.min( attribute.max, value );
 					if ( attribute.type === 'int' ) value = Math.round( value );
 					input.value = value;
 
 					data[ currentType ] = value;
-					this.onInspectorChange( fieldset, type, data, config );
+					this.onInspectorChange( fieldset, type, data, oldValue, config );
 
 				} );
 				fieldset.appendChild( input );
@@ -317,8 +395,9 @@ export function SidebarInspector( editor ) {
 
 				input.addEventListener( 'change', () => {
 
+					const oldValue = data[ currentType ];
 					data[ currentType ] = input.value;
-					this.onInspectorChange( fieldset, type, data, config );
+					this.onInspectorChange( fieldset, type, data, oldValue, config );
 
 				} );
 
@@ -340,7 +419,7 @@ export function SidebarInspector( editor ) {
 
 		return fieldset;
 
-	}
+	};
 
 	this.addSection = function ( component, config ) {
 
@@ -361,7 +440,7 @@ export function SidebarInspector( editor ) {
 
 			for ( const type in data ) {
 
-				section.appendChild( this.addFieldset(type, data, config));
+				section.appendChild( this.addFieldset( type, data, config ) );
 
 			}
 
@@ -531,9 +610,10 @@ export function SidebarInspector( editor ) {
 
 		componentSelector.addEventListener( 'focus', () => {
 
-			const components = Object.keys(ComponentManager.components).sort();
-			for ( let i = 0, len = components.length; i < len; i++ ) {
-				const type = components[i];
+			const components = Object.keys( ComponentManager.components ).sort();
+			for ( let i = 0, len = components.length; i < len; i ++ ) {
+
+				const type = components[ i ];
 
 				const allowMultiple = ComponentManager.components[ type ].config.allowMultiple;
 				const componentData = entity.componentData;
@@ -616,13 +696,15 @@ export function SidebarInspector( editor ) {
 		if ( schema !== undefined ) {
 
 			ComponentManager.sanitizeData( component.data, schema );
-			inspector.appendChild( this.addSection( component, config) );
+			inspector.appendChild( this.addSection( component, config ) );
 
 		}
 
 		if ( runInEditor ) {
+
 			const _component = currentEntity.addComponent( type, component.data );
 			_component.uuid = component.uuid;
+
 		}
 
 		currentEntity.componentData.push( component );
