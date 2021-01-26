@@ -81,6 +81,11 @@ export function SidebarInspector( editor ) {
 
 						}
 
+					} else {
+
+						matchFound = true;
+						break;
+
 					}
 
 				}
@@ -468,11 +473,11 @@ export function SidebarInspector( editor ) {
 
 		const type = document.createElement( 'INPUT' );
 		type.type = 'text';
-		type.value = entity.type;
+		type.value = entity.name;
 		type.style = 'margin-left: 8px;width: 100%;';
 		type.addEventListener( 'change', function () {
 
-			entity.type = this.value;
+			entity.name = this.value;
 			document.querySelector( '#scene-tree div[data-id="' + entity.id + '"' ).textContent = this.value;
 			editor.render();
 
@@ -669,7 +674,7 @@ export function SidebarInspector( editor ) {
 
 		componentList.addEventListener( 'pointerdown', ( event ) => {
 
-			this.addComponent( event.target.textContent );
+			this.addComponent( currentEntity, event.target.textContent );
 
 		} );
 
@@ -680,11 +685,11 @@ export function SidebarInspector( editor ) {
 
 	};
 
-	this.addComponent = function ( type ) {
+	this.addComponent = function ( entity, type, data = {} ) {
 
-		if ( currentEntity.componentData === undefined ) currentEntity.componentData = [];
+		if ( entity.componentData === undefined ) entity.componentData = [];
 
-		const component = { type, data: {}, uuid: MathUtils.generateUUID() };
+		const component = { type, data, uuid: MathUtils.generateUUID() };
 		const config = ComponentManager.components[ type ].config;
 		const schema = config.schema;
 		const runInEditor = config.runInEditor === true;
@@ -692,18 +697,18 @@ export function SidebarInspector( editor ) {
 		if ( schema !== undefined ) {
 
 			ComponentManager.sanitizeData( component.data, schema );
-			inspector.appendChild( this.addSection( component, config ) );
+			if ( entity === currentEntity ) inspector.appendChild( this.addSection( component, config ) );
 
 		}
 
 		if ( runInEditor ) {
 
-			const _component = currentEntity.addComponent( type, component.data );
+			const _component = entity.addComponent( type, component.data );
 			_component.uuid = component.uuid;
 
 		}
 
-		currentEntity.componentData.push( component );
+		entity.componentData.push( component );
 		editor.render();
 
 	};

@@ -163,7 +163,7 @@ export function Viewport( editor ) {
 
 	}
 
-	const inspector = editor.sidebarInspector;
+	const inspector = editor.inspector;
 	const app = editor.app;
 
 	const scene = this.scene = new TARO.Scene();
@@ -200,10 +200,6 @@ export function Viewport( editor ) {
 		return entity;
 
 	};
-
-	this.addEntity();
-	this.addEntity();
-	this.addEntity();
 
 	const grid = new TARO.GridHelper( 30, 30 );
 

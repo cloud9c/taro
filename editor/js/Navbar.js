@@ -17,7 +17,6 @@ export function Navbar( editor ) {
 			// dispose old app
 			app.stop();
 			app.dispose();
-			app.renderer.forceContextLoss();
 			app = undefined;
 
 			// clear webgl context

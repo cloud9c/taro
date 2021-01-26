@@ -121,7 +121,7 @@ export class TaroLoader extends Loader {
 		if ( data.visible !== undefined ) object.visible = data.visible;
 		if ( data.enabled !== undefined ) object.enabled = data.enabled;
 
-		parent.add(object);
+		parent.add( object );
 
 		if ( data.components !== undefined ) {
 
@@ -130,6 +130,7 @@ export class TaroLoader extends Loader {
 
 				const component = object.addComponent( components[ i ].type, components[ i ].data );
 				component.uuid = components[ i ].uuid;
+
 			}
 
 		}
@@ -139,7 +140,7 @@ export class TaroLoader extends Loader {
 			const children = data.children;
 			for ( let i = 0, len = children.length; i < len; i ++ ) {
 
-				this.parseEntity( children[ i ], this );
+				this.parseEntity( children[ i ], object );
 
 			}
 
