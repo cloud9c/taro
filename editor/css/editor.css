@@ -216,7 +216,6 @@ input[type="number"] {
 	border: none;
 	border-bottom: 1px solid var(--border-color);
 	background: var(--gray-5);
-	font-family: "IBM Plex Mono", monospace;
 	-moz-appearance: textfield;
 	padding-left: 4px;
 }
