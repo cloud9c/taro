@@ -163,7 +163,6 @@ export function Viewport( editor ) {
 
 	}
 
-	const inspector = editor.inspector;
 	const app = editor.app;
 
 	const scene = this.scene = new TARO.Scene();
@@ -358,7 +357,7 @@ export function Viewport( editor ) {
 
 				if ( oldTarget !== null ) delete oldTarget.dataset.selected;
 
-				inspector.detach();
+				editor.inspector.detach();
 				control.enabled = false;
 				control.detach();
 
@@ -369,7 +368,7 @@ export function Viewport( editor ) {
 				const newTarget = document.querySelector( '#scene-tree [data-id="' + rayObject.id + '"]' );
 				if ( newTarget !== null ) newTarget.dataset.selected = '';
 
-				inspector.attach( rayObject );
+				editor.inspector.attach( rayObject );
 				control.enabled = true;
 				control.attach( rayObject );
 

@@ -63,56 +63,7 @@
 				</section>
 				<div class="panel">
 					<div id="scene" style="display: inherit;">
-						<section>
-						<fieldset>
-							<legend>Background</legend>
-							<select name="background" id="background">
-								<option value="none">None</option>
-								<option value="color">Color</option>
-								<option value="texture">Texture</option>
-								<option value="equirect">Equirect</option>
-							</select>
-							<input type="color" id="background-color">
-							<div id="background-texture" class="file-wrapper">
-								<canvas width="22" height="22" class="file-display"></canvas>
-								<input class="hidden-input" type="file">
-							</div>
-							<div id="background-equirect" class="file-wrapper">
-								<canvas width="22" height="22" class="file-display"></canvas>
-								<input class="hidden-input" type="file">
-							</div>
-						</fieldset>
-						<fieldset>
-							<legend>Environment</legend>
-							<select name="environment" id="environment">
-								<option value="none">None</option>
-								<option value="texture">Texture</option>
-							</select>
-							<div id="environment-texture" class="file-wrapper">
-								<canvas width="22" height="22" class="file-display"></canvas>
-								<input class="hidden-input" type="file">
-							</div>
-						</fieldset>
-						<fieldset id="fog-wrapper">
-							<legend>Fog</legend>
-							<select name="fog" id="fog">
-								<option value="none">None</option>
-								<option value="linear">Linear</option>
-								<option value="exponential">Exp2</option>
-							</select>
-							<input type="color" id="color-linear-fog" value="#c4c4c4">
-							<input type="color" id="color-exp-fog" value="#c4c4c4">
-						</fieldset>
-						<fieldset id="linear-fog">
-							<input type="number" value="0.1">
-							<input type="number" value="50">
-						</fieldset>
-						<fieldset id="exponential-fog" value="#c4c4c4">
-							<input type="number" value="0.05">
-						</fieldset>
-						</section>
-						<section id="scene-tree">
-						</section>
+						<section id="scene-tree"></section>
 					</div>
 					<div id="app">2</div>
 					<div id="assets">3</div>
@@ -164,7 +115,56 @@
 				<section class="tabs">
 					<div class="tab" data-selected>Inspector</div>
 				</section>
-				<div class="panel" id="inspector"></div>
+				<div class="panel" id="inspector">
+					<section id='scene-default'>
+						<fieldset>
+							<legend>Background</legend>
+							<select name="background" id="background">
+								<option value="none">None</option>
+								<option value="color">Color</option>
+								<option value="texture">Texture</option>
+								<option value="equirect">Equirect</option>
+							</select>
+							<input type="color" id="background-color">
+							<div id="background-texture" class="file-wrapper">
+								<canvas width="22" height="22" class="file-display"></canvas>
+								<input class="hidden-input" type="file">
+							</div>
+							<div id="background-equirect" class="file-wrapper">
+								<canvas width="22" height="22" class="file-display"></canvas>
+								<input class="hidden-input" type="file">
+							</div>
+						</fieldset>
+						<fieldset>
+							<legend>Environment</legend>
+							<select name="environment" id="environment">
+								<option value="none">None</option>
+								<option value="texture">Texture</option>
+							</select>
+							<div id="environment-texture" class="file-wrapper">
+								<canvas width="22" height="22" class="file-display"></canvas>
+								<input class="hidden-input" type="file">
+							</div>
+						</fieldset>
+						<fieldset id="fog-wrapper">
+							<legend>Fog</legend>
+							<select name="fog" id="fog">
+								<option value="none">None</option>
+								<option value="linear">Linear</option>
+								<option value="exponential">Exp2</option>
+							</select>
+							<input type="color" id="color-linear-fog" value="#c4c4c4">
+							<input type="color" id="color-exp-fog" value="#c4c4c4">
+						</fieldset>
+						<fieldset id="linear-fog">
+							<input type="number" value="0.1">
+							<input type="number" value="50">
+						</fieldset>
+						<fieldset id="exponential-fog" value="#c4c4c4">
+							<input type="number" value="0.05">
+						</fieldset>
+					</section>
+				</div>
 			</aside>
 		</main>
 		<script type="module" src="js/Editor.js"></script>

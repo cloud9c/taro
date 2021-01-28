@@ -1,8 +1,9 @@
-import { MathUtils, ComponentManager, Vector4, Vector3, Vector2, Color } from '../../build/taro.js';
+import { MathUtils, ComponentManager, Vector4, Vector3, Vector2, Color, TextureLoader, Fog, FogExp2, WebGLCubeRenderTarget } from '../../build/taro.js';
 
 export function SidebarInspector( editor ) {
 
 	const inspector = document.getElementById( 'inspector' );
+	const scene = editor.viewport.scene;
 	let currentEntity = null;
 
 	this.attach = function ( entity ) {
@@ -10,7 +11,10 @@ export function SidebarInspector( editor ) {
 		if ( currentEntity !== null ) this.detach();
 		currentEntity = entity;
 
-		this.addDefaultSection( entity );
+		// display: none for the scene inspector
+		document.getElementById( 'scene-default' ).style.display = 'none';
+
+		this.addEntitySection( entity );
 
 		const components = entity.componentData;
 
@@ -30,8 +34,9 @@ export function SidebarInspector( editor ) {
 	this.detach = function () {
 
 		currentEntity = null;
+		document.getElementById( 'scene-default' ).style.display = '';
 
-		while ( inspector.firstChild !== null ) inspector.removeChild( inspector.lastChild );
+		while ( inspector.children.length > 1 ) inspector.removeChild( inspector.lastChild );
 
 	};
 
@@ -451,7 +456,278 @@ export function SidebarInspector( editor ) {
 
 	};
 
-	this.addDefaultSection = function ( entity ) {
+	this.addSceneSection = function () {
+
+		const textureLoader = new TextureLoader();
+
+		let colorBackground = new Color();
+		let textureBackground, textureEquirect, environmentTexture;
+		const fog = new Fog();
+		const fogExp2 = new FogExp2();
+
+		function processFile( files, target ) {
+
+			if ( files.length === 0 ) return;
+
+			const canvas = target.getElementsByClassName( 'file-display' )[ 0 ];
+			const context = canvas.getContext( '2d' );
+			const reader = new FileReader();
+
+			reader.onload = () => {
+
+				textureLoader.load( reader.result, function ( texture ) {
+
+					const image = texture.image;
+					const scale = canvas.width / image.width;
+
+					context.fillStyle = '#fff';
+					context.fillRect( 0, 0, canvas.width, canvas.height );
+					context.drawImage( image, canvas.width / 2 - image.width * scale / 2,
+						canvas.height / 2 - image.height * scale / 2, image.width * scale, image.height * scale );
+
+					switch ( target.id ) {
+
+						case 'background-texture':
+							textureBackground = texture;
+							onTextureOption();
+							break;
+						case 'background-equirect':
+							textureEquirect = new WebGLCubeRenderTarget( image.height );
+							textureEquirect.fromEquirectangularTexture( renderer, texture );
+							onEquirectOption();
+							break;
+						case 'environment-texture':
+							environmentTexture = texture;
+							onEnvironmentOption();
+
+					}
+
+				} );
+
+			};
+
+			reader.readAsDataURL( files[ 0 ] );
+
+		}
+
+		function onChange() {
+
+			processFile( this.files, this.parentElement );
+
+		}
+
+		function onFileDown( event ) {
+
+			if ( event.isPrimary === false ) return;
+
+			event.target.querySelector( 'input' ).click();
+
+		}
+
+		function onDragEnter( event ) {
+
+			event.stopPropagation();
+			event.preventDefault();
+
+		}
+
+		function onDrop( event ) {
+
+			event.stopPropagation();
+			event.preventDefault();
+
+			processFile( event.dataTransfer.files, event.target );
+
+		}
+
+		const dropboxes = document.querySelectorAll( '#scene .file-wrapper' );
+		const hiddenInputs = document.querySelectorAll( '#scene .hidden-input' );
+
+		for ( let i = 0, len = dropboxes.length; i < len; i ++ ) {
+
+			hiddenInputs[ i ].addEventListener( 'change', onChange, false );
+			dropboxes[ i ].addEventListener( 'pointerdown', onFileDown, false );
+			dropboxes[ i ].addEventListener( 'dragenter', onDragEnter, false );
+			dropboxes[ i ].addEventListener( 'dragover', onDragEnter, false );
+			dropboxes[ i ].addEventListener( 'drop', onDrop, false );
+
+		}
+
+		function resetBackgroundInput() {
+
+			document.getElementById( 'background-color' ).style.removeProperty( 'display' );
+			document.getElementById( 'background-texture' ).style.removeProperty( 'display' );
+			document.getElementById( 'background-equirect' ).style.removeProperty( 'display' );
+
+		}
+
+		function onColorOption() {
+
+			colorBackground.set( document.getElementById( 'background-color' ).value );
+			scene.background = colorBackground;
+			editor.render();
+
+		}
+
+		function onTextureOption() {
+
+			if ( textureBackground !== undefined ) {
+
+				scene.background = textureBackground;
+				editor.render();
+
+			}
+
+		}
+
+		function onEquirectOption() {
+
+			if ( textureEquirect !== undefined ) {
+
+				scene.background = textureEquirect;
+				editor.render();
+
+			}
+
+		}
+
+		document.getElementById( 'background-color' ).addEventListener( 'input', onColorOption );
+
+		document.getElementById( 'background' ).addEventListener( 'change', function ( event ) {
+
+			resetBackgroundInput();
+
+			switch ( event.target.value ) {
+
+				case 'none':
+					scene.background = null;
+					this.style.removeProperty( 'min-width' );
+					editor.render();
+					break;
+				case 'color':
+					document.getElementById( 'background-color' ).style.setProperty( 'display', 'inherit' );
+					onColorOption( event.target );
+					this.style.setProperty( 'min-width', '90px' );
+					break;
+				case 'texture':
+					document.getElementById( 'background-texture' ).style.setProperty( 'display', 'inherit' );
+					onTextureOption();
+					this.style.setProperty( 'min-width', '90px' );
+					break;
+				case 'equirect':
+					document.getElementById( 'background-equirect' ).style.setProperty( 'display', 'inherit' );
+					onEquirectOption();
+					this.style.setProperty( 'min-width', '90px' );
+
+			}
+
+		} );
+
+		function onEnvironmentOption() {
+
+			if ( environmentTexture !== undefined ) {
+
+				scene.environment = environmentTexture;
+				editor.render();
+
+			}
+
+		}
+
+		document.getElementById( 'environment' ).addEventListener( 'change', function ( event ) {
+
+			switch ( event.target.value ) {
+
+				case 'none':
+					document.getElementById( 'environment-texture' ).style.removeProperty( 'display' );
+					scene.environment = null;
+					editor.render();
+					this.style.removeProperty( 'min-width' );
+					break;
+				case 'texture':
+					document.getElementById( 'environment-texture' ).style.setProperty( 'display', 'inherit' );
+					onEnvironmentOption();
+					this.style.setProperty( 'min-width', '90px' );
+					break;
+
+			}
+
+		} );
+
+		const fogOptions = document.querySelectorAll( '#fog-options input' );
+		const linearFog = document.getElementById( 'linear-fog' ).children;
+		const expFog = document.getElementById( 'exponential-fog' ).children;
+		const linearColor = document.getElementById( 'color-linear-fog' );
+		const expColor = document.getElementById( 'color-exp-fog' );
+
+		function resetFogInput() {
+
+			document.getElementById( 'linear-fog' ).style.removeProperty( 'display' );
+			linearColor.style.removeProperty( 'display' );
+			document.getElementById( 'exponential-fog' ).style.removeProperty( 'display' );
+			expColor.style.removeProperty( 'display' );
+
+		}
+
+		document.getElementById( 'fog' ).addEventListener( 'change', function ( event ) {
+
+			resetFogInput();
+
+			switch ( event.target.value ) {
+
+				case 'none':
+					scene.fog = null;
+					this.style.removeProperty( 'min-width' );
+					editor.render();
+					break;
+				case 'linear':
+					document.getElementById( 'linear-fog' ).style.setProperty( 'display', 'flex' );
+					this.style.setProperty( 'min-width', '90px' );
+					linearColor.style.setProperty( 'display', 'inherit' );
+					setFog();
+					break;
+				case 'exponential':
+					document.getElementById( 'exponential-fog' ).style.setProperty( 'display', 'flex' );
+					this.style.setProperty( 'min-width', '90px' );
+					expColor.style.setProperty( 'display', 'inherit' );
+					setExpFog();
+					break;
+
+			}
+
+		} );
+
+		function setFog() {
+
+			console.log( 'here' );
+			fog.color.set( linearColor.value );
+			fog.near = parseFloat( linearFog[ 0 ].value );
+			fog.far = parseFloat( linearFog[ 1 ].value );
+
+			scene.fog = fog;
+			editor.render();
+
+		}
+
+		function setExpFog() {
+
+			fogExp2.color.set( expColor.value );
+			fogExp2.density = parseFloat( expFog[ 0 ].value );
+
+			scene.fog = fogExp2;
+			editor.render();
+
+		}
+
+		linearColor.addEventListener( 'input', setFog );
+		expColor.addEventListener( 'input', setExpFog );
+		linearFog[ 0 ].addEventListener( 'input', setFog );
+		linearFog[ 1 ].addEventListener( 'input', setFog );
+		expFog[ 0 ].addEventListener( 'input', setExpFog );
+
+	};
+
+	this.addEntitySection = function ( entity ) {
 
 		let section = document.createElement( 'SECTION' );
 		section.id = 'entity-section';
@@ -712,5 +988,7 @@ export function SidebarInspector( editor ) {
 		editor.render();
 
 	};
+
+	this.addSceneSection();
 
 }

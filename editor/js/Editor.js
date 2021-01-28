@@ -13,8 +13,8 @@ function Editor() {
 	this.sidebar = new Sidebar();
 
 	this.app = new Application( { canvas: document.getElementById( 'canvas' ), antialias: true } );
-	this.inspector = new SidebarInspector( this );
 	this.viewport = new Viewport( this );
+	this.inspector = new SidebarInspector( this );
 	this.render = this.viewport.render;
 	this.addEntity = this.viewport.addEntity;
 
