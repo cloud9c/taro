@@ -407,6 +407,10 @@ input[type="checkbox"]:checked:after {
 	z-index: 1
 }
 
+#component-list::-webkit-scrollbar {
+    width: 0;
+}
+
 #component-list div {
 	padding: 4px 0 4px 8px;
 	cursor: pointer;

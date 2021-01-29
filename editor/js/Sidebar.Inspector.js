@@ -73,9 +73,17 @@ export function SidebarInspector( editor ) {
 
 						if ( oldExit && ! newExit ) {
 
-							// add
+							const fieldset = section.querySelector( 'fieldset[data-type="' + name + '"]' );
+							if ( fieldset !== null ) {
+
+								fieldset.remove();
+
+							}
+
 							data[ name ] = ComponentManager.addDefault( attribute[ i ].type, attribute[ i ].default );
 							section.appendChild( this.addFieldset( name, data, config ) );
+
+							// add
 							matchFound = true;
 							break;
 
@@ -95,11 +103,13 @@ export function SidebarInspector( editor ) {
 
 				}
 
-				if ( ! matchFound && data[ name ] !== undefined ) {
+				const fieldset = section.querySelector( 'fieldset[data-type="' + name + '"]' );
+
+				if ( ! matchFound && fieldset !== null ) {
 
 					// remove
 					delete data[ name ];
-					section.querySelector( 'fieldset[data-type="' + name + '"]' ).remove();
+					fieldset.outerHTML = '';
 
 				}
 
@@ -117,11 +127,17 @@ export function SidebarInspector( editor ) {
 
 						}
 
-					} else if ( data[ name ] !== undefined ) {
+					} else {
 
-						// remove attribute from data
-						delete data[ name ];
-						section.querySelector( 'fieldset[data-type="' + name + '"]' ).remove();
+						const fieldset = section.querySelector( 'fieldset[data-type="' + name + '"]' );
+
+						if ( data[ name ] !== undefined ) {
+
+							// remove attribute from data
+							delete data[ name ];
+							fieldset.outerHTML = '';
+
+						}
 
 					}
 
