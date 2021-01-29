@@ -180,15 +180,12 @@ input[type="color"], select, .file-wrapper {
 	cursor: pointer;
 }
 
-#left-sidebar input[type="color"], #left-sidebar .file-wrapper {
-	width: 22px;
-	height: 22px;
+input[type="color"], .file-wrapper {
 	border: 1px solid var(--border-color);
 	background-color: transparent;
 	padding: 0;
-}
-
-input[type="color"], .file-wrapper {
+	width: 22px;
+	height: 22px;
 	border: 1px solid var(--border-color);
 	background-color: transparent;
 	padding: 0;
@@ -314,6 +311,16 @@ input[type="checkbox"]:checked:after {
 	display: none;
 }
 
+#linear-fog, #exponential-fog {
+	display: none;
+}
+
+#left-sidebar .panel > div {
+	display: none;
+}
+
+/**/
+
 #scene-tree {
 	background: var(--gray-5);
 	padding: 12px 0;
@@ -367,10 +374,6 @@ input[type="checkbox"]:checked:after {
 #scene-tree li {
 	list-style-type: none;
 	position: relative;
-}
-
-#left-sidebar .panel > div, #linear-fog, #exponential-fog {
-	display: none;
 }
 
 /*inspector*/
