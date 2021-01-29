@@ -5,7 +5,7 @@ export class Renderable {
 
 	init( data ) {
 
-		if ( data === undefined )
+		if ( data.isObject3D === undefined )
 			data = new Object3D();
 
 		this.ref = data;
