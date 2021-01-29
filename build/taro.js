@@ -53282,9 +53282,29 @@ class Scene$1 extends Scene {
 
 	}
 
+	traverseEntities( callback ) {
+
+		this.traverse( child => {
+
+			if ( child.isEntity !== undefined )
+				callback( child );
+
+		} );
+
+	}
+
 	getEntities() {
 
-		return this.children;
+		const filteredChildren = [];
+		const children = this.children;
+		for ( let i = 0, len = children.length; i < len; i ++ ) {
+
+			if ( children[ i ].isEntity !== undefined )
+				filteredChildren.push( children[ i ] );
+
+		}
+
+		return filteredChildren;
 
 	}
 
