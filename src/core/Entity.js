@@ -152,7 +152,7 @@ export class Entity extends Group {
 
 		super.add( object );
 
-		this.scene._addToScene( object );
+		this.scene._addToScene( ...arguments );
 
 		return this;
 
@@ -162,7 +162,7 @@ export class Entity extends Group {
 
 		super.remove( object );
 
-		this.scene._removeFromScene( object );
+		this.scene._removeFromScene( ...arguments );
 
 		return this;
 

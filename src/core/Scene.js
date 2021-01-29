@@ -62,6 +62,7 @@ export class Scene extends TS {
 
 				object.dispatchEvent( { type: 'sceneadd' } );
 				object.traverseEntities( ( child ) => {
+
 					child.scene = this;
 					child.dispatchEvent( { type: 'sceneadd' } );
 
@@ -82,6 +83,7 @@ export class Scene extends TS {
 
 			object.dispatchEvent( { type: 'sceneremove' } );
 			object.traverseEntities( ( child ) => {
+
 				delete child.scene;
 				child.dispatchEvent( { type: 'sceneremove' } );
 
@@ -95,7 +97,7 @@ export class Scene extends TS {
 
 		this._addToScene( object );
 
-		return super.add( object );
+		return super.add( ...arguments );
 
 	}
 
@@ -103,7 +105,7 @@ export class Scene extends TS {
 
 		this._removeFromScene( object );
 
-		return super.remove( object );
+		return super.remove( ...arguments );
 
 	}
 
