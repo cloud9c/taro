@@ -220,7 +220,11 @@ export function Viewport( editor ) {
 	attribute.needsUpdate = true;
 
 	const boxHelper = new TARO.BoxHelper();
-	boxHelper.material.color.set( 0xffffff );
+	boxHelper.material.depthTest = false;
+	boxHelper.material.transparent = true;
+	boxHelper.visible = false;
+
+	const helpers = this.helpers = [ boxHelper ];
 
 	scene.add( grid, boxHelper );
 
@@ -259,7 +263,11 @@ export function Viewport( editor ) {
 
 		}
 
-		boxHelper.update();
+		for ( let i = 0, len = helpers.length; i < len; i ++ ) {
+
+			helpers[ i ].update();
+
+		}
 
 		renderer.render( scene, camera );
 
@@ -332,6 +340,7 @@ export function Viewport( editor ) {
 
 	sceneHelper.add( control );
 
+	const box = new TARO.Box3();
 	let dragging = false;
 
 	const attach = this.attach = function ( entity ) {
@@ -340,7 +349,18 @@ export function Viewport( editor ) {
 		editor.inspector.attach( entity );
 		control.attach( entity );
 
-		boxHelper.setFromObject( entity );
+		box.setFromObject( entity );
+
+		if ( box.isEmpty() === false ) {
+
+			boxHelper.setFromObject( entity );
+			boxHelper.visible = true;
+
+		} else {
+
+			boxHelper.visible = false;
+
+		}
 
 	};
 
@@ -350,7 +370,7 @@ export function Viewport( editor ) {
 		control.enabled = false;
 		control.detach();
 
-		boxHelper.object = undefined;
+		boxHelper.visible = false;
 
 	}
 
