@@ -432,5 +432,6 @@ ComponentManager.register( 'joint', Joint, {
 		twistLimit: { default: AngularLimit, if: { type: [ 'ragdoll' ] } },
 		linkedSpringDamper: { default: SpringDamper, if: { type: [ 'universal' ] } },
 		linkedAngularLimit: { default: AngularLimit, if: { type: [ 'universal' ] } },
-	}
+	},
+	multiple: true
 } );

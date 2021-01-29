@@ -102,8 +102,8 @@ export class Entity extends Group {
 		const componentData = ComponentManager.components[ type ];
 		const config = componentData.config;
 
-		if ( config.allowMultiple === false && this.getComponent( type ) !== undefined )
-			return console.warn( 'Entity: allowMultiple Attribute is false' );
+		if ( config.multiple !== true && this.getComponent( type ) !== undefined )
+			return console.warn( 'Entity: multiple attribute for ' + type + ' component is false/undefined' );
 
 		if ( config.dependencies !== undefined ) {
 

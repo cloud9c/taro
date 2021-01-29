@@ -1,11 +1,12 @@
 import { ComponentManager } from '../core/ComponentManager.js';
+import { Object3D } from '../lib/three.js';
 
 export class Renderable {
 
 	init( data ) {
 
-		if ( data.isObject3D === undefined )
-			throw Error( 'Renderable must be an instance of Object3D' );
+		if ( data === undefined )
+			data = new Object3D();
 
 		this.ref = data;
 		this.addEventListener( 'enable', this.onEnable );
@@ -27,4 +28,6 @@ export class Renderable {
 
 }
 
-ComponentManager.register( 'renderable', Renderable );
+ComponentManager.register( 'renderable', Renderable, {
+	multiple: true,
+} );

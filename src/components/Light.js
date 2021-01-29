@@ -1,5 +1,5 @@
 import { ComponentManager } from '../core/ComponentManager.js';
-import { AmbientLight, DirectionalLight, HemisphereLight, PointLight, SpotLight } from '../lib/three.js';
+import { AmbientLight, DirectionalLight, HemisphereLight, PointLight, SpotLight, MathUtils } from '../lib/three.js';
 
 export class Light {
 
@@ -24,7 +24,7 @@ export class Light {
 				this.ref = new PointLight( color, intensity, data.distance, data.decay );
 				break;
 			case 'spot':
-				this.ref = new SpotLight( color, intensity, data.distance, data.angle, data.penumbra, data.decay );
+				this.ref = new SpotLight( color, intensity, data.distance, MathUtils.degToRad( data.angle ), data.penumbra, data.decay );
 				break;
 			default:
 				throw new Error( 'Light: invalid light type ' + type );
@@ -59,7 +59,7 @@ ComponentManager.register( 'light', Light, {
 		groundColor: { type: 'color', if: { type: [ 'hemisphere' ] } },
 		distance: { default: 0, if: { type: [ 'point', 'spot' ] } },
 		decay: { default: 1, if: { type: [ 'point', 'spot' ] } },
-		angle: { default: Math.PI / 3, if: { type: [ 'spot' ] } },
+		angle: { default: 60, if: { type: [ 'spot' ] } },
 		penumbra: { default: 0, if: { type: [ 'spot' ] } }
 	}
 } );

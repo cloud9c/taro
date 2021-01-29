@@ -210,7 +210,7 @@ export const ComponentManager = {
 
 					}
 
-					data[name] = this.addDefault( object.type, object.default );
+					data[ name ] = this.addDefault( object.type, object.default );
 
 				}
 
@@ -270,6 +270,6 @@ export const ComponentManager = {
 	}
 };
 
-// config: allowMultiple, dependencies, schema
+// config: multiple, dependencies, schema
 // schema is an object of objects
 // ex: schema: {{type: "number", default: 1}}

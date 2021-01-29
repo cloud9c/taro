@@ -76,6 +76,5 @@ ComponentManager.register( 'camera', Camera, {
 		far: { default: 2000 },
 		aspect: { default: 1 },
 		viewport: { type: 'vector4', default: [ 0, 0, 1, 1 ] }
-	},
-	allowMultiple: false
+	}
 } );

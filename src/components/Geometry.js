@@ -130,6 +130,5 @@ ComponentManager.register( 'geometry', Geometry, {
 
 		p: { default: 2, min: 1, if: { type: [ 'torusKnot' ] } },
 		q: { default: 3, min: 1, if: { type: [ 'torusKnot' ] } },
-	},
-	allowMultiple: false,
+	}
 } );

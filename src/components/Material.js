@@ -151,6 +151,5 @@ const schema = {
 };
 
 ComponentManager.register( 'material', Material, {
-	schema,
-	allowMultiple: false
+	schema
 } );

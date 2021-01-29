@@ -618,5 +618,6 @@ ComponentManager.register( 'collider', Collider, {
 		radius: { default: 0.5, if: { type: [ 'capsule', 'cone', 'cylinder', 'sphere' ] } },
 		halfHeight: { default: 1, if: { type: [ 'capsule', 'cone', 'cylinder' ] } },
 		mesh: { type: 'asset', if: { type: [ 'mesh' ] } },
-	}
+	},
+	multiple: true,
 } );
