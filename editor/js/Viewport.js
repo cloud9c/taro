@@ -201,13 +201,10 @@ export function Viewport( editor ) {
 	};
 
 	const grid = new TARO.GridHelper( 30, 30 );
-
 	const color1 = new TARO.Color( 0x7d7d7d );
 	const color2 = new TARO.Color( 0xDCDCDC );
-
 	const attribute = grid.geometry.attributes.color;
 	const array = attribute.array;
-
 	for ( let i = 0; i < array.length; i += 12 ) {
 
 		const color = ( i % ( 12 * 5 ) === 0 ) ? color1 : color2;
@@ -221,6 +218,11 @@ export function Viewport( editor ) {
 	}
 
 	attribute.needsUpdate = true;
+
+	const boxHelper = new TARO.BoxHelper();
+	boxHelper.material.color.set( 0xffffff );
+
+	scene.add( grid, boxHelper );
 
 	const renderer = app.renderer;
 	const dom = renderer.domElement;
@@ -257,9 +259,9 @@ export function Viewport( editor ) {
 
 		}
 
-		scene.add( grid );
+		boxHelper.update();
+
 		renderer.render( scene, camera );
-		scene.remove( grid );
 
 		renderer.autoClear = false;
 		renderer.render( sceneHelper, camera );
@@ -332,20 +334,49 @@ export function Viewport( editor ) {
 
 	let dragging = false;
 
+	const attach = this.attach = function ( entity ) {
+
+		control.enabled = true;
+		editor.inspector.attach( entity );
+		control.attach( entity );
+
+		boxHelper.setFromObject( entity );
+
+	};
+
+	function detach() {
+
+		editor.inspector.detach();
+		control.enabled = false;
+		control.detach();
+
+		boxHelper.object = undefined;
+
+	}
+
 	function onPointerUp( event ) {
 
-		const firstIntersect = getIntersects( event.clientX, event.clientY )[ 0 ];
+		const intersects = getIntersects( event.clientX, event.clientY );
 		let rayObject;
 
-		if ( firstIntersect !== undefined ) {
+		for ( let i = 0, len = intersects.length; i < len; i ++ ) {
 
-			rayObject = firstIntersect.object;
-
+			rayObject = intersects[ i ].object;
 			while ( rayObject.isEntity === undefined ) {
+
+				if ( rayObject.parent === null ) {
+
+					rayObject = undefined;
+					break;
+
+				}
 
 				rayObject = rayObject.parent;
 
 			}
+
+			if ( rayObject !== undefined )
+				break;
 
 		}
 
@@ -353,13 +384,11 @@ export function Viewport( editor ) {
 
 			const oldTarget = document.querySelector( '#scene-tree [data-selected]' );
 
-			if ( firstIntersect === undefined ) {
+			if ( rayObject === undefined ) {
 
 				if ( oldTarget !== null ) delete oldTarget.dataset.selected;
 
-				editor.inspector.detach();
-				control.enabled = false;
-				control.detach();
+				detach();
 
 			} else if ( control.object !== rayObject && control !== rayObject ) {
 
@@ -368,9 +397,7 @@ export function Viewport( editor ) {
 				const newTarget = document.querySelector( '#scene-tree [data-id="' + rayObject.id + '"]' );
 				if ( newTarget !== null ) newTarget.dataset.selected = '';
 
-				editor.inspector.attach( rayObject );
-				control.enabled = true;
-				control.attach( rayObject );
+				attach( rayObject );
 
 			}
 

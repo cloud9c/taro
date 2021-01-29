@@ -88,10 +88,7 @@ export function SidebarScene( editor ) {
 
 				const entity = scene.getEntityById( parseInt( target.dataset.id ) );
 
-				viewport.control.enabled = true;
-				inspector.attach( entity );
-				viewport.control.attach( entity );
-
+				viewport.attach( entity );
 				editor.render();
 
 			}

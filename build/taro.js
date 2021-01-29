@@ -55691,7 +55691,7 @@ class Scene$1 extends Scene {
 
 		this._addToScene( object );
 
-		return super.add( object );
+		return super.add( ...arguments );
 
 	}
 
@@ -55699,7 +55699,7 @@ class Scene$1 extends Scene {
 
 		this._removeFromScene( object );
 
-		return super.remove( object );
+		return super.remove( ...arguments );
 
 	}
 
