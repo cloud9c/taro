@@ -206,7 +206,7 @@ input[type="file"] {
 input[type="number"] {
 	font-size: 13px;
 	height: 22px;
-	width: 54px;
+	width: 50px;
 	border: none;
 	border-bottom: 1px solid var(--border-color);
 	background: var(--gray-5);
@@ -407,10 +407,6 @@ input[type="checkbox"]:checked:after {
 	z-index: 1
 }
 
-#component-list::-webkit-scrollbar {
-    width: 0;
-}
-
 #component-list div {
 	padding: 4px 0 4px 8px;
 	cursor: pointer;
@@ -474,7 +470,7 @@ section.component {
 
 #right-sidebar {
 	border-left: 1px solid var(--border-color);
-	min-width: 300px;
+	width: 299px;
 }
 
 #viewport {

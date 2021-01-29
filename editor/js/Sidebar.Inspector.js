@@ -256,7 +256,7 @@ export function SidebarInspector( editor ) {
 				for ( let i = 0; i < 2; i ++ ) {
 
 					const input = document.createElement( 'INPUT' );
-					input.style.width = '87px';
+					input.style.width = '78px';
 					input.type = 'number';
 
 					if ( i == 1 ) input.style.marginLeft = '6px';
@@ -316,7 +316,7 @@ export function SidebarInspector( editor ) {
 				break;
 			case 'vector4':
 				div = document.createElement( 'DIV' );
-				div.style = 'display: flex;flex-wrap: wrap;width:174px';
+				div.style = 'display: flex;flex-wrap: wrap;width:162px';
 				for ( let i = 0; i < 4; i ++ ) {
 
 					const input = document.createElement( 'INPUT' );
@@ -363,7 +363,6 @@ export function SidebarInspector( editor ) {
 			case 'boolean':
 				input = document.createElement( 'INPUT' );
 				input.type = 'checkbox';
-				input.style.width = '174px';
 				if ( value ) input.checked = true;
 				input.addEventListener( 'change', () => {
 
@@ -829,7 +828,7 @@ export function SidebarInspector( editor ) {
 		fieldset.appendChild( legend );
 
 		const div = document.createElement( 'DIV' );
-		div.style = 'display:flex;align-items:center;width:174px';
+		div.style = 'display:flex;align-items:center;width:162px';
 
 		enabled = document.createElement( 'INPUT' );
 		enabled.type = 'checkbox';
@@ -875,7 +874,6 @@ export function SidebarInspector( editor ) {
 
 		enabled = document.createElement( 'INPUT' );
 		enabled.type = 'checkbox';
-		enabled.style.width = '174px';
 		if ( entity.visible )
 			enabled.checked = true;
 		enabled.addEventListener( 'change', function () {
