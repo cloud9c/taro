@@ -425,6 +425,10 @@ section.component {
 	padding: 0 12px;
 }
 
+.component fieldset:first-of-type {
+	padding-top: 12px;
+}
+
 .component h1 {
 	font-weight: 500;
 	font-size: 14px;
@@ -432,7 +436,6 @@ section.component {
 	text-transform: uppercase;
 	position: relative;
 	background: var(--gray-6);
-	margin-bottom: 12px;
 	cursor: pointer;
 }
 

@@ -452,6 +452,38 @@ export function SidebarInspector( editor ) {
 		const title = document.createElement( 'H1' );
 		title.textContent = component.type;
 		title.dataset.opened = '';
+		title.addEventListener( 'pointerdown', () => {
+
+			if ( title.dataset.opened !== undefined ) {
+
+				// close
+
+				const fieldsets = section.querySelectorAll( 'fieldset' );
+
+				for ( let i = 0, len = fieldsets.length; i < len; i ++ ) {
+
+					fieldsets[ i ].style.display = 'none';
+
+				}
+
+				delete title.dataset.opened;
+
+			} else {
+
+				// open up
+
+				const fieldsets = section.querySelectorAll( 'fieldset' );
+				for ( let i = 0, len = fieldsets.length; i < len; i ++ ) {
+
+					fieldsets[ i ].style.display = '';
+
+				}
+
+				title.dataset.opened = '';
+
+			}
+
+		} );
 		section.appendChild( title );
 
 		const schema = config.schema;
