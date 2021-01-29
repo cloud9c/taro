@@ -73,10 +73,9 @@ export function SidebarInspector( editor ) {
 
 						if ( oldExit && ! newExit ) {
 
-							const fieldset = section.querySelector( 'fieldset[data-type="' + name + '"]' );
-							if ( fieldset !== null ) {
+							if ( data[ name ] !== undefined ) {
 
-								fieldset.remove();
+								section.querySelector( 'fieldset[data-type="' + name + '"]' ).remove();
 
 							}
 
@@ -109,7 +108,7 @@ export function SidebarInspector( editor ) {
 
 					// remove
 					delete data[ name ];
-					fieldset.outerHTML = '';
+					fieldset.remove();
 
 				}
 
@@ -135,7 +134,7 @@ export function SidebarInspector( editor ) {
 
 							// remove attribute from data
 							delete data[ name ];
-							fieldset.outerHTML = '';
+							fieldset.remove();
 
 						}
 
