@@ -929,9 +929,9 @@ export function SidebarInspector( editor ) {
 
 				const type = components[ i ];
 
-				const allowMultiple = ComponentManager.components[ type ].config.allowMultiple;
+				const multiple = ComponentManager.components[ type ].config.multiple;
 				const componentData = entity.componentData;
-				if ( allowMultiple === false && componentData !== undefined ) {
+				if ( multiple !== true && componentData !== undefined ) {
 
 					let disabled = false;
 					for ( let i = 0, len = componentData.length; i < len; i ++ ) {
