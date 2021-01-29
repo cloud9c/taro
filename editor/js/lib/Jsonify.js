@@ -26,7 +26,7 @@ function sceneToJSON( scene ) {
 	if ( scene.environment !== null ) data.environment = scene.environment.toJSON();
 	if ( scene.fog !== null ) data.fog = scene.fog.toJSON();
 
-	const children = scene.children;
+	const children = scene.getEntities();
 	if ( children.length > 0 ) {
 
 		data.children = [];
