@@ -4,6 +4,7 @@ export function SidebarInspector( editor ) {
 
 	const inspector = document.getElementById( 'inspector' );
 	const scene = editor.viewport.scene;
+	const closedComponents = {};
 	let currentEntity = null;
 
 	this.attach = function ( entity ) {
@@ -451,34 +452,26 @@ export function SidebarInspector( editor ) {
 
 		const title = document.createElement( 'H1' );
 		title.textContent = component.type;
-		title.dataset.opened = '';
+		if ( closedComponents[ component.type ] === undefined ) {
+
+			title.dataset.opened = '';
+
+		}
+
 		title.addEventListener( 'pointerdown', () => {
 
 			if ( title.dataset.opened !== undefined ) {
 
 				// close
 
-				const fieldsets = section.querySelectorAll( 'fieldset' );
-
-				for ( let i = 0, len = fieldsets.length; i < len; i ++ ) {
-
-					fieldsets[ i ].style.display = 'none';
-
-				}
-
+				closedComponents[ component.type ] = true;
 				delete title.dataset.opened;
 
 			} else {
 
 				// open up
 
-				const fieldsets = section.querySelectorAll( 'fieldset' );
-				for ( let i = 0, len = fieldsets.length; i < len; i ++ ) {
-
-					fieldsets[ i ].style.display = '';
-
-				}
-
+				delete closedComponents[ component.type ];
 				title.dataset.opened = '';
 
 			}
@@ -487,7 +480,6 @@ export function SidebarInspector( editor ) {
 		section.appendChild( title );
 
 		const schema = config.schema;
-
 		if ( schema !== undefined ) {
 
 			for ( const type in data ) {

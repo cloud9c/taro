@@ -443,6 +443,10 @@ section.component {
 	transform: rotate(90deg)
 }
 
+.component h1:not([data-opened]) ~ fieldset {
+	display: none;
+}
+
 .component h1:before {
     content: "";
     display: inline-block;
