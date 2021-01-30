@@ -53268,17 +53268,17 @@ class Scene$1 extends Scene {
 
 	add( object ) {
 
+		super.add( ...arguments );
 		this._addToScene( object );
-
-		return super.add( ...arguments );
+		return this;
 
 	}
 
 	remove( object ) {
 
+		super.remove( ...arguments );
 		this._removeFromScene( object );
-
-		return super.remove( ...arguments );
+		return this;
 
 	}
 
@@ -53871,20 +53871,16 @@ class Entity extends Group {
 
 	add( object ) {
 
-		super.add( object );
-
-		this.scene._addToScene( ...arguments );
-
+		super.add( ...arguments );
+		this.scene._addToScene( object );
 		return this;
 
 	}
 
 	remove( object ) {
 
-		super.remove( object );
-
-		this.scene._removeFromScene( ...arguments );
-
+		super.remove( ...arguments );
+		this.scene._removeFromScene( object );
 		return this;
 
 	}
