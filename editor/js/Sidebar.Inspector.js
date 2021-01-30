@@ -458,7 +458,7 @@ export function SidebarInspector( editor ) {
 
 		}
 
-		title.addEventListener( 'pointerdown', () => {
+		title.addEventListener( 'pointerup', () => {
 
 			if ( title.dataset.opened !== undefined ) {
 
