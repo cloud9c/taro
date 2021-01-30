@@ -450,29 +450,63 @@ export function SidebarInspector( editor ) {
 		section.dataset.uuid = component.uuid;
 		section.classList.add( 'component' );
 
+		const trash = document.createElement( 'A' );
+		trash.classList.add( 'trash' );
+		fetch( 'img/trash.svg' ).then( r => r.text() ).then( text => {
+
+			trash.insertAdjacentHTML( 'beforeend', text );
+
+		} );
+
 		const title = document.createElement( 'H1' );
 		title.textContent = component.type;
-		if ( closedComponents[ component.type ] === undefined ) {
-
+		title.appendChild( trash );
+		if ( closedComponents[ component.type ] === undefined )
 			title.dataset.opened = '';
 
-		}
+		title.addEventListener( 'pointerup', ( event ) => {
 
-		title.addEventListener( 'pointerup', () => {
+			if ( event.target.classList.contains( 'trash' ) ) {
 
-			if ( title.dataset.opened !== undefined ) {
+				const index = currentEntity.componentData.indexOf( component );
+				currentEntity.componentData.splice( index, 1 );
 
-				// close
+				if ( component.type ) {
 
-				closedComponents[ component.type ] = true;
-				delete title.dataset.opened;
+					const components = currentEntity.components;
+					for ( let i = 0, len = components.length; i < len; i ++ ) {
+
+						if ( components[ i ].uuid === component.uuid ) {
+
+							console.log( components[ i ] );
+							currentEntity.removeComponent( components[ i ] );
+							break;
+
+						}
+
+					}
+
+				}
+
+				section.remove();
 
 			} else {
 
-				// open up
+				if ( title.dataset.opened !== undefined ) {
 
-				delete closedComponents[ component.type ];
-				title.dataset.opened = '';
+					// close
+
+					closedComponents[ component.type ] = true;
+					delete title.dataset.opened;
+
+				} else {
+
+					// open up
+
+					delete closedComponents[ component.type ];
+					title.dataset.opened = '';
+
+				}
 
 			}
 

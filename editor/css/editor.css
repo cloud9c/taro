@@ -457,16 +457,16 @@ section.component {
     top: 7px;
 }
 
-.component h1:after {
-    content: "";
-    display: inline-block;
+.trash {
     width: 16px;
     height: 16px;
-    background-image: url("../img/trash.svg");
-    background-repeat: no-repeat;
     position: absolute;
     top: 7px;
     right: 7px;
+}
+
+.trash svg {
+	pointer-events: none;
 }
 
 .component h1:hover {
