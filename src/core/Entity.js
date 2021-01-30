@@ -150,20 +150,16 @@ export class Entity extends Group {
 
 	add( object ) {
 
-		super.add( object );
-
-		this.scene._addToScene( ...arguments );
-
+		super.add( ...arguments );
+		this.scene._addToScene( object );
 		return this;
 
 	}
 
 	remove( object ) {
 
-		super.remove( object );
-
-		this.scene._removeFromScene( ...arguments );
-
+		super.remove( ...arguments );
+		this.scene._removeFromScene( object );
 		return this;
 
 	}

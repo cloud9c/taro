@@ -95,17 +95,17 @@ export class Scene extends TS {
 
 	add( object ) {
 
+		super.add( ...arguments );
 		this._addToScene( object );
-
-		return super.add( ...arguments );
+		return this;
 
 	}
 
 	remove( object ) {
 
+		super.remove( ...arguments );
 		this._removeFromScene( object );
-
-		return super.remove( ...arguments );
+		return this;
 
 	}
 
