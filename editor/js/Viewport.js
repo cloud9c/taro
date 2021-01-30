@@ -225,6 +225,7 @@ export function Viewport( editor ) {
 	boxHelper.visible = false;
 
 	const helpers = this.helpers = [ boxHelper ];
+	const icons = this.icons = [];
 
 	scene.add( grid, boxHelper );
 
@@ -349,6 +350,20 @@ export function Viewport( editor ) {
 		editor.inspector.attach( entity );
 		control.attach( entity );
 
+		const children = entity.children;
+		const temp = [];
+
+		for ( let i = children.length - 1; i >= 0; i -- ) {
+
+			if ( icons.includes( children[ i ] ) ) {
+
+				temp.push( children[ i ] );
+				entity.remove( children[ i ] );
+
+			}
+
+		}
+
 		box.setFromObject( entity );
 
 		if ( box.isEmpty() === false ) {
@@ -361,6 +376,8 @@ export function Viewport( editor ) {
 			boxHelper.visible = false;
 
 		}
+
+		if ( temp.length > 0 ) entity.add( ...temp );
 
 	};
 

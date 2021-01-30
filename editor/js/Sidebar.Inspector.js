@@ -1,4 +1,4 @@
-import { MathUtils, ComponentManager, Vector4, Vector3, Vector2, Color, TextureLoader, Fog, FogExp2, WebGLCubeRenderTarget } from '../../build/taro.js';
+import { MathUtils, ComponentManager, Vector4, Vector3, Vector2, Color, TextureLoader, Fog, FogExp2, WebGLCubeRenderTarget, Sprite, SpriteMaterial } from '../../build/taro.js';
 
 export function SidebarInspector( editor ) {
 
@@ -494,9 +494,9 @@ export function SidebarInspector( editor ) {
 
 	};
 
-	this.addSceneSection = function () {
+	const textureLoader = new TextureLoader();
 
-		const textureLoader = new TextureLoader();
+	this.addSceneSection = function () {
 
 		let colorBackground = new Color();
 		let textureBackground, textureEquirect, environmentTexture;
@@ -956,13 +956,10 @@ export function SidebarInspector( editor ) {
 
 			}
 
-			componentList.style.maxHeight = '400px';
-
 		} );
 
 		componentSelector.addEventListener( 'focusout', () => {
 
-			componentList.style.maxHeight = 0;
 			while ( componentList.firstChild !== null ) componentList.removeChild( componentList.lastChild );
 
 		} );
@@ -1007,12 +1004,9 @@ export function SidebarInspector( editor ) {
 		const schema = config.schema;
 		const runInEditor = config.runInEditor === true;
 
-		if ( schema !== undefined ) {
+		if ( schema !== undefined ) ComponentManager.sanitizeData( component.data, schema );
 
-			ComponentManager.sanitizeData( component.data, schema );
-			if ( entity === currentEntity ) inspector.appendChild( this.addSection( component, config ) );
-
-		}
+		if ( entity === currentEntity ) inspector.appendChild( this.addSection( component, config ) );
 
 		if ( runInEditor ) {
 
@@ -1021,8 +1015,33 @@ export function SidebarInspector( editor ) {
 
 		}
 
+		this.addIcon( entity, type );
+
 		entity.componentData.push( component );
 		editor.render();
+
+	};
+
+	const icons = editor.viewport.icons;
+
+	this.addIcon = function ( entity, type ) {
+
+		if ( ! [ 'light', 'camera' ].includes( type ) ) return;
+
+		const component = entity.getComponent( type );
+
+		if ( component !== undefined ) {
+
+			textureLoader.load( 'img/' + type + '.svg', function ( texture ) {
+
+				const sprite = new Sprite( new SpriteMaterial( { map: texture } ) );
+				icons.push( sprite );
+				entity.add( sprite );
+				editor.render();
+
+			} );
+
+		}
 
 	};
 

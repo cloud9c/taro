@@ -401,9 +401,8 @@ input[type="checkbox"]:checked:after {
 	right: 0;
 	background: var(--gray-5);
 	box-shadow: 0 2px 6px rgb(0 0 0 / 20%);
-	max-height: 0;
+	max-height: 400px;
 	overflow-y: auto;
-	transition: max-height .11s cubic-bezier(.2,0,.38,.9);
 	z-index: 1
 }
 
@@ -426,17 +425,16 @@ section.component {
 }
 
 .component fieldset:first-of-type {
-	padding-top: 12px;
+	padding-top: 6px;
 }
 
 .component h1 {
 	font-weight: 500;
 	font-size: 14px;
 	padding: 6px 0 6px 28px;
-	text-transform: uppercase;
 	position: relative;
-	background: var(--gray-6);
 	cursor: pointer;
+	transition: background .11s cubic-bezier(.2,0,.38,.9)
 }
 
 .component h1[data-opened]:before {
@@ -460,7 +458,7 @@ section.component {
 }
 
 .component h1:hover {
-	background: var(--gray-5);
+	background: var(--gray-6);
 }
 
 .component input[type="color"] {
