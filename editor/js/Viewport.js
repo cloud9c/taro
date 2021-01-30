@@ -342,27 +342,15 @@ export function Viewport( editor ) {
 	sceneHelper.add( control );
 
 	const box = new TARO.Box3();
-	let dragging = false;
 
-	const attach = this.attach = function ( entity ) {
-
-		control.enabled = true;
-		editor.inspector.attach( entity );
-		control.attach( entity );
+	const updateBoxHelper = this.updateBoxHelper = function ( entity ) {
 
 		const children = entity.children;
-		const temp = [];
+		let temp;
 
-		for ( let i = children.length - 1; i >= 0; i -- ) {
-
-			if ( icons.includes( children[ i ] ) ) {
-
-				temp.push( children[ i ] );
-				entity.remove( children[ i ] );
-
-			}
-
-		}
+		for ( let i = children.length - 1; i >= 0; i -- )
+			if ( icons.includes( children[ i ] ) )
+				return;
 
 		box.setFromObject( entity );
 
@@ -377,7 +365,17 @@ export function Viewport( editor ) {
 
 		}
 
-		if ( temp.length > 0 ) entity.add( ...temp );
+		if ( temp !== undefined ) entity.add( temp );
+
+	};
+
+	const attach = this.attach = function ( entity ) {
+
+		control.enabled = true;
+		editor.inspector.attach( entity );
+		control.attach( entity );
+
+		updateBoxHelper( entity );
 
 	};
 
@@ -390,6 +388,8 @@ export function Viewport( editor ) {
 		boxHelper.visible = false;
 
 	}
+
+	let dragging = false;
 
 	function onPointerUp( event ) {
 

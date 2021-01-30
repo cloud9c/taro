@@ -466,6 +466,7 @@ export function SidebarInspector( editor ) {
 
 		title.addEventListener( 'pointerup', ( event ) => {
 
+			// trash component
 			if ( event.target.classList.contains( 'trash' ) ) {
 
 				const index = currentEntity.componentData.indexOf( component );
@@ -488,14 +489,17 @@ export function SidebarInspector( editor ) {
 
 				}
 
+				editor.viewport.updateBoxHelper( currentEntity );
+				editor.viewport.render();
+
 				section.remove();
 
-			} else {
+			} else { // minimize the component
 
 				if ( title.dataset.opened !== undefined ) {
 
 					// close
-
+					// remember which components are minimized
 					closedComponents[ component.type ] = true;
 					delete title.dataset.opened;
 
@@ -1057,23 +1061,48 @@ export function SidebarInspector( editor ) {
 	};
 
 	const icons = editor.viewport.icons;
+	const iconMaterials = {
+		light: undefined,
+		camera: undefined
+	};
+
+	function createSprite( entity, type ) {
+
+		const sprite = new Sprite( iconMaterials[ type ] );
+		icons.push( sprite );
+		entity.add( sprite );
+		editor.render();
+
+	}
 
 	this.addIcon = function ( entity, type ) {
 
-		if ( ! [ 'light', 'camera' ].includes( type ) ) return;
+		const children = entity.children;
+		for ( let i = children.length - 1; i >= 0; i -- )
+			if ( icons.includes( children[ i ] ) )
+				return;
+
+		if ( ! ( type in iconMaterials ) ) return;
 
 		const component = entity.getComponent( type );
 
 		if ( component !== undefined ) {
 
-			textureLoader.load( 'img/' + type + '.svg', function ( texture ) {
+			if ( iconMaterials[ type ] === undefined ) {
 
-				const sprite = new Sprite( new SpriteMaterial( { map: texture } ) );
-				icons.push( sprite );
-				entity.add( sprite );
-				editor.render();
+				// create sprite material if the iconMaterials value is undefined
+				textureLoader.load( 'img/' + type + '.svg', function ( texture ) {
 
-			} );
+					iconMaterials[ type ] = new SpriteMaterial( { map: texture } );
+					createSprite( entity, type );
+
+				} );
+
+			} else {
+
+				createSprite( entity, type );
+
+			}
 
 		}
 
