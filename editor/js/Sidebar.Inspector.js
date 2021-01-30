@@ -1,4 +1,4 @@
-import { MathUtils, ComponentManager, Vector4, Vector3, Vector2, Color, TextureLoader, Fog, FogExp2, WebGLCubeRenderTarget, Sprite, SpriteMaterial } from '../../build/taro.js';
+import { MathUtils, ComponentManager, Vector4, Vector3, Vector2, Color, TextureLoader, Fog, FogExp2, WebGLCubeRenderTarget, Sprite, SpriteMaterial, Box3 } from '../../build/taro.js';
 
 export function SidebarInspector( editor ) {
 
@@ -442,6 +442,8 @@ export function SidebarInspector( editor ) {
 
 	};
 
+	const icons = editor.viewport.icons;
+
 	this.addSection = function ( component, config ) {
 
 		const data = component.data;
@@ -472,14 +474,13 @@ export function SidebarInspector( editor ) {
 				const index = currentEntity.componentData.indexOf( component );
 				currentEntity.componentData.splice( index, 1 );
 
-				if ( component.type ) {
+				if ( config.runInEditor === true ) {
 
 					const components = currentEntity.components;
 					for ( let i = 0, len = components.length; i < len; i ++ ) {
 
 						if ( components[ i ].uuid === component.uuid ) {
 
-							console.log( components[ i ] );
 							currentEntity.removeComponent( components[ i ] );
 							break;
 
@@ -488,6 +489,24 @@ export function SidebarInspector( editor ) {
 					}
 
 				}
+
+				const children = currentEntity.children;
+				for ( let i = 0, len = children.length; i < len; i ++ ) {
+
+					if ( icons.includes( children[ i ] ) && children[ i ].name === component.type ) {
+
+						icons.splice( icons.indexOf( children[ i ] ), 1 );
+						currentEntity.remove( children[ i ] );
+
+						break;
+
+					}
+
+				}
+
+				const components = currentEntity.componentData;
+				for ( let i = 0, len = components.length; i < len; i ++ )
+					if ( this.updateIcon( currentEntity, components[ i ].type ) ) break;
 
 				editor.viewport.updateBoxHelper( currentEntity );
 				editor.viewport.render();
@@ -1053,14 +1072,13 @@ export function SidebarInspector( editor ) {
 
 		}
 
-		this.addIcon( entity, type );
+		this.updateIcon( entity, type );
 
 		entity.componentData.push( component );
 		editor.render();
 
 	};
 
-	const icons = editor.viewport.icons;
 	const iconMaterials = {
 		light: undefined,
 		camera: undefined
@@ -1069,42 +1087,73 @@ export function SidebarInspector( editor ) {
 	function createSprite( entity, type ) {
 
 		const sprite = new Sprite( iconMaterials[ type ] );
+		sprite.name = type;
 		icons.push( sprite );
 		entity.add( sprite );
 		editor.render();
 
 	}
 
-	this.addIcon = function ( entity, type ) {
+	const box = new Box3();
 
+	// returns boolean indicating if icon searching is resolved
+	this.updateIcon = function ( entity, type ) {
+
+		// remove icon if a box3 can be drawn
+		let temp;
 		const children = entity.children;
-		for ( let i = children.length - 1; i >= 0; i -- )
-			if ( icons.includes( children[ i ] ) )
-				return;
+		for ( let i = children.length - 1; i >= 0; i -- ) {
 
-		if ( ! ( type in iconMaterials ) ) return;
+			if ( icons.includes( children[ i ] ) ) {
 
-		const component = entity.getComponent( type );
-
-		if ( component !== undefined ) {
-
-			if ( iconMaterials[ type ] === undefined ) {
-
-				// create sprite material if the iconMaterials value is undefined
-				textureLoader.load( 'img/' + type + '.svg', function ( texture ) {
-
-					iconMaterials[ type ] = new SpriteMaterial( { map: texture } );
-					createSprite( entity, type );
-
-				} );
-
-			} else {
-
-				createSprite( entity, type );
+				temp = children[ i ];
+				entity.remove( temp );
 
 			}
 
 		}
+
+		// return true if an icon already exists
+		if ( temp !== undefined ) {
+
+			if ( box.setFromObject( entity ).isEmpty() === false ) {
+
+				icons.splice( icons.indexOf( temp ), 1 );
+
+			} else {
+
+				entity.add( temp );
+
+			}
+
+			return true;
+
+		}
+
+		// return false if icon does not have source in iconMaterials
+		if ( ! ( type in iconMaterials ) ) return false;
+
+		// return false if the box3 has points
+		if ( ! editor.viewport.box.setFromObject( entity ).isEmpty() ) return false;
+
+		// returns true because the icon sprite is being created
+		if ( iconMaterials[ type ] === undefined ) {
+
+			// create sprite material if the iconMaterials value is undefined
+			textureLoader.load( 'img/' + type + '.svg', function ( texture ) {
+
+				iconMaterials[ type ] = new SpriteMaterial( { map: texture } );
+				createSprite( entity, type );
+
+			} );
+
+		} else {
+
+			createSprite( entity, type );
+
+		}
+
+		return true;
 
 	};
 

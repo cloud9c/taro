@@ -341,16 +341,22 @@ export function Viewport( editor ) {
 
 	sceneHelper.add( control );
 
-	const box = new TARO.Box3();
+	const box = this.box = new TARO.Box3();
 
 	const updateBoxHelper = this.updateBoxHelper = function ( entity ) {
 
 		const children = entity.children;
-		let temp;
 
-		for ( let i = children.length - 1; i >= 0; i -- )
-			if ( icons.includes( children[ i ] ) )
+		for ( let i = 0, len = children.length; i < len; i ++ ) {
+
+			if ( icons.includes( children[ i ] ) ) {
+
+				boxHelper.visible = false;
 				return;
+
+			}
+
+		}
 
 		box.setFromObject( entity );
 
@@ -364,8 +370,6 @@ export function Viewport( editor ) {
 			boxHelper.visible = false;
 
 		}
-
-		if ( temp !== undefined ) entity.add( temp );
 
 	};
 
