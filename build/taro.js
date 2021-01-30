@@ -49530,7 +49530,7 @@ const ComponentManager = {
 					const container = this.entity.scene._containers[
 						this.componentType
 					];
-					if ( value ) {
+					if ( value === true ) {
 
 						container.push( this );
 						this.dispatchEvent( { type: 'enable' } );
@@ -53853,18 +53853,11 @@ class Entity extends Group {
 
 	removeComponent( component ) {
 
-		if ( component.enabled ) {
+		if ( component.enabled === true ) component.enabled = false;
 
-			const type = component.componentType;
-			const container = this.scene._containers[ type ];
-			container.splice( container.indexOf( component ), 1 );
-
-		}
-
-		const components = this.entity.components;
+		const components = this.components;
 		components.splice( components.indexOf( component ), 1 );
 
-		this.dispatchEvent( { type: 'disable' } );
 		this.dispatchEvent( { type: 'remove' } );
 
 	}
