@@ -9,7 +9,6 @@ export function Viewport( editor ) {
 	function onDragStart( event ) {
 
 		currentDrag = this;
-
 		event.dataTransfer.effectAllowed = 'move';
 
 	}
@@ -19,7 +18,7 @@ export function Viewport( editor ) {
 		event.preventDefault();
 		event.dataTransfer.dropEffect = 'move';
 
-		if ( currentDrag === this ) return;
+		if ( currentDrag === undefined || currentDrag === this ) return;
 
 		const area = event.offsetY / this.clientHeight;
 
@@ -44,113 +43,115 @@ export function Viewport( editor ) {
 
 	function onDrop( event ) {
 
-		if ( currentDrag === this ) return this.classList.remove( 'drag-into', 'drag-above', 'drag-below' );
+		if ( currentDrag !== undefined && currentDrag !== this ) {
 
-		let element = this;
-		while ( element.dataset.parent !== undefined ) {
+			let element = this;
+			while ( element.dataset.parent !== undefined ) {
 
-			 if ( element.dataset.parent === currentDrag.dataset.id ) return this.classList.remove( 'drag-into', 'drag-above', 'drag-below' );
+				 if ( element.dataset.parent === currentDrag.dataset.id ) return this.classList.remove( 'drag-into', 'drag-above', 'drag-below' );
 
-			element = document.querySelector( '#scene-tree [data-id="' + element.dataset.parent + '"]' );
-
-		}
-
-		if ( currentDrag.dataset.id === this.dataset.parent ) return;
-
-		const currentObject = scene.getEntityById( parseInt( currentDrag.dataset.id ) );
-		const thisObject = scene.getEntityById( parseInt( this.dataset.id ) );
-
-		if ( currentDrag.dataset.parent !== undefined ) {
-
-			const id = currentDrag.dataset.parent;
-			delete currentDrag.dataset.parent;
-
-			if ( document.querySelectorAll( '#scene-tree [data-parent="' + id + '"]' ).length === 0 ) {
-
-				const parent = document.querySelector( '#scene-tree [data-id="' + id + '"]' );
-				parent.classList.remove( 'parent' );
-				delete parent.dataset.opened;
+				element = document.querySelector( '#scene-tree [data-id="' + element.dataset.parent + '"]' );
 
 			}
 
-		}
+			if ( currentDrag.dataset.id === this.dataset.parent ) return;
 
-		if ( this.classList.contains( 'drag-above' ) || this.classList.contains( 'drag-below' ) ) {
+			const currentObject = scene.getEntityById( parseInt( currentDrag.dataset.id ) );
+			const thisObject = scene.getEntityById( parseInt( this.dataset.id ) );
 
-			if ( currentDrag.style.paddingLeft !== '' || currentDrag.style.paddingLeft !== '24px' )
-				currentDrag.style.paddingLeft = parseFloat( currentDrag.style.paddingLeft ) - 16 + 'px';
+			if ( currentDrag.dataset.parent !== undefined ) {
 
-			if ( this.classList.contains( 'drag-above' ) )
-				this.before( currentDrag );
-			else
-				this.after( currentDrag );
+				const id = currentDrag.dataset.parent;
+				delete currentDrag.dataset.parent;
 
-			if ( this.classList.contains( 'parent' ) && this.classList.contains( 'drag-below' ) ) {
+				if ( document.querySelectorAll( '#scene-tree [data-parent="' + id + '"]' ).length === 0 ) {
 
-				currentDrag.style.paddingLeft = parseFloat( window.getComputedStyle( this ).getPropertyValue( 'padding-left' ) ) + 16 + 'px';
-				currentDrag.dataset.parent = this.dataset.id;
-				thisObject.add( currentObject );
-
-			} else if ( this.dataset.parent !== undefined ) {
-
-				const parent = document.querySelector( '#scene-tree [data-id="' + this.dataset.parent + '"]' );
-				currentDrag.dataset.parent = parent.dataset.id;
-				currentDrag.style.paddingLeft = parseFloat( window.getComputedStyle( parent ).getPropertyValue( 'padding-left' ) ) + 16 + 'px';
-
-			}
-
-			thisObject.parent.add( currentObject );
-
-		} else {
-
-			const children = document.querySelectorAll( '#scene-tree [data-parent="' + this.dataset.id + '"]' );
-
-			if ( children.length > 0 ) {
-
-				editor.sidebarScene.openParent( this );
-				children[ children.length - 1 ].after( currentDrag );
-
-			} else {
-
-				this.after( currentDrag );
-
-			}
-
-			this.classList.add( 'parent' );
-			this.dataset.opened = '';
-			currentDrag.style.paddingLeft = parseFloat( window.getComputedStyle( this ).getPropertyValue( 'padding-left' ) ) + 16 + 'px';
-			currentDrag.dataset.parent = this.dataset.id;
-			console.log( thisObject.scene );
-			thisObject.add( currentObject );
-
-		}
-
-		const recursion = ( element ) => {
-
-			const children = document.querySelectorAll( '#scene-tree [data-parent="' + element.dataset.id + '"]' );
-
-			if ( children.length > 0 ) {
-
-				let prevChild = element;
-				const paddingLeft = parseFloat( window.getComputedStyle( element ).getPropertyValue( 'padding-left' ) );
-				for ( let i = 0, len = children.length; i < len; i ++ ) {
-
-					children[ i ].style.paddingLeft = paddingLeft + 16 + 'px';
-
-					prevChild.after( children[ i ] );
-					prevChild = children[ i ];
-
-					recursion( children[ i ] );
+					const parent = document.querySelector( '#scene-tree [data-id="' + id + '"]' );
+					parent.classList.remove( 'parent' );
+					delete parent.dataset.opened;
 
 				}
 
 			}
 
-		};
+			if ( this.classList.contains( 'drag-above' ) || this.classList.contains( 'drag-below' ) ) {
 
-		recursion( currentDrag );
+				if ( currentDrag.style.paddingLeft !== '' || currentDrag.style.paddingLeft !== '24px' )
+					currentDrag.style.paddingLeft = parseFloat( currentDrag.style.paddingLeft ) - 16 + 'px';
 
-		render();
+				if ( this.classList.contains( 'drag-above' ) )
+					this.before( currentDrag );
+				else
+					this.after( currentDrag );
+
+				if ( this.classList.contains( 'parent' ) && this.classList.contains( 'drag-below' ) ) {
+
+					currentDrag.style.paddingLeft = parseFloat( window.getComputedStyle( this ).getPropertyValue( 'padding-left' ) ) + 16 + 'px';
+					currentDrag.dataset.parent = this.dataset.id;
+					thisObject.add( currentObject );
+
+				} else if ( this.dataset.parent !== undefined ) {
+
+					const parent = document.querySelector( '#scene-tree [data-id="' + this.dataset.parent + '"]' );
+					currentDrag.dataset.parent = parent.dataset.id;
+					currentDrag.style.paddingLeft = parseFloat( window.getComputedStyle( parent ).getPropertyValue( 'padding-left' ) ) + 16 + 'px';
+
+				}
+
+				thisObject.parent.add( currentObject );
+
+			} else {
+
+				const children = document.querySelectorAll( '#scene-tree [data-parent="' + this.dataset.id + '"]' );
+
+				if ( children.length > 0 ) {
+
+					editor.sidebarScene.openParent( this );
+					children[ children.length - 1 ].after( currentDrag );
+
+				} else {
+
+					this.after( currentDrag );
+
+				}
+
+				this.classList.add( 'parent' );
+				this.dataset.opened = '';
+				currentDrag.style.paddingLeft = parseFloat( window.getComputedStyle( this ).getPropertyValue( 'padding-left' ) ) + 16 + 'px';
+				currentDrag.dataset.parent = this.dataset.id;
+				thisObject.add( currentObject );
+
+			}
+
+			const recursion = ( element ) => {
+
+				const children = document.querySelectorAll( '#scene-tree [data-parent="' + element.dataset.id + '"]' );
+
+				if ( children.length > 0 ) {
+
+					let prevChild = element;
+					const paddingLeft = parseFloat( window.getComputedStyle( element ).getPropertyValue( 'padding-left' ) );
+					for ( let i = 0, len = children.length; i < len; i ++ ) {
+
+						children[ i ].style.paddingLeft = paddingLeft + 16 + 'px';
+
+						prevChild.after( children[ i ] );
+						prevChild = children[ i ];
+
+						recursion( children[ i ] );
+
+					}
+
+				}
+
+			};
+
+			recursion( currentDrag );
+
+			render();
+
+		}
+
 		this.classList.remove( 'drag-into', 'drag-above', 'drag-below' );
 
 		event.preventDefault();

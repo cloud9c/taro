@@ -442,6 +442,150 @@ export function SidebarInspector( editor ) {
 
 	};
 
+	const box = new Box3();
+
+	const iconMaterials = {
+		light: null,
+		camera: null
+	};
+
+	const updateIcon = this.updateIcon = function ( entity, reorder ) {
+
+		let temp;
+		const children = entity.children;
+		for ( let i = children.length - 1; i >= 0; i -- ) {
+
+			if ( icons.includes( children[ i ] ) ) {
+
+				temp = children[ i ];
+				entity.remove( temp );
+				break;
+
+			}
+
+		}
+
+		if ( temp !== undefined ) {
+
+			if ( reorder || box.setFromObject( entity ).isEmpty() === false )
+				icons.splice( icons.indexOf( temp ), 1 );
+			else
+				entity.add( temp );
+
+			if ( reorder === undefined ) return;
+
+		}
+
+		const components = entity.componentData;
+		for ( let i = 0, len = components.length; i < len; i ++ ) {
+
+			const type = components[ i ].type;
+
+			if ( iconMaterials[ type ] !== undefined ) {
+
+				if ( iconMaterials[ type ] === null ) {
+
+					textureLoader.load( 'img/' + type + '.svg', function ( texture ) {
+
+						iconMaterials[ type ] = new SpriteMaterial( { map: texture } );
+						createSprite( entity, type );
+
+					} );
+
+				} else {
+
+					createSprite( entity, type );
+
+				}
+
+				break;
+
+			}
+
+		}
+
+		return true;
+
+	};
+
+	let currentDrag;
+
+	function onDragStart( event ) {
+
+		currentDrag = this;
+		event.dataTransfer.effectAllowed = 'move';
+
+	}
+
+	function onDragOver( event ) {
+
+		event.preventDefault();
+		event.dataTransfer.dropEffect = 'move';
+
+		if ( currentDrag === undefined || currentDrag.parentElement === this ) return;
+
+		const area = event.offsetY / this.clientHeight;
+
+		if ( area < 0.25 ) {
+
+			this.classList.add( 'drag-above' );
+			this.classList.remove( 'drag-below' );
+
+		} else if ( area > 0.75 ) {
+
+			this.classList.add( 'drag-below' );
+			this.classList.remove( 'drag-above' );
+
+		}
+
+	}
+
+	function onDrop( event ) {
+
+		if ( currentDrag !== undefined && currentDrag.parentElement !== this ) {
+
+			let index1, index2;
+			const uuid1 = currentDrag.parentElement.dataset.uuid;
+			const uuid2 = this.dataset.uuid;
+
+			const components = currentEntity.componentData;
+
+			for ( let i = 0, len = components.length; i < len; i ++ ) {
+
+				if ( components[ i ].uuid === uuid1 ) index1 = i;
+				else if ( components[ i ].uuid === uuid2 ) index2 = i;
+
+				if ( index1 !== undefined && index2 !== undefined ) break;
+
+			}
+
+			if ( this.classList.contains( 'drag-above' ) && index1 + 1 !== index2 ) {
+
+				this.before( currentDrag.parentElement );
+				components.splice( index2, 0, components.splice( index1, 1 )[ 0 ] );
+
+			} else if ( this.classList.contains( 'drag-below' ) && index1 - 1 !== index2 ) {
+
+				this.after( currentDrag.parentElement );
+				components.splice( index2, 0, components.splice( index1, 1 )[ 0 ] );
+
+			}
+
+			updateIcon( currentEntity, true );
+
+		}
+
+		this.classList.remove( 'drag-above', 'drag-below' );
+		event.preventDefault();
+
+	}
+
+	function onDragLeave( event ) {
+
+		this.classList.remove( 'drag-above', 'drag-below' );
+
+	}
+
 	const icons = editor.viewport.icons;
 
 	this.addSection = function ( component, config ) {
@@ -451,6 +595,9 @@ export function SidebarInspector( editor ) {
 		const section = document.createElement( 'SECTION' );
 		section.dataset.uuid = component.uuid;
 		section.classList.add( 'component' );
+		section.addEventListener( 'dragover', onDragOver );
+		section.addEventListener( 'drop', onDrop );
+		section.addEventListener( 'dragleave', onDragLeave );
 
 		const trash = document.createElement( 'A' );
 		trash.classList.add( 'trash' );
@@ -462,7 +609,8 @@ export function SidebarInspector( editor ) {
 
 		const title = document.createElement( 'H1' );
 		title.textContent = component.type;
-		title.appendChild( trash );
+		title.draggable = true;
+		title.addEventListener( 'dragstart', onDragStart );
 		if ( closedComponents[ component.type ] === undefined )
 			title.dataset.opened = '';
 
@@ -504,9 +652,7 @@ export function SidebarInspector( editor ) {
 
 				}
 
-				const components = currentEntity.componentData;
-				for ( let i = 0, len = components.length; i < len; i ++ )
-					if ( this.updateIcon( currentEntity, components[ i ].type ) ) break;
+				this.updateIcon( currentEntity );
 
 				editor.viewport.updateBoxHelper( currentEntity );
 				editor.viewport.render();
@@ -534,6 +680,7 @@ export function SidebarInspector( editor ) {
 			}
 
 		} );
+		title.appendChild( trash );
 		section.appendChild( title );
 
 		const schema = config.schema;
@@ -612,8 +759,6 @@ export function SidebarInspector( editor ) {
 		}
 
 		function onFileDown( event ) {
-
-			if ( event.isPrimary === false ) return;
 
 			event.target.querySelector( 'input' ).click();
 
@@ -1072,16 +1217,11 @@ export function SidebarInspector( editor ) {
 
 		}
 
-		this.updateIcon( entity, type );
-
 		entity.componentData.push( component );
+		this.updateIcon( entity );
+
 		editor.render();
 
-	};
-
-	const iconMaterials = {
-		light: undefined,
-		camera: undefined
 	};
 
 	function createSprite( entity, type ) {
@@ -1093,69 +1233,6 @@ export function SidebarInspector( editor ) {
 		editor.render();
 
 	}
-
-	const box = new Box3();
-
-	// returns boolean indicating if icon searching is resolved
-	this.updateIcon = function ( entity, type ) {
-
-		// remove icon if a box3 can be drawn
-		let temp;
-		const children = entity.children;
-		for ( let i = children.length - 1; i >= 0; i -- ) {
-
-			if ( icons.includes( children[ i ] ) ) {
-
-				temp = children[ i ];
-				entity.remove( temp );
-
-			}
-
-		}
-
-		// return true if an icon already exists
-		if ( temp !== undefined ) {
-
-			if ( box.setFromObject( entity ).isEmpty() === false ) {
-
-				icons.splice( icons.indexOf( temp ), 1 );
-
-			} else {
-
-				entity.add( temp );
-
-			}
-
-			return true;
-
-		}
-
-		// return false if icon does not have source in iconMaterials
-		if ( ! ( type in iconMaterials ) ) return false;
-
-		// return false if the box3 has points
-		if ( ! editor.viewport.box.setFromObject( entity ).isEmpty() ) return false;
-
-		// returns true because the icon sprite is being created
-		if ( iconMaterials[ type ] === undefined ) {
-
-			// create sprite material if the iconMaterials value is undefined
-			textureLoader.load( 'img/' + type + '.svg', function ( texture ) {
-
-				iconMaterials[ type ] = new SpriteMaterial( { map: texture } );
-				createSprite( entity, type );
-
-			} );
-
-		} else {
-
-			createSprite( entity, type );
-
-		}
-
-		return true;
-
-	};
 
 	this.addSceneSection();
 

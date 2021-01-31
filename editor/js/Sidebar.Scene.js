@@ -72,7 +72,7 @@ export function SidebarScene( editor ) {
 
 		const target = event.target;
 
-		if ( event.isPrimary === true && target.tagName !== 'SECTION' ) {
+		if ( target.tagName !== 'SECTION' ) {
 
 			if ( target.classList.contains( 'parent' ) && event.clientX - target.getBoundingClientRect().left < parseFloat( window.getComputedStyle( target ).getPropertyValue( 'padding-left' ) ) ) {
 

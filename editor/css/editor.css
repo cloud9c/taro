@@ -339,12 +339,13 @@ input[type="checkbox"]:checked:after {
 	border-color: var(--theme-color);
 }
 
-#scene-tree .drag-above {
+#scene-tree .drag-above, .component.drag-above {
 	border-top-color: var(--theme-color);
 }
 
-#scene-tree .drag-below {
+#scene-tree .drag-below, .component.drag-below {
 	border-bottom-color: var(--theme-color);
+	border-bottom-style: dashed;
 }
 
 #scene-tree div:hover {
@@ -367,7 +368,7 @@ input[type="checkbox"]:checked:after {
     background-image: url("../img/caret.svg");
     background-repeat: no-repeat;
     position: absolute;
-    left: 4px;
+    margin-left: -20px;
     top: 5px;
 }
 
@@ -418,6 +419,7 @@ input[type="checkbox"]:checked:after {
 section.component {
 	padding: 0;
 	user-select: none;
+	border-top: 1px dashed transparent;
 }
 
 .component fieldset {

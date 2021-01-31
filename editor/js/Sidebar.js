@@ -4,14 +4,13 @@ export function Sidebar() {
 
 		const target = event.target;
 
-		if ( event.isPrimary === false || target.classList.contains( 'tabs' ) || target.dataset.selected !== undefined ) return;
+		if ( target.classList.contains( 'tabs' ) || target.dataset.selected !== undefined ) return;
 
 		const tabs = target.parentElement;
 
 		const oldTarget = tabs.querySelector( '[data-selected]' );
 		delete oldTarget.dataset.selected;
 		document.getElementById( oldTarget.dataset.tab ).style.removeProperty( 'display' );
-
 
 		target.dataset.selected = '';
 		document.getElementById( target.dataset.tab ).style.setProperty( 'display', 'inherit' );
