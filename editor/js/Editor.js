@@ -38,7 +38,9 @@ function Editor() {
 	} );
 	entity.position.set( 0, 5, 1 );
 	entity = this.addEntity( 'Box' );
-	this.inspector.addComponent( entity, 'geometry' );
+	this.inspector.addComponent( entity, 'geometry', {
+		type: 'torusKnot'
+	} );
 	this.inspector.addComponent( entity, 'material', {
 		type: 'phong'
 	} );

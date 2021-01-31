@@ -4,7 +4,7 @@ import * as TARO from '../../build/taro.js';
 
 export function Viewport( editor ) {
 
-	let currentDrag;
+	let currentDrag, currentEntity;
 
 	function onDragStart( event ) {
 
@@ -225,7 +225,7 @@ export function Viewport( editor ) {
 	boxHelper.material.transparent = true;
 	boxHelper.visible = false;
 
-	const helpers = this.helpers = [ boxHelper ];
+	const helpers = this.helpers = [ ];
 	const icons = this.icons = [];
 
 	scene.add( grid, boxHelper );
@@ -265,9 +265,15 @@ export function Viewport( editor ) {
 
 		}
 
-		for ( let i = 0, len = helpers.length; i < len; i ++ ) {
+		if ( currentEntity !== undefined ) {
 
-			helpers[ i ].update();
+			updateBoxHelper( currentEntity );
+
+			for ( let i = 0, len = helpers.length; i < len; i ++ ) {
+
+				helpers[ i ].update();
+
+			}
 
 		}
 
@@ -346,14 +352,14 @@ export function Viewport( editor ) {
 
 	const updateBoxHelper = this.updateBoxHelper = function ( entity ) {
 
+		const temp = [];
 		const children = entity.children;
-
 		for ( let i = 0, len = children.length; i < len; i ++ ) {
 
-			if ( icons.includes( children[ i ] ) ) {
+			if ( icons.includes( children[ i ] ) || children[ i ].isEntity === true ) {
 
-				boxHelper.visible = false;
-				return;
+				temp.push( children[ i ] );
+				entity.remove( children[ i ] );
 
 			}
 
@@ -361,14 +367,20 @@ export function Viewport( editor ) {
 
 		box.setFromObject( entity );
 
-		if ( box.isEmpty() === false ) {
+		if ( box.isEmpty() ) {
+
+			boxHelper.visible = false;
+
+		} else {
 
 			boxHelper.setFromObject( entity );
 			boxHelper.visible = true;
 
-		} else {
+		}
 
-			boxHelper.visible = false;
+		for ( let i = 0, len = temp.length; i < len; i ++ ) {
+
+			entity.add( temp[ i ] );
 
 		}
 
@@ -376,21 +388,21 @@ export function Viewport( editor ) {
 
 	const attach = this.attach = function ( entity ) {
 
+		currentEntity = entity;
 		control.enabled = true;
 		editor.inspector.attach( entity );
 		control.attach( entity );
-
 		updateBoxHelper( entity );
 
 	};
 
 	function detach() {
 
+		currentEntity = undefined;
+		boxHelper.visible = false;
 		editor.inspector.detach();
 		control.enabled = false;
 		control.detach();
-
-		boxHelper.visible = false;
 
 	}
 
