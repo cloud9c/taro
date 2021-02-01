@@ -1,4 +1,4 @@
-import { MathUtils, ComponentManager, Vector4, Vector3, Vector2, Color, TextureLoader, Fog, FogExp2, WebGLCubeRenderTarget, Sprite, SpriteMaterial, Box3 } from '../../build/taro.js';
+import * as TARO from '../../build/taro.js';
 
 export function SidebarInspector( editor ) {
 
@@ -6,6 +6,56 @@ export function SidebarInspector( editor ) {
 	const scene = editor.viewport.scene;
 	const closedComponents = {};
 	let currentEntity = null;
+	const helpers = editor.viewport.helpers;
+	const icons = editor.viewport.icons;
+	const iconMaterials = {
+		light: null,
+		camera: null
+	};
+	const box = new TARO.Box3();
+	let currentDrag;
+	const textureLoader = new TARO.TextureLoader();
+
+	function addHelper( object ) {
+
+		console.log( object.position, object.parent.position );
+
+		let helper;
+		if ( object.isCamera ) {
+
+			helper = new TARO.CameraHelper( object );
+
+		} else if ( object.isPointLight ) {
+
+			helper = new TARO.PointLightHelper( object, 1 );
+
+		} else if ( object.isDirectionalLight ) {
+
+			helper = new TARO.DirectionalLightHelper( object, 1 );
+
+		} else if ( object.isSpotLight ) {
+
+			helper = new TARO.SpotLightHelper( object, 1 );
+
+		} else if ( object.isHemisphereLight ) {
+
+			helper = new TARO.HemisphereLightHelper( object, 1 );
+
+		} else if ( object.isSkinnedMesh ) {
+
+			helper = new TARO.SkeletonHelper( object.skeleton.bones[ 0 ] );
+
+		} else {
+
+			// no helper for this object type
+			return;
+
+		}
+
+		helpers.push( helper );
+		scene.add( helper );
+
+	}
 
 	this.attach = function ( entity ) {
 
@@ -23,16 +73,47 @@ export function SidebarInspector( editor ) {
 
 			for ( let i = 0, len = components.length; i < len; i ++ ) {
 
-				const config = ComponentManager.components[ components[ i ].type ].config;
+				const config = TARO.ComponentManager.components[ components[ i ].type ].config;
 				inspector.appendChild( this.addSection( components[ i ], config ) );
 
 			}
 
 		}
 
+
+
+		const children = entity.children;
+		for ( let i = 0, len = children.length; i < len; i ++ ) {
+
+
+			addHelper( children[ i ] );
+
+		}
+
 	};
 
 	this.detach = function () {
+
+		// const children = currentEntity.children;
+		// for ( let i = 0, len = children.length; i < len; i ++ ) {
+
+		// 	if ( icons.includes( children[ i ] ) ) {
+
+		// 		children[ i ].visible = true;
+		// 		break;
+
+		// 	}
+
+		// }
+
+		for ( let i = 0, len = helpers.length; i < len; i ++ ) {
+
+			scene.remove( helpers[ i ] );
+
+		}
+
+		// empty array while maintaing reference in viewport
+		helpers.length = 0;
 
 		currentEntity = null;
 		document.getElementById( 'scene-default' ).style.display = '';
@@ -80,7 +161,7 @@ export function SidebarInspector( editor ) {
 
 							}
 
-							data[ name ] = ComponentManager.addDefault( attribute[ i ].type, attribute[ i ].default );
+							data[ name ] = TARO.ComponentManager.addDefault( attribute[ i ].type, attribute[ i ].default );
 							section.appendChild( this.addFieldset( name, data, config ) );
 
 							// add
@@ -122,7 +203,7 @@ export function SidebarInspector( editor ) {
 						if ( data[ name ] === undefined ) {
 
 							// add attribute to data
-							data[ name ] = ComponentManager.addDefault( attribute.type, attribute.default );
+							data[ name ] = TARO.ComponentManager.addDefault( attribute.type, attribute.default );
 							section.appendChild( this.addFieldset( name, data, config ) );
 
 						}
@@ -442,13 +523,6 @@ export function SidebarInspector( editor ) {
 
 	};
 
-	const box = new Box3();
-
-	const iconMaterials = {
-		light: null,
-		camera: null
-	};
-
 	const updateIcon = this.updateIcon = function ( entity, reorder ) {
 
 		let temp;
@@ -487,7 +561,7 @@ export function SidebarInspector( editor ) {
 
 					textureLoader.load( 'img/' + type + '.svg', function ( texture ) {
 
-						iconMaterials[ type ] = new SpriteMaterial( { map: texture } );
+						iconMaterials[ type ] = new TARO.SpriteMaterial( { map: texture } );
 						createSprite( entity, type );
 
 					} );
@@ -507,8 +581,6 @@ export function SidebarInspector( editor ) {
 		return true;
 
 	};
-
-	let currentDrag;
 
 	function onDragStart( event ) {
 
@@ -585,8 +657,6 @@ export function SidebarInspector( editor ) {
 		this.classList.remove( 'drag-above', 'drag-below' );
 
 	}
-
-	const icons = editor.viewport.icons;
 
 	this.addSection = function ( component, config ) {
 
@@ -708,14 +778,12 @@ export function SidebarInspector( editor ) {
 
 	};
 
-	const textureLoader = new TextureLoader();
-
 	this.addSceneSection = function () {
 
-		let colorBackground = new Color();
+		let colorBackground = new TARO.Color();
 		let textureBackground, textureEquirect, environmentTexture;
-		const fog = new Fog();
-		const fogExp2 = new FogExp2();
+		const fog = new TARO.Fog();
+		const fogExp2 = new TARO.FogExp2();
 
 		function processFile( files, target ) {
 
@@ -723,7 +791,7 @@ export function SidebarInspector( editor ) {
 
 			const canvas = target.getElementsByClassName( 'file-display' )[ 0 ];
 			const context = canvas.getContext( '2d' );
-			const reader = new FileReader();
+			const reader = new TARO.FileReader();
 
 			reader.onload = () => {
 
@@ -744,7 +812,7 @@ export function SidebarInspector( editor ) {
 							onTextureOption();
 							break;
 						case 'background-equirect':
-							textureEquirect = new WebGLCubeRenderTarget( image.height );
+							textureEquirect = new TARO.WebGLCubeRenderTarget( image.height );
 							textureEquirect.fromEquirectangularTexture( renderer, texture );
 							onEquirectOption();
 							break;
@@ -1033,7 +1101,7 @@ export function SidebarInspector( editor ) {
 
 					input.addEventListener( 'change', function () {
 
-						entity[ translation[ i ] ][ xyz[ j ] ] = MathUtils.degToRad( parseFloat( this.value ) );
+						entity[ translation[ i ] ][ xyz[ j ] ] = TARO.MathUtils.degToRad( parseFloat( this.value ) );
 						editor.render();
 
 					} );
@@ -1136,12 +1204,12 @@ export function SidebarInspector( editor ) {
 
 		componentSelector.addEventListener( 'focus', () => {
 
-			const components = Object.keys( ComponentManager.components ).sort();
+			const components = Object.keys( TARO.ComponentManager.components ).sort();
 			for ( let i = 0, len = components.length; i < len; i ++ ) {
 
 				const type = components[ i ];
 
-				const multiple = ComponentManager.components[ type ].config.multiple;
+				const multiple = TARO.ComponentManager.components[ type ].config.multiple;
 				const componentData = entity.componentData;
 				if ( multiple !== true && componentData !== undefined ) {
 
@@ -1211,25 +1279,20 @@ export function SidebarInspector( editor ) {
 
 		if ( entity.componentData === undefined ) entity.componentData = [];
 
-		const component = { type, data, uuid: MathUtils.generateUUID() };
-		const config = ComponentManager.components[ type ].config;
+		const component = { type, data, uuid: TARO.MathUtils.generateUUID() };
+		const config = TARO.ComponentManager.components[ type ].config;
 		const schema = config.schema;
 		const runInEditor = config.runInEditor === true;
 
-		if ( schema !== undefined ) ComponentManager.sanitizeData( component.data, schema );
+		if ( schema !== undefined ) TARO.ComponentManager.sanitizeData( component.data, schema );
 
 		if ( entity === currentEntity ) inspector.appendChild( this.addSection( component, config ) );
 
 		if ( runInEditor ) {
 
 			const _component = entity.addComponent( type, component.data );
+			// used by editor to select component by uuid (maybe standardize to TARO engine?)
 			_component.uuid = component.uuid;
-
-			if ( type === camera ) {
-				// TODO
-			} else if ( type === light ) {
-
-			}
 
 		}
 
@@ -1242,7 +1305,7 @@ export function SidebarInspector( editor ) {
 
 	function createSprite( entity, type ) {
 
-		const sprite = new Sprite( iconMaterials[ type ] );
+		const sprite = new TARO.Sprite( iconMaterials[ type ] );
 		sprite.name = type;
 		icons.push( sprite );
 		entity.add( sprite );

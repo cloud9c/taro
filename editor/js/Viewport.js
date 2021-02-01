@@ -235,10 +235,12 @@ export function Viewport( editor ) {
 	renderer.observer.disconnect();
 	renderer.setClearColor( 0xc4c4c4 );
 
-	const camera = new TARO.PerspectiveCamera();
+	const DEFAULT_CAMERA = new TARO.PerspectiveCamera( 50, 1, 0.01, 1000 );
 	const { width, height } = renderer.domElement.getBoundingClientRect();
-	camera.aspect = width /	height;
-	camera.updateProjectionMatrix();
+	DEFAULT_CAMERA.aspect = width /	height;
+	DEFAULT_CAMERA.updateProjectionMatrix();
+
+	let camera = DEFAULT_CAMERA;
 
 	const observer = new ResizeObserver( function () {
 
@@ -354,7 +356,7 @@ export function Viewport( editor ) {
 
 		const temp = [];
 		const children = entity.children;
-		for ( let i = 0, len = children.length; i < len; i ++ ) {
+		for ( let i = children.length - 1; i >= 0; i -- ) {
 
 			if ( icons.includes( children[ i ] ) || children[ i ].isEntity === true ) {
 
