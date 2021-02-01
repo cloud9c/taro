@@ -16,44 +16,62 @@ export function SidebarInspector( editor ) {
 	let currentDrag;
 	const textureLoader = new TARO.TextureLoader();
 
-	function addHelper( object ) {
+	function addHelpers( entity ) {
 
-		console.log( object.position, object.parent.position );
+		const children = entity.children;
+		for ( let i = 0, len = children.length; i < len; i ++ ) {
 
-		let helper;
-		if ( object.isCamera ) {
+			const object = children[ i ];
 
-			helper = new TARO.CameraHelper( object );
+			let helper;
+			if ( object.isCamera ) {
 
-		} else if ( object.isPointLight ) {
+				helper = new TARO.CameraHelper( object );
 
-			helper = new TARO.PointLightHelper( object, 1 );
+			} else if ( object.isPointLight ) {
 
-		} else if ( object.isDirectionalLight ) {
+				helper = new TARO.PointLightHelper( object, 1 );
 
-			helper = new TARO.DirectionalLightHelper( object, 1 );
+			} else if ( object.isDirectionalLight ) {
 
-		} else if ( object.isSpotLight ) {
+				helper = new TARO.DirectionalLightHelper( object, 1 );
 
-			helper = new TARO.SpotLightHelper( object, 1 );
+			} else if ( object.isSpotLight ) {
 
-		} else if ( object.isHemisphereLight ) {
+				helper = new TARO.SpotLightHelper( object, 1 );
 
-			helper = new TARO.HemisphereLightHelper( object, 1 );
+			} else if ( object.isHemisphereLight ) {
 
-		} else if ( object.isSkinnedMesh ) {
+				helper = new TARO.HemisphereLightHelper( object, 1 );
 
-			helper = new TARO.SkeletonHelper( object.skeleton.bones[ 0 ] );
+			} else if ( object.isSkinnedMesh ) {
 
-		} else {
+				helper = new TARO.SkeletonHelper( object.skeleton.bones[ 0 ] );
 
-			// no helper for this object type
-			return;
+			} else {
+
+				// no helper for this object type
+				continue;
+
+			}
+
+			helpers.push( helper );
+			scene.add( helper );
 
 		}
 
-		helpers.push( helper );
-		scene.add( helper );
+	}
+
+	function removeHelpers() {
+
+		for ( let i = 0, len = helpers.length; i < len; i ++ ) {
+
+			scene.remove( helpers[ i ] );
+
+		}
+
+		// empty array while maintaing reference in viewport
+		helpers.length = 0;
 
 	}
 
@@ -80,40 +98,13 @@ export function SidebarInspector( editor ) {
 
 		}
 
-
-
-		const children = entity.children;
-		for ( let i = 0, len = children.length; i < len; i ++ ) {
-
-
-			addHelper( children[ i ] );
-
-		}
+		addHelpers( entity );
 
 	};
 
 	this.detach = function () {
 
-		// const children = currentEntity.children;
-		// for ( let i = 0, len = children.length; i < len; i ++ ) {
-
-		// 	if ( icons.includes( children[ i ] ) ) {
-
-		// 		children[ i ].visible = true;
-		// 		break;
-
-		// 	}
-
-		// }
-
-		for ( let i = 0, len = helpers.length; i < len; i ++ ) {
-
-			scene.remove( helpers[ i ] );
-
-		}
-
-		// empty array while maintaing reference in viewport
-		helpers.length = 0;
+		removeHelpers();
 
 		currentEntity = null;
 		document.getElementById( 'scene-default' ).style.display = '';
@@ -254,6 +245,9 @@ export function SidebarInspector( editor ) {
 				component.enabled = true;
 
 			}
+
+			removeHelpers();
+			addHelpers( component.entity );
 
 			editor.render();
 
