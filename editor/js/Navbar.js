@@ -24,13 +24,15 @@ export function Navbar( editor ) {
 			player.parentNode.replaceChild( newPlayer, player );
 			player = newPlayer;
 
-			canvas.style.display = '';
+			canvas.style.position = '';
+			canvas.style.visibility = '';
 			player.style.display = '';
 			playMenu.firstElementChild.textContent = 'Play';
 
 		} else { // start it
 
-			canvas.style.display = 'none';
+			canvas.style.position = 'absolute';
+			canvas.style.visibility = 'hidden';
 			player.style.display = 'initial';
 
 			const appJSON = applicationToJSON( editor.app );

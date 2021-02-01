@@ -232,7 +232,7 @@ export function Viewport( editor ) {
 
 	const renderer = app.renderer;
 	const dom = renderer.domElement;
-	renderer.observer.disconnect();
+	// renderer.observer.disconnect();
 	renderer.setClearColor( 0xc4c4c4 );
 
 	const DEFAULT_CAMERA = new TARO.PerspectiveCamera( 50, 1, 0.01, 1000 );
