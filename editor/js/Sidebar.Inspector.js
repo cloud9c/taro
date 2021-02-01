@@ -614,7 +614,15 @@ export function SidebarInspector( editor ) {
 		if ( closedComponents[ component.type ] === undefined )
 			title.dataset.opened = '';
 
+		let verified = false;
+		title.addEventListener( 'pointerdown', () => {
+
+			verified = true;
+
+		} );
 		title.addEventListener( 'pointerup', ( event ) => {
+
+			if ( ! verified ) return;
 
 			// trash component
 			if ( event.target.classList.contains( 'trash' ) ) {
@@ -678,6 +686,8 @@ export function SidebarInspector( editor ) {
 				}
 
 			}
+
+			verified = false;
 
 		} );
 		title.appendChild( trash );
@@ -1214,6 +1224,12 @@ export function SidebarInspector( editor ) {
 
 			const _component = entity.addComponent( type, component.data );
 			_component.uuid = component.uuid;
+
+			if ( type === camera ) {
+				// TODO
+			} else if ( type === light ) {
+
+			}
 
 		}
 
