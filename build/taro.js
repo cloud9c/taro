@@ -50005,16 +50005,18 @@ class Light$1 {
 				break;
 			case 'directional':
 				this.ref = new DirectionalLight( color, intensity );
-				this.ref.position.y = 0;
+				this.ref.position.set( 0, 0, 0 );
 				break;
 			case 'hemisphere':
 				this.ref = new HemisphereLight( data.skyColor, data.groundColor, intensity );
+				this.ref.position.set( 0, 0, 0 );
 				break;
 			case 'point':
 				this.ref = new PointLight( color, intensity, data.distance, data.decay );
 				break;
 			case 'spot':
 				this.ref = new SpotLight( color, intensity, data.distance, MathUtils.degToRad( data.angle ), data.penumbra, data.decay );
+				this.ref.position.set( 0, 0, 0 );
 				break;
 			default:
 				throw new Error( 'Light: invalid light type ' + type );
