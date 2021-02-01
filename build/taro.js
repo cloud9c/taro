@@ -50005,6 +50005,7 @@ class Light$1 {
 				break;
 			case 'directional':
 				this.ref = new DirectionalLight( color, intensity );
+				this.ref.position.y = 0;
 				break;
 			case 'hemisphere':
 				this.ref = new HemisphereLight( data.skyColor, data.groundColor, intensity );
