@@ -50045,7 +50045,7 @@ class Light$1 {
 ComponentManager.register( 'light', Light$1, {
 	schema: {
 		type: { type: 'select', default: 'directional', select: [ 'ambient', 'directional', 'hemisphere', 'point', 'spot' ] },
-		color: { type: 'color' },
+		color: { type: 'color', if: { type: [ 'ambient', 'directional', 'point', 'spot' ] } }
 		intensity: { default: 1 },
 		skyColor: { type: 'color', if: { type: [ 'hemisphere' ] } },
 		groundColor: { type: 'color', if: { type: [ 'hemisphere' ] } },
