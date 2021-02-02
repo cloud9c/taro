@@ -49791,7 +49791,7 @@ class Camera$1 {
 				this.ref = new PerspectiveCamera( data.fov, data.aspect, data.near, data.far );
 				break;
 			case 'orthographic':
-				this.ref = new PerspectiveCamera( data.left, data.right, data.top, data.bottom, data.near, data.far );
+				this.ref = new OrthographicCamera( data.left, data.right, data.top, data.bottom, data.near, data.far );
 				break;
 			default:
 				throw new Error( 'Camera: invalid camera type ' + this.type );
