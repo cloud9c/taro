@@ -32,7 +32,7 @@ class Rigidbody {
 		}
 
 		this.ref = new Body( newData );
-		this.cachedScale = new Vector3().copy( this.entity.scale );
+		this.cachedScale = this.entity.getWorldScale( new Vector3() );
 
 		this.ref.addEventListener( 'collide', event => this.entity.dispatchEvent( event ) );
 		this.ref.addEventListener( 'wakeup', event => this.entity.dispatchEvent( event ) );

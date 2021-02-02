@@ -38,11 +38,9 @@
 						window.addEventListener("pointerdown", () => {
 							this.entity.app.renderer.domElement.requestPointerLock();
 						});
-						// this.ball.addEventListener("collisionenter", function (
-						// 	c
-						// ) {
-						// 	console.log(c);
-						// });
+						this.ball.addEventListener("collide", function (c) {
+							console.log(c);
+						});
 					}
 					update() {
 						const ball = this.ball;

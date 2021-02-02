@@ -73,7 +73,7 @@ class Shape {
 	onDisable() {
 
 		const body = this.body.ref;
-		const index = this.shapes.indexOf( shape );
+		const index = body.shapes.indexOf( this.ref );
 
 		body.shapes.splice( index, 1 );
 		body.shapeOffsets.splice( index, 1 );
@@ -83,7 +83,7 @@ class Shape {
 
 		body.aabbNeedsUpdate = true;
 
-		shape.body = null;
+		this.ref.body = null;
 
 	}
 

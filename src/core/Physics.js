@@ -1,6 +1,7 @@
 import { Quaternion, Vector3, Matrix4 } from '../lib/three.js';
 
 const _v1 = new Vector3();
+const _v2 = new Vector3();
 const _q1 = new Quaternion();
 const SLEEPING = 2;
 
@@ -43,21 +44,31 @@ export class Physics {
 			const entity = rigidbodies[ i ].entity;
 			const body = rigidbodies[ i ].ref;
 
-			if ( entity.position.equals( body.position ) === false ) {
+			entity.updateWorldMatrix( true, false );
+			entity.matrixWorld.decompose( _v1, _q1, _v2 );
 
-				body.position.copy( entity.position );
+			if ( this.hasVectorChanged( body.interpolatedPosition, _v1 ) ) {
+
+				body.position.copy( _v1 );
+				body.previousPosition.copy( _v1 );
+				body.interpolatedPosition.copy( _v1 );
+				body.wakeUp();
 
 			}
 
-			if ( entity.quaternion.equals( body.quaternion ) === false ) {
+			if ( this.hasQuaternionChanged( body.interpolatedQuaternion, _q1 ) ) {
 
-				body.quaternion.copy( entity.quaternion );
+				body.quaternion.copy( _q1 );
+				body.previousQuaternion.copy( _q1 );
+				body.interpolatedQuaternion.copy( _q1 );
+				body.wakeUp();
 
 			}
 
-			if ( entity.scale.equals( rigidbodies[ i ].cachedScale ) === false ) {
+			if ( this.hasVectorChanged( rigidbodies[ i ].cachedScale, _v2 ) ) {
 
-				rigidbodies[ i ].cachedScale.copy( entity.scale );
+				console.log( 'here' );
+				rigidbodies[ i ].cachedScale.copy( _v2 );
 
 				const shapes = entity.getComponents( 'shape' );
 
@@ -69,6 +80,8 @@ export class Physics {
 					shapes[ i ].enabled = true;
 
 				}
+
+				body.wakeUp();
 
 			}
 
@@ -86,10 +99,10 @@ export class Physics {
 					const entity = body.entity;
 
 					const position = entity.position;
-					position.copy( body.ref.position );
+					position.copy( body.ref.interpolatedPosition );
 
 					const quaternion = entity.quaternion;
-					quaternion.copy( body.ref.quaternion );
+					quaternion.copy( body.ref.interpolatedQuaternion );
 
 					if ( entity.parent !== entity.scene ) {
 
@@ -103,6 +116,23 @@ export class Physics {
 			}
 
 		}
+
+	}
+
+	hasVectorChanged( v1, v2 ) {
+
+		return ! ( Math.abs( v1.x - v2.x ) < 0.001 &&
+				 Math.abs( v1.y - v2.y ) < 0.001 &&
+				 Math.abs( v1.z - v2.z ) < 0.001 );
+
+	}
+
+	hasQuaternionChanged( q1, q2 ) {
+
+		return ! ( Math.abs( q1.x - q2.x ) < 0.001 &&
+				 Math.abs( q1.y - q2.y ) < 0.001 &&
+				 Math.abs( q1.z - q2.z ) < 0.001 &&
+				 Math.abs( q1.w - q2.w ) < 0.001 );
 
 	}
 
