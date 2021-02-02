@@ -50064,44 +50064,43 @@ class Material$1 {
 
 		const type = data.type;
 
-		const params = Object.assign( {}, data );
-		delete params.type;
+		delete data.type;
 
-		for ( const name in params ) {
+		for ( const name in data ) {
 
-			if ( schema[ name ].type === 'select' && params[ name ] !== null && params[ name ][ 0 ] === params[ name ][ 0 ].toUpperCase() )
-				params[ name ] = THREE[ params[ name ] ];
+			if ( schema[ name ].type === 'select' && data[ name ] !== null && data[ name ][ 0 ] === data[ name ][ 0 ].toUpperCase() )
+				data[ name ] = THREE[ data[ name ] ];
 
 		}
 
 		switch ( type ) {
 
 			case 'basic':
-				this.ref = new MeshBasicMaterial( params );
+				this.ref = new MeshBasicMaterial( data );
 				break;
 			case 'depth':
-				this.ref = new MeshDepthMaterial( params );
+				this.ref = new MeshDepthMaterial( data );
 				break;
 			case 'lambert':
-				this.ref = new MeshLambertMaterial( params );
+				this.ref = new MeshLambertMaterial( data );
 				break;
 			case 'matcap':
-				this.ref = new MeshMatcapMaterial( params );
+				this.ref = new MeshMatcapMaterial( data );
 				break;
 			case 'normal':
-				this.ref = new MeshNormalMaterial( params );
+				this.ref = new MeshNormalMaterial( data );
 				break;
 			case 'phong':
-				this.ref = new MeshPhongMaterial( params );
+				this.ref = new MeshPhongMaterial( data );
 				break;
 			case 'physical':
-				this.ref = new MeshPhysicalMaterial( params );
+				this.ref = new MeshPhysicalMaterial( data );
 				break;
 			case 'standard':
-				this.ref = new MeshStandardMaterial( params );
+				this.ref = new MeshStandardMaterial( data );
 				break;
 			case 'toon':
-				this.ref = new MeshToonMaterial( params );
+				this.ref = new MeshToonMaterial( data );
 				break;
 			default:
 				throw new Error( 'Geometry: invalid material type ' + type );
@@ -59895,7 +59894,8 @@ ComponentManager.register( 'shape', Shape$2, {
 		collisionFilterMask: { type: 'int', default: - 1 },
 
 	},
-	dependencies: [ 'rigidbody' ]
+	dependencies: [ 'rigidbody' ],
+	multiple: true,
 } );
 
 const DEFAULT_CONNECTED_BODY = new Body();
@@ -60012,32 +60012,30 @@ class Rigidbody {
 
 	init( data ) {
 
-		const newData = Object.assign( data );
-
-		switch ( newData.type ) {
+		switch ( data.type ) {
 
 			case 'dynamic':
-				newData.type = Body.DYNAMIC;
+				data.type = Body.DYNAMIC;
 				break;
 			case 'static':
-				newData.type = Body.KINEMATIC;
+				data.type = Body.KINEMATIC;
 				break;
 			case 'kinematic':
-				newData.type = Body.STATIC;
+				data.type = Body.STATIC;
 				break;
 			default:
-				throw new Error( 'Rigidbody: invalid rigidbody type ' + newData.type );
+				throw new Error( 'Rigidbody: invalid rigidbody type ' + data.type );
 
 		}
 
-		if ( newData.physicsMaterial !== undefined ) {
+		if ( data.physicsMaterial !== undefined ) {
 
-			newData.material = newData.physicsMaterial;
-			delete newData.physicsMaterial;
+			data.material = data.physicsMaterial;
+			delete data.physicsMaterial;
 
 		}
 
-		this.ref = new Body( newData );
+		this.ref = new Body( data );
 		this.cachedScale = this.entity.getWorldScale( new Vector3() );
 
 		this.ref.addEventListener( 'collide', event => this.entity.dispatchEvent( event ) );
