@@ -1290,6 +1290,16 @@ export function SidebarInspector( editor ) {
 
 		}
 
+		if ( config.dependencies !== undefined ) {
+
+			for ( let i = 0, len = config.dependencies.length; i < len; i ++ ) {
+
+				addComponent( entity, config.dependencies[ i ] );
+
+			}
+
+		}
+
 		entity.componentData.push( component );
 		this.updateIcon( entity );
 
