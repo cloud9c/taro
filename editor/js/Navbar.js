@@ -4,11 +4,11 @@ import { TaroLoader } from './lib/TaroLoader.js';
 export function Navbar( editor ) {
 
 	// Entity
-	const entityMenu = document.getElementsByClassName( 'menu' )[ 2 ];
+	const entityMenu = document.getElementsByClassName( 'menu' )[ 2 ].getElementsByClassName( 'options' )[ 0 ].children;
 
 	entityMenu[ 0 ].addEventListener( 'pointerdown', () => {
 
-		this.addEntity( 'Empty' );
+		editor.addEntity( 'Empty' );
 
 		if ( editor.inspector.currentEntity !== undefined ) {
 

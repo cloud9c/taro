@@ -1062,7 +1062,8 @@ export function SidebarInspector( editor ) {
 		const type = document.createElement( 'INPUT' );
 		type.type = 'text';
 		type.value = entity.name;
-		type.style = 'margin-left: 8px;width: 100%;';
+		type.style.marginLeft = '8px';
+		type.style.width = '246px';
 		type.addEventListener( 'change', function () {
 
 			entity.name = this.value;
@@ -1273,6 +1274,8 @@ export function SidebarInspector( editor ) {
 
 		if ( entity.componentData === undefined ) entity.componentData = [];
 
+		const componentData = entity.componentData;
+
 		const component = { type, data, uuid: TARO.MathUtils.generateUUID() };
 		const config = TARO.ComponentManager.components[ type ].config;
 		const schema = config.schema;
@@ -1294,7 +1297,21 @@ export function SidebarInspector( editor ) {
 
 			for ( let i = 0, len = config.dependencies.length; i < len; i ++ ) {
 
-				this.addComponent( entity, config.dependencies[ i ] );
+				const type = config.dependencies[ i ];
+				let found = false;
+
+				for ( let i = 0, len = componentData.length; i < len; i ++ ) {
+
+					if ( componentData[ i ].type === type ) {
+
+						found = true;
+						break;
+
+					}
+
+				}
+
+				if ( found === false ) this.addComponent( entity, type );
 
 			}
 

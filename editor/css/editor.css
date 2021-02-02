@@ -116,8 +116,30 @@ aside {
 	flex-grow: 1;
 }
 
+/* width */
+::-webkit-scrollbar {
+	width: 12px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+	background: var(--gray-5);
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+	background: var(--gray-3);
+	border-radius: 8px;
+	border: 2px solid var(--gray-5);
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+	background: var(--gray-2);
+}
+
 .panel section {
-	padding: 12px;
+	padding: 12px 0 12px 12px;
 	border-bottom: 1px solid var(--border-color);
 	display: flex;
 	flex-direction: column;
@@ -139,7 +161,7 @@ fieldset {
 legend {
 	user-select: none;
 	padding: 0;
-	width: 95px;
+	width: 108px;
 	padding-right: 6px;
 	float: left;
 	white-space: initial;
@@ -204,7 +226,7 @@ input[type="file"] {
 }
 
 input[type="number"] {
-	font-size: 13px;
+	font-size: 12px;
 	height: 22px;
 	width: 50px;
 	border: none;

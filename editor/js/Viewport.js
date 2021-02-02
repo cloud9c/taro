@@ -389,7 +389,7 @@ export function Viewport( editor ) {
 
 	};
 
-	const attach = this.attach = function ( entity ) {
+	const attach = this.attach = ( entity ) => {
 
 		this.currentEntity = entity;
 		control.enabled = true;
@@ -399,7 +399,7 @@ export function Viewport( editor ) {
 
 	};
 
-	function detach() {
+	const detach = () => {
 
 		this.currentEntity = undefined;
 		boxHelper.visible = false;
@@ -407,7 +407,7 @@ export function Viewport( editor ) {
 		control.enabled = false;
 		control.detach();
 
-	}
+	};
 
 	let dragging = false;
 
