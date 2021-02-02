@@ -1294,7 +1294,7 @@ export function SidebarInspector( editor ) {
 
 			for ( let i = 0, len = config.dependencies.length; i < len; i ++ ) {
 
-				addComponent( entity, config.dependencies[ i ] );
+				this.addComponent( entity, config.dependencies[ i ] );
 
 			}
 

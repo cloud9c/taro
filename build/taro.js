@@ -59362,7 +59362,7 @@ ComponentManager.register( 'shape', Shape$2, {
 		collisionFilterMask: { type: 'int', default: - 1 },
 
 	},
-	dependency: [ 'rigidbody' ]
+	dependencies: [ 'rigidbody' ]
 } );
 
 class Rigidbody {
