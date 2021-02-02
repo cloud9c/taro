@@ -166,6 +166,7 @@
 			const position = new TARO.Vector3(-2, 1, -5);
 			geo = new TARO.BoxBufferGeometry(1, 1, 1);
 			mat = new TARO.MeshPhongMaterial({ color: 0x2194ce });
+			// let last;
 			for (let k = 0; k < 5; k++) {
 				for (let i = 0; i < 5; i++) {
 					for (let j = 0; j < 5; j++) {
@@ -176,6 +177,11 @@
 						entity.addComponent("rigidbody", { mass: 0.01 });
 						entity.addComponent("shape");
 						position.x += 1;
+
+						// if (last !== undefined)
+						// 	entity.addComponent('constraint', {type: 'hinge', connectedBody: last})
+
+						// last = entity;
 					}
 					position.y += 1;
 					position.x = -2;

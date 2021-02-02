@@ -77,8 +77,8 @@ ComponentManager.register( 'camera', Camera, {
 		far: { default: 2000 },
 
 		autoAspect: { default: true, if: { type: [ 'perspective' ] } },
+		aspect: { default: 1, if: { type: [ 'perspective' ], autoAspect: [ false ] } },
 		fov: { default: 50, if: { type: [ 'perspective' ] } },
-		aspect: { default: 1, if: { type: [ 'perspective' ] } },
 		viewport: { type: 'vector4', default: [ 0, 0, 1, 1 ], if: { type: [ 'perspective' ] } },
 
 		left: { default: - 1, if: { type: [ 'orthographic' ] } },

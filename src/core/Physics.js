@@ -67,7 +67,6 @@ export class Physics {
 
 			if ( this.hasVectorChanged( rigidbodies[ i ].cachedScale, _v2 ) ) {
 
-				console.log( 'here' );
 				rigidbodies[ i ].cachedScale.copy( _v2 );
 
 				const shapes = entity.getComponents( 'shape' );

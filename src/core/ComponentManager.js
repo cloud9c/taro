@@ -126,10 +126,8 @@ export const ComponentManager = {
 					prop.default = null;
 					break;
 				case 'entity':
-					prop.default = null; // uuid of entity
+					prop.default = null;
 					break;
-				case 'class':
-					prop.default = {};
 				default:
 					throw Error( 'ComponentManager: invalid schema property type ' + typeof prop.type );
 
@@ -155,9 +153,6 @@ export const ComponentManager = {
 					if ( Array.isArray( prop.default ) )
 						prop.type = 'select';
 					else throw Error( 'ComponentManager: could not infer property type from default ' + prop.default );
-					break;
-				case 'function':
-					prop.type = 'class';
 					break;
 				default:
 					throw Error( 'ComponentManager: could not infer property type from default ' + prop.default );
@@ -260,8 +255,6 @@ export const ComponentManager = {
 				return new Vector4( ..._default );
 			case 'color':
 				return new Color( _default );
-			case 'class':
-				return new _default();
 			default:
 				return _default;
 
