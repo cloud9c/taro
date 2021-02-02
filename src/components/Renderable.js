@@ -1,7 +1,7 @@
 import { ComponentManager } from '../core/ComponentManager.js';
 import { Object3D } from '../lib/three.js';
 
-export class Renderable {
+class Renderable {
 
 	init( data ) {
 

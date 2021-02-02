@@ -40,7 +40,7 @@ export class Application {
 	update( timestamp = performance.now() ) {
 
 		const deltaTime = this.time.update( timestamp / 1000 );
-		this.physics.update( deltaTime, this.time.scaledFixedTimestep );
+		this.physics.update( this.time.scaledFixedTimestep, deltaTime );
 
 		for ( const type in this._containers ) {
 

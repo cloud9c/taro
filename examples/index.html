@@ -20,12 +20,10 @@
 	<body>
 		<canvas id="c"></canvas>
 		<script type="module">
-			import { GLTFLoader } from "https://threejs.org/examples/jsm/loaders/GLTFLoader.js";
 			import * as TARO from "../src/taro.js";
 
 			let entity, geo, mat, mesh;
 
-			const loader = new GLTFLoader();
 			const app = new TARO.Application({canvas: document.getElementById("c")});
 
 			TARO.ComponentManager.register(
@@ -48,27 +46,24 @@
 					}
 					update() {
 						const ball = this.ball;
-						if (this.input.isKeyDown("KeyG")) {
-							console.log(this.ball.toJSON())
-						}
 
 						if (this.input.isKeyDown("ArrowUp")) {
-							ball.getComponent("rigidbody").applyForceToCenter(
+							ball.getComponent("rigidbody").ref.applyForce(
 								new TARO.Vector3(0, 0, -200)
 							);
 						}
 						if (this.input.isKeyDown("ArrowDown")) {
-							ball.getComponent("rigidbody").applyForceToCenter(
+							ball.getComponent("rigidbody").ref.applyForce(
 								new TARO.Vector3(0, 0, 200)
 							);
 						}
 						if (this.input.isKeyDown("ArrowLeft")) {
-							ball.getComponent("rigidbody").applyForceToCenter(
+							ball.getComponent("rigidbody").ref.applyForce(
 								new TARO.Vector3(-200, 0, 0)
 							);
 						}
 						if (this.input.isKeyDown("ArrowRight")) {
-							ball.getComponent("rigidbody").applyForceToCenter(
+							ball.getComponent("rigidbody").ref.applyForce(
 								new TARO.Vector3(200, 0, 0)
 							);
 						}
@@ -146,9 +141,8 @@
 
 			entity = new TARO.Entity("floor");
 			entity.addComponent("renderable", mesh);
-			entity.addComponent("collider", {
-				halfExtents: new TARO.Vector3(100, 100, 0.01),
-			});
+			entity.addComponent("rigidbody", { type: 'static' })
+			entity.addComponent("shape", { type: "plane" });
 			entity.rotation.set(-Math.PI / 2, 0, 0);
 
 			new TARO.Entity().addComponent("renderable",
@@ -165,21 +159,9 @@
 			entity.addComponent("rigidbody", {
 				mass: 1
 			});
-			entity.addComponent("collider", {
+			entity.addComponent("shape", {
 				type: 'sphere',
 				radius: 1,
-			});
-			entity.addComponent("collider", {
-				type: 'sphere',
-				isTrigger: true,
-				radius: 2,
-			});
-			entity.addComponent('material', {
-				type: 'toon'
-			})
-			entity.addComponent('geometry', {
-				type: 'box',
-				width: 10
 			});
 
 			// blocks
@@ -193,10 +175,8 @@
 						mesh = new TARO.Mesh(geo, mat);
 						entity.addComponent("renderable", mesh);
 						entity.position.copy(position);
-						entity.addComponent("collider", {
-							halfExtents: new TARO.Vector3(0.5, 0.5, 0.5),
-						});
-						entity.addComponent("rigidbody", { mass: 0.1 });
+						entity.addComponent("rigidbody", { mass: 0.01 });
+						entity.addComponent("shape");
 						position.x += 1;
 					}
 					position.y += 1;

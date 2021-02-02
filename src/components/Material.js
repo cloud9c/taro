@@ -1,7 +1,7 @@
 import { ComponentManager } from '../core/ComponentManager.js';
 import * as THREE from '../lib/three.js';
 
-export class Material {
+class Material {
 
 	init( data ) {
 

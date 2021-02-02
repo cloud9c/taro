@@ -1,7 +1,7 @@
 import { ComponentManager } from '../core/ComponentManager.js';
 import { AmbientLight, DirectionalLight, HemisphereLight, PointLight, SpotLight, MathUtils } from '../lib/three.js';
 
-export class Light {
+class Light {
 
 	init( data ) {
 

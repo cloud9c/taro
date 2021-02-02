@@ -1,5 +1,5 @@
 import { Scene as TS } from '../lib/three.js';
-import { OIMO } from '../lib/oimo.js';
+import { World } from '../lib/cannon.js';
 
 export class Scene extends TS {
 
@@ -9,7 +9,7 @@ export class Scene extends TS {
 
 		this._cameras = [];
 		this._containers = { rigidbody: [] };
-		this._physicsWorld = new OIMO.World( 2 );
+		this.physicsWorld = new World( { allowSleep: true } );
 
 	}
 
