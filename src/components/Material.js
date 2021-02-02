@@ -7,44 +7,43 @@ class Material {
 
 		const type = data.type;
 
-		const params = Object.assign( {}, data );
-		delete params.type;
+		delete data.type;
 
-		for ( const name in params ) {
+		for ( const name in data ) {
 
-			if ( schema[ name ].type === 'select' && params[ name ] !== null && params[ name ][ 0 ] === params[ name ][ 0 ].toUpperCase() )
-				params[ name ] = THREE[ params[ name ] ];
+			if ( schema[ name ].type === 'select' && data[ name ] !== null && data[ name ][ 0 ] === data[ name ][ 0 ].toUpperCase() )
+				data[ name ] = THREE[ data[ name ] ];
 
 		}
 
 		switch ( type ) {
 
 			case 'basic':
-				this.ref = new THREE.MeshBasicMaterial( params );
+				this.ref = new THREE.MeshBasicMaterial( data );
 				break;
 			case 'depth':
-				this.ref = new THREE.MeshDepthMaterial( params );
+				this.ref = new THREE.MeshDepthMaterial( data );
 				break;
 			case 'lambert':
-				this.ref = new THREE.MeshLambertMaterial( params );
+				this.ref = new THREE.MeshLambertMaterial( data );
 				break;
 			case 'matcap':
-				this.ref = new THREE.MeshMatcapMaterial( params );
+				this.ref = new THREE.MeshMatcapMaterial( data );
 				break;
 			case 'normal':
-				this.ref = new THREE.MeshNormalMaterial( params );
+				this.ref = new THREE.MeshNormalMaterial( data );
 				break;
 			case 'phong':
-				this.ref = new THREE.MeshPhongMaterial( params );
+				this.ref = new THREE.MeshPhongMaterial( data );
 				break;
 			case 'physical':
-				this.ref = new THREE.MeshPhysicalMaterial( params );
+				this.ref = new THREE.MeshPhysicalMaterial( data );
 				break;
 			case 'standard':
-				this.ref = new THREE.MeshStandardMaterial( params );
+				this.ref = new THREE.MeshStandardMaterial( data );
 				break;
 			case 'toon':
-				this.ref = new THREE.MeshToonMaterial( params );
+				this.ref = new THREE.MeshToonMaterial( data );
 				break;
 			default:
 				throw new Error( 'Geometry: invalid material type ' + type );
