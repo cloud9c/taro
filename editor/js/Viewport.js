@@ -4,7 +4,8 @@ import * as TARO from '../../build/taro.js';
 
 export function Viewport( editor ) {
 
-	let currentDrag, currentEntity;
+	let currentDrag;
+	this.currentEntity = undefined;
 
 	function onDragStart( event ) {
 
@@ -254,7 +255,7 @@ export function Viewport( editor ) {
 
 	observer.observe( document.getElementById( 'canvas' ) );
 
-	const render = this.render = function () {
+	const render = this.render = () => {
 
 		const deltaTime = app.time.update( performance.now() / 1000 );
 
@@ -267,9 +268,9 @@ export function Viewport( editor ) {
 
 		}
 
-		if ( currentEntity !== undefined ) {
+		if ( this.currentEntity !== undefined ) {
 
-			updateBoxHelper( currentEntity );
+			updateBoxHelper( this.currentEntity );
 
 			for ( let i = 0, len = helpers.length; i < len; i ++ ) {
 
@@ -390,7 +391,7 @@ export function Viewport( editor ) {
 
 	const attach = this.attach = function ( entity ) {
 
-		currentEntity = entity;
+		this.currentEntity = entity;
 		control.enabled = true;
 		editor.inspector.attach( entity );
 		control.attach( entity );
@@ -400,7 +401,7 @@ export function Viewport( editor ) {
 
 	function detach() {
 
-		currentEntity = undefined;
+		this.currentEntity = undefined;
 		boxHelper.visible = false;
 		editor.inspector.detach();
 		control.enabled = false;

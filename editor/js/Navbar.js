@@ -3,6 +3,20 @@ import { TaroLoader } from './lib/TaroLoader.js';
 
 export function Navbar( editor ) {
 
+	// Entity
+	const entityMenu = document.getElementsByClassName( 'menu' )[ 2 ];
+
+	entityMenu[ 0 ].addEventListener( 'pointerdown', () => {
+
+		this.addEntity( 'Empty' );
+
+		if ( editor.inspector.currentEntity !== undefined ) {
+
+		}
+
+	} );
+
+	// Play/Stop
 	const canvas = document.getElementById( 'canvas' );
 	let player = document.getElementById( 'player' );
 	const playMenu = document.getElementsByClassName( 'menu' )[ 3 ];
@@ -10,7 +24,7 @@ export function Navbar( editor ) {
 	let app;
 
 	let isPlaying = false;
-	playMenu.addEventListener( 'pointerdown', function () {
+	playMenu.addEventListener( 'pointerdown', () => {
 
 		if ( isPlaying ) { // stop it
 
