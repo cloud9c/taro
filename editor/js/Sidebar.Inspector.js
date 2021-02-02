@@ -1,4 +1,4 @@
-import * as TARO from '../../build/taro.js';
+import * as TARO from '../../build/taro.module.js';
 
 export function SidebarInspector( editor ) {
 
@@ -241,7 +241,7 @@ export function SidebarInspector( editor ) {
 			} else {
 
 				component.enabled = false;
-				component.init( data );
+				component.init( Object.assign( {}, data ) );
 				component.enabled = true;
 
 			}
@@ -726,7 +726,7 @@ export function SidebarInspector( editor ) {
 
 				this.updateIcon( currentEntity );
 
-				editor.viewport.updateBoxHelper( currentEntity );
+				editor.viewport.updateOutliner( currentEntity );
 				editor.viewport.render();
 
 				section.remove();
@@ -1063,7 +1063,7 @@ export function SidebarInspector( editor ) {
 		type.type = 'text';
 		type.value = entity.name;
 		type.style.marginLeft = '8px';
-		type.style.width = '246px';
+		type.style.width = '250px';
 		type.addEventListener( 'change', function () {
 
 			entity.name = this.value;
@@ -1287,7 +1287,7 @@ export function SidebarInspector( editor ) {
 
 		if ( runInEditor ) {
 
-			const _component = entity.addComponent( type, component.data );
+			const _component = entity.addComponent( type, Object.assign( {}, component.data ) );
 			// used by editor to select component by uuid (maybe standardize to TARO engine?)
 			_component.uuid = component.uuid;
 

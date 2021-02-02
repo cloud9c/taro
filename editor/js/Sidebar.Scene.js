@@ -1,4 +1,4 @@
-import * as TARO from '../../build/taro.js';
+import * as TARO from '../../build/taro.module.js';
 
 export function SidebarScene( editor ) {
 

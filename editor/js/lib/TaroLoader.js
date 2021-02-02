@@ -1,4 +1,4 @@
-import { Application, Entity, Scene, Loader, Color, Fog, FogExp2 } from '../../../build/taro.js';
+import { Application, Entity, Scene, Loader, Color, Fog, FogExp2 } from '../../../build/taro.module.js';
 
 export class TaroLoader extends Loader {
 

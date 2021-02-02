@@ -1,4 +1,4 @@
-import { ComponentManager } from '../../../build/taro.js';
+import { ComponentManager } from '../../../build/taro.module.js';
 
 export function applicationToJSON( app ) {
 

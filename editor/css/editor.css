@@ -118,7 +118,7 @@ aside {
 
 /* width */
 ::-webkit-scrollbar {
-	width: 12px;
+	width: 8px;
 }
 
 /* Track */
@@ -130,7 +130,7 @@ aside {
 ::-webkit-scrollbar-thumb {
 	background: var(--gray-3);
 	border-radius: 8px;
-	border: 2px solid var(--gray-5);
+	border: 1px solid var(--gray-5);
 }
 
 /* Handle on hover */
@@ -161,7 +161,7 @@ fieldset {
 legend {
 	user-select: none;
 	padding: 0;
-	width: 108px;
+	width: 112px;
 	padding-right: 6px;
 	float: left;
 	white-space: initial;

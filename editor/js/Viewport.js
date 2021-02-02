@@ -1,6 +1,6 @@
 import { TransformControls } from './lib/TransformControls.js';
 import { OrbitControls } from './lib/OrbitControls.js';
-import * as TARO from '../../build/taro.js';
+import * as TARO from '../../build/taro.module.js';
 
 export function Viewport( editor ) {
 
@@ -221,15 +221,15 @@ export function Viewport( editor ) {
 
 	attribute.needsUpdate = true;
 
-	const boxHelper = new TARO.BoxHelper();
-	boxHelper.material.depthTest = false;
-	boxHelper.material.transparent = true;
-	boxHelper.visible = false;
+	const outliner = new TARO.BoxHelper();
+	outliner.material.depthTest = false;
+	outliner.material.transparent = true;
+	outliner.visible = false;
 
 	const helpers = this.helpers = [ ];
 	const icons = this.icons = [];
 
-	scene.add( grid, boxHelper );
+	scene.add( grid, outliner );
 
 	const renderer = app.renderer;
 	const dom = renderer.domElement;
@@ -270,7 +270,7 @@ export function Viewport( editor ) {
 
 		if ( this.currentEntity !== undefined ) {
 
-			updateBoxHelper( this.currentEntity );
+			updateOutliner( this.currentEntity );
 
 			for ( let i = 0, len = helpers.length; i < len; i ++ ) {
 
@@ -353,7 +353,7 @@ export function Viewport( editor ) {
 
 	const box = this.box = new TARO.Box3();
 
-	const updateBoxHelper = this.updateBoxHelper = function ( entity ) {
+	const updateOutliner = this.updateOutliner = function ( entity ) {
 
 		const temp = [];
 		const children = entity.children;
@@ -372,12 +372,12 @@ export function Viewport( editor ) {
 
 		if ( box.isEmpty() ) {
 
-			boxHelper.visible = false;
+			outliner.visible = false;
 
 		} else {
 
-			boxHelper.setFromObject( entity );
-			boxHelper.visible = true;
+			outliner.setFromObject( entity );
+			outliner.visible = true;
 
 		}
 
@@ -395,14 +395,14 @@ export function Viewport( editor ) {
 		control.enabled = true;
 		editor.inspector.attach( entity );
 		control.attach( entity );
-		updateBoxHelper( entity );
+		updateOutliner( entity );
 
 	};
 
 	const detach = () => {
 
 		this.currentEntity = undefined;
-		boxHelper.visible = false;
+		outliner.visible = false;
 		editor.inspector.detach();
 		control.enabled = false;
 		control.detach();

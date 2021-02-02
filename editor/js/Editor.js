@@ -1,5 +1,5 @@
 import { Sidebar } from './Sidebar.js';
-import { Application, ComponentManager } from '../../build/taro.js';
+import { Application, ComponentManager } from '../../build/taro.module.js';
 import { Viewport } from './Viewport.js';
 import { Toolbar } from './Toolbar.js';
 import { SidebarScene } from './Sidebar.Scene.js';
