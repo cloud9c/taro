@@ -116,5 +116,6 @@ ComponentManager.register( 'shape', Shape, {
 		collisionFilterMask: { type: 'int', default: - 1 },
 
 	},
-	dependencies: [ 'rigidbody' ]
+	dependencies: [ 'rigidbody' ],
+	multiple: true,
 } );

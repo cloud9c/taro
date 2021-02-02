@@ -6,32 +6,30 @@ class Rigidbody {
 
 	init( data ) {
 
-		const newData = Object.assign( data );
-
-		switch ( newData.type ) {
+		switch ( data.type ) {
 
 			case 'dynamic':
-				newData.type = Body.DYNAMIC;
+				data.type = Body.DYNAMIC;
 				break;
 			case 'static':
-				newData.type = Body.KINEMATIC;
+				data.type = Body.KINEMATIC;
 				break;
 			case 'kinematic':
-				newData.type = Body.STATIC;
+				data.type = Body.STATIC;
 				break;
 			default:
-				throw new Error( 'Rigidbody: invalid rigidbody type ' + newData.type );
+				throw new Error( 'Rigidbody: invalid rigidbody type ' + data.type );
 
 		}
 
-		if ( newData.physicsMaterial !== undefined ) {
+		if ( data.physicsMaterial !== undefined ) {
 
-			newData.material = newData.physicsMaterial;
-			delete newData.physicsMaterial;
+			data.material = data.physicsMaterial;
+			delete data.physicsMaterial;
 
 		}
 
-		this.ref = new Body( newData );
+		this.ref = new Body( data );
 		this.cachedScale = this.entity.getWorldScale( new Vector3() );
 
 		this.ref.addEventListener( 'collide', event => this.entity.dispatchEvent( event ) );
