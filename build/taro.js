@@ -49632,10 +49632,8 @@ const ComponentManager = {
 					prop.default = null;
 					break;
 				case 'entity':
-					prop.default = null; // uuid of entity
+					prop.default = null;
 					break;
-				case 'class':
-					prop.default = {};
 				default:
 					throw Error( 'ComponentManager: invalid schema property type ' + typeof prop.type );
 
@@ -49661,9 +49659,6 @@ const ComponentManager = {
 					if ( Array.isArray( prop.default ) )
 						prop.type = 'select';
 					else throw Error( 'ComponentManager: could not infer property type from default ' + prop.default );
-					break;
-				case 'function':
-					prop.type = 'class';
 					break;
 				default:
 					throw Error( 'ComponentManager: could not infer property type from default ' + prop.default );
@@ -49766,8 +49761,6 @@ const ComponentManager = {
 				return new Vector4( ..._default );
 			case 'color':
 				return new Color( _default );
-			case 'class':
-				return new _default();
 			default:
 				return _default;
 
@@ -49856,8 +49849,8 @@ ComponentManager.register( 'camera', Camera$1, {
 		far: { default: 2000 },
 
 		autoAspect: { default: true, if: { type: [ 'perspective' ] } },
+		aspect: { default: 1, if: { type: [ 'perspective' ], autoAspect: [ false ] } },
 		fov: { default: 50, if: { type: [ 'perspective' ] } },
-		aspect: { default: 1, if: { type: [ 'perspective' ] } },
 		viewport: { type: 'vector4', default: [ 0, 0, 1, 1 ], if: { type: [ 'perspective' ] } },
 
 		left: { default: - 1, if: { type: [ 'orthographic' ] } },
@@ -55018,6 +55011,80 @@ class Utils {
 }
 
 /**
+ * Constraint base class
+ * @class Constraint
+ * @author schteppe
+ * @constructor
+ * @param {Body} bodyA
+ * @param {Body} bodyB
+ * @param {object} [options]
+ * @param {boolean} [options.collideConnected=true]
+ * @param {boolean} [options.wakeUpBodies=true]
+ */
+class Constraint {
+  // Equations to be solved in this constraint.
+  // Set to true if you want the bodies to collide when they are connected.
+  constructor(bodyA, bodyB, options = {}) {
+    options = Utils.defaults(options, {
+      collideConnected: true,
+      wakeUpBodies: true
+    });
+    this.equations = [];
+    this.bodyA = bodyA;
+    this.bodyB = bodyB;
+    this.id = Constraint.idCounter++;
+    this.collideConnected = options.collideConnected;
+
+    if (options.wakeUpBodies) {
+      if (bodyA) {
+        bodyA.wakeUp();
+      }
+
+      if (bodyB) {
+        bodyB.wakeUp();
+      }
+    }
+  }
+  /**
+   * Update all the equations with data.
+   * @method update
+   */
+
+
+  update() {
+    throw new Error('method update() not implmemented in this Constraint subclass!');
+  }
+  /**
+   * Enables all equations in the constraint.
+   * @method enable
+   */
+
+
+  enable() {
+    const eqs = this.equations;
+
+    for (let i = 0; i < eqs.length; i++) {
+      eqs[i].enabled = true;
+    }
+  }
+  /**
+   * Disables all equations in the constraint.
+   * @method disable
+   */
+
+
+  disable() {
+    const eqs = this.equations;
+
+    for (let i = 0; i < eqs.length; i++) {
+      eqs[i].enabled = false;
+    }
+  }
+
+}
+Constraint.idCounter = 0;
+
+/**
  * An element containing 6 entries, 3 spatial and 3 rotational degrees of freedom.
  */
 
@@ -55344,6 +55411,472 @@ const ContactEquation_getImpactVelocityAlongNormal_vj = new Vec3();
 const ContactEquation_getImpactVelocityAlongNormal_xi = new Vec3();
 const ContactEquation_getImpactVelocityAlongNormal_xj = new Vec3();
 const ContactEquation_getImpactVelocityAlongNormal_relVel = new Vec3();
+
+/**
+ * Connects two bodies at given offset points.
+ * @class PointToPointConstraint
+ * @extends Constraint
+ * @constructor
+ * @param {Body} bodyA
+ * @param {Vec3} pivotA The point relative to the center of mass of bodyA which bodyA is constrained to.
+ * @param {Body} bodyB Body that will be constrained in a similar way to the same point as bodyA. We will therefore get a link between bodyA and bodyB. If not specified, bodyA will be constrained to a static point.
+ * @param {Vec3} pivotB See pivotA.
+ * @param {Number} maxForce The maximum force that should be applied to constrain the bodies.
+ *
+ * @example
+ *     const bodyA = new Body({ mass: 1 });
+ *     const bodyB = new Body({ mass: 1 });
+ *     bodyA.position.set(-1, 0, 0);
+ *     bodyB.position.set(1, 0, 0);
+ *     bodyA.addShape(shapeA);
+ *     bodyB.addShape(shapeB);
+ *     world.addBody(bodyA);
+ *     world.addBody(bodyB);
+ *     const localPivotA = new Vec3(1, 0, 0);
+ *     const localPivotB = new Vec3(-1, 0, 0);
+ *     const constraint = new PointToPointConstraint(bodyA, localPivotA, bodyB, localPivotB);
+ *     world.addConstraint(constraint);
+ */
+class PointToPointConstraint extends Constraint {
+  // Pivot, defined locally in bodyA.
+  // Pivot, defined locally in bodyB.
+  constructor(bodyA, pivotA = new Vec3(), bodyB, pivotB = new Vec3(), maxForce = 1e6) {
+    super(bodyA, bodyB);
+    this.pivotA = pivotA.clone();
+    this.pivotB = pivotB.clone();
+    const x = this.equationX = new ContactEquation(bodyA, bodyB);
+    const y = this.equationY = new ContactEquation(bodyA, bodyB);
+    const z = this.equationZ = new ContactEquation(bodyA, bodyB); // Equations to be fed to the solver
+
+    this.equations.push(x, y, z); // Make the equations bidirectional
+
+    x.minForce = y.minForce = z.minForce = -maxForce;
+    x.maxForce = y.maxForce = z.maxForce = maxForce;
+    x.ni.set(1, 0, 0);
+    y.ni.set(0, 1, 0);
+    z.ni.set(0, 0, 1);
+  }
+
+  update() {
+    const bodyA = this.bodyA;
+    const bodyB = this.bodyB;
+    const x = this.equationX;
+    const y = this.equationY;
+    const z = this.equationZ; // Rotate the pivots to world space
+
+    bodyA.quaternion.vmult(this.pivotA, x.ri);
+    bodyB.quaternion.vmult(this.pivotB, x.rj);
+    y.ri.copy(x.ri);
+    y.rj.copy(x.rj);
+    z.ri.copy(x.ri);
+    z.rj.copy(x.rj);
+  }
+
+}
+
+/**
+ * Cone equation. Works to keep the given body world vectors aligned, or tilted within a given angle from each other.
+ * @class ConeEquation
+ * @constructor
+ * @author schteppe
+ * @param {Body} bodyA
+ * @param {Body} bodyB
+ * @param {Vec3} [options.axisA] Local axis in A
+ * @param {Vec3} [options.axisB] Local axis in B
+ * @param {Vec3} [options.angle] The "cone angle" to keep
+ * @param {number} [options.maxForce=1e6]
+ * @extends Equation
+ */
+class ConeEquation extends Equation {
+  // The cone angle to keep.
+  constructor(bodyA, bodyB, options = {}) {
+    const maxForce = typeof options.maxForce !== 'undefined' ? options.maxForce : 1e6;
+    super(bodyA, bodyB, -maxForce, maxForce);
+    this.axisA = options.axisA ? options.axisA.clone() : new Vec3(1, 0, 0);
+    this.axisB = options.axisB ? options.axisB.clone() : new Vec3(0, 1, 0);
+    this.angle = typeof options.angle !== 'undefined' ? options.angle : 0;
+  }
+
+  computeB(h) {
+    const a = this.a;
+    const b = this.b;
+    const ni = this.axisA;
+    const nj = this.axisB;
+    const nixnj = tmpVec1;
+    const njxni = tmpVec2;
+    const GA = this.jacobianElementA;
+    const GB = this.jacobianElementB; // Caluclate cross products
+
+    ni.cross(nj, nixnj);
+    nj.cross(ni, njxni); // The angle between two vector is:
+    // cos(theta) = a * b / (length(a) * length(b) = { len(a) = len(b) = 1 } = a * b
+    // g = a * b
+    // gdot = (b x a) * wi + (a x b) * wj
+    // G = [0 bxa 0 axb]
+    // W = [vi wi vj wj]
+
+    GA.rotational.copy(njxni);
+    GB.rotational.copy(nixnj);
+    const g = Math.cos(this.angle) - ni.dot(nj);
+    const GW = this.computeGW();
+    const GiMf = this.computeGiMf();
+    const B = -g * a - GW * b - h * GiMf;
+    return B;
+  }
+
+}
+const tmpVec1 = new Vec3();
+const tmpVec2 = new Vec3();
+
+/**
+ * Rotational constraint. Works to keep the local vectors orthogonal to each other in world space.
+ * @class RotationalEquation
+ * @constructor
+ * @author schteppe
+ * @param {Body} bodyA
+ * @param {Body} bodyB
+ * @param {Vec3} [options.axisA]
+ * @param {Vec3} [options.axisB]
+ * @param {number} [options.maxForce]
+ * @extends Equation
+ */
+class RotationalEquation extends Equation {
+  constructor(bodyA, bodyB, options = {}) {
+    const maxForce = typeof options.maxForce !== 'undefined' ? options.maxForce : 1e6;
+    super(bodyA, bodyB, -maxForce, maxForce);
+    this.axisA = options.axisA ? options.axisA.clone() : new Vec3(1, 0, 0);
+    this.axisB = options.axisB ? options.axisB.clone() : new Vec3(0, 1, 0);
+    this.maxAngle = Math.PI / 2;
+  }
+
+  computeB(h) {
+    const a = this.a;
+    const b = this.b;
+    const ni = this.axisA;
+    const nj = this.axisB;
+    const nixnj = tmpVec1$1;
+    const njxni = tmpVec2$1;
+    const GA = this.jacobianElementA;
+    const GB = this.jacobianElementB; // Caluclate cross products
+
+    ni.cross(nj, nixnj);
+    nj.cross(ni, njxni); // g = ni * nj
+    // gdot = (nj x ni) * wi + (ni x nj) * wj
+    // G = [0 njxni 0 nixnj]
+    // W = [vi wi vj wj]
+
+    GA.rotational.copy(njxni);
+    GB.rotational.copy(nixnj);
+    const g = Math.cos(this.maxAngle) - ni.dot(nj);
+    const GW = this.computeGW();
+    const GiMf = this.computeGiMf();
+    const B = -g * a - GW * b - h * GiMf;
+    return B;
+  }
+
+}
+const tmpVec1$1 = new Vec3();
+const tmpVec2$1 = new Vec3();
+
+/**
+ * @class ConeTwistConstraint
+ * @constructor
+ * @author schteppe
+ * @param {Body} bodyA
+ * @param {Body} bodyB
+ * @param {object} [options]
+ * @param {Vec3} [options.pivotA]
+ * @param {Vec3} [options.pivotB]
+ * @param {Vec3} [options.axisA]
+ * @param {Vec3} [options.axisB]
+ * @param {Number} [options.maxForce=1e6]
+ * @extends PointToPointConstraint
+ */
+class ConeTwistConstraint extends PointToPointConstraint {
+  constructor(bodyA, bodyB, options = {}) {
+    const maxForce = typeof options.maxForce !== 'undefined' ? options.maxForce : 1e6; // Set pivot point in between
+
+    const pivotA = options.pivotA ? options.pivotA.clone() : new Vec3();
+    const pivotB = options.pivotB ? options.pivotB.clone() : new Vec3();
+    super(bodyA, pivotA, bodyB, pivotB, maxForce);
+    this.axisA = options.axisA ? options.axisA.clone() : new Vec3();
+    this.axisB = options.axisB ? options.axisB.clone() : new Vec3();
+    this.collideConnected = !!options.collideConnected;
+    this.angle = typeof options.angle !== 'undefined' ? options.angle : 0;
+    const c = this.coneEquation = new ConeEquation(bodyA, bodyB, options);
+    const t = this.twistEquation = new RotationalEquation(bodyA, bodyB, options);
+    this.twistAngle = typeof options.twistAngle !== 'undefined' ? options.twistAngle : 0; // Make the cone equation push the bodies toward the cone axis, not outward
+
+    c.maxForce = 0;
+    c.minForce = -maxForce; // Make the twist equation add torque toward the initial position
+
+    t.maxForce = 0;
+    t.minForce = -maxForce;
+    this.equations.push(c, t);
+  }
+
+  update() {
+    const bodyA = this.bodyA;
+    const bodyB = this.bodyB;
+    const cone = this.coneEquation;
+    const twist = this.twistEquation;
+    super.update(); // Update the axes to the cone constraint
+
+    bodyA.vectorToWorldFrame(this.axisA, cone.axisA);
+    bodyB.vectorToWorldFrame(this.axisB, cone.axisB); // Update the world axes in the twist constraint
+
+    this.axisA.tangents(twist.axisA, twist.axisA);
+    bodyA.vectorToWorldFrame(twist.axisA, twist.axisA);
+    this.axisB.tangents(twist.axisB, twist.axisB);
+    bodyB.vectorToWorldFrame(twist.axisB, twist.axisB);
+    cone.angle = this.angle;
+    twist.maxAngle = this.twistAngle;
+  }
+
+}
+
+/**
+ * Constrains two bodies to be at a constant distance from each others center of mass.
+ * @class DistanceConstraint
+ * @constructor
+ * @author schteppe
+ * @param {Body} bodyA
+ * @param {Body} bodyB
+ * @param {Number} [distance] The distance to keep. If undefined, it will be set to the current distance between bodyA and bodyB
+ * @param {Number} [maxForce=1e6]
+ * @extends Constraint
+ */
+class DistanceConstraint extends Constraint {
+  constructor(bodyA, bodyB, distance, maxForce = 1e6) {
+    super(bodyA, bodyB);
+
+    if (typeof distance === 'undefined') {
+      distance = bodyA.position.distanceTo(bodyB.position);
+    }
+
+    this.distance = distance;
+    const eq = this.distanceEquation = new ContactEquation(bodyA, bodyB);
+    this.equations.push(eq); // Make it bidirectional
+
+    eq.minForce = -maxForce;
+    eq.maxForce = maxForce;
+  }
+
+  update() {
+    const bodyA = this.bodyA;
+    const bodyB = this.bodyB;
+    const eq = this.distanceEquation;
+    const halfDist = this.distance * 0.5;
+    const normal = eq.ni;
+    bodyB.position.vsub(bodyA.position, normal);
+    normal.normalize();
+    normal.scale(halfDist, eq.ri);
+    normal.scale(-halfDist, eq.rj);
+  }
+
+}
+
+/**
+ * Lock constraint. Will remove all degrees of freedom between the bodies.
+ * @class LockConstraint
+ * @constructor
+ * @author schteppe
+ * @param {Body} bodyA
+ * @param {Body} bodyB
+ * @param {object} [options]
+ * @param {Number} [options.maxForce=1e6]
+ * @extends PointToPointConstraint
+ */
+class LockConstraint extends PointToPointConstraint {
+  constructor(bodyA, bodyB, options = {}) {
+    const maxForce = typeof options.maxForce !== 'undefined' ? options.maxForce : 1e6; // Set pivot point in between
+
+    const pivotA = new Vec3();
+    const pivotB = new Vec3();
+    const halfWay = new Vec3();
+    bodyA.position.vadd(bodyB.position, halfWay);
+    halfWay.scale(0.5, halfWay);
+    bodyB.pointToLocalFrame(halfWay, pivotB);
+    bodyA.pointToLocalFrame(halfWay, pivotA); // The point-to-point constraint will keep a point shared between the bodies
+
+    super(bodyA, pivotA, bodyB, pivotB, maxForce); // Store initial rotation of the bodies as unit vectors in the local body spaces
+
+    this.xA = bodyA.vectorToLocalFrame(Vec3.UNIT_X);
+    this.xB = bodyB.vectorToLocalFrame(Vec3.UNIT_X);
+    this.yA = bodyA.vectorToLocalFrame(Vec3.UNIT_Y);
+    this.yB = bodyB.vectorToLocalFrame(Vec3.UNIT_Y);
+    this.zA = bodyA.vectorToLocalFrame(Vec3.UNIT_Z);
+    this.zB = bodyB.vectorToLocalFrame(Vec3.UNIT_Z); // ...and the following rotational equations will keep all rotational DOF's in place
+
+    const r1 = this.rotationalEquation1 = new RotationalEquation(bodyA, bodyB, options);
+    const r2 = this.rotationalEquation2 = new RotationalEquation(bodyA, bodyB, options);
+    const r3 = this.rotationalEquation3 = new RotationalEquation(bodyA, bodyB, options);
+    this.equations.push(r1, r2, r3);
+  }
+
+  update() {
+    const bodyA = this.bodyA;
+    const bodyB = this.bodyB;
+    const motor = this.motorEquation;
+    const r1 = this.rotationalEquation1;
+    const r2 = this.rotationalEquation2;
+    const r3 = this.rotationalEquation3;
+    super.update(); // These vector pairs must be orthogonal
+
+    bodyA.vectorToWorldFrame(this.xA, r1.axisA);
+    bodyB.vectorToWorldFrame(this.yB, r1.axisB);
+    bodyA.vectorToWorldFrame(this.yA, r2.axisA);
+    bodyB.vectorToWorldFrame(this.zB, r2.axisB);
+    bodyA.vectorToWorldFrame(this.zA, r3.axisA);
+    bodyB.vectorToWorldFrame(this.xB, r3.axisB);
+  }
+
+}
+
+/**
+ * Rotational motor constraint. Tries to keep the relative angular velocity of the bodies to a given value.
+ * @class RotationalMotorEquation
+ * @constructor
+ * @author schteppe
+ * @param {Body} bodyA
+ * @param {Body} bodyB
+ * @param {Number} maxForce
+ * @extends Equation
+ */
+class RotationalMotorEquation extends Equation {
+  // World oriented rotational axis.
+  // World oriented rotational axis.
+  // Motor velocity.
+  constructor(bodyA, bodyB, maxForce = 1e6) {
+    super(bodyA, bodyB, -maxForce, maxForce);
+    this.axisA = new Vec3();
+    this.axisB = new Vec3();
+    this.targetVelocity = 0;
+  }
+
+  computeB(h) {
+    const a = this.a;
+    const b = this.b;
+    const bi = this.bi;
+    const bj = this.bj;
+    const axisA = this.axisA;
+    const axisB = this.axisB;
+    const GA = this.jacobianElementA;
+    const GB = this.jacobianElementB; // g = 0
+    // gdot = axisA * wi - axisB * wj
+    // gdot = G * W = G * [vi wi vj wj]
+    // =>
+    // G = [0 axisA 0 -axisB]
+
+    GA.rotational.copy(axisA);
+    axisB.negate(GB.rotational);
+    const GW = this.computeGW() - this.targetVelocity;
+    const GiMf = this.computeGiMf();
+    const B = -GW * b - h * GiMf;
+    return B;
+  }
+
+}
+
+/**
+ * Hinge constraint. Think of it as a door hinge. It tries to keep the door in the correct place and with the correct orientation.
+ * @class HingeConstraint
+ * @constructor
+ * @author schteppe
+ * @param {Body} bodyA
+ * @param {Body} bodyB
+ * @param {object} [options]
+ * @param {Vec3} [options.pivotA] A point defined locally in bodyA. This defines the offset of axisA.
+ * @param {Vec3} [options.axisA] An axis that bodyA can rotate around, defined locally in bodyA.
+ * @param {Vec3} [options.pivotB]
+ * @param {Vec3} [options.axisB]
+ * @param {Number} [options.maxForce=1e6]
+ * @extends PointToPointConstraint
+ */
+class HingeConstraint extends PointToPointConstraint {
+  // Rotation axis, defined locally in bodyA.
+  // Rotation axis, defined locally in bodyB.
+  constructor(bodyA, bodyB, options = {}) {
+    const maxForce = typeof options.maxForce !== 'undefined' ? options.maxForce : 1e6;
+    const pivotA = options.pivotA ? options.pivotA.clone() : new Vec3();
+    const pivotB = options.pivotB ? options.pivotB.clone() : new Vec3();
+    super(bodyA, pivotA, bodyB, pivotB, maxForce);
+    const axisA = this.axisA = options.axisA ? options.axisA.clone() : new Vec3(1, 0, 0);
+    axisA.normalize();
+    const axisB = this.axisB = options.axisB ? options.axisB.clone() : new Vec3(1, 0, 0);
+    axisB.normalize();
+    this.collideConnected = !!options.collideConnected;
+    const rotational1 = this.rotationalEquation1 = new RotationalEquation(bodyA, bodyB, options);
+    const rotational2 = this.rotationalEquation2 = new RotationalEquation(bodyA, bodyB, options);
+    const motor = this.motorEquation = new RotationalMotorEquation(bodyA, bodyB, maxForce);
+    motor.enabled = false; // Not enabled by default
+    // Equations to be fed to the solver
+
+    this.equations.push(rotational1, rotational2, motor);
+  }
+  /**
+   * @method enableMotor
+   */
+
+
+  enableMotor() {
+    this.motorEquation.enabled = true;
+  }
+  /**
+   * @method disableMotor
+   */
+
+
+  disableMotor() {
+    this.motorEquation.enabled = false;
+  }
+  /**
+   * @method setMotorSpeed
+   * @param {number} speed
+   */
+
+
+  setMotorSpeed(speed) {
+    this.motorEquation.targetVelocity = speed;
+  }
+  /**
+   * @method setMotorMaxForce
+   * @param {number} maxForce
+   */
+
+
+  setMotorMaxForce(maxForce) {
+    this.motorEquation.maxForce = maxForce;
+    this.motorEquation.minForce = -maxForce;
+  }
+
+  update() {
+    const bodyA = this.bodyA;
+    const bodyB = this.bodyB;
+    const motor = this.motorEquation;
+    const r1 = this.rotationalEquation1;
+    const r2 = this.rotationalEquation2;
+    const worldAxisA = HingeConstraint_update_tmpVec1;
+    const worldAxisB = HingeConstraint_update_tmpVec2;
+    const axisA = this.axisA;
+    const axisB = this.axisB;
+    super.update(); // Get world axes
+
+    bodyA.quaternion.vmult(axisA, worldAxisA);
+    bodyB.quaternion.vmult(axisB, worldAxisB);
+    worldAxisA.tangents(r1.axisA, r2.axisA);
+    r1.axisB.copy(worldAxisB);
+    r2.axisB.copy(worldAxisB);
+
+    if (this.motorEquation.enabled) {
+      bodyA.quaternion.vmult(this.axisA, motor.axisA);
+      bodyB.quaternion.vmult(this.axisB, motor.axisB);
+    }
+  }
+
+}
+const HingeConstraint_update_tmpVec1 = new Vec3();
+const HingeConstraint_update_tmpVec2 = new Vec3();
 
 /**
  * Constrains the slipping in a contact along a tangent
@@ -59319,7 +59852,7 @@ class Shape$2 {
 	onDisable() {
 
 		const body = this.body.ref;
-		const index = this.shapes.indexOf( shape );
+		const index = body.shapes.indexOf( this.ref );
 
 		body.shapes.splice( index, 1 );
 		body.shapeOffsets.splice( index, 1 );
@@ -59329,7 +59862,7 @@ class Shape$2 {
 
 		body.aabbNeedsUpdate = true;
 
-		shape.body = null;
+		this.ref.body = null;
 
 	}
 
@@ -59365,6 +59898,116 @@ ComponentManager.register( 'shape', Shape$2, {
 	dependencies: [ 'rigidbody' ]
 } );
 
+const DEFAULT_CONNECTED_BODY = new Body();
+
+class Constraint$1 {
+
+	init( data ) {
+
+		const bodyA = this.entity.getComponent( 'rigidbody' ).ref;
+		let bodyB;
+
+		if ( data.connectedBody !== null ) {
+
+			bodyB = data.connectedBody.getComponent( 'rigidbody' );
+			if ( bodyB === undefined ) {
+
+				bodyB = data.connectedBody.addComponent( 'rigidbody' ).ref;
+
+			} else {
+
+				bodyB = bodyB.ref;
+
+			}
+
+		} else {
+
+			bodyB = DEFAULT_CONNECTED_BODY;
+
+		}
+
+		switch ( data.type ) {
+
+			case 'distance':
+				this.ref = new DistanceConstraint( bodyA, bodyB, data.distance, data.maxForce );
+				break;
+			case 'point':
+				this.ref = new PointToPointConstraint( bodyA, data.pivot, bodyB, data.connectedPivot, data.maxForce );
+				break;
+			case 'coneTwist':
+				this.ref = new ConeTwistConstraint( bodyA, bodyB, {
+					pivotA: data.pivot,
+					pivotB: data.connectedPivot,
+					axisA: new Vec3().copy( data.axis ),
+					axisB: new Vec3().copy( data.connectedAxis ),
+					maxForce: data.maxForce,
+					angle: MathUtils.degToRad( data.angle ),
+					twistAngle: MathUtils.degToRad( data.twistAngle ),
+				} );
+				break;
+			case 'lock':
+				this.ref = new LockConstraint( bodyA, bodyB, {
+					maxForce: data.maxForce,
+				} );
+				break;
+			case 'hinge':
+				this.ref = new HingeConstraint( bodyA, bodyB, {
+					pivotA: data.pivot,
+					pivotB: data.connectedPivot,
+					axisA: new Vec3().copy( data.axis ),
+					axisB: new Vec3().copy( data.connectedAxis ),
+					maxForce: data.maxForce,
+				} );
+				break;
+			default:
+				throw new Error( 'Constraint: invalid constraint type ' + data.type );
+
+		}
+
+		this.ref.collideConnected = data.collideConnected;
+
+		this.addEventListener( 'enable', this.onEnable );
+		this.addEventListener( 'disable', this.onDisable );
+
+	}
+
+	onEnable() {
+
+		this.entity.scene.physicsWorld.addConstraint( this.ref );
+
+	}
+
+	onDisable() {
+
+		this.entity.scene.physicsWorld.removeConstraint( this.ref );
+
+	}
+
+}
+
+// TODO: Research how to implement Trimesh type
+ComponentManager.register( 'constraint', Constraint$1, {
+	schema: {
+		type: { type: 'select', default: 'distance', select: [ 'distance', 'point', 'coneTwist', 'lock', 'hinge' ] },
+		connectedBody: { type: 'entity' },
+
+		distance: { default: 1, if: { type: [ 'distance' ] } },
+
+		pivot: { type: 'vector3', if: { type: [ 'point', 'coneTwist', 'hinge' ] } },
+		connectedPivot: { type: 'vector3', if: { type: [ 'point', 'coneTwist', 'hinge' ] } },
+
+		axis: { type: 'vector3', if: { type: [ 'coneTwist', 'hinge' ] } },
+		connectedAxis: { type: 'vector3', if: { type: [ 'coneTwist', 'hinge' ] } },
+		angle: { default: 0, if: { type: [ 'coneTwist' ] } },
+		twistAngle: { default: 0, if: { type: [ 'coneTwist' ] } },
+
+		maxForce: { type: 'number', default: 1e6, min: 0 },
+		collideConnected: { default: true },
+
+	},
+	dependencies: [ 'rigidbody' ]
+} );
+
 class Rigidbody {
 
 	init( data ) {
@@ -59395,7 +60038,7 @@ class Rigidbody {
 		}
 
 		this.ref = new Body( newData );
-		this.cachedScale = new Vector3().copy( this.entity.scale );
+		this.cachedScale = this.entity.getWorldScale( new Vector3() );
 
 		this.ref.addEventListener( 'collide', event => this.entity.dispatchEvent( event ) );
 		this.ref.addEventListener( 'wakeup', event => this.entity.dispatchEvent( event ) );
@@ -59638,6 +60281,7 @@ class Scene$1 extends Scene {
 }
 
 const _v1$7 = new Vector3();
+const _v2$4 = new Vector3();
 const _q1$2 = new Quaternion();
 const SLEEPING = 2;
 
@@ -59680,21 +60324,30 @@ class Physics {
 			const entity = rigidbodies[ i ].entity;
 			const body = rigidbodies[ i ].ref;
 
-			if ( entity.position.equals( body.position ) === false ) {
+			entity.updateWorldMatrix( true, false );
+			entity.matrixWorld.decompose( _v1$7, _q1$2, _v2$4 );
 
-				body.position.copy( entity.position );
+			if ( this.hasVectorChanged( body.interpolatedPosition, _v1$7 ) ) {
+
+				body.position.copy( _v1$7 );
+				body.previousPosition.copy( _v1$7 );
+				body.interpolatedPosition.copy( _v1$7 );
+				body.wakeUp();
 
 			}
 
-			if ( entity.quaternion.equals( body.quaternion ) === false ) {
+			if ( this.hasQuaternionChanged( body.interpolatedQuaternion, _q1$2 ) ) {
 
-				body.quaternion.copy( entity.quaternion );
+				body.quaternion.copy( _q1$2 );
+				body.previousQuaternion.copy( _q1$2 );
+				body.interpolatedQuaternion.copy( _q1$2 );
+				body.wakeUp();
 
 			}
 
-			if ( entity.scale.equals( rigidbodies[ i ].cachedScale ) === false ) {
+			if ( this.hasVectorChanged( rigidbodies[ i ].cachedScale, _v2$4 ) ) {
 
-				rigidbodies[ i ].cachedScale.copy( entity.scale );
+				rigidbodies[ i ].cachedScale.copy( _v2$4 );
 
 				const shapes = entity.getComponents( 'shape' );
 
@@ -59706,6 +60359,8 @@ class Physics {
 					shapes[ i ].enabled = true;
 
 				}
+
+				body.wakeUp();
 
 			}
 
@@ -59723,10 +60378,10 @@ class Physics {
 					const entity = body.entity;
 
 					const position = entity.position;
-					position.copy( body.ref.position );
+					position.copy( body.ref.interpolatedPosition );
 
 					const quaternion = entity.quaternion;
-					quaternion.copy( body.ref.quaternion );
+					quaternion.copy( body.ref.interpolatedQuaternion );
 
 					if ( entity.parent !== entity.scene ) {
 
@@ -59740,6 +60395,23 @@ class Physics {
 			}
 
 		}
+
+	}
+
+	hasVectorChanged( v1, v2 ) {
+
+		return ! ( Math.abs( v1.x - v2.x ) < 0.001 &&
+				 Math.abs( v1.y - v2.y ) < 0.001 &&
+				 Math.abs( v1.z - v2.z ) < 0.001 );
+
+	}
+
+	hasQuaternionChanged( q1, q2 ) {
+
+		return ! ( Math.abs( q1.x - q2.x ) < 0.001 &&
+				 Math.abs( q1.y - q2.y ) < 0.001 &&
+				 Math.abs( q1.z - q2.z ) < 0.001 &&
+				 Math.abs( q1.w - q2.w ) < 0.001 );
 
 	}
 
