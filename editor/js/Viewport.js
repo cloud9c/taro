@@ -2,6 +2,10 @@ import { TransformControls } from './lib/TransformControls.js';
 import { OrbitControls } from './lib/OrbitControls.js';
 import * as TARO from '../../build/taro.module.js';
 
+// import { EffectComposer } from './lib/EffectComposer.js';
+// import { RenderPass } from '/lib/RenderPass.js';
+// import { OutlinePass } from '/lib/OutlinePass.js';
+
 export function Viewport( editor ) {
 
 	let currentDrag;

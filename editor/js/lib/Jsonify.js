@@ -47,7 +47,7 @@ function entityToJSON( entity ) {
 	data.matrix = entity.matrix.toArray();
 
 	if ( entity.tags.length !== 0 ) data.tags = entity.tags;
-	if ( entity.componentData !== undefined ) data.components = entity.componentData;
+	if ( entity.componentData !== undefined ) data.components = JSON.parse(JSON.stringify(entity.componentData));
 
 	if ( entity.name !== '' ) data.name = entity.name;
 	if ( entity.castShadow === true ) data.castShadow = true;
