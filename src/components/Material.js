@@ -45,6 +45,8 @@ class Material {
 			case 'toon':
 				this.ref = new THREE.MeshToonMaterial( data );
 				break;
+			case 'asset':
+				this.ref = MaterialLoader.load(data.asset);
 			default:
 				throw new Error( 'Geometry: invalid material type ' + type );
 
@@ -92,7 +94,7 @@ const sourceFactors = [ 'ZeroFactor', 'OneFactor', 'SrcColorFactor', 'OneMinusSr
 const destinationFactors = [ 'ZeroFactor', 'OneFactor', 'SrcColorFactor', 'OneMinusSrcColorFactor', 'SrcAlphaFactor', 'OneMinusSrcAlphaFactor', 'DstAlphaFactor', 'OneMinusDstAlphaFactor', 'DstColorFactor', 'OneMinusDstColorFactor' ];
 const sides = [ 'FrontSide', 'BackSide', 'DoubleSide' ];
 const schema = {
-	type: { type: 'select', default: 'basic', select: [ 'basic', 'depth', 'lambert', 'matcap', 'normal', 'phong', 'physical', 'standard', 'toon' ] },
+	type: { type: 'select', default: 'basic', select: [ 'basic', 'depth', 'lambert', 'matcap', 'normal', 'phong', 'physical', 'standard', 'toon', 'asset' ] },
 
 	color: { type: 'color', if: { type: [ 'basic', 'lambert', 'matcap', 'phong', 'standard', 'physical', 'toon' ] } },
 	roughness: { default: 1.0, if: { type: [ 'standard', 'physical' ] } },
@@ -103,7 +105,7 @@ const schema = {
 	clearcoatRoughness: { default: 0.0, if: { type: [ 'physical' ] } },
 	specular: { type: 'color', default: '#111111', if: { type: [ 'phong' ] } },
 	shininess: { default: 30, if: { type: [ 'phong' ] } },
-	vertexColors: { default: false },
+	vertexColors: { default: false, if: { type: ['basic', 'depth', 'lambert', 'matcap', 'normal', 'phong', 'physical', 'standard', 'toon'] } },
 	vertexTangents: { default: false, if: { type: [ 'standard', 'physical' ] } },
 
 	depthPacking: { type: 'select', default: 'BasicDepthPacking', select: [ 'BasicDepthPacking', 'RGBADepthPacking' ], if: { type: [ 'depth' ] } },
@@ -138,14 +140,14 @@ const schema = {
 	emissiveMap: { type: 'asset', if: { type: [ 'lambert', 'phong', 'standard', 'physical', 'toon' ] } },
 	gradientMap: { type: 'asset', if: { type: [ 'toon' ] } },
 
-	side: { type: 'select', default: 'FrontSide', select: sides },
-	flatShading: { default: false },
-	blending: { type: 'select', default: 'NormalBlending', select: blendingModes },
-	opacity: { default: 1.0, min: 0.0, max: 1.0 },
-	transparent: { default: false },
-	alphaTest: { default: 0, min: 0, max: 1 },
-	depthTest: { default: true },
-	depthWrite: { default: true },
+	side: { type: 'select', default: 'FrontSide', select: sides, if: { type: ['basic', 'depth', 'lambert', 'matcap', 'normal', 'phong', 'physical', 'standard', 'toon'] }  },
+	flatShading: { default: false, if: { type: ['basic', 'depth', 'lambert', 'matcap', 'normal', 'phong', 'physical', 'standard', 'toon'] } },
+	blending: { type: 'select', default: 'NormalBlending', select: blendingModes, if: { type: ['basic', 'depth', 'lambert', 'matcap', 'normal', 'phong', 'physical', 'standard', 'toon'] } },
+	opacity: { default: 1.0, min: 0.0, max: 1.0, if: { type: ['basic', 'depth', 'lambert', 'matcap', 'normal', 'phong', 'physical', 'standard', 'toon'] } },
+	transparent: { default: false, if: { type: ['basic', 'depth', 'lambert', 'matcap', 'normal', 'phong', 'physical', 'standard', 'toon'] } },
+	alphaTest: { default: 0, min: 0, max: 1, if: { type: ['basic', 'depth', 'lambert', 'matcap', 'normal', 'phong', 'physical', 'standard', 'toon'] } },
+	depthTest: { default: true, if: { type: ['basic', 'depth', 'lambert', 'matcap', 'normal', 'phong', 'physical', 'standard', 'toon'] } },
+	depthWrite: { default: true, if: { type: ['basic', 'depth', 'lambert', 'matcap', 'normal', 'phong', 'physical', 'standard', 'toon'] } },
 	wireframe: { default: false, if: { type: [ 'basic', 'depth', 'lambert', 'normal', 'phong', 'standard', 'physical', 'toon' ] } },
 };
 
