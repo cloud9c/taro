@@ -637,6 +637,8 @@ export function SidebarInspector( editor ) {
 
 			}
 
+			console.log( components );
+
 			updateIcon( currentEntity, true );
 
 		}
@@ -691,45 +693,17 @@ export function SidebarInspector( editor ) {
 			// trash component
 			if ( event.target.classList.contains( 'trash' ) ) {
 
-				const index = currentEntity.componentData.indexOf( component );
-				currentEntity.componentData.splice( index, 1 );
+				this.removeComponent( currentEntity, component );
 
-				if ( config.runInEditor === true ) {
+				const components = currentEntity.componentData;
+				for ( let i = 0, len = components.length; i < len; i ++ ) {
 
-					const components = currentEntity.components;
-					for ( let i = 0, len = components.length; i < len; i ++ ) {
+					const dependencies = TARO.ComponentManager.components[ components[ i ].type ].config.dependencies;
 
-						if ( components[ i ].uuid === component.uuid ) {
-
-							currentEntity.removeComponent( components[ i ] );
-							break;
-
-						}
-
-					}
+					if ( dependencies !== undefined && dependencies.includes( component.type ) )
+						this.removeComponent( currentEntity, components[ i ] );
 
 				}
-
-				const children = currentEntity.children;
-				for ( let i = 0, len = children.length; i < len; i ++ ) {
-
-					if ( icons.includes( children[ i ] ) && children[ i ].name === component.type ) {
-
-						icons.splice( icons.indexOf( children[ i ] ), 1 );
-						currentEntity.remove( children[ i ] );
-
-						break;
-
-					}
-
-				}
-
-				this.updateIcon( currentEntity );
-
-				editor.viewport.updateOutliner( currentEntity );
-				editor.viewport.render();
-
-				section.remove();
 
 			} else { // minimize the component
 
@@ -1283,16 +1257,6 @@ export function SidebarInspector( editor ) {
 
 		if ( schema !== undefined ) TARO.ComponentManager.sanitizeData( component.data, schema );
 
-		if ( entity === currentEntity ) inspector.appendChild( this.addSection( component, config ) );
-
-		if ( runInEditor ) {
-
-			const _component = entity.addComponent( type, Object.assign( {}, component.data ) );
-			// used by editor to select component by uuid (maybe standardize to TARO engine?)
-			_component.uuid = component.uuid;
-
-		}
-
 		if ( config.dependencies !== undefined ) {
 
 			for ( let i = 0, len = config.dependencies.length; i < len; i ++ ) {
@@ -1317,10 +1281,70 @@ export function SidebarInspector( editor ) {
 
 		}
 
+		if ( runInEditor ) {
+
+			const _component = entity.addComponent( type, Object.assign( {}, component.data ) );
+			// used by editor to select component by uuid (maybe standardize to TARO engine?)
+			_component.uuid = component.uuid;
+
+		}
+
+		if ( entity === currentEntity ) inspector.appendChild( this.addSection( component, config ) );
+
 		entity.componentData.push( component );
 		this.updateIcon( entity );
 
 		editor.render();
+
+	};
+
+	this.removeComponent = function ( entity, component ) {
+
+		const config = TARO.ComponentManager.components[ component.type ].config;
+
+		const index = entity.componentData.indexOf( component );
+		entity.componentData.splice( index, 1 );
+
+		if ( config.runInEditor === true ) {
+
+			const components = entity.components;
+			for ( let i = 0, len = components.length; i < len; i ++ ) {
+
+				if ( components[ i ].uuid === component.uuid ) {
+
+					entity.removeComponent( components[ i ] );
+					break;
+
+				}
+
+			}
+
+		}
+
+		const children = entity.children;
+		for ( let i = 0, len = children.length; i < len; i ++ ) {
+
+			if ( icons.includes( children[ i ] ) && children[ i ].name === component.type ) {
+
+				icons.splice( icons.indexOf( children[ i ] ), 1 );
+				entity.remove( children[ i ] );
+
+				break;
+
+			}
+
+		}
+
+		this.updateIcon( entity );
+
+		if ( currentEntity === entity ) {
+
+			editor.viewport.updateOutliner( currentEntity );
+			document.getElementById( 'inspector' ).querySelector( 'section[data-uuid="' + component.uuid + '"]' ).remove();
+
+		}
+
+		editor.viewport.render();
 
 	};
 

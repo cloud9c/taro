@@ -1,4 +1,4 @@
-import { Application, Entity, Scene, Loader, Color, Fog, FogExp2 } from '../../../build/taro.module.js';
+import { Application, Entity, Scene, Loader, Color, Fog, FogExp2, ComponentManager, Vector2, Vector3, Vector4 } from '../../../build/taro.module.js';
 
 export class TaroLoader extends Loader {
 
@@ -108,6 +108,17 @@ export class TaroLoader extends Loader {
 
 	parseEntity( data, parent ) {
 
+		if ( data.children !== undefined ) {
+
+			const children = data.children;
+			for ( let i = 0, len = children.length; i < len; i ++ ) {
+
+				this.parseEntity( children[ i ], object );
+
+			}
+
+		}
+
 		const object = new Entity();
 
 		object.uuid = data.uuid;
@@ -121,30 +132,48 @@ export class TaroLoader extends Loader {
 		if ( data.visible !== undefined ) object.visible = data.visible;
 		if ( data.enabled !== undefined ) object.enabled = data.enabled;
 
-		parent.add( object );
-
 		if ( data.components !== undefined ) {
 
 			const components = data.components;
 			for ( let i = 0, len = components.length; i < len; i ++ ) {
 
-				const component = object.addComponent( components[ i ].type, components[ i ].data );
+				const type = components[ i ].type;
+				const data = components[ i ].data;
+				const schema = ComponentManager.components[ type ].config.schema;
+				// convert vector JSONs to actual vector classes (also color)
+				if ( schema !== undefined ) {
+
+					for ( const name in data ) {
+
+						switch ( schema[ name ].type ) {
+
+							case 'vector2':
+								data[ name ] = new Vector2( data[ name ].x, data[ name ].y );
+								break;
+							case 'vector3':
+								data[ name ] = new Vector3( data[ name ].x, data[ name ].y, data[ name ].z );
+								break;
+							case 'vector4':
+								data[ name ] = new Vector4( data[ name ].x, data[ name ].y, data[ name ].z, data[ name ].w );
+								break;
+							case 'color':
+								data[ name ] = new Color( data[ name ] );
+								break;
+
+						}
+
+					}
+
+				}
+
+				const component = object.addComponent( type, data );
 				component.uuid = components[ i ].uuid;
 
 			}
 
 		}
 
-		if ( data.children !== undefined ) {
-
-			const children = data.children;
-			for ( let i = 0, len = children.length; i < len; i ++ ) {
-
-				this.parseEntity( children[ i ], object );
-
-			}
-
-		}
+		parent.add( object );
 
 		return object;
 

@@ -41,20 +41,6 @@ function sceneToJSON( scene ) {
 
 function entityToJSON( entity ) {
 
-	const data = {};
-
-	data.uuid = entity.uuid;
-	data.matrix = entity.matrix.toArray();
-
-	if ( entity.tags.length !== 0 ) data.tags = entity.tags;
-	if ( entity.componentData !== undefined ) data.components = JSON.parse(JSON.stringify(entity.componentData));
-
-	if ( entity.name !== '' ) data.name = entity.name;
-	if ( entity.castShadow === true ) data.castShadow = true;
-	if ( entity.receiveShadow === true ) data.receiveShadow = true;
-	if ( entity.visible === false ) entity.visible = false;
-	if ( entity._enabled === false ) data.enabled = false;
-
 	const children = entity.getEntities();
 	if ( children.length > 0 ) {
 
@@ -63,6 +49,76 @@ function entityToJSON( entity ) {
 			data.children.push( entityToJSON( children[ i ] ) );
 
 	}
+
+	const data = {};
+
+	data.uuid = entity.uuid;
+	data.matrix = entity.matrix.toArray();
+
+	if ( entity.tags.length !== 0 ) data.tags = entity.tags;
+	if ( entity.componentData !== undefined ) {
+
+		const array = JSON.parse( JSON.stringify( entity.componentData ) );
+		data.components = [];
+
+		// sorting array to place non-dependency components last
+		array.sort( ( a, b ) => {
+
+			const dependenciesA = ComponentManager.components[ a.type ].config.dependencies;
+			const dependenciesB = ComponentManager.components[ b.type ].config.dependencies;
+
+			if ( dependenciesA === undefined )
+				return 1;
+			else if ( dependenciesB === undefined )
+				return - 1;
+			return 0;
+
+		} );
+
+		while ( array.length > 0 ) {
+
+			let i = array.length;
+
+			while ( i -- ) {
+
+				const dependencies = ComponentManager.components[ array[ i ].type ].config.dependencies;
+
+				if ( dependencies !== undefined ) {
+
+					let wait = false;
+					for ( let j = 0, len = dependencies.length; j < len; j ++ ) {
+
+						if ( array.includes( dependencies[ j ] ) ) {
+
+							wait = true;
+							break;
+
+						}
+
+					}
+
+					if ( wait === true ) {
+
+						continue;
+
+					}
+
+				}
+
+				data.components.push( array[ i ] );
+				array.splice( i, 1 );
+
+			}
+
+		}
+
+	}
+
+	if ( entity.name !== '' ) data.name = entity.name;
+	if ( entity.castShadow === true ) data.castShadow = true;
+	if ( entity.receiveShadow === true ) data.receiveShadow = true;
+	if ( entity.visible === false ) entity.visible = false;
+	if ( entity._enabled === false ) data.enabled = false;
 
 	return data;
 
