@@ -1,5 +1,7 @@
 import { ComponentManager } from '../core/ComponentManager.js';
-import { MathUtils, Mesh, BufferGeometry, BoxBufferGeometry, CircleBufferGeometry, ConeBufferGeometry, CylinderBufferGeometry, DodecahedronBufferGeometry, ExtrudeBufferGeometry, IcosahedronBufferGeometry, LatheBufferGeometry, OctahedronBufferGeometry, ParametricBufferGeometry, PlaneBufferGeometry, PolyhedronBufferGeometry, RingBufferGeometry, ShapeBufferGeometry, SphereBufferGeometry, TetrahedronBufferGeometry, TextBufferGeometry, TorusBufferGeometry, TorusKnotBufferGeometry, TubeBufferGeometry } from '../lib/three.js';
+import { BufferGeometryLoader, Font, MathUtils, Mesh, BoxGeometry, CircleGeometry, ConeGeometry, CylinderGeometry, DodecahedronGeometry, ExtrudeGeometry, IcosahedronGeometry, LatheGeometry, OctahedronGeometry, ParametricGeometry, PlaneGeometry, PolyhedronGeometry, RingGeometry, ShapeGeometry, SphereGeometry, TetrahedronGeometry, TextGeometry, TorusGeometry, TorusKnotGeometry, TubeGeometry } from '../lib/three.js';
+
+const geometryLoader = new BufferGeometryLoader();
 
 class Geometry {
 
@@ -10,46 +12,47 @@ class Geometry {
 		switch ( type ) {
 
 			case 'box':
-				this.ref = new BoxBufferGeometry( data.width, data.height, data.depth, data.widthSegments, data.heightSegments, data.depthSegments );
+				this.ref = new BoxGeometry( data.width, data.height, data.depth, data.widthSegments, data.heightSegments, data.depthSegments );
 				break;
 			case 'circle':
-				this.ref = new CircleBufferGeometry( data.radius, data.segments, MathUtils.degToRad( data.thetaStart ), MathUtils.degToRad( data.thetaLength ) );
+				this.ref = new CircleGeometry( data.radius, data.segments, MathUtils.degToRad( data.thetaStart ), MathUtils.degToRad( data.thetaLength ) );
 				break;
 			case 'cone':
-				this.ref = new ConeBufferGeometry( data.radius, data.height, data.radialSegments, data.heightSegments, data.openEnded, MathUtils.degToRad( data.thetaStart ), MathUtils.degToRad( data.thetaLength ) );
+				this.ref = new ConeGeometry( data.radius, data.height, data.radialSegments, data.heightSegments, data.openEnded, MathUtils.degToRad( data.thetaStart ), MathUtils.degToRad( data.thetaLength ) );
 				break;
 			case 'cylinder':
-				this.ref = new CylinderBufferGeometry( data.radiusTop, data.radiusBottom, data.height, data.radialSegments, data.heightSegments, data.openEnded, MathUtils.degToRad( data.thetaStart ), MathUtils.degToRad( data.thetaLength ) );
+				this.ref = new CylinderGeometry( data.radiusTop, data.radiusBottom, data.height, data.radialSegments, data.heightSegments, data.openEnded, MathUtils.degToRad( data.thetaStart ), MathUtils.degToRad( data.thetaLength ) );
 				break;
 			case 'dodecahedron':
-				this.ref = new DodecahedronBufferGeometry( data.radius, data.detail );
+				this.ref = new DodecahedronGeometry( data.radius, data.detail );
 				break;
 			case 'icosahedron':
-				this.ref = new IcosahedronBufferGeometry( data.radius, data.detail );
+				this.ref = new IcosahedronGeometry( data.radius, data.detail );
 				break;
 			case 'octahedron':
-				this.ref = new OctahedronBufferGeometry( data.radius, data.detail );
+				this.ref = new OctahedronGeometry( data.radius, data.detail );
 				break;
 			case 'plane':
-				this.ref = new PlaneBufferGeometry( data.width, data.height, data.widthSegments, data.heightSegments );
+				this.ref = new PlaneGeometry( data.width, data.height, data.widthSegments, data.heightSegments );
 				break;
 			case 'ring':
-				this.ref = new RingBufferGeometry( data.innerRadius, data.outerRadius, data.thetaSegments, data.phiSegments, MathUtils.degToRad( data.thetaStart ), MathUtils.degToRad( data.thetaLength ) );
+				this.ref = new RingGeometry( data.innerRadius, data.outerRadius, data.thetaSegments, data.phiSegments, MathUtils.degToRad( data.thetaStart ), MathUtils.degToRad( data.thetaLength ) );
 				break;
 			case 'sphere':
-				this.ref = new SphereBufferGeometry( data.radius, data.widthSegments, data.heightSegments, MathUtils.degToRad( data.phiStart ), MathUtils.degToRad( data.phiLength ), MathUtils.degToRad( data.thetaStart ), MathUtils.degToRad( data.thetaLength ) );
+				this.ref = new SphereGeometry( data.radius, data.widthSegments, data.heightSegments, MathUtils.degToRad( data.phiStart ), MathUtils.degToRad( data.phiLength ), MathUtils.degToRad( data.thetaStart ), MathUtils.degToRad( data.thetaLength ) );
 				break;
 			case 'tetrahedron':
-				this.ref = new TetrahedronBufferGeometry( data.radius, data.detail );
+				this.ref = new TetrahedronGeometry( data.radius, data.detail );
 				break;
 			case 'torus':
-				this.ref = new TorusBufferGeometry( data.radius, data.tube, data.radialSegments, data.tubularSegments, MathUtils.degToRad( data.arc ) );
+				this.ref = new TorusGeometry( data.radius, data.tube, data.radialSegments, data.tubularSegments, MathUtils.degToRad( data.arc ) );
 				break;
 			case 'torusKnot':
-				this.ref = new TorusKnotBufferGeometry( data.radius, data.tube, data.tubularSegments, data.radialSegments, data.p, data.q );
+				this.ref = new TorusKnotGeometry( data.radius, data.tube, data.tubularSegments, data.radialSegments, data.p, data.q );
 				break;
-			case 'custom':
-				this.ref = new BufferGeometry();
+			case 'asset':
+				this.ref = undefined;
+				geometryLoader.load( data.asset, ( g ) => onLoad( g ), undefined, () => this.onError() );
 				break;
 			default:
 				throw new Error( 'Geometry: invalid geometry type ' + type );
@@ -64,9 +67,16 @@ class Geometry {
 	onEnable() {
 
 		const material = this.entity.getComponent( 'material' );
-		if ( material !== undefined && material.enabled ) {
+		if ( material !== undefined && material._enabled ) {
 
-			material.mesh = this.mesh = new Mesh( this.ref, material.ref );
+			const m = material.ref !== undefined ? material.ref : material.MissingMaterial;
+			const g = this.ref !== undefined ? this.ref : this.MissingGeometry;
+
+			material.mesh = this.mesh = new Mesh( g, m );
+
+			if ( this.ref === undefined || material.ref === undefined )
+				this.mesh.visible = false;
+
 			this.entity.add( this.mesh );
 
 		}
@@ -86,11 +96,31 @@ class Geometry {
 
 	}
 
+	onLoad( geometry ) {
+
+		this.mesh.geometry = this.ref = geometry;
+		if ( this._enabled === true ) this.mesh.visible = true;
+
+		this.dispatchEvent( { type: 'load' } );
+
+	}
+
+	onError() {
+
+		console.error( 'Geometry: missing geometry asset' );
+		if ( this._enabled === true ) this.mesh.visible = true;
+
+		this.dispatchEvent( { type: 'error' } );
+
+	}
+
 }
+
+Geometry.prototype.MissingGeometry = new PlaneGeometry();
 
 ComponentManager.register( 'geometry', Geometry, {
 	schema: {
-		type: { type: 'select', default: 'box', select: [ 'box', 'circle', 'cone', 'cylinder', 'dodecahedron', 'icosahedron', 'octahedron', 'plane', 'ring', 'sphere', 'tetrahedron', 'torus', 'torusKnot', 'custom' ] },
+		type: { type: 'select', default: 'box', select: [ 'box', 'circle', 'cone', 'cylinder', 'dodecahedron', 'icosahedron', 'octahedron', 'plane', 'ring', 'sphere', 'tetrahedron', 'torus', 'torusKnot', 'asset' ] },
 
 		depth: { default: 1, min: 0, if: { type: [ 'box' ] } },
 		height: { default: 1, min: 0, if: { type: [ 'box', 'cone', 'cylinder', 'plane' ] } },
@@ -130,5 +160,7 @@ ComponentManager.register( 'geometry', Geometry, {
 
 		p: { default: 2, min: 1, if: { type: [ 'torusKnot' ] } },
 		q: { default: 3, min: 1, if: { type: [ 'torusKnot' ] } },
+
+		asset: { type: 'asset', if: { type: [ 'asset' ] } },
 	}
 } );

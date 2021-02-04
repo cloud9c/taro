@@ -101,7 +101,7 @@ export const ComponentManager = {
 					prop.default = '';
 					break;
 				case 'asset':
-					prop.default = null;
+					prop.default = '';
 					break;
 				case 'color':
 					prop.default = '#ffffff';

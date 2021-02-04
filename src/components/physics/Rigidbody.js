@@ -6,31 +6,18 @@ class Rigidbody {
 
 	init( data ) {
 
-		switch ( data.type ) {
+		// temporary changes to data
+		data.type = indexedTypes.indexOf( data.type );
 
-			case 'dynamic':
-				data.type = Body.DYNAMIC;
-				break;
-			case 'static':
-				data.type = Body.KINEMATIC;
-				break;
-			case 'kinematic':
-				data.type = Body.STATIC;
-				break;
-			default:
-				throw new Error( 'Rigidbody: invalid rigidbody type ' + data.type );
-
-		}
-
-		if ( data.physicsMaterial !== undefined ) {
-
-			data.material = data.physicsMaterial;
-			delete data.physicsMaterial;
-
-		}
+		if ( data.physicsMaterial !== undefined ) data.material = data.physicsMaterial;
 
 		this.ref = new Body( data );
 		this.cachedScale = this.entity.getWorldScale( new Vector3() );
+
+		// fixing it
+		if ( data.material !== undefined ) delete data.material;
+
+		data.type = indexedTypes[ data.type ];
 
 		this.ref.addEventListener( 'collide', event => this.entity.dispatchEvent( event ) );
 		this.ref.addEventListener( 'wakeup', event => this.entity.dispatchEvent( event ) );
@@ -56,9 +43,12 @@ class Rigidbody {
 
 }
 
+const types = [ 'dynamic', 'static', 'kinematic' ];
+const indexedTypes = [ undefined, 'dynamic', 'static', undefined, 'kinematic' ];
+
 ComponentManager.register( 'rigidbody', Rigidbody, {
 	schema: {
-		type: { type: 'select', default: 'dynamic', select: [ 'dynamic', 'static', 'kinematic' ] },
+		type: { type: 'select', default: 'dynamic', select: types },
 		mass: { default: 1, if: { type: [ 'dynamic' ] } },
 		velocity: { type: 'vector3', if: { type: [ 'dynamic', 'kinematic' ] } },
 		angularVelocity: { type: 'vector3', if: { type: [ 'dynamic', 'kinematic' ] } },

@@ -19,7 +19,9 @@ class Shape {
 		switch ( data.type ) {
 
 			case 'box':
-				this.ref = new Box( new Vec3().copy( data.halfExtents.multiply( scale ) ) );
+				const halfExtents = new Vec3().copy( data.halfExtents );
+				halfExtents.vmul( scale, halfExtents );
+				this.ref = new Box( halfExtents );
 				break;
 			case 'sphere':
 				const radius = data.radius * maxScale;

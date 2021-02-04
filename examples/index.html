@@ -130,15 +130,12 @@
 			entity.position.set(-100, 175, 100);
 
 			// floor
-			geo = new TARO.PlaneBufferGeometry(200, 200);
-			mat = new TARO.MeshPhongMaterial({
-				color: 0x718e3e,
-			});
-			mesh = new TARO.Mesh(geo, mat);
-			mesh.receiveShadow = true;
-
 			entity = new TARO.Entity("floor");
-			entity.addComponent("renderable", mesh);
+
+			entity.addComponent("material", {type: 'phong', color: 0x718e3e});
+			let geometry = entity.addComponent("geometry", {type: 'plane', width: 200, height: 200});
+			geometry.mesh.receiveShadow = true;
+
 			entity.addComponent("rigidbody", { type: 'static' })
 			entity.addComponent("shape", { type: "plane" });
 			entity.rotation.set(-Math.PI / 2, 0, 0);
