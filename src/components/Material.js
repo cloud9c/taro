@@ -49,7 +49,7 @@ class Material {
 				break;
 			case 'asset':
 				this.ref = undefined;
-				materialLoader.load( data.asset, ( m ) => onLoad( m ), undefined, () => this.onError() );
+				this.promise = materialLoader.load( data.asset, ( m ) => onLoad( m ), undefined, () => this.onError() );
 				break;
 			default:
 				throw new Error( 'Material: invalid material type ' + type );
@@ -93,7 +93,7 @@ class Material {
 	onDisable() {
 
 		const geometry = this.entity.getComponent( 'geometry' );
-		if ( geometry !== undefined && geometry.enabled ) {
+		if ( geometry !== undefined && geometry._enabled ) {
 
 			this.entity.remove( this.mesh );
 			delete this.mesh;
@@ -106,8 +106,8 @@ class Material {
 	onLoad( material ) {
 
 		this.mesh.material = this.ref = material;
-		if ( this._enabled === true ) this.mesh.visible = true;
-
+		if ( this._enabled ) this.mesh.visible = true;
+		delete this.promise;
 		this.dispatchEvent( { type: 'load' } );
 
 	}
@@ -116,7 +116,7 @@ class Material {
 
 		console.error( 'Material: missing material asset' );
 		if ( this._enabled === true ) this.mesh.visible = true;
-
+		delete this.promise;
 		this.dispatchEvent( { type: 'error' } );
 
 	}
@@ -125,6 +125,7 @@ class Material {
 
 Material.prototype.MissingMaterial = new MeshBasicMaterial( { color: 0xff00ff } );
 
+const notAsset = [ 'basic', 'depth', 'lambert', 'matcap', 'normal', 'phong', 'physical', 'standard', 'toon' ];
 const blendingModes = [ 'NoBlending', 'NormalBlending', 'AdditiveBlending', 'SubstractiveBlending', 'MultiplyBlending', 'CustomBlending' ];
 const sides = [ 'FrontSide', 'BackSide', 'DoubleSide' ];
 const schema = {
@@ -139,7 +140,7 @@ const schema = {
 	clearcoatRoughness: { default: 0.0, if: { type: [ 'physical' ] } },
 	specular: { type: 'color', default: '#111111', if: { type: [ 'phong' ] } },
 	shininess: { default: 30, if: { type: [ 'phong' ] } },
-	vertexColors: { default: false, if: { type: [ 'basic', 'depth', 'lambert', 'matcap', 'normal', 'phong', 'physical', 'standard', 'toon' ] } },
+	vertexColors: { default: false, if: { type: notAsset } },
 	vertexTangents: { default: false, if: { type: [ 'standard', 'physical' ] } },
 
 	depthPacking: { type: 'select', default: 'BasicDepthPacking', select: [ 'BasicDepthPacking', 'RGBADepthPacking' ], if: { type: [ 'depth' ] } },
@@ -174,14 +175,14 @@ const schema = {
 	emissiveMap: { type: 'asset', if: { type: [ 'lambert', 'phong', 'standard', 'physical', 'toon' ] } },
 	gradientMap: { type: 'asset', if: { type: [ 'toon' ] } },
 
-	side: { type: 'select', default: 'FrontSide', select: sides, if: { type: [ 'basic', 'depth', 'lambert', 'matcap', 'normal', 'phong', 'physical', 'standard', 'toon' ] } },
-	flatShading: { default: false, if: { type: [ 'basic', 'depth', 'lambert', 'matcap', 'normal', 'phong', 'physical', 'standard', 'toon' ] } },
-	blending: { type: 'select', default: 'NormalBlending', select: blendingModes, if: { type: [ 'basic', 'depth', 'lambert', 'matcap', 'normal', 'phong', 'physical', 'standard', 'toon' ] } },
-	opacity: { default: 1.0, min: 0.0, max: 1.0, if: { type: [ 'basic', 'depth', 'lambert', 'matcap', 'normal', 'phong', 'physical', 'standard', 'toon' ] } },
-	transparent: { default: false, if: { type: [ 'basic', 'depth', 'lambert', 'matcap', 'normal', 'phong', 'physical', 'standard', 'toon' ] } },
-	alphaTest: { default: 0, min: 0, max: 1, if: { type: [ 'basic', 'depth', 'lambert', 'matcap', 'normal', 'phong', 'physical', 'standard', 'toon' ] } },
-	depthTest: { default: true, if: { type: [ 'basic', 'depth', 'lambert', 'matcap', 'normal', 'phong', 'physical', 'standard', 'toon' ] } },
-	depthWrite: { default: true, if: { type: [ 'basic', 'depth', 'lambert', 'matcap', 'normal', 'phong', 'physical', 'standard', 'toon' ] } },
+	side: { type: 'select', default: 'FrontSide', select: sides, if: { type: notAsset } },
+	flatShading: { default: false, if: { type: notAsset } },
+	blending: { type: 'select', default: 'NormalBlending', select: blendingModes, if: { type: notAsset } },
+	opacity: { default: 1.0, min: 0.0, max: 1.0, if: { type: notAsset } },
+	transparent: { default: false, if: { type: notAsset } },
+	alphaTest: { default: 0, min: 0, max: 1, if: { type: notAsset } },
+	depthTest: { default: true, if: { type: notAsset } },
+	depthWrite: { default: true, if: { type: notAsset } },
 	wireframe: { default: false, if: { type: [ 'basic', 'depth', 'lambert', 'normal', 'phong', 'standard', 'physical', 'toon' ] } },
 };
 
