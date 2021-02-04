@@ -17,7 +17,10 @@ class Material {
 
 		if ( data.side !== undefined )
 			data.side = sides.indexOf( data.side );
-
+		
+		// asset property that needs to be deleted when re-inited
+		delete this.promise;
+		
 		switch ( type ) {
 
 			case 'basic':
@@ -107,7 +110,7 @@ class Material {
 
 		this.mesh.material = this.ref = material;
 		if ( this._enabled ) this.mesh.visible = true;
-		delete this.promise;
+
 		this.dispatchEvent( { type: 'load' } );
 
 	}
@@ -116,7 +119,7 @@ class Material {
 
 		console.error( 'Material: missing material asset' );
 		if ( this._enabled === true ) this.mesh.visible = true;
-		delete this.promise;
+
 		this.dispatchEvent( { type: 'error' } );
 
 	}
