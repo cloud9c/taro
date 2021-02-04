@@ -70,7 +70,6 @@ class Material {
 
 		this.addEventListener( 'enable', this.onEnable );
 		this.addEventListener( 'disable', this.onDisable );
-		this.addEventListener( 'remove', this.onRemove );
 
 	}
 
