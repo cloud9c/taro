@@ -52,7 +52,7 @@ class Geometry {
 				break;
 			case 'asset':
 				this.ref = undefined;
-				geometryLoader.load( data.asset, ( g ) => onLoad( g ), undefined, () => this.onError() );
+				this.promise = geometryLoader.load( data.asset, ( g ) => onLoad( g ), undefined, () => this.onError() );
 				break;
 			default:
 				throw new Error( 'Geometry: invalid geometry type ' + type );
@@ -86,7 +86,7 @@ class Geometry {
 	onDisable() {
 
 		const material = this.entity.getComponent( 'material' );
-		if ( material !== undefined && material.enabled ) {
+		if ( material !== undefined && material._enabled ) {
 
 			this.entity.remove( this.mesh );
 			delete this.mesh;
@@ -100,7 +100,7 @@ class Geometry {
 
 		this.mesh.geometry = this.ref = geometry;
 		if ( this._enabled === true ) this.mesh.visible = true;
-
+		delete this.promise;
 		this.dispatchEvent( { type: 'load' } );
 
 	}
@@ -109,7 +109,7 @@ class Geometry {
 
 		console.error( 'Geometry: missing geometry asset' );
 		if ( this._enabled === true ) this.mesh.visible = true;
-
+		delete this.promise;
 		this.dispatchEvent( { type: 'error' } );
 
 	}
