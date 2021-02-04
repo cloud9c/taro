@@ -132,7 +132,9 @@ ComponentManager.register( 'geometry', Geometry, {
 						 { default: 36, min: 3, type: 'int', if: { type: [ 'sphere' ] } } ],
 		depthSegments: { default: 1, min: 1, max: 20, type: 'int', if: { type: [ 'box' ] } },
 
-		radius: { default: 1, min: 0, if: { type: [ 'circle', 'cone', 'cylinder', 'dodecahedron', 'icosahedron', 'octahedron', 'sphere', 'tetrahedron', 'torus', 'torusKnot' ] } },
+		radius: { default: 1, min: 0, if: { type: [ 'circle', 'cone', 'dodecahedron', 'icosahedron', 'octahedron', 'sphere', 'tetrahedron', 'torus', 'torusKnot' ] } },
+		radiusTop: { default: 1, min: 0, if: { type: [ 'cylinder' ] } },
+		radiusBottom: { default: 1, min: 0, if: { type: [ 'cylinder' ] } },
 		segments: { default: 32, min: 3, type: 'int', if: { type: [ 'circle' ] } },
 		thetaLength: [ { default: 360, min: 0, if: { type: [ 'circle', 'cone', 'cylinder', 'ring' ] } },
 					  { default: 180, min: 0, if: { type: [ 'sphere' ] } } ],
