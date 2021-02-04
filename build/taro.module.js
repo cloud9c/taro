@@ -49037,475 +49037,6 @@ if ( typeof window !== 'undefined' ) {
 
 }
 
-var THREE = /*#__PURE__*/Object.freeze({
-	__proto__: null,
-	ACESFilmicToneMapping: ACESFilmicToneMapping,
-	AddEquation: AddEquation,
-	AddOperation: AddOperation,
-	AdditiveAnimationBlendMode: AdditiveAnimationBlendMode,
-	AdditiveBlending: AdditiveBlending,
-	AlphaFormat: AlphaFormat,
-	AlwaysDepth: AlwaysDepth,
-	AlwaysStencilFunc: AlwaysStencilFunc,
-	AmbientLight: AmbientLight,
-	AmbientLightProbe: AmbientLightProbe,
-	AnimationClip: AnimationClip,
-	AnimationLoader: AnimationLoader,
-	AnimationMixer: AnimationMixer,
-	AnimationObjectGroup: AnimationObjectGroup,
-	AnimationUtils: AnimationUtils,
-	ArcCurve: ArcCurve,
-	ArrayCamera: ArrayCamera,
-	ArrowHelper: ArrowHelper,
-	Audio: Audio,
-	AudioAnalyser: AudioAnalyser,
-	AudioContext: AudioContext,
-	AudioListener: AudioListener,
-	AudioLoader: AudioLoader,
-	AxesHelper: AxesHelper,
-	AxisHelper: AxisHelper,
-	BackSide: BackSide,
-	BasicDepthPacking: BasicDepthPacking,
-	BasicShadowMap: BasicShadowMap,
-	BinaryTextureLoader: BinaryTextureLoader,
-	Bone: Bone,
-	BooleanKeyframeTrack: BooleanKeyframeTrack,
-	BoundingBoxHelper: BoundingBoxHelper,
-	Box2: Box2,
-	Box3: Box3,
-	Box3Helper: Box3Helper,
-	BoxBufferGeometry: BoxGeometry,
-	BoxGeometry: BoxGeometry,
-	BoxHelper: BoxHelper,
-	BufferAttribute: BufferAttribute,
-	BufferGeometry: BufferGeometry,
-	BufferGeometryLoader: BufferGeometryLoader,
-	ByteType: ByteType,
-	Cache: Cache,
-	Camera: Camera,
-	CameraHelper: CameraHelper,
-	CanvasRenderer: CanvasRenderer,
-	CanvasTexture: CanvasTexture,
-	CatmullRomCurve3: CatmullRomCurve3,
-	CineonToneMapping: CineonToneMapping,
-	CircleBufferGeometry: CircleGeometry,
-	CircleGeometry: CircleGeometry,
-	ClampToEdgeWrapping: ClampToEdgeWrapping,
-	Clock: Clock,
-	ClosedSplineCurve3: ClosedSplineCurve3,
-	Color: Color,
-	ColorKeyframeTrack: ColorKeyframeTrack,
-	CompressedTexture: CompressedTexture,
-	CompressedTextureLoader: CompressedTextureLoader,
-	ConeBufferGeometry: ConeGeometry,
-	ConeGeometry: ConeGeometry,
-	CubeCamera: CubeCamera,
-	CubeReflectionMapping: CubeReflectionMapping,
-	CubeRefractionMapping: CubeRefractionMapping,
-	CubeTexture: CubeTexture,
-	CubeTextureLoader: CubeTextureLoader,
-	CubeUVReflectionMapping: CubeUVReflectionMapping,
-	CubeUVRefractionMapping: CubeUVRefractionMapping,
-	CubicBezierCurve: CubicBezierCurve,
-	CubicBezierCurve3: CubicBezierCurve3,
-	CubicInterpolant: CubicInterpolant,
-	CullFaceBack: CullFaceBack,
-	CullFaceFront: CullFaceFront,
-	CullFaceFrontBack: CullFaceFrontBack,
-	CullFaceNone: CullFaceNone,
-	Curve: Curve,
-	CurvePath: CurvePath,
-	CustomBlending: CustomBlending,
-	CustomToneMapping: CustomToneMapping,
-	CylinderBufferGeometry: CylinderGeometry,
-	CylinderGeometry: CylinderGeometry,
-	Cylindrical: Cylindrical,
-	DataTexture: DataTexture,
-	DataTexture2DArray: DataTexture2DArray,
-	DataTexture3D: DataTexture3D,
-	DataTextureLoader: DataTextureLoader,
-	DataUtils: DataUtils,
-	DecrementStencilOp: DecrementStencilOp,
-	DecrementWrapStencilOp: DecrementWrapStencilOp,
-	DefaultLoadingManager: DefaultLoadingManager,
-	DepthFormat: DepthFormat,
-	DepthStencilFormat: DepthStencilFormat,
-	DepthTexture: DepthTexture,
-	DirectionalLight: DirectionalLight,
-	DirectionalLightHelper: DirectionalLightHelper,
-	DiscreteInterpolant: DiscreteInterpolant,
-	DodecahedronBufferGeometry: DodecahedronGeometry,
-	DodecahedronGeometry: DodecahedronGeometry,
-	DoubleSide: DoubleSide,
-	DstAlphaFactor: DstAlphaFactor,
-	DstColorFactor: DstColorFactor,
-	DynamicBufferAttribute: DynamicBufferAttribute,
-	DynamicCopyUsage: DynamicCopyUsage,
-	DynamicDrawUsage: DynamicDrawUsage,
-	DynamicReadUsage: DynamicReadUsage,
-	EdgesGeometry: EdgesGeometry,
-	EdgesHelper: EdgesHelper,
-	EllipseCurve: EllipseCurve,
-	EqualDepth: EqualDepth,
-	EqualStencilFunc: EqualStencilFunc,
-	EquirectangularReflectionMapping: EquirectangularReflectionMapping,
-	EquirectangularRefractionMapping: EquirectangularRefractionMapping,
-	Euler: Euler,
-	EventDispatcher: EventDispatcher,
-	ExtrudeBufferGeometry: ExtrudeGeometry,
-	ExtrudeGeometry: ExtrudeGeometry,
-	Face3: Face3,
-	Face4: Face4,
-	FaceColors: FaceColors,
-	FileLoader: FileLoader,
-	FlatShading: FlatShading,
-	Float16BufferAttribute: Float16BufferAttribute,
-	Float32Attribute: Float32Attribute,
-	Float32BufferAttribute: Float32BufferAttribute,
-	Float64Attribute: Float64Attribute,
-	Float64BufferAttribute: Float64BufferAttribute,
-	FloatType: FloatType,
-	Fog: Fog,
-	FogExp2: FogExp2,
-	Font: Font,
-	FontLoader: FontLoader,
-	FrontSide: FrontSide,
-	Frustum: Frustum,
-	GLBufferAttribute: GLBufferAttribute,
-	GLSL1: GLSL1,
-	GLSL3: GLSL3,
-	GammaEncoding: GammaEncoding,
-	GeometryUtils: GeometryUtils,
-	GreaterDepth: GreaterDepth,
-	GreaterEqualDepth: GreaterEqualDepth,
-	GreaterEqualStencilFunc: GreaterEqualStencilFunc,
-	GreaterStencilFunc: GreaterStencilFunc,
-	GridHelper: GridHelper,
-	Group: Group,
-	HalfFloatType: HalfFloatType,
-	HemisphereLight: HemisphereLight,
-	HemisphereLightHelper: HemisphereLightHelper,
-	HemisphereLightProbe: HemisphereLightProbe,
-	IcosahedronBufferGeometry: IcosahedronGeometry,
-	IcosahedronGeometry: IcosahedronGeometry,
-	ImageBitmapLoader: ImageBitmapLoader,
-	ImageLoader: ImageLoader,
-	ImageUtils: ImageUtils,
-	ImmediateRenderObject: ImmediateRenderObject,
-	IncrementStencilOp: IncrementStencilOp,
-	IncrementWrapStencilOp: IncrementWrapStencilOp,
-	InstancedBufferAttribute: InstancedBufferAttribute,
-	InstancedBufferGeometry: InstancedBufferGeometry,
-	InstancedInterleavedBuffer: InstancedInterleavedBuffer,
-	InstancedMesh: InstancedMesh,
-	Int16Attribute: Int16Attribute,
-	Int16BufferAttribute: Int16BufferAttribute,
-	Int32Attribute: Int32Attribute,
-	Int32BufferAttribute: Int32BufferAttribute,
-	Int8Attribute: Int8Attribute,
-	Int8BufferAttribute: Int8BufferAttribute,
-	IntType: IntType,
-	InterleavedBuffer: InterleavedBuffer,
-	InterleavedBufferAttribute: InterleavedBufferAttribute,
-	Interpolant: Interpolant,
-	InterpolateDiscrete: InterpolateDiscrete,
-	InterpolateLinear: InterpolateLinear,
-	InterpolateSmooth: InterpolateSmooth,
-	InvertStencilOp: InvertStencilOp,
-	JSONLoader: JSONLoader,
-	KeepStencilOp: KeepStencilOp,
-	KeyframeTrack: KeyframeTrack,
-	LOD: LOD,
-	LatheBufferGeometry: LatheGeometry,
-	LatheGeometry: LatheGeometry,
-	Layers: Layers,
-	LensFlare: LensFlare,
-	LessDepth: LessDepth,
-	LessEqualDepth: LessEqualDepth,
-	LessEqualStencilFunc: LessEqualStencilFunc,
-	LessStencilFunc: LessStencilFunc,
-	Light: Light,
-	LightProbe: LightProbe,
-	Line: Line,
-	Line3: Line3,
-	LineBasicMaterial: LineBasicMaterial,
-	LineCurve: LineCurve,
-	LineCurve3: LineCurve3,
-	LineDashedMaterial: LineDashedMaterial,
-	LineLoop: LineLoop,
-	LinePieces: LinePieces,
-	LineSegments: LineSegments,
-	LineStrip: LineStrip,
-	LinearEncoding: LinearEncoding,
-	LinearFilter: LinearFilter,
-	LinearInterpolant: LinearInterpolant,
-	LinearMipMapLinearFilter: LinearMipMapLinearFilter,
-	LinearMipMapNearestFilter: LinearMipMapNearestFilter,
-	LinearMipmapLinearFilter: LinearMipmapLinearFilter,
-	LinearMipmapNearestFilter: LinearMipmapNearestFilter,
-	LinearToneMapping: LinearToneMapping,
-	Loader: Loader,
-	LoaderUtils: LoaderUtils,
-	LoadingManager: LoadingManager,
-	LogLuvEncoding: LogLuvEncoding,
-	LoopOnce: LoopOnce,
-	LoopPingPong: LoopPingPong,
-	LoopRepeat: LoopRepeat,
-	LuminanceAlphaFormat: LuminanceAlphaFormat,
-	LuminanceFormat: LuminanceFormat,
-	MOUSE: MOUSE,
-	Material: Material,
-	MaterialLoader: MaterialLoader,
-	Math: MathUtils,
-	MathUtils: MathUtils,
-	Matrix3: Matrix3,
-	Matrix4: Matrix4,
-	MaxEquation: MaxEquation,
-	Mesh: Mesh,
-	MeshBasicMaterial: MeshBasicMaterial,
-	MeshDepthMaterial: MeshDepthMaterial,
-	MeshDistanceMaterial: MeshDistanceMaterial,
-	MeshFaceMaterial: MeshFaceMaterial,
-	MeshLambertMaterial: MeshLambertMaterial,
-	MeshMatcapMaterial: MeshMatcapMaterial,
-	MeshNormalMaterial: MeshNormalMaterial,
-	MeshPhongMaterial: MeshPhongMaterial,
-	MeshPhysicalMaterial: MeshPhysicalMaterial,
-	MeshStandardMaterial: MeshStandardMaterial,
-	MeshToonMaterial: MeshToonMaterial,
-	MinEquation: MinEquation,
-	MirroredRepeatWrapping: MirroredRepeatWrapping,
-	MixOperation: MixOperation,
-	MultiMaterial: MultiMaterial,
-	MultiplyBlending: MultiplyBlending,
-	MultiplyOperation: MultiplyOperation,
-	NearestFilter: NearestFilter,
-	NearestMipMapLinearFilter: NearestMipMapLinearFilter,
-	NearestMipMapNearestFilter: NearestMipMapNearestFilter,
-	NearestMipmapLinearFilter: NearestMipmapLinearFilter,
-	NearestMipmapNearestFilter: NearestMipmapNearestFilter,
-	NeverDepth: NeverDepth,
-	NeverStencilFunc: NeverStencilFunc,
-	NoBlending: NoBlending,
-	NoColors: NoColors,
-	NoToneMapping: NoToneMapping,
-	NormalAnimationBlendMode: NormalAnimationBlendMode,
-	NormalBlending: NormalBlending,
-	NotEqualDepth: NotEqualDepth,
-	NotEqualStencilFunc: NotEqualStencilFunc,
-	NumberKeyframeTrack: NumberKeyframeTrack,
-	Object3D: Object3D,
-	ObjectLoader: ObjectLoader,
-	ObjectSpaceNormalMap: ObjectSpaceNormalMap,
-	OctahedronBufferGeometry: OctahedronGeometry,
-	OctahedronGeometry: OctahedronGeometry,
-	OneFactor: OneFactor,
-	OneMinusDstAlphaFactor: OneMinusDstAlphaFactor,
-	OneMinusDstColorFactor: OneMinusDstColorFactor,
-	OneMinusSrcAlphaFactor: OneMinusSrcAlphaFactor,
-	OneMinusSrcColorFactor: OneMinusSrcColorFactor,
-	OrthographicCamera: OrthographicCamera,
-	PCFShadowMap: PCFShadowMap,
-	PCFSoftShadowMap: PCFSoftShadowMap,
-	PMREMGenerator: PMREMGenerator,
-	ParametricBufferGeometry: ParametricGeometry,
-	ParametricGeometry: ParametricGeometry,
-	Particle: Particle,
-	ParticleBasicMaterial: ParticleBasicMaterial,
-	ParticleSystem: ParticleSystem,
-	ParticleSystemMaterial: ParticleSystemMaterial,
-	Path: Path,
-	PerspectiveCamera: PerspectiveCamera,
-	Plane: Plane,
-	PlaneBufferGeometry: PlaneGeometry,
-	PlaneGeometry: PlaneGeometry,
-	PlaneHelper: PlaneHelper,
-	PointCloud: PointCloud,
-	PointCloudMaterial: PointCloudMaterial,
-	PointLight: PointLight,
-	PointLightHelper: PointLightHelper,
-	Points: Points,
-	PointsMaterial: PointsMaterial,
-	PolarGridHelper: PolarGridHelper,
-	PolyhedronBufferGeometry: PolyhedronGeometry,
-	PolyhedronGeometry: PolyhedronGeometry,
-	PositionalAudio: PositionalAudio,
-	PropertyBinding: PropertyBinding,
-	PropertyMixer: PropertyMixer,
-	QuadraticBezierCurve: QuadraticBezierCurve,
-	QuadraticBezierCurve3: QuadraticBezierCurve3,
-	Quaternion: Quaternion,
-	QuaternionKeyframeTrack: QuaternionKeyframeTrack,
-	QuaternionLinearInterpolant: QuaternionLinearInterpolant,
-	REVISION: REVISION,
-	RGBADepthPacking: RGBADepthPacking,
-	RGBAFormat: RGBAFormat,
-	RGBAIntegerFormat: RGBAIntegerFormat,
-	RGBA_ASTC_10x10_Format: RGBA_ASTC_10x10_Format,
-	RGBA_ASTC_10x5_Format: RGBA_ASTC_10x5_Format,
-	RGBA_ASTC_10x6_Format: RGBA_ASTC_10x6_Format,
-	RGBA_ASTC_10x8_Format: RGBA_ASTC_10x8_Format,
-	RGBA_ASTC_12x10_Format: RGBA_ASTC_12x10_Format,
-	RGBA_ASTC_12x12_Format: RGBA_ASTC_12x12_Format,
-	RGBA_ASTC_4x4_Format: RGBA_ASTC_4x4_Format,
-	RGBA_ASTC_5x4_Format: RGBA_ASTC_5x4_Format,
-	RGBA_ASTC_5x5_Format: RGBA_ASTC_5x5_Format,
-	RGBA_ASTC_6x5_Format: RGBA_ASTC_6x5_Format,
-	RGBA_ASTC_6x6_Format: RGBA_ASTC_6x6_Format,
-	RGBA_ASTC_8x5_Format: RGBA_ASTC_8x5_Format,
-	RGBA_ASTC_8x6_Format: RGBA_ASTC_8x6_Format,
-	RGBA_ASTC_8x8_Format: RGBA_ASTC_8x8_Format,
-	RGBA_BPTC_Format: RGBA_BPTC_Format,
-	RGBA_ETC2_EAC_Format: RGBA_ETC2_EAC_Format,
-	RGBA_PVRTC_2BPPV1_Format: RGBA_PVRTC_2BPPV1_Format,
-	RGBA_PVRTC_4BPPV1_Format: RGBA_PVRTC_4BPPV1_Format,
-	RGBA_S3TC_DXT1_Format: RGBA_S3TC_DXT1_Format,
-	RGBA_S3TC_DXT3_Format: RGBA_S3TC_DXT3_Format,
-	RGBA_S3TC_DXT5_Format: RGBA_S3TC_DXT5_Format,
-	RGBDEncoding: RGBDEncoding,
-	RGBEEncoding: RGBEEncoding,
-	RGBEFormat: RGBEFormat,
-	RGBFormat: RGBFormat,
-	RGBIntegerFormat: RGBIntegerFormat,
-	RGBM16Encoding: RGBM16Encoding,
-	RGBM7Encoding: RGBM7Encoding,
-	RGB_ETC1_Format: RGB_ETC1_Format,
-	RGB_ETC2_Format: RGB_ETC2_Format,
-	RGB_PVRTC_2BPPV1_Format: RGB_PVRTC_2BPPV1_Format,
-	RGB_PVRTC_4BPPV1_Format: RGB_PVRTC_4BPPV1_Format,
-	RGB_S3TC_DXT1_Format: RGB_S3TC_DXT1_Format,
-	RGFormat: RGFormat,
-	RGIntegerFormat: RGIntegerFormat,
-	RawShaderMaterial: RawShaderMaterial,
-	Ray: Ray,
-	Raycaster: Raycaster,
-	RectAreaLight: RectAreaLight,
-	RedFormat: RedFormat,
-	RedIntegerFormat: RedIntegerFormat,
-	ReinhardToneMapping: ReinhardToneMapping,
-	RepeatWrapping: RepeatWrapping,
-	ReplaceStencilOp: ReplaceStencilOp,
-	ReverseSubtractEquation: ReverseSubtractEquation,
-	RingBufferGeometry: RingGeometry,
-	RingGeometry: RingGeometry,
-	SRGB8_ALPHA8_ASTC_10x10_Format: SRGB8_ALPHA8_ASTC_10x10_Format,
-	SRGB8_ALPHA8_ASTC_10x5_Format: SRGB8_ALPHA8_ASTC_10x5_Format,
-	SRGB8_ALPHA8_ASTC_10x6_Format: SRGB8_ALPHA8_ASTC_10x6_Format,
-	SRGB8_ALPHA8_ASTC_10x8_Format: SRGB8_ALPHA8_ASTC_10x8_Format,
-	SRGB8_ALPHA8_ASTC_12x10_Format: SRGB8_ALPHA8_ASTC_12x10_Format,
-	SRGB8_ALPHA8_ASTC_12x12_Format: SRGB8_ALPHA8_ASTC_12x12_Format,
-	SRGB8_ALPHA8_ASTC_4x4_Format: SRGB8_ALPHA8_ASTC_4x4_Format,
-	SRGB8_ALPHA8_ASTC_5x4_Format: SRGB8_ALPHA8_ASTC_5x4_Format,
-	SRGB8_ALPHA8_ASTC_5x5_Format: SRGB8_ALPHA8_ASTC_5x5_Format,
-	SRGB8_ALPHA8_ASTC_6x5_Format: SRGB8_ALPHA8_ASTC_6x5_Format,
-	SRGB8_ALPHA8_ASTC_6x6_Format: SRGB8_ALPHA8_ASTC_6x6_Format,
-	SRGB8_ALPHA8_ASTC_8x5_Format: SRGB8_ALPHA8_ASTC_8x5_Format,
-	SRGB8_ALPHA8_ASTC_8x6_Format: SRGB8_ALPHA8_ASTC_8x6_Format,
-	SRGB8_ALPHA8_ASTC_8x8_Format: SRGB8_ALPHA8_ASTC_8x8_Format,
-	Scene: Scene,
-	SceneUtils: SceneUtils,
-	ShaderChunk: ShaderChunk,
-	ShaderLib: ShaderLib,
-	ShaderMaterial: ShaderMaterial,
-	ShadowMaterial: ShadowMaterial,
-	Shape: Shape,
-	ShapeBufferGeometry: ShapeGeometry,
-	ShapeGeometry: ShapeGeometry,
-	ShapePath: ShapePath,
-	ShapeUtils: ShapeUtils,
-	ShortType: ShortType,
-	Skeleton: Skeleton,
-	SkeletonHelper: SkeletonHelper,
-	SkinnedMesh: SkinnedMesh,
-	SmoothShading: SmoothShading,
-	Sphere: Sphere,
-	SphereBufferGeometry: SphereGeometry,
-	SphereGeometry: SphereGeometry,
-	Spherical: Spherical,
-	SphericalHarmonics3: SphericalHarmonics3,
-	Spline: Spline,
-	SplineCurve: SplineCurve,
-	SplineCurve3: SplineCurve3,
-	SpotLight: SpotLight,
-	SpotLightHelper: SpotLightHelper,
-	Sprite: Sprite,
-	SpriteMaterial: SpriteMaterial,
-	SrcAlphaFactor: SrcAlphaFactor,
-	SrcAlphaSaturateFactor: SrcAlphaSaturateFactor,
-	SrcColorFactor: SrcColorFactor,
-	StaticCopyUsage: StaticCopyUsage,
-	StaticDrawUsage: StaticDrawUsage,
-	StaticReadUsage: StaticReadUsage,
-	StereoCamera: StereoCamera,
-	StreamCopyUsage: StreamCopyUsage,
-	StreamDrawUsage: StreamDrawUsage,
-	StreamReadUsage: StreamReadUsage,
-	StringKeyframeTrack: StringKeyframeTrack,
-	SubtractEquation: SubtractEquation,
-	SubtractiveBlending: SubtractiveBlending,
-	TOUCH: TOUCH,
-	TangentSpaceNormalMap: TangentSpaceNormalMap,
-	TetrahedronBufferGeometry: TetrahedronGeometry,
-	TetrahedronGeometry: TetrahedronGeometry,
-	TextBufferGeometry: TextGeometry,
-	TextGeometry: TextGeometry,
-	Texture: Texture,
-	TextureLoader: TextureLoader,
-	TorusBufferGeometry: TorusGeometry,
-	TorusGeometry: TorusGeometry,
-	TorusKnotBufferGeometry: TorusKnotGeometry,
-	TorusKnotGeometry: TorusKnotGeometry,
-	Triangle: Triangle,
-	TriangleFanDrawMode: TriangleFanDrawMode,
-	TriangleStripDrawMode: TriangleStripDrawMode,
-	TrianglesDrawMode: TrianglesDrawMode,
-	TubeBufferGeometry: TubeGeometry,
-	TubeGeometry: TubeGeometry,
-	UVMapping: UVMapping,
-	Uint16Attribute: Uint16Attribute,
-	Uint16BufferAttribute: Uint16BufferAttribute,
-	Uint32Attribute: Uint32Attribute,
-	Uint32BufferAttribute: Uint32BufferAttribute,
-	Uint8Attribute: Uint8Attribute,
-	Uint8BufferAttribute: Uint8BufferAttribute,
-	Uint8ClampedAttribute: Uint8ClampedAttribute,
-	Uint8ClampedBufferAttribute: Uint8ClampedBufferAttribute,
-	Uniform: Uniform,
-	UniformsLib: UniformsLib,
-	UniformsUtils: UniformsUtils,
-	UnsignedByteType: UnsignedByteType,
-	UnsignedInt248Type: UnsignedInt248Type,
-	UnsignedIntType: UnsignedIntType,
-	UnsignedShort4444Type: UnsignedShort4444Type,
-	UnsignedShort5551Type: UnsignedShort5551Type,
-	UnsignedShort565Type: UnsignedShort565Type,
-	UnsignedShortType: UnsignedShortType,
-	VSMShadowMap: VSMShadowMap,
-	Vector2: Vector2,
-	Vector3: Vector3,
-	Vector4: Vector4,
-	VectorKeyframeTrack: VectorKeyframeTrack,
-	Vertex: Vertex,
-	VertexColors: VertexColors,
-	VideoTexture: VideoTexture,
-	WebGL1Renderer: WebGL1Renderer,
-	WebGLCubeRenderTarget: WebGLCubeRenderTarget,
-	WebGLMultisampleRenderTarget: WebGLMultisampleRenderTarget,
-	WebGLRenderTarget: WebGLRenderTarget,
-	WebGLRenderTargetCube: WebGLRenderTargetCube,
-	WebGLRenderer: WebGLRenderer,
-	WebGLUtils: WebGLUtils,
-	WireframeGeometry: WireframeGeometry,
-	WireframeHelper: WireframeHelper,
-	WrapAroundEnding: WrapAroundEnding,
-	XHRLoader: XHRLoader,
-	ZeroCurvatureEnding: ZeroCurvatureEnding,
-	ZeroFactor: ZeroFactor,
-	ZeroSlopeEnding: ZeroSlopeEnding,
-	ZeroStencilOp: ZeroStencilOp,
-	sRGBEncoding: sRGBEncoding
-});
-
 const ComponentManager = {
 	components: {},
 	properties: {
@@ -49607,7 +49138,7 @@ const ComponentManager = {
 					prop.default = '';
 					break;
 				case 'asset':
-					prop.default = null;
+					prop.default = '';
 					break;
 				case 'color':
 					prop.default = '#ffffff';
@@ -49861,6 +49392,8 @@ ComponentManager.register( 'camera', Camera$1, {
 	}
 } );
 
+const geometryLoader = new BufferGeometryLoader();
+
 class Geometry {
 
 	init( data ) {
@@ -49908,8 +49441,9 @@ class Geometry {
 			case 'torusKnot':
 				this.ref = new TorusKnotGeometry( data.radius, data.tube, data.tubularSegments, data.radialSegments, data.p, data.q );
 				break;
-			case 'custom':
-				this.ref = new BufferGeometry();
+			case 'asset':
+				this.ref = undefined;
+				geometryLoader.load( data.asset, ( g ) => onLoad( g ), undefined, () => this.onError() );
 				break;
 			default:
 				throw new Error( 'Geometry: invalid geometry type ' + type );
@@ -49924,9 +49458,16 @@ class Geometry {
 	onEnable() {
 
 		const material = this.entity.getComponent( 'material' );
-		if ( material !== undefined && material.enabled ) {
+		if ( material !== undefined && material._enabled ) {
 
-			material.mesh = this.mesh = new Mesh( this.ref, material.ref );
+			const m = material.ref !== undefined ? material.ref : material.MissingMaterial;
+			const g = this.ref !== undefined ? this.ref : this.MissingGeometry;
+
+			material.mesh = this.mesh = new Mesh( g, m );
+
+			if ( this.ref === undefined || material.ref === undefined )
+				this.mesh.visible = false;
+
 			this.entity.add( this.mesh );
 
 		}
@@ -49946,11 +49487,31 @@ class Geometry {
 
 	}
 
+	onLoad( geometry ) {
+
+		this.mesh.geometry = this.ref = geometry;
+		if ( this._enabled === true ) this.mesh.visible = true;
+
+		this.dispatchEvent( { type: 'load' } );
+
+	}
+
+	onError() {
+
+		console.error( 'Geometry: missing geometry asset' );
+		if ( this._enabled === true ) this.mesh.visible = true;
+
+		this.dispatchEvent( { type: 'error' } );
+
+	}
+
 }
+
+Geometry.prototype.MissingGeometry = new PlaneGeometry();
 
 ComponentManager.register( 'geometry', Geometry, {
 	schema: {
-		type: { type: 'select', default: 'box', select: [ 'box', 'circle', 'cone', 'cylinder', 'dodecahedron', 'icosahedron', 'octahedron', 'plane', 'ring', 'sphere', 'tetrahedron', 'torus', 'torusKnot', 'custom' ] },
+		type: { type: 'select', default: 'box', select: [ 'box', 'circle', 'cone', 'cylinder', 'dodecahedron', 'icosahedron', 'octahedron', 'plane', 'ring', 'sphere', 'tetrahedron', 'torus', 'torusKnot', 'asset' ] },
 
 		depth: { default: 1, min: 0, if: { type: [ 'box' ] } },
 		height: { default: 1, min: 0, if: { type: [ 'box', 'cone', 'cylinder', 'plane' ] } },
@@ -49990,6 +49551,8 @@ ComponentManager.register( 'geometry', Geometry, {
 
 		p: { default: 2, min: 1, if: { type: [ 'torusKnot' ] } },
 		q: { default: 3, min: 1, if: { type: [ 'torusKnot' ] } },
+
+		asset: { type: 'asset', if: { type: [ 'asset' ] } },
 	}
 } );
 
@@ -50059,20 +49622,22 @@ ComponentManager.register( 'light', Light$1, {
 	}
 } );
 
+const materialLoader = new MaterialLoader();
+
 class Material$1 {
 
 	init( data ) {
 
 		const type = data.type;
 
+		// temporary changes to data
 		delete data.type;
 
-		for ( const name in data ) {
+		if ( data.blending !== undefined )
+			data.blending = blendingModes.indexOf( data.blending );
 
-			if ( schema[ name ].type === 'select' && data[ name ] !== null && data[ name ][ 0 ] === data[ name ][ 0 ].toUpperCase() )
-				data[ name ] = THREE[ data[ name ] ];
-
-		}
+		if ( data.side !== undefined )
+			data.side = sides.indexOf( data.side );
 
 		switch ( type ) {
 
@@ -50103,10 +49668,23 @@ class Material$1 {
 			case 'toon':
 				this.ref = new MeshToonMaterial( data );
 				break;
+			case 'asset':
+				this.ref = undefined;
+				materialLoader.load( data.asset, ( m ) => onLoad( m ), undefined, () => this.onError() );
+				break;
 			default:
-				throw new Error( 'Geometry: invalid material type ' + type );
+				throw new Error( 'Material: invalid material type ' + type );
 
 		}
+
+		// fixes to temp changes
+		data.type = type;
+
+		if ( data.blending !== undefined )
+			data.blending = blendingModes[ data.blending ];
+
+		if ( data.side !== undefined )
+			data.side = sides[ data.side ];
 
 		this.addEventListener( 'enable', this.onEnable );
 		this.addEventListener( 'disable', this.onDisable );
@@ -50117,9 +49695,16 @@ class Material$1 {
 	onEnable() {
 
 		const geometry = this.entity.getComponent( 'geometry' );
-		if ( geometry !== undefined && geometry.enabled ) {
+		if ( geometry !== undefined && geometry._enabled ) {
 
-			geometry.mesh = this.mesh = new Mesh( geometry.ref, this.ref );
+			const m = this.ref !== undefined ? this.ref : this.MissingMaterial;
+			const g = geometry.ref !== undefined ? geometry.ref : geometry.MissingGeometry;
+
+			material.mesh = this.mesh = new Mesh( g, m );
+
+			if ( this.ref === undefined || geometry.ref === undefined )
+				this.mesh.visible = false;
+
 			this.entity.add( this.mesh );
 
 		}
@@ -50139,12 +49724,32 @@ class Material$1 {
 
 	}
 
+	onLoad( material ) {
+
+		this.mesh.material = this.ref = material;
+		if ( this._enabled === true ) this.mesh.visible = true;
+
+		this.dispatchEvent( { type: 'load' } );
+
+	}
+
+	onError() {
+
+		console.error( 'Material: missing material asset' );
+		if ( this._enabled === true ) this.mesh.visible = true;
+
+		this.dispatchEvent( { type: 'error' } );
+
+	}
+
 }
+
+Material$1.prototype.MissingMaterial = new MeshBasicMaterial( { color: 0xff00ff } );
 
 const blendingModes = [ 'NoBlending', 'NormalBlending', 'AdditiveBlending', 'SubstractiveBlending', 'MultiplyBlending', 'CustomBlending' ];
 const sides = [ 'FrontSide', 'BackSide', 'DoubleSide' ];
 const schema = {
-	type: { type: 'select', default: 'basic', select: [ 'basic', 'depth', 'lambert', 'matcap', 'normal', 'phong', 'physical', 'standard', 'toon' ] },
+	type: { type: 'select', default: 'basic', select: [ 'basic', 'depth', 'lambert', 'matcap', 'normal', 'phong', 'physical', 'standard', 'toon', 'asset' ] },
 
 	color: { type: 'color', if: { type: [ 'basic', 'lambert', 'matcap', 'phong', 'standard', 'physical', 'toon' ] } },
 	roughness: { default: 1.0, if: { type: [ 'standard', 'physical' ] } },
@@ -50155,7 +49760,7 @@ const schema = {
 	clearcoatRoughness: { default: 0.0, if: { type: [ 'physical' ] } },
 	specular: { type: 'color', default: '#111111', if: { type: [ 'phong' ] } },
 	shininess: { default: 30, if: { type: [ 'phong' ] } },
-	vertexColors: { default: false },
+	vertexColors: { default: false, if: { type: [ 'basic', 'depth', 'lambert', 'matcap', 'normal', 'phong', 'physical', 'standard', 'toon' ] } },
 	vertexTangents: { default: false, if: { type: [ 'standard', 'physical' ] } },
 
 	depthPacking: { type: 'select', default: 'BasicDepthPacking', select: [ 'BasicDepthPacking', 'RGBADepthPacking' ], if: { type: [ 'depth' ] } },
@@ -50190,14 +49795,14 @@ const schema = {
 	emissiveMap: { type: 'asset', if: { type: [ 'lambert', 'phong', 'standard', 'physical', 'toon' ] } },
 	gradientMap: { type: 'asset', if: { type: [ 'toon' ] } },
 
-	side: { type: 'select', default: 'FrontSide', select: sides },
-	flatShading: { default: false },
-	blending: { type: 'select', default: 'NormalBlending', select: blendingModes },
-	opacity: { default: 1.0, min: 0.0, max: 1.0 },
-	transparent: { default: false },
-	alphaTest: { default: 0, min: 0, max: 1 },
-	depthTest: { default: true },
-	depthWrite: { default: true },
+	side: { type: 'select', default: 'FrontSide', select: sides, if: { type: [ 'basic', 'depth', 'lambert', 'matcap', 'normal', 'phong', 'physical', 'standard', 'toon' ] } },
+	flatShading: { default: false, if: { type: [ 'basic', 'depth', 'lambert', 'matcap', 'normal', 'phong', 'physical', 'standard', 'toon' ] } },
+	blending: { type: 'select', default: 'NormalBlending', select: blendingModes, if: { type: [ 'basic', 'depth', 'lambert', 'matcap', 'normal', 'phong', 'physical', 'standard', 'toon' ] } },
+	opacity: { default: 1.0, min: 0.0, max: 1.0, if: { type: [ 'basic', 'depth', 'lambert', 'matcap', 'normal', 'phong', 'physical', 'standard', 'toon' ] } },
+	transparent: { default: false, if: { type: [ 'basic', 'depth', 'lambert', 'matcap', 'normal', 'phong', 'physical', 'standard', 'toon' ] } },
+	alphaTest: { default: 0, min: 0, max: 1, if: { type: [ 'basic', 'depth', 'lambert', 'matcap', 'normal', 'phong', 'physical', 'standard', 'toon' ] } },
+	depthTest: { default: true, if: { type: [ 'basic', 'depth', 'lambert', 'matcap', 'normal', 'phong', 'physical', 'standard', 'toon' ] } },
+	depthWrite: { default: true, if: { type: [ 'basic', 'depth', 'lambert', 'matcap', 'normal', 'phong', 'physical', 'standard', 'toon' ] } },
 	wireframe: { default: false, if: { type: [ 'basic', 'depth', 'lambert', 'normal', 'phong', 'standard', 'physical', 'toon' ] } },
 };
 
@@ -59798,7 +59403,9 @@ class Shape$2 {
 		switch ( data.type ) {
 
 			case 'box':
-				this.ref = new Box( new Vec3().copy( data.halfExtents.multiply( scale ) ) );
+				const halfExtents = new Vec3().copy( data.halfExtents );
+				halfExtents.vmul( scale, halfExtents );
+				this.ref = new Box( halfExtents );
 				break;
 			case 'sphere':
 				const radius = data.radius * maxScale;
@@ -60013,31 +59620,18 @@ class Rigidbody {
 
 	init( data ) {
 
-		switch ( data.type ) {
+		// temporary changes to data
+		data.type = indexedTypes.indexOf( data.type );
 
-			case 'dynamic':
-				data.type = Body.DYNAMIC;
-				break;
-			case 'static':
-				data.type = Body.KINEMATIC;
-				break;
-			case 'kinematic':
-				data.type = Body.STATIC;
-				break;
-			default:
-				throw new Error( 'Rigidbody: invalid rigidbody type ' + data.type );
-
-		}
-
-		if ( data.physicsMaterial !== undefined ) {
-
-			data.material = data.physicsMaterial;
-			delete data.physicsMaterial;
-
-		}
+		if ( data.physicsMaterial !== undefined ) data.material = data.physicsMaterial;
 
 		this.ref = new Body( data );
 		this.cachedScale = this.entity.getWorldScale( new Vector3() );
+
+		// fixing it
+		if ( data.material !== undefined ) delete data.material;
+
+		data.type = indexedTypes[ data.type ];
 
 		this.ref.addEventListener( 'collide', event => this.entity.dispatchEvent( event ) );
 		this.ref.addEventListener( 'wakeup', event => this.entity.dispatchEvent( event ) );
@@ -60063,9 +59657,12 @@ class Rigidbody {
 
 }
 
+const types = [ 'dynamic', 'static', 'kinematic' ];
+const indexedTypes = [ undefined, 'dynamic', 'static', undefined, 'kinematic' ];
+
 ComponentManager.register( 'rigidbody', Rigidbody, {
 	schema: {
-		type: { type: 'select', default: 'dynamic', select: [ 'dynamic', 'static', 'kinematic' ] },
+		type: { type: 'select', default: 'dynamic', select: types },
 		mass: { default: 1, if: { type: [ 'dynamic' ] } },
 		velocity: { type: 'vector3', if: { type: [ 'dynamic', 'kinematic' ] } },
 		angularVelocity: { type: 'vector3', if: { type: [ 'dynamic', 'kinematic' ] } },
