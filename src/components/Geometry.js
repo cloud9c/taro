@@ -9,6 +9,9 @@ class Geometry {
 
 		const type = data.type;
 
+		// asset property that needs to be deleted when re-inited
+		delete this.promise;
+		
 		switch ( type ) {
 
 			case 'box':
@@ -100,7 +103,7 @@ class Geometry {
 
 		this.mesh.geometry = this.ref = geometry;
 		if ( this._enabled ) this.mesh.visible = true;
-		delete this.promise;
+
 		this.dispatchEvent( { type: 'load' } );
 
 	}
@@ -109,7 +112,7 @@ class Geometry {
 
 		console.error( 'Geometry: missing geometry asset' );
 		if ( this._enabled ) this.mesh.visible = true;
-		delete this.promise;
+
 		this.dispatchEvent( { type: 'error' } );
 
 	}
