@@ -99,7 +99,7 @@ class Geometry {
 	onLoad( geometry ) {
 
 		this.mesh.geometry = this.ref = geometry;
-		if ( this._enabled === true ) this.mesh.visible = true;
+		if ( this._enabled ) this.mesh.visible = true;
 		delete this.promise;
 		this.dispatchEvent( { type: 'load' } );
 
@@ -108,7 +108,7 @@ class Geometry {
 	onError() {
 
 		console.error( 'Geometry: missing geometry asset' );
-		if ( this._enabled === true ) this.mesh.visible = true;
+		if ( this._enabled ) this.mesh.visible = true;
 		delete this.promise;
 		this.dispatchEvent( { type: 'error' } );
 
