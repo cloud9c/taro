@@ -79,7 +79,7 @@ class Material {
 			const m = this.ref !== undefined ? this.ref : this.MissingMaterial;
 			const g = geometry.ref !== undefined ? geometry.ref : geometry.MissingGeometry;
 
-			material.mesh = this.mesh = new Mesh( g, m );
+			geometry.mesh = this.mesh = new Mesh( g, m );
 
 			if ( this.ref === undefined || geometry.ref === undefined )
 				this.mesh.visible = false;
