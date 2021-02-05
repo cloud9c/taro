@@ -5,7 +5,7 @@ import { ComponentManager } from './ComponentManager.js';
 
 export class Entity extends Group {
 
-	constructor( name, scene ) {
+	constructor( name, parent ) {
 
 		super();
 
@@ -15,25 +15,15 @@ export class Entity extends Group {
 
 		this._enabled = true;
 
-		if ( name !== undefined ) {
-
-			if ( name.isScene !== undefined ) {
-
-				name.add( this );
-
-			} else {
-
-				this.name = name;
-
-			}
-
-		}
+		if ( name !== undefined )
+			this.name = name;
 
 		this.addEventListener( 'sceneadd', this._emptyQueue );
 
-		if ( scene !== undefined && scene.isScene !== undefined ) {
+		// add to parent if provided, otherwise add to currentScene for the currentApp
+		if ( parent !== undefined ) {
 
-			scene.add( this );
+			parent.add( this );
 
 		} else if ( Application.currentApp !== undefined && Application.currentApp.currentScene !== undefined ) {
 

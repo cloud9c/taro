@@ -52,7 +52,7 @@ export class Scene extends TS {
 
 	_addToScene( object ) {
 
-		if ( object.isEntity !== undefined && this.children.indexOf( object ) === - 1 ) {
+		if ( object.isEntity !== undefined ) {
 
 			if ( object.scene !== undefined ) {
 
@@ -78,7 +78,7 @@ export class Scene extends TS {
 
 	_removeFromScene( object ) {
 
-		if ( object.isEntity !== undefined && this.children.indexOf( object ) !== - 1 ) {
+		if ( object.isEntity !== undefined ) {
 
 			this._removeComponents( object.components );
 
