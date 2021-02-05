@@ -52,21 +52,23 @@ export class Scene extends TS {
 
 	_addToScene( object ) {
 
-		if ( object.isEntity !== undefined ) {
+		if ( object.isEntity !== undefined && this.children.indexOf( object ) === - 1 ) {
+
+			if ( object.scene !== undefined ) {
+
+				object.scene._removeComponents( object.components );
+
+			}
 
 			this._addComponents( object.components );
-			const oldScene = object.scene;
+
 			object.scene = this;
+			object.dispatchEvent( { type: 'sceneadd' } );
 
-			if ( oldScene === undefined ) {
+			const children = object.children;
+			for ( let i = 0, len = children.length; i < len; i ++ ) {
 
-				object.dispatchEvent( { type: 'sceneadd' } );
-				object.traverseEntities( ( child ) => {
-
-					child.scene = this;
-					child.dispatchEvent( { type: 'sceneadd' } );
-
-				} );
+				this._addToScene( children[ i ] );
 
 			}
 
@@ -79,15 +81,16 @@ export class Scene extends TS {
 		if ( object.isEntity !== undefined && this.children.indexOf( object ) !== - 1 ) {
 
 			this._removeComponents( object.components );
+
 			delete object.scene;
-
 			object.dispatchEvent( { type: 'sceneremove' } );
-			object.traverseEntities( ( child ) => {
 
-				delete child.scene;
-				child.dispatchEvent( { type: 'sceneremove' } );
+			const children = object.children;
+			for ( let i = 0, len = children.length; i < len; i ++ ) {
 
-			} );
+				this._removeFromScene( children[ i ] );
+
+			}
 
 		}
 

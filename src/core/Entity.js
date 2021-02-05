@@ -147,7 +147,7 @@ export class Entity extends Group {
 	add( object ) {
 
 		super.add( ...arguments );
-		this.scene._addToScene( object );
+		if ( this.scene !== undefined ) this.scene._addToScene( object );
 		return this;
 
 	}
@@ -155,7 +155,7 @@ export class Entity extends Group {
 	remove( object ) {
 
 		super.remove( ...arguments );
-		this.scene._removeFromScene( object );
+		if ( this.scene !== undefined ) this.scene._removeFromScene( object );
 		return this;
 
 	}
