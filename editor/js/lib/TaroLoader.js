@@ -172,8 +172,6 @@ export class TaroLoader extends Loader {
 
 		}
 
-		console.log( parent, object );
-
 		parent.add( object );
 
 		return object;
