@@ -52,7 +52,7 @@ class Geometry {
 				break;
 			case 'asset':
 				this.ref = undefined;
-				this.promise = geometryLoader.load( data.asset, ( g ) => this.onLoad( g ), undefined, () => this.onError() );
+				this.promise = geometryLoader.load( data.asset, ( g ) => this.onLoad( g ), ( p ) => this.onProgress( p ), () => this.onError() );
 				break;
 			default:
 				console.error( 'Geometry: invalid geometry type ' + type );
@@ -69,11 +69,13 @@ class Geometry {
 		const material = this.entity.getComponent( 'material' );
 
 		if ( material !== undefined && material._enabled ) {
+
 			const g = this.ref !== undefined ? this.ref : this.DefaultGeometry;
 			const m = material.ref !== undefined ? material.ref : material.DefaultMaterial;
 
 			material.mesh = this.mesh = new Mesh( g, m );
 			this.entity.add( this.mesh );
+
 		}
 
 	}
@@ -90,18 +92,24 @@ class Geometry {
 
 	onLoad( geometry ) {
 
-		this.mesh.geometry = this.ref = geometry;
-		if (this.mesh !== undefined)
+		this.ref = geometry;
+		if ( this.mesh !== undefined )
 			this.mesh.geometry = geometry;
-		
+
 		this.dispatchEvent( { type: 'load' } );
 
 	}
 
-	onError() {
+	onProgress( event ) {
 
-		console.error( 'Geometry: missing geometry asset' );
-		this.dispatchEvent( { type: 'error' } );
+		this.dispatchEvent( { type: 'progress', progressEvent: event } );
+
+	}
+
+	onError( error ) {
+
+		console.error( 'Geometry: failed retrieving asset' );
+		this.dispatchEvent( { type: 'error', error } );
 
 	}
 

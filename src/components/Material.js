@@ -52,7 +52,7 @@ class Material {
 				break;
 			case 'asset':
 				this.ref = undefined;
-				this.promise = materialLoader.load( data.asset, ( m ) => this.onLoad( m ), undefined, () => this.onError() );
+				this.promise = materialLoader.load( data.asset, ( m ) => this.onLoad( m ), ( p ) => this.onProgress( p ), ( e ) => this.onError( e ) );
 				break;
 			default:
 				console.error( 'Material: invalid material type ' + type );
@@ -78,11 +78,13 @@ class Material {
 		const geometry = this.entity.getComponent( 'geometry' );
 
 		if ( geometry !== undefined && geometry._enabled ) {
+
 			const g = geometry.ref !== undefined ? geometry.ref : geometry.DefaultGeometry;
 			const m = this.ref !== undefined ? this.ref : this.DefaultMaterial;
 
 			geometry.mesh = this.mesh = new Mesh( g, m );
 			this.entity.add( this.mesh );
+
 		}
 
 	}
@@ -100,17 +102,23 @@ class Material {
 	onLoad( material ) {
 
 		this.ref = material;
-		if (this.mesh !== undefined)
+		if ( this.mesh !== undefined )
 			this.mesh.material = material;
-		
+
 		this.dispatchEvent( { type: 'load' } );
 
 	}
 
-	onError() {
+	onProgress( event ) {
 
-		console.error( 'Material: missing material asset' );
-		this.dispatchEvent( { type: 'error' } );
+		this.dispatchEvent( { type: 'progress', progressEvent: event } );
+
+	}
+
+	onError( error ) {
+
+		console.error( 'Material: failed retrieving asset' );
+		this.dispatchEvent( { type: 'error', error } );
 
 	}
 

@@ -100,6 +100,9 @@ export class Entity extends Group {
 	addComponent( type, data = {} ) {
 
 		const constructor = ComponentManager.components[ type ];
+
+		if ( constructor === undefined ) return console.error( 'Entity: component does not exist' );
+
 		const config = constructor.config;
 
 		if ( config.multiple !== true && this.getComponent( type ) !== undefined )
