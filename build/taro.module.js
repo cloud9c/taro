@@ -53861,17 +53861,12 @@ class Camera$1 {
 
 	onEnable() {
 
-		this.scene._cameras.push( this );
 		this.entity.add( this.ref );
 
 	}
 
 	onDisable() {
 
-		this.scene._cameras.splice(
-			this.scene._cameras.indexOf( this ),
-			1
-		);
 		this.entity.remove( this.ref );
 
 	}
@@ -53893,6 +53888,14 @@ class Camera$1 {
 			canvas.width * view.z,
 			canvas.height * view.w
 		);
+
+	}
+
+	updateProjectionMatrix() {
+
+		this.ref.updateProjectionMatrix();
+
+		if ( this.app !== undefined ) this._updateRegion( this.app.domElement );
 
 	}
 
@@ -64340,7 +64343,7 @@ class Scene$1 extends Scene {
 		super();
 
 		this._cameras = [];
-		this._containers = { rigidbody: [] };
+		this.components = { rigidbody: [], camera: [] };
 		this.physicsWorld = new World( { allowSleep: true } );
 
 	}
@@ -64354,9 +64357,9 @@ class Scene$1 extends Scene {
 
 				const type = component.componentType;
 
-				if ( this._containers[ type ] === undefined )
-					this._containers[ type ] = [];
-				this._containers[ type ].push( component );
+				if ( this.components[ type ] === undefined )
+					this.components[ type ] = [];
+				this.components[ type ].push( component );
 
 			}
 
@@ -64372,7 +64375,7 @@ class Scene$1 extends Scene {
 			if ( component._enabled ) {
 
 				const type = component.componentType;
-				const container = this._containers[ type ];
+				const container = this.components[ type ];
 
 				container.splice( container.indexOf( component ), 1 );
 
@@ -64441,6 +64444,18 @@ class Scene$1 extends Scene {
 		super.remove( ...arguments );
 		this._removeFromScene( object );
 		return this;
+
+	}
+
+	getComponent( type ) {
+
+		return this.components[ type ] !== undefined ? this.components[ type ][ 0 ] : undefined;
+
+	}
+
+	getComponents( type ) {
+
+		return this.components[ type ] !== undefined ? this.components[ type ] : [];
 
 	}
 
@@ -64537,8 +64552,8 @@ class Physics {
 	constructor( parameters ) {
 
 		this._gravity = parameters.gravity !== undefined ? parameters.gravity : new Vector3( 0, - 9.80665, 0 );
-		this.world;
-		this.rigidbodies;
+		this.world = undefined;
+		this.rigidbodies = undefined;
 
 	}
 	get gravity() {
@@ -64558,7 +64573,7 @@ class Physics {
 		this.world = scene.physicsWorld;
 		this.world.gravity.copy( this._gravity );
 
-		this.rigidbodies = scene._containers[ 'rigidbody' ];
+		this.rigidbodies = scene.components.rigidbody;
 
 	}
 
@@ -64661,9 +64676,10 @@ class Renderer extends WebGLRenderer {
 
 		super( parameters );
 
-		this.cameras = [];
+		this.scene = undefined;
+		this.cameras = {};
+
 		this.setPixelRatio( window.devicePixelRatio );
-		this._onResize();
 
 		this.observer = new ResizeObserver( () => this._onResize() );
 		this.observer.observe( this.domElement );
@@ -64675,22 +64691,29 @@ class Renderer extends WebGLRenderer {
 		const canvas = this.domElement;
 		this.setSize( canvas.clientWidth, canvas.clientHeight, false );
 
-		for ( let i = 0, len = this.cameras.length; i < len; i ++ ) {
+		const cameras = this.cameras;
 
-			const camera = this.cameras[ i ];
-			camera._updateRegion( canvas );
-
-		}
+		for ( let i = 0, len = cameras.length; i < len; i ++ )
+			cameras[ i ]._updateRegion( canvas );
 
 		this.update();
 
 	}
 
+	_updateScene( scene ) {
+
+		this.cameras = scene.components.camera;
+		this.scene = scene;
+
+	}
+
 	update() {
 
-		for ( let i = 0, len = this.cameras.length; i < len; i ++ ) {
+		const cameras = this.cameras;
 
-			const camera = this.cameras[ i ];
+		for ( let i = 0, len = cameras.length; i < len; i ++ ) {
+
+			const camera = cameras[ i ];
 
 			this.setViewport( camera._region );
 			this.setScissor( camera._region );
@@ -64923,9 +64946,9 @@ class Application {
 		const deltaTime = this.time.update( timestamp / 1000 );
 		this.physics.update( this.time.scaledFixedTimestep, deltaTime );
 
-		for ( const type in this._containers ) {
+		for ( const type in this.components ) {
 
-			const container = this._containers[ type ];
+			const container = this.components[ type ];
 			if ( container[ 0 ] !== undefined && container[ 0 ].update !== undefined )
 				for ( let j = 0, lenj = container.length; j < lenj; j ++ )
 					container[ j ].update( deltaTime );
@@ -64971,12 +64994,12 @@ class Application {
 		if ( this.scenes.indexOf( scene ) === - 1 )
 			this.addScene( scene );
 
-		this.renderer.scene = this._currentScene = scene;
-		this._containers = scene._containers;
+		this.components = scene.components;
+		this._currentScene = scene;
 
+		this.renderer._updateScene( scene );
 		this.physics._updateScene( scene );
 
-		this.renderer.cameras = scene._cameras;
 		return scene;
 
 	}
@@ -65060,10 +65083,10 @@ class Entity extends Group {
 
 	_activateComponent( type, component, data ) {
 
-		if ( this.scene._containers[ type ] === undefined )
-			this.scene._containers[ type ] = [];
+		if ( this.scene.components[ type ] === undefined )
+			this.scene.components[ type ] = [];
 
-		this.scene._containers[ type ].push( component );
+		this.scene.components[ type ].push( component );
 
 		if ( component.init !== undefined )
 			component.init( data );
@@ -65075,26 +65098,21 @@ class Entity extends Group {
 	getComponent( type ) {
 
 		const components = this.components;
-		for ( let i = 0, len = components.length; i < len; i ++ ) {
-
+		for ( let i = 0, len = components.length; i < len; i ++ )
 			if ( components[ i ].componentType === type ) return components[ i ];
 
-		}
 
 	}
 
 	getComponents( type ) {
 
-		const list = [];
+		const array = [];
 		const components = this.components;
 
-		for ( let i = 0, len = components.length; i < len; i ++ ) {
+		for ( let i = 0, len = components.length; i < len; i ++ )
+			if ( components[ i ].componentType === type ) array.push( components[ i ] );
 
-			if ( components[ i ].componentType === type ) list.push( components[ i ] );
-
-		}
-
-		return list;
+		return array;
 
 	}
 
