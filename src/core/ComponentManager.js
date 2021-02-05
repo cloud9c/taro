@@ -55,15 +55,21 @@ export const ComponentManager = {
 			}
 		}
 	},
-	register: function ( type, constructor, config = {} ) {
+	register: function ( type, constructor ) {
 
 		if ( this.components.type !== undefined ) throw 'component ' + type + ' already exists';
 
-		if ( config.schema !== undefined ) {
+		// add config static variable if the constructor doesn't have it
+		if ( constructor.config === undefined )
+			constructor.config = {};
 
-			for ( const name in config.schema ) {
+		const schema = constructor.config.schema;
 
-				const prop = config.schema[ name ];
+		if ( schema !== undefined ) {
+
+			for ( const name in schema ) {
+
+				const prop = schema[ name ];
 
 				if ( Array.isArray( prop ) ) {
 
@@ -84,7 +90,7 @@ export const ComponentManager = {
 		Object.defineProperties( constructor.prototype, this.properties );
 		Object.assign( constructor.prototype, EventDispatcher.prototype );
 
-		this.components[ type ] = { constructor, config };
+		this.components[ type ] = constructor;
 
 	},
 	sanitizeSchema: function ( prop ) {

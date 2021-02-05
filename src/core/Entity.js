@@ -99,8 +99,8 @@ export class Entity extends Group {
 
 	addComponent( type, data = {} ) {
 
-		const componentData = ComponentManager.components[ type ];
-		const config = componentData.config;
+		const constructor = ComponentManager.components[ type ];
+		const config = constructor.config;
 
 		if ( config.multiple !== true && this.getComponent( type ) !== undefined )
 			return console.warn( 'Entity: multiple attribute for ' + type + ' component is false/undefined' );
@@ -116,7 +116,7 @@ export class Entity extends Group {
 
 		if ( config.schema !== undefined ) ComponentManager.sanitizeData( data, config.schema );
 
-		const component = new componentData.constructor();
+		const component = new constructor();
 
 		component.entity = this;
 		component.uuid = MathUtils.generateUUID();

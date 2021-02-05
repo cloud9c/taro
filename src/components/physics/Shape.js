@@ -89,35 +89,37 @@ class Shape {
 
 	}
 
+	static config = {
+		schema: {
+			type: { type: 'select', default: 'box', select: [ 'box', 'sphere', 'plane', 'cylinder', 'convex', 'particle', 'heightfield' ] },
+			physicsMaterial: { type: 'asset', default: null },
+
+			halfExtents: { type: 'vector3', min: 0, default: [ 0.5, 0.5, 0.5 ], if: { type: [ 'box' ] } },
+			radius: { default: 1, min: 0, if: { type: [ 'sphere' ] } },
+
+			radiusTop: { default: 1, min: 0, if: { type: [ 'cylinder' ] } },
+			radiusBottom: { default: 1, min: 0, if: { type: [ 'cylinder' ] } },
+			height: { default: 1, min: 0, if: { type: [ 'cylinder' ] } },
+			numSegments: { type: 'int', min: 0, default: 8, if: { type: [ 'cylinder' ] } },
+
+			asset: { type: 'asset', if: { type: [ 'convex', 'heightfield' ] } },
+
+			// TODO: see how to integrate maxValue and minValue, since they're both null by default...
+			elementSize: { default: 1, if: { type: 'heightfield' } },
+
+			offset: { type: 'vector3' },
+			orientation: { type: 'vector3' },
+
+			collisionResponse: { default: true },
+			collisionFilterGroup: { type: 'int', default: 1 },
+			collisionFilterMask: { type: 'int', default: - 1 },
+
+		},
+		dependencies: [ 'rigidbody' ],
+		multiple: true,
+	};
+
 }
 
 // TODO: Research how to implement Trimesh type
-ComponentManager.register( 'shape', Shape, {
-	schema: {
-		type: { type: 'select', default: 'box', select: [ 'box', 'sphere', 'plane', 'cylinder', 'convex', 'particle', 'heightfield' ] },
-		physicsMaterial: { type: 'asset', default: null },
-
-		halfExtents: { type: 'vector3', min: 0, default: [ 0.5, 0.5, 0.5 ], if: { type: [ 'box' ] } },
-		radius: { default: 1, min: 0, if: { type: [ 'sphere' ] } },
-
-		radiusTop: { default: 1, min: 0, if: { type: [ 'cylinder' ] } },
-		radiusBottom: { default: 1, min: 0, if: { type: [ 'cylinder' ] } },
-		height: { default: 1, min: 0, if: { type: [ 'cylinder' ] } },
-		numSegments: { type: 'int', min: 0, default: 8, if: { type: [ 'cylinder' ] } },
-
-		asset: { type: 'asset', if: { type: [ 'convex', 'heightfield' ] } },
-
-		// TODO: see how to integrate maxValue and minValue, since they're both null by default...
-		elementSize: { default: 1, if: { type: 'heightfield' } },
-
-		offset: { type: 'vector3' },
-		orientation: { type: 'vector3' },
-
-		collisionResponse: { default: true },
-		collisionFilterGroup: { type: 'int', default: 1 },
-		collisionFilterMask: { type: 'int', default: - 1 },
-
-	},
-	dependencies: [ 'rigidbody' ],
-	multiple: true,
-} );
+ComponentManager.register( 'shape', Shape );
