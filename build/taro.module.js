@@ -54356,6 +54356,9 @@ class Model {
 
 	init( data ) {
 
+		delete this.ref;
+		if ( data.asset === '' ) return;
+
 		const extension = data.asset.split( '.' ).pop().toLowerCase();
 
 		switch ( extension ) {
