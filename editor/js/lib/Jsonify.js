@@ -43,15 +43,6 @@ function entityToJSON( entity ) {
 
 	const data = {};
 
-	const children = entity.getEntities();
-	if ( children.length > 0 ) {
-
-		data.children = [];
-		for ( let i = 0, len = children.length; i < len; i ++ )
-			data.children.push( entityToJSON( children[ i ] ) );
-
-	}
-
 	data.uuid = entity.uuid;
 	data.matrix = entity.matrix.toArray();
 
@@ -119,6 +110,15 @@ function entityToJSON( entity ) {
 	if ( entity.receiveShadow === true ) data.receiveShadow = true;
 	if ( entity.visible === false ) entity.visible = false;
 	if ( entity._enabled === false ) data.enabled = false;
+
+	const children = entity.getEntities();
+	if ( children.length > 0 ) {
+
+		data.children = [];
+		for ( let i = 0, len = children.length; i < len; i ++ )
+			data.children.push( entityToJSON( children[ i ] ) );
+
+	}
 
 	return data;
 

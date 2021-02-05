@@ -108,19 +108,7 @@ export class TaroLoader extends Loader {
 
 	parseEntity( data, parent ) {
 
-		if ( data.children !== undefined ) {
-
-			const children = data.children;
-			for ( let i = 0, len = children.length; i < len; i ++ ) {
-
-				this.parseEntity( children[ i ], object );
-
-			}
-
-		}
-
 		const object = new Entity();
-
 		object.uuid = data.uuid;
 		object.matrix.fromArray( data.matrix );
 		object.matrix.decompose( object.position, object.quaternion, object.scale );
@@ -131,6 +119,17 @@ export class TaroLoader extends Loader {
 		if ( data.receiveShadow !== undefined ) object.receiveShadow = data.receiveShadow;
 		if ( data.visible !== undefined ) object.visible = data.visible;
 		if ( data.enabled !== undefined ) object.enabled = data.enabled;
+
+		if ( data.children !== undefined ) {
+
+			const children = data.children;
+			for ( let i = 0, len = children.length; i < len; i ++ ) {
+
+				this.parseEntity( children[ i ], object );
+
+			}
+
+		}
 
 		if ( data.components !== undefined ) {
 
@@ -172,6 +171,8 @@ export class TaroLoader extends Loader {
 			}
 
 		}
+
+		console.log( parent, object );
 
 		parent.add( object );
 
