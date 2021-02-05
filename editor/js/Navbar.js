@@ -1,5 +1,6 @@
 import { applicationToJSON } from './lib/Jsonify.js';
 import { TaroLoader } from './lib/TaroLoader.js';
+import { Renderer } from '../../build/taro.module.js';
 
 export function Navbar( editor ) {
 
@@ -18,7 +19,10 @@ export function Navbar( editor ) {
 
 	// Play/Stop
 	const canvas = document.getElementById( 'canvas' );
-	let player = document.getElementById( 'player' );
+	const player = document.getElementById( 'player' );
+	const renderer = new Renderer( {
+		canvas: player
+	} );
 	const playMenu = document.getElementsByClassName( 'menu' )[ 3 ];
 	const taroLoader = new TaroLoader();
 	let app;
@@ -31,13 +35,7 @@ export function Navbar( editor ) {
 			// dispose old app
 			app.stop();
 			app.dispose();
-			app.renderer.forceContextLoss();
 			app = undefined;
-
-			// clear webgl context
-			const newPlayer = player.cloneNode( true );
-			player.parentNode.replaceChild( newPlayer, player );
-			player = newPlayer;
 
 			canvas.style.position = '';
 			canvas.style.visibility = '';
@@ -52,6 +50,7 @@ export function Navbar( editor ) {
 
 			const appJSON = applicationToJSON( editor.app );
 			appJSON.parameters.canvas = player;
+			appJSON.parameters.renderer = renderer;
 			taroLoader.parse( appJSON, function ( newApp ) {
 
 				playMenu.firstElementChild.textContent = 'Stop';
