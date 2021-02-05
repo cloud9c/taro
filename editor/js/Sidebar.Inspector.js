@@ -501,7 +501,15 @@ export function SidebarInspector( editor ) {
 				break;
 			case 'asset': // TODO
 				input = document.createElement( 'INPUT' );
-				input.type = 'file';
+				input.type = 'text';
+				input.value = value;
+				input.addEventListener( 'change', () => {
+
+					const oldValue = data[ currentType ];
+					data[ currentType ] = input.value;
+					this.onInspectorChange( fieldset, type, data, oldValue, config );
+
+				} );
 				fieldset.appendChild( input );
 				break;
 			case 'class': // REWORK
