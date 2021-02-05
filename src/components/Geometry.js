@@ -1,5 +1,5 @@
 import { ComponentManager } from '../core/ComponentManager.js';
-import { BufferGeometryLoader, Font, MathUtils, Mesh, BoxGeometry, CircleGeometry, ConeGeometry, CylinderGeometry, DodecahedronGeometry, ExtrudeGeometry, IcosahedronGeometry, LatheGeometry, OctahedronGeometry, ParametricGeometry, PlaneGeometry, PolyhedronGeometry, RingGeometry, ShapeGeometry, SphereGeometry, TetrahedronGeometry, TextGeometry, TorusGeometry, TorusKnotGeometry, TubeGeometry } from '../lib/three.js';
+import { BufferGeometry, BufferGeometryLoader, Font, MathUtils, Mesh, BoxGeometry, CircleGeometry, ConeGeometry, CylinderGeometry, DodecahedronGeometry, ExtrudeGeometry, IcosahedronGeometry, LatheGeometry, OctahedronGeometry, ParametricGeometry, PlaneGeometry, PolyhedronGeometry, RingGeometry, ShapeGeometry, SphereGeometry, TetrahedronGeometry, TextGeometry, TorusGeometry, TorusKnotGeometry, TubeGeometry } from '../lib/three.module.js';
 
 const geometryLoader = new BufferGeometryLoader();
 
@@ -52,10 +52,10 @@ class Geometry {
 				break;
 			case 'asset':
 				this.ref = undefined;
-				this.promise = geometryLoader.load( data.asset, ( g ) => onLoad( g ), undefined, () => this.onError() );
+				this.promise = geometryLoader.load( data.asset, ( g ) => this.onLoad( g ), undefined, () => this.onError() );
 				break;
 			default:
-				throw new Error( 'Geometry: invalid geometry type ' + type );
+				console.error( 'Geometry: invalid geometry type ' + type );
 
 		}
 
@@ -67,18 +67,13 @@ class Geometry {
 	onEnable() {
 
 		const material = this.entity.getComponent( 'material' );
-		if ( material !== undefined && material._enabled ) {
 
-			const m = material.ref !== undefined ? material.ref : material.MissingMaterial;
-			const g = this.ref !== undefined ? this.ref : this.MissingGeometry;
+		if ( material !== undefined && material._enabled ) {
+			const g = this.ref !== undefined ? this.ref : this.DefaultGeometry;
+			const m = material.ref !== undefined ? material.ref : material.DefaultMaterial;
 
 			material.mesh = this.mesh = new Mesh( g, m );
-
-			if ( this.ref === undefined || material.ref === undefined )
-				this.mesh.visible = false;
-
 			this.entity.add( this.mesh );
-
 		}
 
 	}
@@ -86,21 +81,19 @@ class Geometry {
 	onDisable() {
 
 		const material = this.entity.getComponent( 'material' );
-		if ( material !== undefined && material._enabled ) {
 
-			this.entity.remove( this.mesh );
-			delete this.mesh;
-			delete material.mesh;
-
-		}
+		this.entity.remove( this.mesh );
+		delete this.mesh;
+		delete material.mesh;
 
 	}
 
 	onLoad( geometry ) {
 
 		this.mesh.geometry = this.ref = geometry;
-		if ( this._enabled ) this.mesh.visible = true;
-
+		if (this.mesh !== undefined)
+			this.mesh.geometry = geometry;
+		
 		this.dispatchEvent( { type: 'load' } );
 
 	}
@@ -108,8 +101,6 @@ class Geometry {
 	onError() {
 
 		console.error( 'Geometry: missing geometry asset' );
-		if ( this._enabled ) this.mesh.visible = true;
-
 		this.dispatchEvent( { type: 'error' } );
 
 	}
@@ -165,6 +156,6 @@ class Geometry {
 
 }
 
-Geometry.prototype.MissingGeometry = new PlaneGeometry();
+Geometry.prototype.DefaultGeometry = new BufferGeometry();
 
 ComponentManager.register( 'geometry', Geometry );

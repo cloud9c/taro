@@ -1,4 +1,4 @@
-import { Quaternion, Vector3, Matrix4 } from '../lib/three.js';
+import { Quaternion, Vector3, Matrix4 } from '../lib/three.module.js';
 
 const _v1 = new Vector3();
 const _v2 = new Vector3();

@@ -1,4 +1,4 @@
-import { Group, MathUtils } from '../lib/three.js';
+import { Group, MathUtils } from '../lib/three.module.js';
 import { Scene } from './Scene.js';
 import { Application } from './Application.js';
 import { ComponentManager } from './ComponentManager.js';

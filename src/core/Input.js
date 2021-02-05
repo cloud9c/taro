@@ -1,4 +1,4 @@
-import { Vector2 } from '../lib/three.js';
+import { Vector2 } from '../lib/three.module.js';
 
 export class Input {
 

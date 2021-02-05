@@ -1,5 +1,5 @@
 import { ComponentManager } from '../core/ComponentManager.js';
-import { Mesh, MaterialLoader, MeshBasicMaterial, MeshDepthMaterial, MeshLambertMaterial, MeshMatcapMaterial, MeshNormalMaterial, MeshPhongMaterial, MeshPhysicalMaterial, MeshStandardMaterial, MeshToonMaterial } from '../lib/three.js';
+import { Mesh, MaterialLoader, MeshBasicMaterial, MeshDepthMaterial, MeshLambertMaterial, MeshMatcapMaterial, MeshNormalMaterial, MeshPhongMaterial, MeshPhysicalMaterial, MeshStandardMaterial, MeshToonMaterial } from '../lib/three.module.js';
 
 const materialLoader = new MaterialLoader();
 const notAsset = [ 'basic', 'depth', 'lambert', 'matcap', 'normal', 'phong', 'physical', 'standard', 'toon' ];
@@ -52,10 +52,10 @@ class Material {
 				break;
 			case 'asset':
 				this.ref = undefined;
-				this.promise = materialLoader.load( data.asset, ( m ) => onLoad( m ), undefined, () => this.onError() );
+				this.promise = materialLoader.load( data.asset, ( m ) => this.onLoad( m ), undefined, () => this.onError() );
 				break;
 			default:
-				throw new Error( 'Material: invalid material type ' + type );
+				console.error( 'Material: invalid material type ' + type );
 
 		}
 
@@ -76,18 +76,13 @@ class Material {
 	onEnable() {
 
 		const geometry = this.entity.getComponent( 'geometry' );
-		if ( geometry !== undefined && geometry._enabled ) {
 
-			const m = this.ref !== undefined ? this.ref : this.MissingMaterial;
-			const g = geometry.ref !== undefined ? geometry.ref : geometry.MissingGeometry;
+		if ( geometry !== undefined && geometry._enabled ) {
+			const g = geometry.ref !== undefined ? geometry.ref : geometry.DefaultGeometry;
+			const m = this.ref !== undefined ? this.ref : this.DefaultMaterial;
 
 			geometry.mesh = this.mesh = new Mesh( g, m );
-
-			if ( this.ref === undefined || geometry.ref === undefined )
-				this.mesh.visible = false;
-
 			this.entity.add( this.mesh );
-
 		}
 
 	}
@@ -95,21 +90,19 @@ class Material {
 	onDisable() {
 
 		const geometry = this.entity.getComponent( 'geometry' );
-		if ( geometry !== undefined && geometry._enabled ) {
 
-			this.entity.remove( this.mesh );
-			delete this.mesh;
-			delete geometry.mesh;
-
-		}
+		this.entity.remove( this.mesh );
+		delete this.mesh;
+		delete geometry.mesh;
 
 	}
 
 	onLoad( material ) {
 
-		this.mesh.material = this.ref = material;
-		if ( this._enabled ) this.mesh.visible = true;
-
+		this.ref = material;
+		if (this.mesh !== undefined)
+			this.mesh.material = material;
+		
 		this.dispatchEvent( { type: 'load' } );
 
 	}
@@ -117,8 +110,6 @@ class Material {
 	onError() {
 
 		console.error( 'Material: missing material asset' );
-		if ( this._enabled === true ) this.mesh.visible = true;
-
 		this.dispatchEvent( { type: 'error' } );
 
 	}
@@ -185,6 +176,8 @@ class Material {
 
 }
 
-Material.prototype.MissingMaterial = new MeshBasicMaterial( { color: 0xff00ff } );
+Material.prototype.DefaultMaterial = new MeshBasicMaterial();
+Material.prototype.DefaultMaterial.transparent = true;
+Material.prototype.DefaultMaterial.opacity = 0;
 
 ComponentManager.register( 'material', Material );

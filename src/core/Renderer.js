@@ -1,4 +1,4 @@
-import { WebGLRenderer } from '../lib/three.js';
+import { WebGLRenderer } from '../lib/three.module.js';
 
 export class Renderer extends WebGLRenderer {
 

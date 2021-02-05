@@ -1,5 +1,5 @@
 import { ComponentManager } from '../core/ComponentManager.js';
-import { AmbientLight, DirectionalLight, HemisphereLight, PointLight, SpotLight, MathUtils } from '../lib/three.js';
+import { AmbientLight, DirectionalLight, HemisphereLight, PointLight, SpotLight, MathUtils } from '../lib/three.module.js';
 
 class Light {
 
@@ -30,7 +30,7 @@ class Light {
 				this.ref.position.set( 0, 0, 0 );
 				break;
 			default:
-				throw new Error( 'Light: invalid light type ' + type );
+				console.error( 'Light: invalid light type ' + type );
 
 		}
 

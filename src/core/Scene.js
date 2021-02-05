@@ -1,4 +1,4 @@
-import { Scene as TS } from '../lib/three.js';
+import { Scene as TS } from '../lib/three.module.js';
 import { World } from '../lib/cannon.js';
 
 export class Scene extends TS {

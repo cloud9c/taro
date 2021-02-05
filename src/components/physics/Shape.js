@@ -1,6 +1,6 @@
 import { ComponentManager } from '../../core/ComponentManager.js';
 import { Box, Sphere, Plane, Cylinder, ConvexPolyhedron, Particle, Heightfield, Vec3 } from '../../lib/cannon.js';
-import { Euler, Quaternion } from '../../lib/three.js';
+import { Euler, Quaternion } from '../../lib/three.module.js';
 
 const _e1 = new Euler();
 const _q1 = new Quaternion();
@@ -48,7 +48,7 @@ class Shape {
 				this.ref = new Heightfield( data.data, { elementSize: data.elementSize } );
 				break;
 			default:
-				throw new Error( 'Shape: invalid shape type ' + data.type );
+				console.error( 'Shape: invalid shape type ' + data.type );
 
 		}
 

@@ -1,5 +1,5 @@
-export * from './lib/three.js';
-
+export * from './lib/three.module.js';
+export { GLTFLoader } from './lib/GLTFLoader.js'
 // components
 import './components/Camera.js';
 import './components/Geometry.js';

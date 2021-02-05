@@ -1,5 +1,5 @@
 import { ComponentManager } from '../core/ComponentManager.js';
-import { Object3D } from '../lib/three.js';
+import { Object3D } from '../lib/three.module.js';
 
 class Renderable {
 

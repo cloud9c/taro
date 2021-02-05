@@ -1,5 +1,5 @@
 import { ComponentManager } from '../core/ComponentManager.js';
-import { OrthographicCamera, PerspectiveCamera, Vector4 } from '../lib/three.js';
+import { OrthographicCamera, PerspectiveCamera, Vector4 } from '../lib/three.module.js';
 
 class Camera {
 
@@ -22,7 +22,7 @@ class Camera {
 				this.ref = new OrthographicCamera( data.left, data.right, data.top, data.bottom, data.near, data.far );
 				break;
 			default:
-				throw new Error( 'Camera: invalid camera type ' + this.type );
+				console.error( 'Camera: invalid camera type ' + this.type );
 
 		}
 

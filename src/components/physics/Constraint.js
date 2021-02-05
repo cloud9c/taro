@@ -1,6 +1,6 @@
 import { ComponentManager } from '../../core/ComponentManager.js';
 import { Body, Vec3, DistanceConstraint, PointToPointConstraint, ConeTwistConstraint, LockConstraint, HingeConstraint } from '../../lib/cannon.js';
-import { MathUtils } from '../../lib/three.js';
+import { MathUtils } from '../../lib/three.module.js';
 
 const DEFAULT_CONNECTED_BODY = new Body();
 
@@ -64,7 +64,7 @@ class Constraint {
 				} );
 				break;
 			default:
-				throw new Error( 'Constraint: invalid constraint type ' + data.type );
+				console.error( 'Constraint: invalid constraint type ' + data.type );
 
 		}
 

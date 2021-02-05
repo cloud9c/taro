@@ -1,4 +1,4 @@
-import { EventDispatcher, Vector4, Vector3, Vector2, Color } from '../lib/three.js';
+import { EventDispatcher, Vector4, Vector3, Vector2, Color } from '../lib/three.module.js';
 
 export const ComponentManager = {
 	components: {},
@@ -57,7 +57,7 @@ export const ComponentManager = {
 	},
 	register: function ( type, constructor ) {
 
-		if ( this.components.type !== undefined ) throw 'component ' + type + ' already exists';
+		if ( this.components.type !== undefined ) return console.error( 'component ' + type + ' already exists' );
 
 		// add config static variable if the constructor doesn't have it
 		if ( constructor.config === undefined )

@@ -20,7 +20,7 @@
 	<body>
 		<canvas id="c"></canvas>
 		<script type="module">
-			import * as TARO from "../src/taro.js";
+			import * as TARO from "../src/Taro.js";
 
 			let entity, geo, mat, mesh;
 
@@ -132,9 +132,8 @@
 			// floor
 			entity = new TARO.Entity("floor");
 
-			entity.addComponent("material", {type: 'phong', color: 0x718e3e});
-			let geometry = entity.addComponent("geometry", {type: 'plane', width: 200, height: 200});
-			geometry.mesh.receiveShadow = true;
+			entity.addComponent("geometry", {type: 'plane', width: 200, height: 200});
+			entity.addComponent("material", {type: 'phong', color: 0x718e3e}).mesh.receiveShadow = true;
 
 			entity.addComponent("rigidbody", { type: 'static' })
 			entity.addComponent("shape", { type: "plane" });

@@ -1,6 +1,6 @@
 import { ComponentManager } from '../../core/ComponentManager.js';
 import { Body } from '../../lib/cannon.js';
-import { Vector3 } from '../../lib/three.js';
+import { Vector3 } from '../../lib/three.module.js';
 
 const types = [ 'dynamic', 'static', 'kinematic' ];
 const indexedTypes = [ undefined, 'dynamic', 'static', undefined, 'kinematic' ];
