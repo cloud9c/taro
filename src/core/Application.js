@@ -42,9 +42,9 @@ export class Application {
 		const deltaTime = this.time.update( timestamp / 1000 );
 		this.physics.update( this.time.scaledFixedTimestep, deltaTime );
 
-		for ( const type in this._containers ) {
+		for ( const type in this.components ) {
 
-			const container = this._containers[ type ];
+			const container = this.components[ type ];
 			if ( container[ 0 ] !== undefined && container[ 0 ].update !== undefined )
 				for ( let j = 0, lenj = container.length; j < lenj; j ++ )
 					container[ j ].update( deltaTime );
@@ -90,12 +90,12 @@ export class Application {
 		if ( this.scenes.indexOf( scene ) === - 1 )
 			this.addScene( scene );
 
-		this.renderer.scene = this._currentScene = scene;
-		this._containers = scene._containers;
+		this.components = scene.components;
+		this._currentScene = scene;
 
+		this.renderer._updateScene( scene );
 		this.physics._updateScene( scene );
 
-		this.renderer.cameras = scene._cameras;
 		return scene;
 
 	}

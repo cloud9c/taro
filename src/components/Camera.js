@@ -33,17 +33,12 @@ class Camera {
 
 	onEnable() {
 
-		this.scene._cameras.push( this );
 		this.entity.add( this.ref );
 
 	}
 
 	onDisable() {
 
-		this.scene._cameras.splice(
-			this.scene._cameras.indexOf( this ),
-			1
-		);
 		this.entity.remove( this.ref );
 
 	}
@@ -65,6 +60,14 @@ class Camera {
 			canvas.width * view.z,
 			canvas.height * view.w
 		);
+
+	}
+
+	updateProjectionMatrix() {
+
+		this.ref.updateProjectionMatrix();
+
+		if ( this.app !== undefined ) this._updateRegion( this.app.domElement );
 
 	}
 

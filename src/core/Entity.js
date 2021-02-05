@@ -49,10 +49,10 @@ export class Entity extends Group {
 
 	_activateComponent( type, component, data ) {
 
-		if ( this.scene._containers[ type ] === undefined )
-			this.scene._containers[ type ] = [];
+		if ( this.scene.components[ type ] === undefined )
+			this.scene.components[ type ] = [];
 
-		this.scene._containers[ type ].push( component );
+		this.scene.components[ type ].push( component );
 
 		if ( component.init !== undefined )
 			component.init( data );
@@ -64,26 +64,21 @@ export class Entity extends Group {
 	getComponent( type ) {
 
 		const components = this.components;
-		for ( let i = 0, len = components.length; i < len; i ++ ) {
-
+		for ( let i = 0, len = components.length; i < len; i ++ )
 			if ( components[ i ].componentType === type ) return components[ i ];
 
-		}
 
 	}
 
 	getComponents( type ) {
 
-		const list = [];
+		const array = [];
 		const components = this.components;
 
-		for ( let i = 0, len = components.length; i < len; i ++ ) {
+		for ( let i = 0, len = components.length; i < len; i ++ )
+			if ( components[ i ].componentType === type ) array.push( components[ i ] );
 
-			if ( components[ i ].componentType === type ) list.push( components[ i ] );
-
-		}
-
-		return list;
+		return array;
 
 	}
 

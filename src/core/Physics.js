@@ -10,8 +10,8 @@ export class Physics {
 	constructor( parameters ) {
 
 		this._gravity = parameters.gravity !== undefined ? parameters.gravity : new Vector3( 0, - 9.80665, 0 );
-		this.world;
-		this.rigidbodies;
+		this.world = undefined;
+		this.rigidbodies = undefined;
 
 	}
 	get gravity() {
@@ -31,7 +31,7 @@ export class Physics {
 		this.world = scene.physicsWorld;
 		this.world.gravity.copy( this._gravity );
 
-		this.rigidbodies = scene._containers[ 'rigidbody' ];
+		this.rigidbodies = scene.components.rigidbody;
 
 	}
 

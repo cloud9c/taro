@@ -8,7 +8,7 @@ export class Scene extends TS {
 		super();
 
 		this._cameras = [];
-		this._containers = { rigidbody: [] };
+		this.components = { rigidbody: [], camera: [] };
 		this.physicsWorld = new World( { allowSleep: true } );
 
 	}
@@ -22,9 +22,9 @@ export class Scene extends TS {
 
 				const type = component.componentType;
 
-				if ( this._containers[ type ] === undefined )
-					this._containers[ type ] = [];
-				this._containers[ type ].push( component );
+				if ( this.components[ type ] === undefined )
+					this.components[ type ] = [];
+				this.components[ type ].push( component );
 
 			}
 
@@ -40,7 +40,7 @@ export class Scene extends TS {
 			if ( component._enabled ) {
 
 				const type = component.componentType;
-				const container = this._containers[ type ];
+				const container = this.components[ type ];
 
 				container.splice( container.indexOf( component ), 1 );
 
@@ -109,6 +109,18 @@ export class Scene extends TS {
 		super.remove( ...arguments );
 		this._removeFromScene( object );
 		return this;
+
+	}
+
+	getComponent( type ) {
+
+		return this.components[ type ] !== undefined ? this.components[ type ][ 0 ] : undefined;
+
+	}
+
+	getComponents( type ) {
+
+		return this.components[ type ] !== undefined ? this.components[ type ] : [];
 
 	}
 
