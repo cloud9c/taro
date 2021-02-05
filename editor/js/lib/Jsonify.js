@@ -41,6 +41,8 @@ function sceneToJSON( scene ) {
 
 function entityToJSON( entity ) {
 
+	const data = {};
+
 	const children = entity.getEntities();
 	if ( children.length > 0 ) {
 
@@ -49,8 +51,6 @@ function entityToJSON( entity ) {
 			data.children.push( entityToJSON( children[ i ] ) );
 
 	}
-
-	const data = {};
 
 	data.uuid = entity.uuid;
 	data.matrix = entity.matrix.toArray();
