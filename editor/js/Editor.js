@@ -32,11 +32,13 @@ function Editor() {
 	entity = this.addEntity( 'Camera' );
 	this.inspector.addComponent( entity, 'camera' );
 	entity.position.set( 0, 0, 5 );
+
 	entity = this.addEntity( 'Light' );
 	this.inspector.addComponent( entity, 'light', {
 		type: 'directional'
 	} );
 	entity.position.set( 0, 5, 1 );
+
 	entity = this.addEntity( 'Box' );
 	this.inspector.addComponent( entity, 'geometry', {
 		type: 'torusKnot'
