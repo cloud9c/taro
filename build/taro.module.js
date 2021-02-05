@@ -54002,9 +54002,13 @@ class Geometry {
 
 		const material = this.entity.getComponent( 'material' );
 
-		this.entity.remove( this.mesh );
-		delete this.mesh;
-		delete material.mesh;
+		if ( material !== undefined && material._enabled ) {
+
+			this.entity.remove( this.mesh );
+			delete this.mesh;
+			delete material.mesh;
+
+		}
 
 	}
 
@@ -54246,9 +54250,13 @@ class Material$1 {
 
 		const geometry = this.entity.getComponent( 'geometry' );
 
-		this.entity.remove( this.mesh );
-		delete this.mesh;
-		delete geometry.mesh;
+		if ( geometry !== undefined && geometry._enabled ) {
+
+			this.entity.remove( this.mesh );
+			delete this.mesh;
+			delete geometry.mesh;
+
+		}
 
 	}
 

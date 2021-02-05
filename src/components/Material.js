@@ -93,9 +93,13 @@ class Material {
 
 		const geometry = this.entity.getComponent( 'geometry' );
 
-		this.entity.remove( this.mesh );
-		delete this.mesh;
-		delete geometry.mesh;
+		if ( geometry !== undefined && geometry._enabled ) {
+
+			this.entity.remove( this.mesh );
+			delete this.mesh;
+			delete geometry.mesh;
+
+		}
 
 	}
 
