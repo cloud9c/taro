@@ -64891,7 +64891,7 @@ class Application {
 
 		this.parameters = parameters;
 
-		this.renderer = new Renderer( parameters );
+		this.renderer = parameters.renderer !== undefined ? parameters.renderer : new Renderer( parameters );
 		this.time = new Time( parameters );
 		this.physics = new Physics( parameters );
 		this.input = new Input();
