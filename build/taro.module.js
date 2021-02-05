@@ -64375,19 +64375,21 @@ class Scene$1 extends Scene {
 
 		if ( object.isEntity !== undefined ) {
 
+			if ( object.scene !== undefined ) {
+
+				object.scene._removeComponents( object.components );
+
+			}
+
 			this._addComponents( object.components );
-			const oldScene = object.scene;
+
 			object.scene = this;
+			object.dispatchEvent( { type: 'sceneadd' } );
 
-			if ( oldScene === undefined ) {
+			const children = object.children;
+			for ( let i = 0, len = children.length; i < len; i ++ ) {
 
-				object.dispatchEvent( { type: 'sceneadd' } );
-				object.traverseEntities( ( child ) => {
-
-					child.scene = this;
-					child.dispatchEvent( { type: 'sceneadd' } );
-
-				} );
+				this._addToScene( children[ i ] );
 
 			}
 
@@ -64397,18 +64399,19 @@ class Scene$1 extends Scene {
 
 	_removeFromScene( object ) {
 
-		if ( object.isEntity !== undefined && this.children.indexOf( object ) !== - 1 ) {
+		if ( object.isEntity !== undefined ) {
 
 			this._removeComponents( object.components );
+
 			delete object.scene;
-
 			object.dispatchEvent( { type: 'sceneremove' } );
-			object.traverseEntities( ( child ) => {
 
-				delete child.scene;
-				child.dispatchEvent( { type: 'sceneremove' } );
+			const children = object.children;
+			for ( let i = 0, len = children.length; i < len; i ++ ) {
 
-			} );
+				this._removeFromScene( children[ i ] );
+
+			}
 
 		}
 
@@ -65011,7 +65014,7 @@ Application.apps = {};
 
 class Entity extends Group {
 
-	constructor( name, scene ) {
+	constructor( name, parent ) {
 
 		super();
 
@@ -65021,25 +65024,15 @@ class Entity extends Group {
 
 		this._enabled = true;
 
-		if ( name !== undefined ) {
-
-			if ( name.isScene !== undefined ) {
-
-				name.add( this );
-
-			} else {
-
-				this.name = name;
-
-			}
-
-		}
+		if ( name !== undefined )
+			this.name = name;
 
 		this.addEventListener( 'sceneadd', this._emptyQueue );
 
-		if ( scene !== undefined && scene.isScene !== undefined ) {
+		// add to parent if provided, otherwise add to currentScene for the currentApp
+		if ( parent !== undefined ) {
 
-			scene.add( this );
+			parent.add( this );
 
 		} else if ( Application.currentApp !== undefined && Application.currentApp.currentScene !== undefined ) {
 
@@ -65153,7 +65146,7 @@ class Entity extends Group {
 	add( object ) {
 
 		super.add( ...arguments );
-		this.scene._addToScene( object );
+		if ( this.scene !== undefined ) this.scene._addToScene( object );
 		return this;
 
 	}
@@ -65161,7 +65154,7 @@ class Entity extends Group {
 	remove( object ) {
 
 		super.remove( ...arguments );
-		this.scene._removeFromScene( object );
+		if ( this.scene !== undefined ) this.scene._removeFromScene( object );
 		return this;
 
 	}
