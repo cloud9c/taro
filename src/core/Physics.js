@@ -92,23 +92,14 @@ export class Physics {
 
 			for ( let i = 0, len = rigidbodies.length; i < len; i ++ ) {
 
-				const body = rigidbodies[ i ];
-				if ( body.ref.sleepState !== SLEEPING ) {
+				const component = rigidbodies[ i ];
+				const body = component.ref;
 
-					const entity = body.entity;
+				if ( body.sleepState !== SLEEPING ) {
 
-					const position = entity.position;
-					position.copy( body.ref.interpolatedPosition );
-
-					const quaternion = entity.quaternion;
-					quaternion.copy( body.ref.interpolatedQuaternion );
-
-					if ( entity.parent !== entity.scene ) {
-
-						entity.worldToLocal( position );
-						quaternion.premultiply( entity.parent.getWorldQuaternion( _q1 ).inverse() );
-
-					}
+					const entity = component.entity;
+					entity.position.copy( body.interpolatedPosition );
+					entity.quaternion.copy( body.interpolatedQuaternion );
 
 				}
 
