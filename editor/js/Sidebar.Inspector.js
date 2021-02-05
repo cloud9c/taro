@@ -118,6 +118,8 @@ export function SidebarInspector( editor ) {
 		const schema = config.schema;
 		const section = fieldset.parentElement;
 
+		if ( schema === undefined ) return;
+
 		for ( const name in schema ) {
 
 			let attribute = schema[ name ];
@@ -223,6 +225,7 @@ export function SidebarInspector( editor ) {
 
 			const components = currentEntity.components;
 			let component;
+
 			for ( let i = 0, len = components.length; i < len; i ++ ) {
 
 				if ( components[ i ].uuid === section.dataset.uuid ) {
@@ -241,6 +244,14 @@ export function SidebarInspector( editor ) {
 			} else {
 
 				component.enabled = false;
+
+				// for components that require loading
+				if ( config.schema[ type ].type === 'asset' ) {
+
+					component.addEventListener( 'load', editor.render );
+
+				}
+
 				component.init( Object.assign( {}, data ) );
 				component.enabled = true;
 
