@@ -38,29 +38,29 @@
 						window.addEventListener("pointerdown", () => {
 							this.entity.app.renderer.domElement.requestPointerLock();
 						});
-						// this.ball.addEventListener("collide", function ( c) {
-						// 	console.log(c);
-						// });
+						this.ball.addEventListener("collide", function (c) {
+							console.log(c);
+						});
 					}
 					update() {
 						const ball = this.ball;
 
-						if (this.input.isKeyDown("ArrowUp")) {
+						if (this.input.getKeyDown("ArrowUp")) {
 							ball.getComponent("rigidbody").ref.applyForce(
 								new TARO.Vector3(0, 0, -200)
 							);
 						}
-						if (this.input.isKeyDown("ArrowDown")) {
+						if (this.input.getKeyDown("ArrowDown")) {
 							ball.getComponent("rigidbody").ref.applyForce(
 								new TARO.Vector3(0, 0, 200)
 							);
 						}
-						if (this.input.isKeyDown("ArrowLeft")) {
+						if (this.input.getKeyDown("ArrowLeft")) {
 							ball.getComponent("rigidbody").ref.applyForce(
 								new TARO.Vector3(-200, 0, 0)
 							);
 						}
-						if (this.input.isKeyDown("ArrowRight")) {
+						if (this.input.getKeyDown("ArrowRight")) {
 							ball.getComponent("rigidbody").ref.applyForce(
 								new TARO.Vector3(200, 0, 0)
 							);
