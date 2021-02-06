@@ -77,7 +77,6 @@ export function SidebarInspector( editor ) {
 
 	this.attach = function ( entity ) {
 
-		if ( currentEntity !== null ) this.detach();
 		currentEntity = entity;
 
 		// display: none for the scene inspector

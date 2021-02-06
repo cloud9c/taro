@@ -9,7 +9,7 @@ import * as TARO from '../../build/taro.module.js';
 export function Viewport( editor ) {
 
 	let currentDrag;
-	this.currentEntity = undefined;
+	let currentEntity = undefined;
 
 	function onDragStart( event ) {
 
@@ -175,7 +175,7 @@ export function Viewport( editor ) {
 	const sceneHelper = new TARO.Scene();
 	app.setScene( scene );
 
-	this.addEntity = function ( name = 'Entity' ) {
+	this.addEntity = ( name = 'Entity' ) => {
 
 		let counter = 1;
 		while ( scene.getEntityByName( name ) !== undefined ) {
@@ -188,7 +188,7 @@ export function Viewport( editor ) {
 
 		}
 
-		const entity = new TARO.Entity( name );
+		const entity = new TARO.Entity( name, scene );
 		const div = document.createElement( 'div' );
 
 		div.innerText = name;
@@ -272,9 +272,9 @@ export function Viewport( editor ) {
 
 		}
 
-		if ( this.currentEntity !== undefined ) {
+		if ( currentEntity !== undefined ) {
 
-			updateOutliner( this.currentEntity );
+			updateOutliner( currentEntity );
 
 			for ( let i = 0, len = helpers.length; i < len; i ++ ) {
 
@@ -290,7 +290,7 @@ export function Viewport( editor ) {
 		renderer.render( sceneHelper, camera );
 		renderer.autoClear = true;
 
-		app.input.update();
+		app.input.reset();
 
 	};
 
@@ -395,7 +395,11 @@ export function Viewport( editor ) {
 
 	const attach = this.attach = ( entity ) => {
 
-		this.currentEntity = entity;
+		if ( currentEntity !== undefined ) detach();
+
+		document.querySelector( '#scene-tree [data-id="' + entity.id + '"]' ).dataset.selected = '';
+
+		currentEntity = entity;
 		control.enabled = true;
 		editor.inspector.attach( entity );
 		control.attach( entity );
@@ -405,7 +409,12 @@ export function Viewport( editor ) {
 
 	const detach = () => {
 
-		this.currentEntity = undefined;
+		const target = document.querySelector( '#scene-tree [data-selected]' );
+
+		if ( target !== null )
+			delete target.dataset.selected;
+
+		currentEntity = undefined;
 		outliner.visible = false;
 		editor.inspector.detach();
 		control.enabled = false;
@@ -443,20 +452,11 @@ export function Viewport( editor ) {
 
 		if ( ! ( onControl || dragging ) ) {
 
-			const oldTarget = document.querySelector( '#scene-tree [data-selected]' );
-
 			if ( rayObject === undefined ) {
-
-				if ( oldTarget !== null ) delete oldTarget.dataset.selected;
 
 				detach();
 
 			} else if ( control.object !== rayObject && control !== rayObject ) {
-
-				if ( oldTarget !== null ) delete oldTarget.dataset.selected;
-
-				const newTarget = document.querySelector( '#scene-tree [data-id="' + rayObject.id + '"]' );
-				if ( newTarget !== null ) newTarget.dataset.selected = '';
 
 				attach( rayObject );
 

@@ -9,11 +9,8 @@ export function Navbar( editor ) {
 
 	entityMenu[ 0 ].addEventListener( 'pointerdown', () => {
 
-		editor.addEntity( 'Empty' );
-
-		if ( editor.inspector.currentEntity !== undefined ) {
-
-		}
+		let entity = editor.addEntity( 'Empty' );
+		editor.viewport.attach( entity );
 
 	} );
 
