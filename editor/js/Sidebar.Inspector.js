@@ -5,7 +5,7 @@ export function SidebarInspector( editor ) {
 	const inspector = document.getElementById( 'inspector' );
 	const scene = editor.viewport.scene;
 	const closedComponents = {};
-	let currentEntity = null;
+	let currentEntity = undefined;
 	const helpers = editor.viewport.helpers;
 	const icons = editor.viewport.icons;
 	const iconMaterials = {
@@ -13,7 +13,7 @@ export function SidebarInspector( editor ) {
 		camera: null
 	};
 	const box = new TARO.Box3();
-	let currentDrag;
+	let currentDrag = undefined;
 	const textureLoader = new TARO.TextureLoader();
 
 	function addHelpers( entity ) {
@@ -105,7 +105,7 @@ export function SidebarInspector( editor ) {
 
 		removeHelpers();
 
-		currentEntity = null;
+		currentEntity = undefined;
 		document.getElementById( 'scene-default' ).style.display = '';
 
 		while ( inspector.children.length > 1 ) inspector.removeChild( inspector.lastChild );
@@ -567,7 +567,7 @@ export function SidebarInspector( editor ) {
 
 			const type = components[ i ].type;
 
-			if ( iconMaterials[ type ] !== undefined ) {
+			if ( components[ i ].enabled === true && iconMaterials[ type ] !== undefined ) {
 
 				if ( iconMaterials[ type ] === null ) {
 
@@ -698,6 +698,40 @@ export function SidebarInspector( editor ) {
 		if ( closedComponents[ component.type ] === undefined )
 			title.dataset.opened = '';
 
+		const enabled = document.createElement( 'INPUT' );
+		enabled.type = 'checkbox';
+		enabled.style.margin = 'auto 0 auto auto';
+		if ( component.enabled ) enabled.checked = true;
+
+		enabled.addEventListener( 'change', () => {
+
+			component.enabled = enabled.checked;
+
+			if ( config.runInEditor === true ) {
+
+				const components = currentEntity.components;
+				for ( let i = 0, len = components.length; i < len; i ++ ) {
+
+					if ( components[ i ].uuid === component.uuid ) {
+
+						components[ i ].enabled = enabled.checked;
+						break;
+
+					}
+
+				}
+
+				this.updateIcon( currentEntity, true );
+				removeHelpers();
+				addHelpers( currentEntity );
+				editor.viewport.updateOutliner( currentEntity );
+				editor.viewport.render();
+
+			}
+
+		} );
+		title.appendChild( enabled );
+
 		let verified = false;
 		title.addEventListener( 'pointerdown', () => {
 
@@ -707,6 +741,8 @@ export function SidebarInspector( editor ) {
 		title.addEventListener( 'pointerup', ( event ) => {
 
 			if ( ! verified ) return;
+
+			if ( event.target.nodeName === 'INPUT' ) return;
 
 			// trash component
 			if ( event.target.classList.contains( 'trash' ) ) {
@@ -735,11 +771,13 @@ export function SidebarInspector( editor ) {
 				} else {
 
 					// open up
-
 					delete closedComponents[ component.type ];
 					title.dataset.opened = '';
 
 				}
+
+				removeHelpers();
+				addHelpers( currentEntity );
 
 			}
 
@@ -1268,7 +1306,7 @@ export function SidebarInspector( editor ) {
 
 		const componentData = entity.componentData;
 
-		const component = { type, data, uuid: TARO.MathUtils.generateUUID() };
+		const component = { type, data, uuid: TARO.MathUtils.generateUUID(), enabled: true };
 		const config = TARO.ComponentManager.components[ type ].config;
 		const schema = config.schema;
 		const runInEditor = config.runInEditor === true;

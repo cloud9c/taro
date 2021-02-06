@@ -119,6 +119,7 @@ aside {
 /* width */
 ::-webkit-scrollbar {
 	width: 8px;
+	height: 8px;
 }
 
 /* Track */
@@ -343,6 +344,10 @@ input[type="checkbox"]:checked:after {
 
 /**/
 
+#scene {
+	min-width: 100%;
+}
+
 #scene-tree {
 	background: var(--gray-5);
 	padding: 12px 0;
@@ -458,7 +463,8 @@ section.component {
 	padding: 6px 0 6px 28px;
 	position: relative;
 	cursor: pointer;
-	transition: background .11s cubic-bezier(.2,0,.38,.9)
+	transition: background .11s cubic-bezier(.2,0,.38,.9);
+	display: flex;
 }
 
 .component h1[data-opened]:before {
@@ -484,9 +490,7 @@ section.component {
 .trash {
     width: 16px;
     height: 16px;
-    position: absolute;
-    top: 7px;
-    right: 7px;
+    margin: 0 6px;
 }
 
 .trash svg {
@@ -506,7 +510,12 @@ section.component {
 
 #left-sidebar {
 	border-right: 1px solid var(--border-color);
-	width: 240px;
+}
+
+#left-sidebar .panel {
+	resize: horizontal;
+	min-width: 240px;
+	overflow-x: auto;
 }
 
 #right-sidebar {

@@ -2,21 +2,17 @@ import { TransformControls } from './lib/TransformControls.js';
 import { OrbitControls } from './lib/OrbitControls.js';
 import * as TARO from '../../build/taro.module.js';
 
-// import { EffectComposer } from './lib/EffectComposer.js';
-// import { RenderPass } from '/lib/RenderPass.js';
-// import { OutlinePass } from '/lib/OutlinePass.js';
-
 export function Viewport( editor ) {
 
 	let currentDrag;
-	let currentEntity = undefined;
+	this.currentEntity = undefined;
 
-	function onDragStart( event ) {
+	const onDragStart = this.onDragStart = function ( event ) {
 
 		currentDrag = this;
-		event.dataTransfer.effectAllowed = 'move';
+		if ( event !== undefined ) event.dataTransfer.effectAllowed = 'move';
 
-	}
+	};
 
 	function onDragOver( event ) {
 
@@ -46,7 +42,7 @@ export function Viewport( editor ) {
 
 	}
 
-	function onDrop( event ) {
+	const onDrop = this.onDrop = function ( event ) {
 
 		if ( currentDrag !== undefined && currentDrag !== this ) {
 
@@ -159,9 +155,9 @@ export function Viewport( editor ) {
 
 		this.classList.remove( 'drag-into', 'drag-above', 'drag-below' );
 
-		event.preventDefault();
+		if ( event !== undefined ) event.preventDefault();
 
-	}
+	};
 
 	function onDragLeave( event ) {
 
@@ -263,24 +259,22 @@ export function Viewport( editor ) {
 
 		const deltaTime = app.time.update( performance.now() / 1000 );
 
-		for ( const type in app._containers ) {
+		for ( const type in app.components ) {
 
-			const container = app._containers[ type ];
-			if ( container[ 0 ] !== undefined && container[ 0 ].update !== undefined )
-				for ( let j = 0, lenj = container.length; j < lenj; j ++ )
-					container[ j ].update( deltaTime );
+			const component = app.components[ type ];
+			if ( component[ 0 ] !== undefined && component[ 0 ].update !== undefined )
+				for ( let j = 0, lenj = component.length; j < lenj; j ++ )
+					component[ j ].update( deltaTime );
 
 		}
 
-		if ( currentEntity !== undefined ) {
+		if ( this.currentEntity !== undefined ) {
 
-			updateOutliner( currentEntity );
+			updateOutliner( this.currentEntity );
 
-			for ( let i = 0, len = helpers.length; i < len; i ++ ) {
-
+			for ( let i = 0, len = helpers.length; i < len; i ++ )
 				helpers[ i ].update();
 
-			}
 
 		}
 
@@ -395,11 +389,11 @@ export function Viewport( editor ) {
 
 	const attach = this.attach = ( entity ) => {
 
-		if ( currentEntity !== undefined ) detach();
+		if ( this.currentEntity !== undefined ) detach();
 
 		document.querySelector( '#scene-tree [data-id="' + entity.id + '"]' ).dataset.selected = '';
 
-		currentEntity = entity;
+		this.currentEntity = entity;
 		control.enabled = true;
 		editor.inspector.attach( entity );
 		control.attach( entity );
@@ -414,7 +408,7 @@ export function Viewport( editor ) {
 		if ( target !== null )
 			delete target.dataset.selected;
 
-		currentEntity = undefined;
+		this.currentEntity = undefined;
 		outliner.visible = false;
 		editor.inspector.detach();
 		control.enabled = false;

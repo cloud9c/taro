@@ -8,7 +8,7 @@ export function SidebarScene( editor ) {
 	const render = editor.render;
 	const scene = viewport.scene;
 
-	this.closeParent = function closeParent( target ) {
+	function closeParent( target ) {
 
 		const recursion = ( children ) => {
 
@@ -32,7 +32,7 @@ export function SidebarScene( editor ) {
 
 		delete target.dataset.opened;
 
-	};
+	}
 
 	function openParent( target ) {
 

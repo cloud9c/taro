@@ -4,13 +4,58 @@ import { Renderer } from '../../build/taro.module.js';
 
 export function Navbar( editor ) {
 
+	const inspector = editor.inspector;
+
 	// Entity
-	const entityMenu = document.getElementsByClassName( 'menu' )[ 2 ].getElementsByClassName( 'options' )[ 0 ].children;
+	const entityMenu = document.getElementsByClassName( 'menu' )[ 2 ].getElementsByClassName( 'options' )[ 0 ];
 
-	entityMenu[ 0 ].addEventListener( 'pointerdown', () => {
+	entityMenu.addEventListener( 'pointerdown', ( event ) => {
 
-		let entity = editor.addEntity( 'Empty' );
-		editor.viewport.attach( entity );
+		const preset = event.target.textContent;
+
+		let entity = editor.addEntity( preset );
+
+		switch ( preset ) {
+
+			case 'Empty':
+				break;
+			case 'Box':
+				inspector.addComponent( entity, 'geometry', { type: 'box' } );
+				inspector.addComponent( entity, 'material', { type: 'phong' } );
+				break;
+			case 'Sphere':
+				inspector.addComponent( entity, 'geometry', { type: 'sphere' } );
+				inspector.addComponent( entity, 'material', { type: 'phong' } );
+				break;
+			case 'Cone':
+				inspector.addComponent( entity, 'geometry', { type: 'cone' } );
+				inspector.addComponent( entity, 'material', { type: 'phong' } );
+				break;
+			case 'Cylinder':
+				inspector.addComponent( entity, 'geometry', { type: 'cylinder' } );
+				inspector.addComponent( entity, 'material', { type: 'phong' } );
+				break;
+			case 'Model':
+				inspector.addComponent( entity, 'model' );
+				break;
+			case 'Light':
+				inspector.addComponent( entity, 'light' );
+				break;
+			case 'Camera':
+				inspector.addComponent( entity, 'camera' );
+				break;
+
+		}
+
+		if ( editor.viewport.currentEntity !== undefined ) {
+
+			const child = document.querySelector( '#scene-tree [data-id="' + entity.id + '"]' );
+			const parent = document.querySelector( '#scene-tree [data-id="' + editor.viewport.currentEntity.id + '"]' );
+
+			editor.viewport.onDragStart.call( child );
+			editor.viewport.onDrop.call( parent );
+
+		}
 
 	} );
 
