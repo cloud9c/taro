@@ -53569,17 +53569,15 @@ const ComponentManager = {
 			},
 			set( value ) {
 
-				if ( value != this._enabled ) {
+				if ( value !== this._enabled ) {
 
 					if ( value && ! this.entity._enabled )
-						return console.warn(
-							"Component: Can't enable if the entity is disabled"
-						);
+						return console.warn( "Component: Can't enable if the entity is disabled" );
+
 					this._enabled = value;
 
-					const container = this.entity.scene._containers[
-						this.componentType
-					];
+					const container = this.entity.scene.components[ this.componentType ];
+
 					if ( value === true ) {
 
 						container.push( this );
@@ -65170,7 +65168,6 @@ class Entity extends Group {
 		if ( config.schema !== undefined ) ComponentManager.sanitizeData( data, config.schema );
 
 		const component = new constructor();
-
 		component.entity = this;
 		component.uuid = MathUtils.generateUUID();
 
