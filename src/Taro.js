@@ -18,5 +18,6 @@ import './components/physics/Rigidbody.js';
 // core
 export { Entity } from './core/Entity.js';
 export { Scene } from './core/Scene.js';
+export { Renderer } from './core/Renderer.js';
 export { Application } from './core/Application.js';
 export { ComponentManager } from './core/ComponentManager.js';

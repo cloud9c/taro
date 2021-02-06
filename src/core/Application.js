@@ -11,15 +11,14 @@ export class Application {
 		this.parameters = parameters;
 
 		this.renderer = parameters.renderer !== undefined ? parameters.renderer : new Renderer( parameters );
+		this.domElement = this.renderer.domElement;
+
 		this.time = new Time( parameters );
 		this.physics = new Physics( parameters );
-		this.input = new Input();
+		this.input = new Input( this.domElement );
 
 		this.scenes = [];
 		this._currentScene;
-		this.requestID;
-
-		this.domElement = this.renderer.domElement;
 
 		Application.currentApp = this;
 
@@ -52,7 +51,7 @@ export class Application {
 		}
 
 		this.renderer.update();
-		this.input.update();
+		this.input.reset();
 
 	}
 

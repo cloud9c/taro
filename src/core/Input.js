@@ -1,18 +1,24 @@
-import { Vector2 } from '../lib/three.module.js';
+import { Vector2, EventDispatcher } from '../lib/three.module.js';
 
-export class Input {
+export class Input extends EventDispatcher {
 
-	constructor() {
+	constructor( domElement ) {
+
+		super();
+
+		this.domElement = domElement;
 
 		this.pointerPosition = new Vector2();
 		this.pointerDelta = new Vector2();
 		this.wheelDelta = new Vector2();
-		this._pointer = [];
-		this._pointerDown = [];
-		this._pointerUp = [];
-		this._key = {};
-		this._keyDown = {};
-		this._keyUp = {};
+
+		this.pointer = [];
+		this.pointerDown = [];
+		this.pointerUp = [];
+
+		this.key = {};
+		this.keyDown = {};
+		this.keyUp = {};
 
 		this.onBlur = () => {
 
@@ -29,15 +35,15 @@ export class Input {
 
 		this.onPointerDown = ( e ) => {
 
-			this._pointer[ e.button ] = true;
-			this._pointerDown[ e.button ] = true;
+			this.pointer[ e.button ] = true;
+			this.pointerDown[ e.button ] = true;
 
 		};
 
 		this.onPointerUp = ( e ) => {
 
-			this._pointer[ e.button ] = false;
-			this._pointerUp[ e.button ] = true;
+			this.pointer[ e.button ] = false;
+			this.pointerUp[ e.button ] = true;
 
 		};
 
@@ -49,45 +55,43 @@ export class Input {
 
 		this.onKeyDown = () => {
 
-			this._key[ event.code ] = true;
-			if ( ! event.repeat ) this._keyDown[ event.code ] = true;
+			this.key[ event.code ] = true;
+			if ( ! event.repeat ) this.keyDown[ event.code ] = true;
 
 		};
 
 		this.onKeyUp = () => {
 
-			this._key[ event.code ] = false;
-			this._keyUp[ event.code ] = true;
+			this.key[ event.code ] = false;
+			this.keyUp[ event.code ] = true;
 
 		};
 
 		window.addEventListener( 'blur', this.onBlur );
 		document.addEventListener( 'fullscreenchange', this.onBlur );
-		document.addEventListener( 'pointermove', this.onPointerMove );
-		document.addEventListener( 'pointerdown', this.onPointerDown );
-		document.addEventListener( 'pointerup', this.onPointerUp );
-		document.addEventListener( 'wheel', this.onWheel );
+
+		this.domElement.addEventListener( 'pointermove', this.onPointerMove );
+		this.domElement.addEventListener( 'pointerdown', this.onPointerDown );
+		this.domElement.addEventListener( 'pointerup', this.onPointerUp );
+		this.domElement.addEventListener( 'wheel', this.onWheel );
+
 		document.addEventListener( 'keydown', this.onKeyDown );
 		document.addEventListener( 'keyup', this.onKeyUp );
 
 	}
 
-	update() {
+	reset() {
 
-		for ( const prop in this._keyDown ) {
+		for ( const prop in this.keyDown )
+			delete this.keyDown[ prop ];
 
-			delete this._keyDown[ prop ];
 
-		}
+		for ( const prop in this.keyUp )
+			delete this.keyUp[ prop ];
 
-		for ( const prop in this._keyUp ) {
+		this.pointerDown.length = 0;
+		this.pointerUp.length = 0;
 
-			delete this._keyUp[ prop ];
-
-		}
-
-		this._pointerDown.length = 0;
-		this._pointerUp.length = 0;
 		this.pointerDelta.set( 0, 0 );
 		this.wheelDelta.set( 0, 0 );
 
@@ -95,37 +99,37 @@ export class Input {
 
 	getKey( key ) {
 
-		return this._key[ key ] === true;
+		return this.key[ key ] === true;
 
 	}
 
-	isKeyDown( key ) {
+	getKeyDown( key ) {
 
-		return key in this._keyDown;
+		return key in this.keyDown;
 
 	}
 
-	isKeyUp( key ) {
+	getKeyUp( key ) {
 
-		return key in this._keyUp;
+		return key in this.keyUp;
 
 	}
 
 	getPointer( button ) {
 
-		return this._pointer[ button ] === true;
+		return this.pointer[ button ] === true;
 
 	}
 
-	isPointerDown( button ) {
+	getPointerDown( button ) {
 
-		return this._pointerDown[ button ] === true;
+		return this.pointerDown[ button ] === true;
 
 	}
 
-	isPointerUp( button ) {
+	getPointerUp( button ) {
 
-		return this._pointerUp[ button ] === true;
+		return this.pointerUp[ button ] === true;
 
 	}
 
@@ -133,10 +137,12 @@ export class Input {
 
 		window.removeEventListener( 'blur', this.onBlur );
 		document.removeEventListener( 'fullscreenchange', this.onBlur );
-		document.removeEventListener( 'pointermove', this.onPointerMove );
-		document.removeEventListener( 'pointerdown', this.onPointerDown );
-		document.removeEventListener( 'pointerup', this.onPointerUp );
-		document.removeEventListener( 'wheel', this.onWheel );
+
+		this.domElement.removeEventListener( 'pointermove', this.onPointerMove );
+		this.domElement.removeEventListener( 'pointerdown', this.onPointerDown );
+		this.domElement.removeEventListener( 'pointerup', this.onPointerUp );
+		this.domElement.removeEventListener( 'wheel', this.onWheel );
+
 		document.removeEventListener( 'keydown', this.onKeyDown );
 		document.removeEventListener( 'keyup', this.onKeyUp );
 
