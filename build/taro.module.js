@@ -53971,7 +53971,7 @@ class Geometry {
 				break;
 			case 'asset':
 				this.ref = undefined;
-				this.promise = geometryLoader.load( data.asset, ( g ) => this.onLoad( g ), ( p ) => this.onProgress( p ), () => this.onError() );
+				geometryLoader.load( data.asset, ( g ) => this.onLoad( g ), ( p ) => this.onProgress( p ), () => this.onError() );
 				break;
 			default:
 				console.error( 'Geometry: invalid geometry type ' + type );
@@ -54160,6 +54160,7 @@ class Light$1 {
 ComponentManager.register( 'light', Light$1 );
 
 const materialLoader = new MaterialLoader();
+const textureLoader = new TextureLoader();
 const notAsset = [ 'basic', 'depth', 'lambert', 'matcap', 'normal', 'phong', 'physical', 'standard', 'toon' ];
 const blendingModes = [ 'NoBlending', 'NormalBlending', 'AdditiveBlending', 'SubstractiveBlending', 'MultiplyBlending', 'CustomBlending' ];
 const sides = [ 'FrontSide', 'BackSide', 'DoubleSide' ];
@@ -54169,62 +54170,62 @@ class Material$1 {
 	init( data ) {
 
 		const type = data.type;
+		const parameters = {};
 
-		// temporary changes to data
-		delete data.type;
+		for ( const name in data ) {
 
-		if ( data.blending !== undefined )
-			data.blending = blendingModes.indexOf( data.blending );
+			if ( Material$1.config.schema[ name ].type === 'asset' && data[ name ].length > 0 )
 
-		if ( data.side !== undefined )
-			data.side = sides.indexOf( data.side );
+				parameters[ name ] = textureLoader.load( data[ name ] );
+			else
+				parameters[ name ] = data[ name ];
+
+		}
+
+		delete parameters.type;
+
+		if ( parameters.blending !== undefined )
+			parameters.blending = blendingModes.indexOf( parameters.blending );
+		else if ( parameters.side !== undefined )
+			parameters.side = sides.indexOf( parameters.side );
 
 		switch ( type ) {
 
 			case 'basic':
-				this.ref = new MeshBasicMaterial( data );
+				this.ref = new MeshBasicMaterial( parameters );
 				break;
 			case 'depth':
-				this.ref = new MeshDepthMaterial( data );
+				this.ref = new MeshDepthMaterial( parameters );
 				break;
 			case 'lambert':
-				this.ref = new MeshLambertMaterial( data );
+				this.ref = new MeshLambertMaterial( parameters );
 				break;
 			case 'matcap':
-				this.ref = new MeshMatcapMaterial( data );
+				this.ref = new MeshMatcapMaterial( parameters );
 				break;
 			case 'normal':
-				this.ref = new MeshNormalMaterial( data );
+				this.ref = new MeshNormalMaterial( parameters );
 				break;
 			case 'phong':
-				this.ref = new MeshPhongMaterial( data );
+				this.ref = new MeshPhongMaterial( parameters );
 				break;
 			case 'physical':
-				this.ref = new MeshPhysicalMaterial( data );
+				this.ref = new MeshPhysicalMaterial( parameters );
 				break;
 			case 'standard':
-				this.ref = new MeshStandardMaterial( data );
+				this.ref = new MeshStandardMaterial( parameters );
 				break;
 			case 'toon':
-				this.ref = new MeshToonMaterial( data );
+				this.ref = new MeshToonMaterial( parameters );
 				break;
 			case 'asset':
 				this.ref = undefined;
-				this.promise = materialLoader.load( data.asset, ( m ) => this.onLoad( m ), ( p ) => this.onProgress( p ), ( e ) => this.onError( e ) );
+				materialLoader.load( parameters.asset, ( m ) => this.onLoad( m ), ( p ) => this.onProgress( p ), ( e ) => this.onError( e ) );
 				break;
 			default:
 				console.error( 'Material: invalid material type ' + type );
 
 		}
-
-		// fixes to temp changes
-		data.type = type;
-
-		if ( data.blending !== undefined )
-			data.blending = blendingModes[ data.blending ];
-
-		if ( data.side !== undefined )
-			data.side = sides[ data.side ];
 
 		this.addEventListener( 'enable', this.onEnable );
 		this.addEventListener( 'disable', this.onDisable );
@@ -54341,6 +54342,8 @@ class Material$1 {
 			depthTest: { default: true, if: { type: notAsset } },
 			depthWrite: { default: true, if: { type: notAsset } },
 			wireframe: { default: false, if: { type: [ 'basic', 'depth', 'lambert', 'normal', 'phong', 'standard', 'physical', 'toon' ] } },
+
+			asset: { type: 'asset', if: { type: [ 'asset' ] } },
 		}
 	};
 
@@ -64334,212 +64337,6 @@ class Rigidbody {
 
 ComponentManager.register( 'rigidbody', Rigidbody );
 
-class Scene$1 extends Scene {
-
-	constructor() {
-
-		super();
-
-		this._cameras = [];
-		this.components = { rigidbody: [], camera: [] };
-		this.physicsWorld = new World( { allowSleep: true } );
-
-	}
-
-	_addComponents( components ) {
-
-		for ( let i = 0, len = components.length; i < len; i ++ ) {
-
-			const component = components[ i ];
-			if ( component._enabled ) {
-
-				const type = component.componentType;
-
-				if ( this.components[ type ] === undefined )
-					this.components[ type ] = [];
-				this.components[ type ].push( component );
-
-			}
-
-		}
-
-	}
-
-	_removeComponents( components ) {
-
-		for ( let i = 0, len = components.length; i < len; i ++ ) {
-
-			const component = components[ i ];
-			if ( component._enabled ) {
-
-				const type = component.componentType;
-				const container = this.components[ type ];
-
-				container.splice( container.indexOf( component ), 1 );
-
-			}
-
-		}
-
-	}
-
-	_addToScene( object ) {
-
-		if ( object.isEntity !== undefined ) {
-
-			if ( object.scene !== undefined ) {
-
-				object.scene._removeComponents( object.components );
-
-			}
-
-			this._addComponents( object.components );
-
-			object.scene = this;
-			object.dispatchEvent( { type: 'sceneadd' } );
-
-			const children = object.children;
-			for ( let i = 0, len = children.length; i < len; i ++ ) {
-
-				this._addToScene( children[ i ] );
-
-			}
-
-		}
-
-	}
-
-	_removeFromScene( object ) {
-
-		if ( object.isEntity !== undefined ) {
-
-			this._removeComponents( object.components );
-
-			delete object.scene;
-			object.dispatchEvent( { type: 'sceneremove' } );
-
-			const children = object.children;
-			for ( let i = 0, len = children.length; i < len; i ++ ) {
-
-				this._removeFromScene( children[ i ] );
-
-			}
-
-		}
-
-	}
-
-	add( object ) {
-
-		super.add( ...arguments );
-		this._addToScene( object );
-		return this;
-
-	}
-
-	remove( object ) {
-
-		super.remove( ...arguments );
-		this._removeFromScene( object );
-		return this;
-
-	}
-
-	getComponent( type ) {
-
-		return this.components[ type ] !== undefined ? this.components[ type ][ 0 ] : undefined;
-
-	}
-
-	getComponents( type ) {
-
-		return this.components[ type ] !== undefined ? this.components[ type ] : [];
-
-	}
-
-	traverseEntities( callback ) {
-
-		this.traverse( child => {
-
-			if ( child.isEntity !== undefined )
-				callback( child );
-
-		} );
-
-	}
-
-	getEntities() {
-
-		const filteredChildren = [];
-		const children = this.children;
-		for ( let i = 0, len = children.length; i < len; i ++ ) {
-
-			if ( children[ i ].isEntity !== undefined )
-				filteredChildren.push( children[ i ] );
-
-		}
-
-		return filteredChildren;
-
-	}
-
-	getEntityById( id ) {
-
-		return this.getObjectById( id );
-
-	}
-
-	getEntityByName( name ) {
-
-		let match;
-
-		this.traverse( ( child ) => {
-
-			if ( child.isEntity !== undefined && child.name === name ) {
-
-				match = child;
-
-			}
-
-		} );
-
-		return match;
-
-	}
-
-	getEntityByTag( tag ) {
-
-		const matches = [];
-		this.traverse( ( child ) => {
-
-			if ( child.isEntity !== undefined && child.tags.includes( tag ) )
-				matches.push( child );
-
-		} );
-		return matches;
-
-	}
-
-	getEntityByProperty( name, value ) {
-
-		let match;
-
-		this.traverse( ( child ) => {
-
-			if ( child.isEntity !== undefined && child[ name ] === value ) {
-
-				match = child;
-
-			}
-
-		} );
-
-		return match;
-
-	}
-
-}
-
 const _v1$7 = new Vector3();
 const _v2$4 = new Vector3();
 const _q1$2 = new Quaternion();
@@ -64952,7 +64749,7 @@ class Application {
 		this.input = new Input( this.domElement );
 
 		this.scenes = [];
-		this._currentScene;
+		this.currentScene = undefined;
 
 		Application.currentApp = this;
 
@@ -65024,7 +64821,7 @@ class Application {
 			this.addScene( scene );
 
 		this.components = scene.components;
-		this._currentScene = scene;
+		this.currentScene = scene;
 
 		this.renderer._updateScene( scene );
 		this.physics._updateScene( scene );
@@ -65033,27 +64830,28 @@ class Application {
 
 	}
 
+	getEntityById( id ) {
+
+		return this.getEntityByProperty( 'id', id );
+
+	}
+
 	getSceneByName( name ) {
+
+		return this.getSceneByProperty( 'name', name );
+
+	}
+
+	getSceneByProperty( name, value ) {
 
 		for ( let i = 0, len = this.scenes.length; i < len; i ++ ) {
 
-			if ( this.scenes[ i ].name === name )
+			if ( this.scenes[ i ][ name ] === value )
 				return this.scenes[ i ];
 
 		}
 
-	}
-
-	getSceneById( id ) {
-
-		return this.findSceneByProperty( 'id', id );
-
-
-	}
-
-	get currentScene() {
-
-		return this._currentScene;
+		return undefined;
 
 	}
 
@@ -65065,6 +64863,219 @@ class Application {
 
 }
 Application.apps = {};
+
+class Scene$1 extends Scene {
+
+	constructor( name, app ) {
+
+		super();
+
+		this.components = { rigidbody: [], camera: [] };
+		this.physicsWorld = new World( { allowSleep: true } );
+
+		if ( name !== undefined )
+			this.name = name;
+
+		if ( app !== undefined )
+			app.addScene( this );
+		else if ( Application.currentApp !== undefined )
+			Application.currentApp.addScene( this );
+
+
+	}
+
+	_addComponents( components ) {
+
+		for ( let i = 0, len = components.length; i < len; i ++ ) {
+
+			const component = components[ i ];
+			if ( component._enabled ) {
+
+				const type = component.componentType;
+
+				if ( this.components[ type ] === undefined )
+					this.components[ type ] = [];
+				this.components[ type ].push( component );
+
+			}
+
+		}
+
+	}
+
+	_removeComponents( components ) {
+
+		for ( let i = 0, len = components.length; i < len; i ++ ) {
+
+			const component = components[ i ];
+			if ( component._enabled ) {
+
+				const type = component.componentType;
+				const container = this.components[ type ];
+
+				container.splice( container.indexOf( component ), 1 );
+
+			}
+
+		}
+
+	}
+
+	_addToScene( object ) {
+
+		if ( object.isEntity !== undefined ) {
+
+			if ( object.scene !== undefined ) {
+
+				object.scene._removeComponents( object.components );
+
+			}
+
+			this._addComponents( object.components );
+
+			object.scene = this;
+			object.dispatchEvent( { type: 'sceneadd' } );
+
+			const children = object.children;
+			for ( let i = 0, len = children.length; i < len; i ++ ) {
+
+				this._addToScene( children[ i ] );
+
+			}
+
+		}
+
+	}
+
+	_removeFromScene( object ) {
+
+		if ( object.isEntity !== undefined ) {
+
+			this._removeComponents( object.components );
+
+			delete object.scene;
+			object.dispatchEvent( { type: 'sceneremove' } );
+
+			const children = object.children;
+			for ( let i = 0, len = children.length; i < len; i ++ ) {
+
+				this._removeFromScene( children[ i ] );
+
+			}
+
+		}
+
+	}
+
+	add( object ) {
+
+		super.add( ...arguments );
+		this._addToScene( object );
+		return this;
+
+	}
+
+	remove( object ) {
+
+		super.remove( ...arguments );
+		this._removeFromScene( object );
+		return this;
+
+	}
+
+	getComponent( type ) {
+
+		return this.components[ type ] !== undefined ? this.components[ type ][ 0 ] : undefined;
+
+	}
+
+	getComponents( type ) {
+
+		return this.components[ type ] !== undefined ? this.components[ type ] : [];
+
+	}
+
+	traverseEntities( callback ) {
+
+		this.traverse( child => {
+
+			if ( child.isEntity !== undefined )
+				callback( child );
+
+		} );
+
+	}
+
+	getEntities() {
+
+		const filteredChildren = [];
+		const children = this.children;
+		for ( let i = 0, len = children.length; i < len; i ++ ) {
+
+			if ( children[ i ].isEntity !== undefined )
+				filteredChildren.push( children[ i ] );
+
+		}
+
+		return filteredChildren;
+
+	}
+
+	getEntityById( id ) {
+
+		return this.getEntityByProperty( 'id', id );
+
+	}
+
+	getEntityByName( name ) {
+
+		return this.getEntityByProperty( 'name', name );
+
+	}
+
+	getEntityByTag( tag ) {
+
+		const entities = this.getEntities();
+
+		for ( let i = 0, l = entities.length; i < l; i ++ ) {
+
+			const child = entities[ i ];
+			const object = child.getEntityByTag( tag );
+
+			if ( object !== undefined ) {
+
+				return object;
+
+			}
+
+		}
+
+		return undefined;
+
+	}
+
+	getEntityByProperty( name, value ) {
+
+		const entities = this.getEntities();
+
+		for ( let i = 0, l = entities.length; i < l; i ++ ) {
+
+			const child = entities[ i ];
+			const object = child.getEntityByProperty( name, value );
+
+			if ( object !== undefined ) {
+
+				return object;
+
+			}
+
+		}
+
+		return undefined;
+
+	}
+
+}
 
 class Entity extends Group {
 
@@ -65078,21 +65089,15 @@ class Entity extends Group {
 
 		this._enabled = true;
 
+		this.addEventListener( 'sceneadd', this._emptyQueue );
+
 		if ( name !== undefined )
 			this.name = name;
 
-		this.addEventListener( 'sceneadd', this._emptyQueue );
-
-		// add to parent if provided, otherwise add to currentScene for the currentApp
-		if ( parent !== undefined ) {
-
+		if ( parent !== undefined )
 			parent.add( this );
-
-		} else if ( Application.currentApp !== undefined && Application.currentApp.currentScene !== undefined ) {
-
+		 else if ( Application.currentApp !== undefined && Application.currentApp.currentScene !== undefined )
 			Application.currentApp.currentScene.add( this );
-
-		}
 
 	}
 
@@ -65263,56 +65268,59 @@ class Entity extends Group {
 
 	getEntityById( id ) {
 
-		return this.getObjectById( id );
+		return this.getEntityByProperty( 'id', id );
 
 	}
 
 	getEntityByName( name ) {
 
-		let match;
-
-		this.traverseEntities( ( child ) => {
-
-			if ( child.name === name ) {
-
-				match = child;
-
-			}
-
-		} );
-
-		return match;
+		return this.getEntityByProperty( 'name', name );
 
 	}
 
 	getEntityByTag( tag ) {
 
-		const matches = [];
-		this.traverseEntities( ( child ) => {
+		if ( this.tags.includes( tag ) ) return this;
 
-			if ( child.tags.includes( tag ) )
-				matches.push( child );
+		const entities = this.getEntities();
 
-		} );
-		return matches;
+		for ( let i = 0, l = entities.length; i < l; i ++ ) {
+
+			const child = entities[ i ];
+			const object = child.getEntityByTag( tag );
+
+			if ( object !== undefined ) {
+
+				return object;
+
+			}
+
+		}
+
+		return undefined;
 
 	}
 
 	getEntityByProperty( name, value ) {
 
-		let match;
+		if ( this[ name ] === value ) return this;
 
-		this.traverseEntities( ( child ) => {
+		const entities = this.getEntities();
 
-			if ( child[ name ] === value ) {
+		for ( let i = 0, l = entities.length; i < l; i ++ ) {
 
-				match = child;
+			const child = entities[ i ];
+			const object = child.getEntityByProperty( name, value );
+
+			if ( object !== undefined ) {
+
+				return object;
 
 			}
 
-		} );
+		}
 
-		return match;
+		return undefined;
 
 	}
 

@@ -52,7 +52,7 @@ class Geometry {
 				break;
 			case 'asset':
 				this.ref = undefined;
-				this.promise = geometryLoader.load( data.asset, ( g ) => this.onLoad( g ), ( p ) => this.onProgress( p ), () => this.onError() );
+				geometryLoader.load( data.asset, ( g ) => this.onLoad( g ), ( p ) => this.onProgress( p ), () => this.onError() );
 				break;
 			default:
 				console.error( 'Geometry: invalid geometry type ' + type );

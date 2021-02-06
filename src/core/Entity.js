@@ -15,21 +15,15 @@ export class Entity extends Group {
 
 		this._enabled = true;
 
+		this.addEventListener( 'sceneadd', this._emptyQueue );
+
 		if ( name !== undefined )
 			this.name = name;
 
-		this.addEventListener( 'sceneadd', this._emptyQueue );
-
-		// add to parent if provided, otherwise add to currentScene for the currentApp
-		if ( parent !== undefined ) {
-
+		if ( parent !== undefined )
 			parent.add( this );
-
-		} else if ( Application.currentApp !== undefined && Application.currentApp.currentScene !== undefined ) {
-
+		 else if ( Application.currentApp !== undefined && Application.currentApp.currentScene !== undefined )
 			Application.currentApp.currentScene.add( this );
-
-		}
 
 	}
 
@@ -200,56 +194,59 @@ export class Entity extends Group {
 
 	getEntityById( id ) {
 
-		return this.getObjectById( id );
+		return this.getEntityByProperty( 'id', id );
 
 	}
 
 	getEntityByName( name ) {
 
-		let match;
-
-		this.traverseEntities( ( child ) => {
-
-			if ( child.name === name ) {
-
-				match = child;
-
-			}
-
-		} );
-
-		return match;
+		return this.getEntityByProperty( 'name', name );
 
 	}
 
 	getEntityByTag( tag ) {
 
-		const matches = [];
-		this.traverseEntities( ( child ) => {
+		if ( this.tags.includes( tag ) ) return this;
 
-			if ( child.tags.includes( tag ) )
-				matches.push( child );
+		const entities = this.getEntities();
 
-		} );
-		return matches;
+		for ( let i = 0, l = entities.length; i < l; i ++ ) {
+
+			const child = entities[ i ];
+			const object = child.getEntityByTag( tag );
+
+			if ( object !== undefined ) {
+
+				return object;
+
+			}
+
+		}
+
+		return undefined;
 
 	}
 
 	getEntityByProperty( name, value ) {
 
-		let match;
+		if ( this[ name ] === value ) return this;
 
-		this.traverseEntities( ( child ) => {
+		const entities = this.getEntities();
 
-			if ( child[ name ] === value ) {
+		for ( let i = 0, l = entities.length; i < l; i ++ ) {
 
-				match = child;
+			const child = entities[ i ];
+			const object = child.getEntityByProperty( name, value );
+
+			if ( object !== undefined ) {
+
+				return object;
 
 			}
 
-		} );
+		}
 
-		return match;
+		return undefined;
 
 	}
 

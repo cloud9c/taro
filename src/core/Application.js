@@ -1,7 +1,6 @@
 import { Physics } from './Physics.js';
 import { Renderer } from './Renderer.js';
 import { Time } from './Time.js';
-import { Scene } from './Scene.js';
 import { Input } from './Input.js';
 
 export class Application {
@@ -18,7 +17,7 @@ export class Application {
 		this.input = new Input( this.domElement );
 
 		this.scenes = [];
-		this._currentScene;
+		this.currentScene = undefined;
 
 		Application.currentApp = this;
 
@@ -90,7 +89,7 @@ export class Application {
 			this.addScene( scene );
 
 		this.components = scene.components;
-		this._currentScene = scene;
+		this.currentScene = scene;
 
 		this.renderer._updateScene( scene );
 		this.physics._updateScene( scene );
@@ -99,27 +98,28 @@ export class Application {
 
 	}
 
+	getEntityById( id ) {
+
+		return this.getEntityByProperty( 'id', id );
+
+	}
+
 	getSceneByName( name ) {
+
+		return this.getSceneByProperty( 'name', name );
+
+	}
+
+	getSceneByProperty( name, value ) {
 
 		for ( let i = 0, len = this.scenes.length; i < len; i ++ ) {
 
-			if ( this.scenes[ i ].name === name )
+			if ( this.scenes[ i ][ name ] === value )
 				return this.scenes[ i ];
 
 		}
 
-	}
-
-	getSceneById( id ) {
-
-		return this.findSceneByProperty( 'id', id );
-
-
-	}
-
-	get currentScene() {
-
-		return this._currentScene;
+		return undefined;
 
 	}
 

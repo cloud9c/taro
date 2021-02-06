@@ -92,14 +92,13 @@
 				}
 			);
 
-			const scene = new TARO.Scene();
+			const scene = new TARO.Scene("scene");
+			scene.background = new TARO.Color("skyblue");
 			app.setScene(scene);
-
-			app.currentScene.background = new TARO.Color("skyblue");
 			console.log(app);
 
 			// lighting
-			entity = new TARO.Entity();
+			entity = new TARO.Entity("light");
 			const hemiLight = entity.addComponent("light", {type: 'hemisphere', intensity: 0.6}).ref
 
 			hemiLight.color.setHSL(0.6, 1, 0.6);
@@ -107,7 +106,7 @@
 
 			entity.position.set(0, 100, 0);
 
-			entity = new TARO.Entity();
+			entity = new TARO.Entity("light");
 			const dirLight = entity.addComponent("light").ref;
 
 			dirLight.color.setHSL(0.1, 1, 0.95);
@@ -130,7 +129,7 @@
 			entity.position.set(-100, 175, 100);
 
 			// floor
-			entity = new TARO.Entity("floor");
+			entity = new TARO.Entity("floor" );
 
 			entity.addComponent("geometry", {type: 'plane', width: 200, height: 200});
 			entity.addComponent("material", {type: 'phong', color: 0x718e3e}).mesh.receiveShadow = true;
@@ -141,7 +140,7 @@
 			entity.addComponent("shape", { type: "plane" });
 			entity.rotation.set(-Math.PI / 2, 0, 0);
 
-			new TARO.Entity().addComponent("renderable",
+			new TARO.Entity("gridHelper").addComponent("renderable",
 				new TARO.GridHelper(200, 200, 0x0000ff, 0x808080)
 			);
 
@@ -168,7 +167,7 @@
 			for (let k = 0; k < 5; k++) {
 				for (let i = 0; i < 5; i++) {
 					for (let j = 0; j < 5; j++) {
-						entity = new TARO.Entity();
+						entity = new TARO.Entity("gridHelper");
 						mesh = new TARO.Mesh(geo, mat);
 						entity.addComponent("renderable", mesh);
 						entity.position.copy(position);

@@ -1,15 +1,24 @@
 import { Scene as TS } from '../lib/three.module.js';
+import { Application } from './Application.js';
 import { World } from '../lib/cannon.js';
 
 export class Scene extends TS {
 
-	constructor() {
+	constructor( name, app ) {
 
 		super();
 
-		this._cameras = [];
 		this.components = { rigidbody: [], camera: [] };
 		this.physicsWorld = new World( { allowSleep: true } );
+
+		if ( name !== undefined )
+			this.name = name;
+
+		if ( app !== undefined )
+			app.addScene( this );
+		else if ( Application.currentApp !== undefined )
+			Application.currentApp.addScene( this );
+
 
 	}
 
@@ -152,56 +161,55 @@ export class Scene extends TS {
 
 	getEntityById( id ) {
 
-		return this.getObjectById( id );
+		return this.getEntityByProperty( 'id', id );
 
 	}
 
 	getEntityByName( name ) {
 
-		let match;
-
-		this.traverse( ( child ) => {
-
-			if ( child.isEntity !== undefined && child.name === name ) {
-
-				match = child;
-
-			}
-
-		} );
-
-		return match;
+		return this.getEntityByProperty( 'name', name );
 
 	}
 
 	getEntityByTag( tag ) {
 
-		const matches = [];
-		this.traverse( ( child ) => {
+		const entities = this.getEntities();
 
-			if ( child.isEntity !== undefined && child.tags.includes( tag ) )
-				matches.push( child );
+		for ( let i = 0, l = entities.length; i < l; i ++ ) {
 
-		} );
-		return matches;
+			const child = entities[ i ];
+			const object = child.getEntityByTag( tag );
+
+			if ( object !== undefined ) {
+
+				return object;
+
+			}
+
+		}
+
+		return undefined;
 
 	}
 
 	getEntityByProperty( name, value ) {
 
-		let match;
+		const entities = this.getEntities();
 
-		this.traverse( ( child ) => {
+		for ( let i = 0, l = entities.length; i < l; i ++ ) {
 
-			if ( child.isEntity !== undefined && child[ name ] === value ) {
+			const child = entities[ i ];
+			const object = child.getEntityByProperty( name, value );
 
-				match = child;
+			if ( object !== undefined ) {
+
+				return object;
 
 			}
 
-		} );
+		}
 
-		return match;
+		return undefined;
 
 	}
 

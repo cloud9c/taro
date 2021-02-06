@@ -1,7 +1,8 @@
 import { ComponentManager } from '../core/ComponentManager.js';
-import { Mesh, MaterialLoader, MeshBasicMaterial, MeshDepthMaterial, MeshLambertMaterial, MeshMatcapMaterial, MeshNormalMaterial, MeshPhongMaterial, MeshPhysicalMaterial, MeshStandardMaterial, MeshToonMaterial } from '../lib/three.module.js';
+import { TextureLoader, Mesh, MaterialLoader, MeshBasicMaterial, MeshDepthMaterial, MeshLambertMaterial, MeshMatcapMaterial, MeshNormalMaterial, MeshPhongMaterial, MeshPhysicalMaterial, MeshStandardMaterial, MeshToonMaterial } from '../lib/three.module.js';
 
 const materialLoader = new MaterialLoader();
+const textureLoader = new TextureLoader();
 const notAsset = [ 'basic', 'depth', 'lambert', 'matcap', 'normal', 'phong', 'physical', 'standard', 'toon' ];
 const blendingModes = [ 'NoBlending', 'NormalBlending', 'AdditiveBlending', 'SubstractiveBlending', 'MultiplyBlending', 'CustomBlending' ];
 const sides = [ 'FrontSide', 'BackSide', 'DoubleSide' ];
@@ -11,62 +12,62 @@ class Material {
 	init( data ) {
 
 		const type = data.type;
+		const parameters = {};
 
-		// temporary changes to data
-		delete data.type;
+		for ( const name in data ) {
 
-		if ( data.blending !== undefined )
-			data.blending = blendingModes.indexOf( data.blending );
+			if ( Material.config.schema[ name ].type === 'asset' && data[ name ].length > 0 )
 
-		if ( data.side !== undefined )
-			data.side = sides.indexOf( data.side );
+				parameters[ name ] = textureLoader.load( data[ name ] );
+			else
+				parameters[ name ] = data[ name ];
+
+		}
+
+		delete parameters.type;
+
+		if ( parameters.blending !== undefined )
+			parameters.blending = blendingModes.indexOf( parameters.blending );
+		else if ( parameters.side !== undefined )
+			parameters.side = sides.indexOf( parameters.side );
 
 		switch ( type ) {
 
 			case 'basic':
-				this.ref = new MeshBasicMaterial( data );
+				this.ref = new MeshBasicMaterial( parameters );
 				break;
 			case 'depth':
-				this.ref = new MeshDepthMaterial( data );
+				this.ref = new MeshDepthMaterial( parameters );
 				break;
 			case 'lambert':
-				this.ref = new MeshLambertMaterial( data );
+				this.ref = new MeshLambertMaterial( parameters );
 				break;
 			case 'matcap':
-				this.ref = new MeshMatcapMaterial( data );
+				this.ref = new MeshMatcapMaterial( parameters );
 				break;
 			case 'normal':
-				this.ref = new MeshNormalMaterial( data );
+				this.ref = new MeshNormalMaterial( parameters );
 				break;
 			case 'phong':
-				this.ref = new MeshPhongMaterial( data );
+				this.ref = new MeshPhongMaterial( parameters );
 				break;
 			case 'physical':
-				this.ref = new MeshPhysicalMaterial( data );
+				this.ref = new MeshPhysicalMaterial( parameters );
 				break;
 			case 'standard':
-				this.ref = new MeshStandardMaterial( data );
+				this.ref = new MeshStandardMaterial( parameters );
 				break;
 			case 'toon':
-				this.ref = new MeshToonMaterial( data );
+				this.ref = new MeshToonMaterial( parameters );
 				break;
 			case 'asset':
 				this.ref = undefined;
-				this.promise = materialLoader.load( data.asset, ( m ) => this.onLoad( m ), ( p ) => this.onProgress( p ), ( e ) => this.onError( e ) );
+				materialLoader.load( parameters.asset, ( m ) => this.onLoad( m ), ( p ) => this.onProgress( p ), ( e ) => this.onError( e ) );
 				break;
 			default:
 				console.error( 'Material: invalid material type ' + type );
 
 		}
-
-		// fixes to temp changes
-		data.type = type;
-
-		if ( data.blending !== undefined )
-			data.blending = blendingModes[ data.blending ];
-
-		if ( data.side !== undefined )
-			data.side = sides[ data.side ];
 
 		this.addEventListener( 'enable', this.onEnable );
 		this.addEventListener( 'disable', this.onDisable );
@@ -183,6 +184,8 @@ class Material {
 			depthTest: { default: true, if: { type: notAsset } },
 			depthWrite: { default: true, if: { type: notAsset } },
 			wireframe: { default: false, if: { type: [ 'basic', 'depth', 'lambert', 'normal', 'phong', 'standard', 'physical', 'toon' ] } },
+
+			asset: { type: 'asset', if: { type: [ 'asset' ] } },
 		}
 	};
 
