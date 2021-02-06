@@ -22,7 +22,7 @@ export class Input extends EventDispatcher {
 
 		this.onBlur = () => {
 
-			this.update();
+			this.reset();
 
 		};
 
@@ -31,19 +31,32 @@ export class Input extends EventDispatcher {
 			this.pointerDelta.set( e.movementX, e.movementY );
 			this.pointerPosition.set( e.clientX, e.clientY );
 
+			this.dispatchEvent( { type: 'pointermove',
+				delta: this.pointerDelta,
+				position: this.pointerPosition
+			} );
+
 		};
 
 		this.onPointerDown = ( e ) => {
 
-			this.pointer[ e.button ] = true;
-			this.pointerDown[ e.button ] = true;
+			const button = e.button;
+
+			this.pointer[ button ] = true;
+			this.pointerDown[ button ] = true;
+
+			this.dispatchEvent( { type: 'pointerdown', button } );
 
 		};
 
 		this.onPointerUp = ( e ) => {
 
-			this.pointer[ e.button ] = false;
-			this.pointerUp[ e.button ] = true;
+			const button = e.button;
+
+			this.pointer[ button ] = false;
+			this.pointerUp[ button ] = true;
+
+			this.dispatchEvent( { type: 'pointerup', button } );
 
 		};
 
@@ -51,19 +64,32 @@ export class Input extends EventDispatcher {
 
 			this.wheelDelta.set( e.deltaX, e.deltaY );
 
-		};
-
-		this.onKeyDown = () => {
-
-			this.key[ event.code ] = true;
-			if ( ! event.repeat ) this.keyDown[ event.code ] = true;
+			this.dispatchEvent( {
+				type: 'wheel',
+				wheelDelta: this.wheelDelta,
+			} );
 
 		};
 
-		this.onKeyUp = () => {
+		this.onKeyDown = ( e ) => {
 
-			this.key[ event.code ] = false;
-			this.keyUp[ event.code ] = true;
+			const code = e.code;
+
+			this.key[ code ] = true;
+			if ( ! e.repeat ) this.keyDown[ code ] = true;
+
+			this.dispatchEvent( { type: 'keydown', code } );
+
+		};
+
+		this.onKeyUp = ( e ) => {
+
+			const code = e.code;
+
+			this.key[ code ] = false;
+			this.keyUp[ code ] = true;
+
+			this.dispatchEvent( { type: 'keyup', code } );
 
 		};
 
