@@ -7,6 +7,7 @@ const notAsset = [ 'basic', 'depth', 'lambert', 'matcap', 'normal', 'phong', 'ph
 const blendingModes = [ 'NoBlending', 'NormalBlending', 'AdditiveBlending', 'SubstractiveBlending', 'MultiplyBlending', 'CustomBlending' ];
 const sides = [ 'FrontSide', 'BackSide', 'DoubleSide' ];
 const depthPacking = [ 'BasicDepthPacking', 'RGBADepthPacking' ];
+
 class Material {
 
 	init( data ) {
@@ -27,9 +28,9 @@ class Material {
 
 		if ( parameters.blending !== undefined )
 			parameters.blending = blendingModes.indexOf( parameters.blending );
-		else if ( parameters.side !== undefined )
+		if ( parameters.side !== undefined )
 			parameters.side = sides.indexOf( parameters.side );
-		else if ( parameters.depthPacking !== undefined )
+		if ( parameters.depthPacking !== undefined )
 			parameters.depthPacking = depthPacking.indexOf( parameters.depthPacking );
 
 		switch ( type ) {
