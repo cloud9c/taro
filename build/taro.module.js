@@ -53993,6 +53993,8 @@ class Geometry {
 			const m = material.ref !== undefined ? material.ref : material.DefaultMaterial;
 
 			material.mesh = this.mesh = new Mesh( g, m );
+			this.mesh.castShadow = true;
+			this.mesh.receiveShadow = true;
 			this.entity.add( this.mesh );
 
 		}
@@ -54244,6 +54246,8 @@ class Material$1 {
 			const m = this.ref !== undefined ? this.ref : this.DefaultMaterial;
 
 			geometry.mesh = this.mesh = new Mesh( g, m );
+			this.mesh.castShadow = true;
+			this.mesh.receiveShadow = true;
 			this.entity.add( this.mesh );
 
 		}
@@ -54418,6 +54422,8 @@ class Model {
 
 		const scene = result.scene;
 		scene.animations.push( ...result.animations );
+		scene.castShadow = true;
+		scene.receiveShadow = true;
 
 		this.onLoad( scene );
 
@@ -64342,6 +64348,7 @@ ComponentManager.register( 'rigidbody', Rigidbody );
 const _v1$7 = new Vector3();
 const _v2$4 = new Vector3();
 const _q1$2 = new Quaternion();
+const _m1$3 = new Matrix4();
 const SLEEPING = 2;
 
 class Physics {
@@ -64437,8 +64444,22 @@ class Physics {
 				if ( body.sleepState !== SLEEPING ) {
 
 					const entity = component.entity;
-					entity.position.copy( body.interpolatedPosition );
-					entity.quaternion.copy( body.interpolatedQuaternion );
+
+					const position = entity.position;
+					position.copy( body.interpolatedPosition );
+
+					const quaternion = entity.quaternion;
+					quaternion.copy( body.interpolatedQuaternion );
+
+					if ( entity.parent.isEntity === true ) {
+
+						entity.parent.updateWorldMatrix( true, false );
+
+						position.applyMatrix4( _m1$3.copy( entity.parent.matrixWorld ).invert() );
+						quaternion.premultiply( entity.parent.getWorldQuaternion( _q1$2 ).invert() );
+
+
+					}
 
 				}
 

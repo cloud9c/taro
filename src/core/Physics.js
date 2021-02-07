@@ -3,6 +3,7 @@ import { Quaternion, Vector3, Matrix4 } from '../lib/three.module.js';
 const _v1 = new Vector3();
 const _v2 = new Vector3();
 const _q1 = new Quaternion();
+const _m1 = new Matrix4();
 const SLEEPING = 2;
 
 export class Physics {
@@ -98,8 +99,22 @@ export class Physics {
 				if ( body.sleepState !== SLEEPING ) {
 
 					const entity = component.entity;
-					entity.position.copy( body.interpolatedPosition );
-					entity.quaternion.copy( body.interpolatedQuaternion );
+
+					const position = entity.position;
+					position.copy( body.interpolatedPosition );
+
+					const quaternion = entity.quaternion;
+					quaternion.copy( body.interpolatedQuaternion );
+
+					if ( entity.parent.isEntity === true ) {
+
+						entity.parent.updateWorldMatrix( true, false );
+
+						position.applyMatrix4( _m1.copy( entity.parent.matrixWorld ).invert() );
+						quaternion.premultiply( entity.parent.getWorldQuaternion( _q1 ).invert() );
+
+
+					}
 
 				}
 

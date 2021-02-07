@@ -64,6 +64,8 @@ class Model {
 
 		const scene = result.scene;
 		scene.animations.push( ...result.animations );
+		scene.castShadow = true;
+		scene.receiveShadow = true;
 
 		this.onLoad( scene );
 

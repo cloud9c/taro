@@ -86,6 +86,8 @@ class Material {
 			const m = this.ref !== undefined ? this.ref : this.DefaultMaterial;
 
 			geometry.mesh = this.mesh = new Mesh( g, m );
+			this.mesh.castShadow = true;
+			this.mesh.receiveShadow = true;
 			this.entity.add( this.mesh );
 
 		}

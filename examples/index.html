@@ -148,6 +148,7 @@
 			geo = new TARO.SphereGeometry(1, 32, 32);
 			mat = new TARO.MeshPhongMaterial({ color: 0xffff00 });
 			mesh = new TARO.Mesh(geo, mat);
+
 			entity = new TARO.Entity("ball");
 			entity.addComponent("renderable", mesh);
 			entity.position.set(0, 5, 2);
@@ -167,7 +168,7 @@
 			for (let k = 0; k < 5; k++) {
 				for (let i = 0; i < 5; i++) {
 					for (let j = 0; j < 5; j++) {
-						entity = new TARO.Entity("gridHelper");
+						entity = new TARO.Entity("box");
 						mesh = new TARO.Mesh(geo, mat);
 						entity.addComponent("renderable", mesh);
 						entity.position.copy(position);
