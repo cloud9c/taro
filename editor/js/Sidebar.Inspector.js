@@ -787,7 +787,6 @@ export function SidebarInspector( editor ) {
 				this.updateIcon( currentEntity, true );
 				removeHelpers();
 				addHelpers( currentEntity );
-				editor.viewport.updateOutliner( currentEntity );
 				editor.viewport.render();
 
 			}
@@ -1419,7 +1418,6 @@ export function SidebarInspector( editor ) {
 		if ( entity === currentEntity ) {
 
 			inspector.appendChild( this.addSection( component, config ) );
-			editor.viewport.updateOutliner( entity );
 
 		}
 
@@ -1471,7 +1469,6 @@ export function SidebarInspector( editor ) {
 
 		if ( currentEntity === entity ) {
 
-			editor.viewport.updateOutliner( currentEntity );
 			document.getElementById( 'inspector' ).querySelector( 'section[data-uuid="' + component.uuid + '"]' ).remove();
 
 		}

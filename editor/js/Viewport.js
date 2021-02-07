@@ -232,16 +232,10 @@ export function Viewport( editor ) {
 
 	attribute.needsUpdate = true;
 
-	const outliner = new BoxHelper();
-	outliner.material.depthTest = false;
-	outliner.material.transparent = true;
-	outliner.material.opacity = 0.6;
-	outliner.visible = false;
-
 	const helpers = this.helpers = [ ];
 	const icons = this.icons = [];
 
-	scene.add( grid, outliner );
+	scene.add( grid );
 
 	const renderer = app.renderer;
 	const dom = renderer.domElement;
@@ -281,8 +275,6 @@ export function Viewport( editor ) {
 		}
 
 		if ( this.currentEntity !== undefined ) {
-
-			updateOutliner( this.currentEntity );
 
 			for ( let i = 0, len = helpers.length; i < len; i ++ )
 				helpers[ i ].update();
@@ -362,42 +354,6 @@ export function Viewport( editor ) {
 	sceneHelper.add( control );
 	const box = this.box = new Box3();
 
-	const updateOutliner = this.updateOutliner = function ( entity ) {
-
-		const temp = [];
-		const children = entity.children;
-		for ( let i = children.length - 1; i >= 0; i -- ) {
-
-			if ( icons.includes( children[ i ] ) || children[ i ].isEntity === true ) {
-
-				temp.push( children[ i ] );
-				entity.remove( children[ i ] );
-
-			}
-
-		}
-
-		box.setFromObject( entity );
-
-		if ( box.isEmpty() ) {
-
-			outliner.visible = false;
-
-		} else {
-
-			outliner.setFromObject( entity );
-			outliner.visible = true;
-
-		}
-
-		for ( let i = 0, len = temp.length; i < len; i ++ ) {
-
-			entity.add( temp[ i ] );
-
-		}
-
-	};
-
 	const attach = this.attach = ( entity ) => {
 
 		if ( this.currentEntity !== undefined ) detach();
@@ -408,7 +364,6 @@ export function Viewport( editor ) {
 		control.enabled = true;
 		editor.inspector.attach( entity );
 		control.attach( entity );
-		updateOutliner( entity );
 
 	};
 
@@ -420,7 +375,6 @@ export function Viewport( editor ) {
 			delete target.dataset.selected;
 
 		this.currentEntity = undefined;
-		outliner.visible = false;
 		editor.inspector.detach();
 		control.enabled = false;
 		control.detach();

@@ -41,7 +41,7 @@ function Editor() {
 	} );
 	entity.position.set( 0, 5, 1 );
 
-	entity = this.addEntity( 'Box' );
+	entity = this.addEntity( 'Torus Knot' );
 	this.inspector.addComponent( entity, 'geometry', {
 		type: 'torusKnot'
 	} );

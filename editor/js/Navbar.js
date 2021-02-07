@@ -22,18 +22,29 @@ export function Navbar( editor ) {
 			case 'Box':
 				inspector.addComponent( entity, 'geometry', { type: 'box' } );
 				inspector.addComponent( entity, 'material', { type: 'phong' } );
+				inspector.addComponent( entity, 'shape', { type: 'box' } );
 				break;
 			case 'Sphere':
 				inspector.addComponent( entity, 'geometry', { type: 'sphere' } );
 				inspector.addComponent( entity, 'material', { type: 'phong' } );
+				inspector.addComponent( entity, 'shape', { type: 'sphere' } );
+				break;
+			case 'Plane':
+				inspector.addComponent( entity, 'geometry', { type: 'plane' } );
+				inspector.addComponent( entity, 'material', { type: 'phong' } );
+				inspector.addComponent( entity, 'shape', { type: 'plane' } );
 				break;
 			case 'Cone':
 				inspector.addComponent( entity, 'geometry', { type: 'cone' } );
 				inspector.addComponent( entity, 'material', { type: 'phong' } );
+				const data = { type: 'cylinder' };
+				inspector.addComponent( entity, 'shape', data );
+				data.radiusTop = 0;
 				break;
 			case 'Cylinder':
 				inspector.addComponent( entity, 'geometry', { type: 'cylinder' } );
 				inspector.addComponent( entity, 'material', { type: 'phong' } );
+				inspector.addComponent( entity, 'shape', { type: 'cylinder' } );
 				break;
 			case 'Model':
 				inspector.addComponent( entity, 'model', { asset: 'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/models/gltf/Duck/glTF-Binary/Duck.glb' } );
