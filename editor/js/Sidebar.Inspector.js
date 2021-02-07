@@ -139,6 +139,27 @@ export function SidebarInspector( editor ) {
 
 	};
 
+	this.cloneData = function ( data ) {
+
+		const clonedData = {};
+		for ( const name in data ) {
+
+			if ( typeof clonedData[ name ] === 'object' ) {
+
+				clonedData[ name ] = cloneData[ name ].clone();
+
+			} else {
+
+				clonedData[ name ] = data[ name ];
+
+			}
+
+		}
+
+		return clonedData;
+
+	};
+
 	this.onInspectorChange = function ( fieldset, type, data, oldValue, config ) {
 
 		const schema = config.schema;
@@ -288,8 +309,7 @@ export function SidebarInspector( editor ) {
 
 				}
 
-				component.init( Object.assign( {}, data ) );
-				console.log( data );
+				component.init( this.cloneData( data ) );
 				component.enabled = true;
 
 			}
@@ -1382,7 +1402,7 @@ export function SidebarInspector( editor ) {
 
 		if ( runInEditor ) {
 
-			const _component = entity.addComponent( type, Object.assign( {}, component.data ) );
+			const _component = entity.addComponent( type, this.cloneData( data ) );
 			// used by editor to select component by uuid (maybe standardize to TARO engine?)
 			_component.uuid = component.uuid;
 
