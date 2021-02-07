@@ -288,8 +288,8 @@ export function SidebarInspector( editor ) {
 
 				}
 
-				component.init( data );
-				console.log( component.ref );
+				component.init( Object.assign( {}, data ) );
+				console.log( data );
 				component.enabled = true;
 
 			}
@@ -1382,7 +1382,7 @@ export function SidebarInspector( editor ) {
 
 		if ( runInEditor ) {
 
-			const _component = entity.addComponent( type, component.data );
+			const _component = entity.addComponent( type, Object.assign( {}, component.data ) );
 			// used by editor to select component by uuid (maybe standardize to TARO engine?)
 			_component.uuid = component.uuid;
 
