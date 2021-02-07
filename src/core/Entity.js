@@ -51,7 +51,7 @@ export class Entity extends Group {
 		if ( component.init !== undefined )
 			component.init( data );
 
-		component.dispatchEvent( { type: 'enable' } );
+		if ( this._enabled === true ) component.dispatchEvent( { type: 'enable' } );
 
 	}
 
