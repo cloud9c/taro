@@ -76,7 +76,8 @@ export function SidebarInspector( editor ) {
 
 			} else if ( object.componentType === 'model' && object.ref !== undefined ) {
 
-				helper = new SkeletonHelper( object.ref.skeleton.bones[ 0 ] );
+				// helper = new SkeletonHelper( object.ref.skeleton.bones[ 0 ] );
+				continue;
 
 			} else {
 
@@ -165,114 +166,126 @@ export function SidebarInspector( editor ) {
 		const schema = config.schema;
 		const section = fieldset.parentElement;
 
-		if ( schema === undefined ) return;
+		if ( schema !== undefined ) {
 
-		while ( section.children.length > 1 )
-			section.removeChild( section.lastChild );
+			let keepGoing = false;
 
-		// if ( schema !== undefined ) {
+			for ( const name in schema ) {
 
-		// 	for ( const type in data ) {
+				const attribute = schema[ name ];
 
-		// 		section.appendChild( this.addFieldset( type, data, config ) );
+				if ( Array.isArray( attribute ) ) {
 
-		// 	}
+					for ( let i = 0, len = attribute.length; i < len; i ++ ) {
 
-		// }
-
-		for ( const name in schema ) {
-
-			let attribute = schema[ name ];
-
-			if ( Array.isArray( attribute ) ) {
-
-				let currentAttribute;
-				let matchFound = false;
-
-				for ( let i = 0, len = attribute.length; i < len; i ++ ) {
-
-					if ( attribute[ i ].if !== undefined && attribute[ i ].if[ type ] !== undefined ) {
-
-						const dependencies = attribute[ i ].if;
-
-						let oldExit = false;
-						let newExit = false;
-
-						for ( const d in dependencies ) {
-
-							if ( ! dependencies[ d ].includes( oldValue ) ) oldExit = true;
-							if ( ! dependencies[ d ].includes( data[ type ] ) ) newExit = true;
-
-							if ( oldExit && newExit ) break;
-
-						}
-
-						if ( oldExit && ! newExit ) {
-
-							data[ name ] = ComponentManager.addDefault( attribute[ i ].type, attribute[ i ].default );
-
-							// add
-							matchFound = true;
-							break;
-
-						} else if ( ! oldExit && ! newExit ) {
-
-							matchFound = true;
-							break;
-
-						}
-
-					} else {
-
-						matchFound = true;
-						break;
+						if ( attribute[ i ].if && attribute[ i ].if[ type ] !== undefined )
+							keepGoing = true;
 
 					}
 
-				}
-
-				if ( ! matchFound ) {
-
-					// remove
-					delete data[ name ];
-
 				} else {
 
-					section.appendChild( this.addFieldset( name, data, config ) );
+					if ( attribute.if && attribute.if[ type ] !== undefined )
+						keepGoing = true;
 
 				}
 
-			} else {
+			}
 
-				if ( attribute.if !== undefined && attribute.if[ type ] !== undefined ) {
+			if ( keepGoing ) {
 
-					if ( attribute.if[ type ].includes( data[ type ] ) ) {
+				while ( section.children.length > 1 )
+					section.removeChild( section.lastChild );
 
-						if ( data[ name ] === undefined ) {
+				for ( const name in schema ) {
 
-							// add attribute to data
-							data[ name ] = ComponentManager.addDefault( attribute.type, attribute.default );
+					let attribute = schema[ name ];
+					if ( Array.isArray( attribute ) ) {
+
+						let currentAttribute;
+						let matchFound = false;
+
+						for ( let i = 0, len = attribute.length; i < len; i ++ ) {
+
+							if ( attribute[ i ].if !== undefined && attribute[ i ].if[ type ] !== undefined ) {
+
+								const dependencies = attribute[ i ].if;
+
+								let oldExit = false;
+								let newExit = false;
+
+								for ( const d in dependencies ) {
+
+									if ( ! dependencies[ d ].includes( oldValue ) ) oldExit = true;
+									if ( ! dependencies[ d ].includes( data[ type ] ) ) newExit = true;
+
+									if ( oldExit && newExit ) break;
+
+								}
+
+								if ( oldExit && ! newExit ) {
+
+									data[ name ] = ComponentManager.addDefault( attribute[ i ].type, attribute[ i ].default );
+
+									// add
+									matchFound = true;
+									break;
+
+								} else if ( ! oldExit && ! newExit ) {
+
+									matchFound = true;
+									break;
+
+								}
+
+							} else {
+
+								matchFound = true;
+								break;
+
+							}
 
 						}
 
-						section.appendChild( this.addFieldset( name, data, config ) );
+						if ( ! matchFound ) {
 
-					} else {
-
-						if ( data[ name ] !== undefined ) {
-
-							// remove attribute from data
+							// remove
 							delete data[ name ];
 
 						}
 
+					} else {
+
+						if ( attribute.if !== undefined && attribute.if[ type ] !== undefined ) {
+
+							if ( attribute.if[ type ].includes( data[ type ] ) ) {
+
+								if ( data[ name ] === undefined ) {
+
+									// add attribute to data
+									data[ name ] = ComponentManager.addDefault( attribute.type, attribute.default );
+
+								}
+
+							} else {
+
+								if ( data[ name ] !== undefined ) {
+
+									// remove attribute from data
+									delete data[ name ];
+
+								}
+
+							}
+
+						}
+
 					}
 
-				} else {
-
-					section.appendChild( this.addFieldset( name, data, config ) );
-
 				}
+
+				for ( const name in data )
+					section.appendChild( this.addFieldset( name, data, config ) );
 
 			}
 
@@ -301,14 +314,6 @@ export function SidebarInspector( editor ) {
 			} else {
 
 				component.enabled = false;
-
-				// for components that require loading
-				if ( config.schema[ type ].type === 'asset' ) {
-
-					component.addEventListener( 'load', editor.render );
-
-				}
-
 				component.init( this.cloneData( data ) );
 				component.enabled = true;
 
@@ -581,8 +586,6 @@ export function SidebarInspector( editor ) {
 
 				} );
 				fieldset.appendChild( input );
-				break;
-			case 'class': // REWORK
 				break;
 			case 'entity': // TODO
 				break;
@@ -1403,6 +1406,11 @@ export function SidebarInspector( editor ) {
 		if ( runInEditor ) {
 
 			const _component = entity.addComponent( type, this.cloneData( data ) );
+
+			// for components that require loading
+			_component.addEventListener( 'load', editor.render );
+
+
 			// used by editor to select component by uuid (maybe standardize to TARO engine?)
 			_component.uuid = component.uuid;
 
