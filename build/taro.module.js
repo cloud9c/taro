@@ -54164,7 +54164,7 @@ const textureLoader = new TextureLoader();
 const notAsset = [ 'basic', 'depth', 'lambert', 'matcap', 'normal', 'phong', 'physical', 'standard', 'toon' ];
 const blendingModes = [ 'NoBlending', 'NormalBlending', 'AdditiveBlending', 'SubstractiveBlending', 'MultiplyBlending', 'CustomBlending' ];
 const sides = [ 'FrontSide', 'BackSide', 'DoubleSide' ];
-
+const depthPacking = [ 'BasicDepthPacking', 'RGBADepthPacking' ];
 class Material$1 {
 
 	init( data ) {
@@ -54175,7 +54175,6 @@ class Material$1 {
 		for ( const name in data ) {
 
 			if ( Material$1.config.schema[ name ].type === 'asset' && data[ name ].length > 0 )
-
 				parameters[ name ] = textureLoader.load( data[ name ] );
 			else
 				parameters[ name ] = data[ name ];
@@ -54188,6 +54187,8 @@ class Material$1 {
 			parameters.blending = blendingModes.indexOf( parameters.blending );
 		else if ( parameters.side !== undefined )
 			parameters.side = sides.indexOf( parameters.side );
+		else if ( parameters.depthPacking !== undefined )
+			parameters.depthPacking = depthPacking.indexOf( parameters.depthPacking );
 
 		switch ( type ) {
 
@@ -54301,7 +54302,7 @@ class Material$1 {
 			vertexColors: { default: false, if: { type: notAsset } },
 			vertexTangents: { default: false, if: { type: [ 'standard', 'physical' ] } },
 
-			depthPacking: { type: 'select', default: 'BasicDepthPacking', select: [ 'BasicDepthPacking', 'RGBADepthPacking' ], if: { type: [ 'depth' ] } },
+			depthPacking: { type: 'select', default: 'BasicDepthPacking', select: depthPacking, if: { type: [ 'depth' ] } },
 			skinning: { default: false, if: { type: [ 'basic', 'depth', 'lambert', 'matcap', 'normal', 'phong', 'standard', 'physical', 'toon' ] } },
 
 			map: { type: 'asset', if: { type: [ 'basic', 'depth', 'lambert', 'matcap', 'phong', 'standard', 'physical', 'toon' ] } },
