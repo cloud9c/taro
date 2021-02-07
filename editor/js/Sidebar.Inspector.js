@@ -1257,7 +1257,6 @@ export function SidebarInspector( editor ) {
 			enabled.checked = true;
 		enabled.addEventListener( 'change', function () {
 
-			console.log( entity );
 			entity.castShadow = this.checked;
 			editor.render();
 
