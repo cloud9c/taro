@@ -30,7 +30,8 @@ export function Navbar( editor ) {
 				inspector.addComponent( entity, 'shape', { type: 'sphere' } );
 				break;
 			case 'Plane':
-				inspector.addComponent( entity, 'geometry', { type: 'plane' } );
+				entity.rotation.x = - Math.PI / 2;
+				inspector.addComponent( entity, 'geometry', { type: 'plane', height: 10, width: 10 } );
 				inspector.addComponent( entity, 'material', { type: 'phong' } );
 				inspector.addComponent( entity, 'shape', { type: 'plane' } );
 				break;

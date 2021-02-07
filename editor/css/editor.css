@@ -139,7 +139,7 @@ aside {
 }
 
 .panel section {
-	padding: 12px 12px 12px 12px;
+	padding: 12px 4px 12px 12px;
 	border-bottom: 1px solid var(--border-color);
 	display: flex;
 	flex-direction: column;
@@ -252,6 +252,14 @@ input[type="checkbox"] {
 	appearance: none;
 	margin: 0;
 	cursor: pointer;
+}
+
+input[type="checkbox"]:disabled {
+	cursor:not-allowed;
+}
+
+input[type="checkbox"]:disabled:before {
+	border: 1px solid var(--gray-3);
 }
 
 input[type="checkbox"]:before {

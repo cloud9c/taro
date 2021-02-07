@@ -1143,8 +1143,36 @@ export function SidebarInspector( editor ) {
 
 		enabled = document.createElement( 'INPUT' );
 		enabled.type = 'checkbox';
-		if ( entity.enabled )
+		if ( entity.enabled ) {
+
 			enabled.checked = true;
+
+		} else {
+
+			let object = entity.parent;
+			let disable = false;
+			while ( object.parent !== null ) {
+
+				if ( object.enabled === false ) {
+
+					disable = true;
+					break;
+
+				}
+
+				object = object.parent;
+
+			}
+
+			console.log( disable );
+			if ( disable ) {
+
+				enabled.disabled = true;
+
+			}
+
+		}
+
 		enabled.addEventListener( 'change', function () {
 
 			entity.enabled = this.checked;
