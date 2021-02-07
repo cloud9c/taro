@@ -1,6 +1,17 @@
 import { TransformControls } from './lib/TransformControls.js';
 import { OrbitControls } from './lib/OrbitControls.js';
-import * as TARO from '../../build/taro.module.js';
+import {
+	Entity,
+	Scene,
+	Vector2,
+	Raycaster,
+	BoxHelper,
+	GridHelper,
+	Color,
+	PerspectiveCamera,
+	Box3,
+	MathUtils
+} from '../../build/taro.module.js';
 
 export function Viewport( editor ) {
 
@@ -167,8 +178,8 @@ export function Viewport( editor ) {
 
 	const app = editor.app;
 
-	const scene = this.scene = new TARO.Scene();
-	const sceneHelper = new TARO.Scene();
+	const scene = this.scene = new Scene();
+	const sceneHelper = new Scene();
 	app.setScene( scene );
 
 	this.addEntity = ( name = 'Entity' ) => {
@@ -184,7 +195,7 @@ export function Viewport( editor ) {
 
 		}
 
-		const entity = new TARO.Entity( name, scene );
+		const entity = new Entity( name, scene );
 		const div = document.createElement( 'div' );
 
 		div.innerText = name;
@@ -202,9 +213,9 @@ export function Viewport( editor ) {
 
 	};
 
-	const grid = new TARO.GridHelper( 30, 30 );
-	const color1 = new TARO.Color( 0x7d7d7d );
-	const color2 = new TARO.Color( 0xDCDCDC );
+	const grid = new GridHelper( 30, 30 );
+	const color1 = new Color( 0x7d7d7d );
+	const color2 = new Color( 0xDCDCDC );
 	const attribute = grid.geometry.attributes.color;
 	const array = attribute.array;
 	for ( let i = 0; i < array.length; i += 12 ) {
@@ -221,9 +232,10 @@ export function Viewport( editor ) {
 
 	attribute.needsUpdate = true;
 
-	const outliner = new TARO.BoxHelper();
+	const outliner = new BoxHelper();
 	outliner.material.depthTest = false;
 	outliner.material.transparent = true;
+	outliner.material.opacity = 0.6;
 	outliner.visible = false;
 
 	const helpers = this.helpers = [ ];
@@ -236,7 +248,7 @@ export function Viewport( editor ) {
 	// renderer.observer.disconnect();
 	renderer.setClearColor( 0xc4c4c4 );
 
-	const DEFAULT_CAMERA = new TARO.PerspectiveCamera( 50, 1, 0.01, 1000 );
+	const DEFAULT_CAMERA = new PerspectiveCamera( 50, 1, 0.01, 100000 );
 	const { width, height } = renderer.domElement.getBoundingClientRect();
 	DEFAULT_CAMERA.aspect = width /	height;
 	DEFAULT_CAMERA.updateProjectionMatrix();
@@ -288,8 +300,8 @@ export function Viewport( editor ) {
 
 	};
 
-	const raycaster = new TARO.Raycaster();
-	const mouse = new TARO.Vector2();
+	const raycaster = new Raycaster();
+	const mouse = new Vector2();
 
 	function getIntersects( x, y ) {
 
@@ -333,7 +345,7 @@ export function Viewport( editor ) {
 
 			inputs[ i ].value = value.toFixed( 3 );
 
-			if ( inputs[ i ].dataset.translation === 'rotation' ) inputs[ i ].value = TARO.MathUtils.radToDeg( value ).toFixed( 3 );
+			if ( inputs[ i ].dataset.translation === 'rotation' ) inputs[ i ].value = MathUtils.radToDeg( value ).toFixed( 3 );
 
 		}
 
@@ -348,8 +360,7 @@ export function Viewport( editor ) {
 	} );
 
 	sceneHelper.add( control );
-
-	const box = this.box = new TARO.Box3();
+	const box = this.box = new Box3();
 
 	const updateOutliner = this.updateOutliner = function ( entity ) {
 

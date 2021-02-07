@@ -55,13 +55,14 @@
 		</nav>
 		<main>
 			<aside id="left-sidebar">
+				<div class="resizer" id="left-resizer"></div>
 				<section class="tabs">
 					<div class="tab" data-tab="scene" data-selected>Scene</div>
 					<div class="tab" data-tab="app">App</div>
 					<div class="tab" data-tab="assets">Assets</div>
 				</section>
 				<div class="panel">
-					<div id="scene" style="display: inherit;">
+					<div id="scene" style="display: inline-block;">
 						<section id="scene-tree"></section>
 					</div>
 					<div id="app">2</div>
@@ -111,6 +112,7 @@
 				<canvas id="player" tabindex="0"></canvas>
 			</div>
 			<aside id="right-sidebar">
+				<div class="resizer" id="right-resizer"></div>
 				<section class="tabs">
 					<div class="tab" data-selected>Inspector</div>
 				</section>

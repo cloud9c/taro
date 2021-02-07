@@ -1,5 +1,3 @@
-import * as TARO from '../../build/taro.module.js';
-
 export function SidebarScene( editor ) {
 
 	const inspector = editor.inspector;

@@ -111,9 +111,8 @@ aside {
 }
 
 .panel {
-	overflow-x: hidden;
-	overflow-y: auto;
 	flex-grow: 1;
+	overflow: auto;
 }
 
 /* width */
@@ -140,7 +139,7 @@ aside {
 }
 
 .panel section {
-	padding: 12px 0 12px 12px;
+	padding: 12px 12px 12px 12px;
 	border-bottom: 1px solid var(--border-color);
 	display: flex;
 	flex-direction: column;
@@ -163,6 +162,7 @@ legend {
 	user-select: none;
 	padding: 0;
 	width: 112px;
+	flex: 1;
 	padding-right: 6px;
 	float: left;
 	white-space: initial;
@@ -186,7 +186,7 @@ select {
 	background-size: 16px;
 	height: 22px;
 	outline: 0;
-	min-width: 120px;
+	width: 162px;
 }
 
 label {
@@ -209,9 +209,6 @@ input[type="color"], .file-wrapper {
 	padding: 0;
 	width: 22px;
 	height: 22px;
-	border: 1px solid var(--border-color);
-	background-color: transparent;
-	padding: 0;
 }
 
 input[type="color"]::-webkit-color-swatch-wrapper {
@@ -320,12 +317,12 @@ input[type="checkbox"]:checked:after {
 }
 
 #linear-fog input {
-	width: 57px;
+	width: 78px;
 	padding-left: 4px;
 }
 
 #exponential-fog input {
-	width: 120px;
+	width: 162px;
 	padding-left: 4px;
 }
 
@@ -360,6 +357,7 @@ input[type="checkbox"]:checked:after {
 	cursor: pointer;
 	user-select: none;
 	border: 1px dashed transparent;
+	white-space: nowrap;
 }
 
 #scene-tree .drag-into {
@@ -503,24 +501,35 @@ section.component {
 
 .component input[type="color"] {
 	width: 60px;
-	margin-right: auto;
+	margin-right: 102px;
 }
 
 /*general*/
 
 #left-sidebar {
 	border-right: 1px solid var(--border-color);
-}
-
-#left-sidebar .panel {
-	resize: horizontal;
-	min-width: 240px;
-	overflow-x: auto;
+	width: 240px;
 }
 
 #right-sidebar {
 	border-left: 1px solid var(--border-color);
 	width: 299px;
+}
+
+.resizer {
+	position: absolute;
+	width: 7px;
+	height: 100%;
+	cursor: e-resize;
+	z-index: 1;
+}
+
+#left-resizer {
+	right: -4px;
+}
+
+#right-resizer {
+	left: -4px;
 }
 
 #viewport {

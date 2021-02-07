@@ -1,4 +1,21 @@
-import * as TARO from '../../build/taro.module.js';
+import {
+	TextureLoader,
+	CameraHelper,
+	PointLightHelper,
+	DirectionalLightHelper,
+	SpotLightHelper,
+	HemisphereLightHelper,
+	SkeletonHelper,
+	ComponentManager,
+	WebGLCubeRenderTarget,
+	Sprite,
+	SpriteMaterial,
+	Fog,
+	FogExp2,
+	Color,
+	MathUtils,
+	Box3
+} from '../../build/taro.module.js';
 
 export function SidebarInspector( editor ) {
 
@@ -6,47 +23,60 @@ export function SidebarInspector( editor ) {
 	const scene = editor.viewport.scene;
 	const closedComponents = {};
 	let currentEntity = undefined;
+	const box = new Box3();
 	const helpers = editor.viewport.helpers;
 	const icons = editor.viewport.icons;
 	const iconMaterials = {
 		light: null,
 		camera: null
 	};
-	const box = new TARO.Box3();
 	let currentDrag = undefined;
-	const textureLoader = new TARO.TextureLoader();
+	const textureLoader = new TextureLoader();
 
 	function addHelpers( entity ) {
 
-		const children = entity.children;
-		for ( let i = 0, len = children.length; i < len; i ++ ) {
+		const components = entity.components;
+		for ( let i = 0, len = components.length; i < len; i ++ ) {
 
-			const object = children[ i ];
+			const object = components[ i ];
+
+			if ( closedComponents[ object.componentType ] === true || object.enabled === false ) continue;
 
 			let helper;
-			if ( object.isCamera ) {
 
-				helper = new TARO.CameraHelper( object );
+			if ( object.componentType === 'camera' && object.ref !== undefined ) {
 
-			} else if ( object.isPointLight ) {
+				helper = new CameraHelper( object.ref );
 
-				helper = new TARO.PointLightHelper( object, 1 );
+			} else if ( object.componentType === 'light' && object.ref !== undefined ) {
 
-			} else if ( object.isDirectionalLight ) {
+				const ref = object.ref;
 
-				helper = new TARO.DirectionalLightHelper( object, 1 );
+				if ( ref.isPointLight ) {
 
-			} else if ( object.isSpotLight ) {
+					helper = new PointLightHelper( object.ref, 1 );
 
-				helper = new TARO.SpotLightHelper( object, 1 );
+				} else if ( ref.isDirectionalLight ) {
 
-			} else if ( object.isHemisphereLight ) {
+					helper = new DirectionalLightHelper( object.ref, 1 );
 
-				helper = new TARO.HemisphereLightHelper( object, 1 );
+				} else if ( ref.isSpotLight ) {
 
-			} else if ( object.isSkinnedMesh ) {
+					helper = new SpotLightHelper( object.ref, 1 );
 
-				helper = new TARO.SkeletonHelper( object.skeleton.bones[ 0 ] );
+				} else if ( ref.isHemisphereLight ) {
+
+					helper = new HemisphereLightHelper( object.ref, 1 );
+
+				} else {
+
+					continue;
+
+				}
+
+			} else if ( object.componentType === 'model' && object.ref !== undefined ) {
+
+				helper = new SkeletonHelper( object.ref.skeleton.bones[ 0 ] );
 
 			} else {
 
@@ -64,11 +94,8 @@ export function SidebarInspector( editor ) {
 
 	function removeHelpers() {
 
-		for ( let i = 0, len = helpers.length; i < len; i ++ ) {
-
+		for ( let i = 0, len = helpers.length; i < len; i ++ )
 			scene.remove( helpers[ i ] );
-
-		}
 
 		// empty array while maintaing reference in viewport
 		helpers.length = 0;
@@ -90,7 +117,7 @@ export function SidebarInspector( editor ) {
 
 			for ( let i = 0, len = components.length; i < len; i ++ ) {
 
-				const config = TARO.ComponentManager.components[ components[ i ].type ].config;
+				const config = ComponentManager.components[ components[ i ].type ].config;
 				inspector.appendChild( this.addSection( components[ i ], config ) );
 
 			}
@@ -119,9 +146,23 @@ export function SidebarInspector( editor ) {
 
 		if ( schema === undefined ) return;
 
+		while ( section.children.length > 1 )
+			section.removeChild( section.lastChild );
+
+		// if ( schema !== undefined ) {
+
+		// 	for ( const type in data ) {
+
+		// 		section.appendChild( this.addFieldset( type, data, config ) );
+
+		// 	}
+
+		// }
+
 		for ( const name in schema ) {
 
 			let attribute = schema[ name ];
+
 			if ( Array.isArray( attribute ) ) {
 
 				let currentAttribute;
@@ -147,14 +188,7 @@ export function SidebarInspector( editor ) {
 
 						if ( oldExit && ! newExit ) {
 
-							if ( data[ name ] !== undefined ) {
-
-								section.querySelector( 'fieldset[data-type="' + name + '"]' ).remove();
-
-							}
-
-							data[ name ] = TARO.ComponentManager.addDefault( attribute[ i ].type, attribute[ i ].default );
-							section.appendChild( this.addFieldset( name, data, config ) );
+							data[ name ] = ComponentManager.addDefault( attribute[ i ].type, attribute[ i ].default );
 
 							// add
 							matchFound = true;
@@ -176,13 +210,14 @@ export function SidebarInspector( editor ) {
 
 				}
 
-				const fieldset = section.querySelector( 'fieldset[data-type="' + name + '"]' );
-
-				if ( ! matchFound && fieldset !== null ) {
+				if ( ! matchFound ) {
 
 					// remove
 					delete data[ name ];
-					fieldset.remove();
+
+				} else {
+
+					section.appendChild( this.addFieldset( name, data, config ) );
 
 				}
 
@@ -195,24 +230,26 @@ export function SidebarInspector( editor ) {
 						if ( data[ name ] === undefined ) {
 
 							// add attribute to data
-							data[ name ] = TARO.ComponentManager.addDefault( attribute.type, attribute.default );
-							section.appendChild( this.addFieldset( name, data, config ) );
+							data[ name ] = ComponentManager.addDefault( attribute.type, attribute.default );
 
 						}
 
-					} else {
+						section.appendChild( this.addFieldset( name, data, config ) );
 
-						const fieldset = section.querySelector( 'fieldset[data-type="' + name + '"]' );
+					} else {
 
 						if ( data[ name ] !== undefined ) {
 
 							// remove attribute from data
 							delete data[ name ];
-							fieldset.remove();
 
 						}
 
 					}
+
+				} else {
+
+					section.appendChild( this.addFieldset( name, data, config ) );
 
 				}
 
@@ -251,7 +288,8 @@ export function SidebarInspector( editor ) {
 
 				}
 
-				component.init( Object.assign( {}, data ) );
+				component.init( data );
+				console.log( component.ref );
 				component.enabled = true;
 
 			}
@@ -449,6 +487,7 @@ export function SidebarInspector( editor ) {
 			case 'boolean':
 				input = document.createElement( 'INPUT' );
 				input.type = 'checkbox';
+				input.style.width = '162px';
 				if ( value ) input.checked = true;
 				input.addEventListener( 'change', () => {
 
@@ -463,7 +502,7 @@ export function SidebarInspector( editor ) {
 			case 'int':
 				input = document.createElement( 'INPUT' );
 				input.type = 'number';
-				input.style.width = '114px';
+				input.style.width = '162px';
 				input.value = value;
 				input.addEventListener( 'change', () => {
 
@@ -512,6 +551,7 @@ export function SidebarInspector( editor ) {
 			case 'asset': // TODO
 				input = document.createElement( 'INPUT' );
 				input.type = 'text';
+				input.style.width = '162px';
 				input.value = value;
 				input.addEventListener( 'change', () => {
 
@@ -573,7 +613,7 @@ export function SidebarInspector( editor ) {
 
 					textureLoader.load( 'img/' + type + '.svg', function ( texture ) {
 
-						iconMaterials[ type ] = new TARO.SpriteMaterial( { map: texture } );
+						iconMaterials[ type ] = new SpriteMaterial( { map: texture } );
 						createSprite( entity, type );
 
 					} );
@@ -752,7 +792,7 @@ export function SidebarInspector( editor ) {
 				const components = currentEntity.componentData;
 				for ( let i = 0, len = components.length; i < len; i ++ ) {
 
-					const dependencies = TARO.ComponentManager.components[ components[ i ].type ].config.dependencies;
+					const dependencies = ComponentManager.components[ components[ i ].type ].config.dependencies;
 
 					if ( dependencies !== undefined && dependencies.includes( component.type ) )
 						this.removeComponent( currentEntity, components[ i ] );
@@ -779,6 +819,8 @@ export function SidebarInspector( editor ) {
 				removeHelpers();
 				addHelpers( currentEntity );
 
+				editor.render();
+
 			}
 
 			verified = false;
@@ -804,10 +846,10 @@ export function SidebarInspector( editor ) {
 
 	this.addSceneSection = function () {
 
-		let colorBackground = new TARO.Color();
+		let colorBackground = new Color();
 		let textureBackground, textureEquirect, environmentTexture;
-		const fog = new TARO.Fog();
-		const fogExp2 = new TARO.FogExp2();
+		const fog = new Fog();
+		const fogExp2 = new FogExp2();
 
 		function processFile( files, target ) {
 
@@ -815,7 +857,7 @@ export function SidebarInspector( editor ) {
 
 			const canvas = target.getElementsByClassName( 'file-display' )[ 0 ];
 			const context = canvas.getContext( '2d' );
-			const reader = new TARO.FileReader();
+			const reader = new FileReader();
 
 			reader.onload = () => {
 
@@ -836,7 +878,7 @@ export function SidebarInspector( editor ) {
 							onTextureOption();
 							break;
 						case 'background-equirect':
-							textureEquirect = new TARO.WebGLCubeRenderTarget( image.height );
+							textureEquirect = new WebGLCubeRenderTarget( image.height );
 							textureEquirect.fromEquirectangularTexture( renderer, texture );
 							onEquirectOption();
 							break;
@@ -943,23 +985,23 @@ export function SidebarInspector( editor ) {
 
 				case 'none':
 					scene.background = null;
-					this.style.removeProperty( 'min-width' );
+					this.style.removeProperty( 'width' );
 					editor.render();
 					break;
 				case 'color':
 					document.getElementById( 'background-color' ).style.setProperty( 'display', 'inherit' );
 					onColorOption( event.target );
-					this.style.setProperty( 'min-width', '90px' );
+					this.style.setProperty( 'width', '132px' );
 					break;
 				case 'texture':
 					document.getElementById( 'background-texture' ).style.setProperty( 'display', 'inherit' );
 					onTextureOption();
-					this.style.setProperty( 'min-width', '90px' );
+					this.style.setProperty( 'width', '132px' );
 					break;
 				case 'equirect':
 					document.getElementById( 'background-equirect' ).style.setProperty( 'display', 'inherit' );
 					onEquirectOption();
-					this.style.setProperty( 'min-width', '90px' );
+					this.style.setProperty( 'width', '132px' );
 
 			}
 
@@ -984,12 +1026,12 @@ export function SidebarInspector( editor ) {
 					document.getElementById( 'environment-texture' ).style.removeProperty( 'display' );
 					scene.environment = null;
 					editor.render();
-					this.style.removeProperty( 'min-width' );
+					this.style.removeProperty( 'width' );
 					break;
 				case 'texture':
 					document.getElementById( 'environment-texture' ).style.setProperty( 'display', 'inherit' );
 					onEnvironmentOption();
-					this.style.setProperty( 'min-width', '90px' );
+					this.style.setProperty( 'width', '132px' );
 					break;
 
 			}
@@ -1019,18 +1061,18 @@ export function SidebarInspector( editor ) {
 
 				case 'none':
 					scene.fog = null;
-					this.style.removeProperty( 'min-width' );
+					this.style.removeProperty( 'width' );
 					editor.render();
 					break;
 				case 'linear':
 					document.getElementById( 'linear-fog' ).style.setProperty( 'display', 'flex' );
-					this.style.setProperty( 'min-width', '90px' );
+					this.style.setProperty( 'width', '132px' );
 					linearColor.style.setProperty( 'display', 'inherit' );
 					setFog();
 					break;
 				case 'exponential':
 					document.getElementById( 'exponential-fog' ).style.setProperty( 'display', 'flex' );
-					this.style.setProperty( 'min-width', '90px' );
+					this.style.setProperty( 'width', '132px' );
 					expColor.style.setProperty( 'display', 'inherit' );
 					setExpFog();
 					break;
@@ -1093,7 +1135,7 @@ export function SidebarInspector( editor ) {
 		type.type = 'text';
 		type.value = entity.name;
 		type.style.marginLeft = '8px';
-		type.style.width = '250px';
+		type.style.width = '100%';
 		type.addEventListener( 'change', function () {
 
 			entity.name = this.value;
@@ -1126,7 +1168,7 @@ export function SidebarInspector( editor ) {
 
 					input.addEventListener( 'change', function () {
 
-						entity[ translation[ i ] ][ xyz[ j ] ] = TARO.MathUtils.degToRad( parseFloat( this.value ) );
+						entity[ translation[ i ] ][ xyz[ j ] ] = MathUtils.degToRad( parseFloat( this.value ) );
 						editor.render();
 
 					} );
@@ -1203,6 +1245,7 @@ export function SidebarInspector( editor ) {
 
 		enabled = document.createElement( 'INPUT' );
 		enabled.type = 'checkbox';
+		enabled.style.width = '162px';
 		if ( entity.visible )
 			enabled.checked = true;
 		enabled.addEventListener( 'change', function () {
@@ -1229,12 +1272,12 @@ export function SidebarInspector( editor ) {
 
 		componentSelector.addEventListener( 'focus', () => {
 
-			const components = Object.keys( TARO.ComponentManager.components ).sort();
+			const components = Object.keys( ComponentManager.components ).sort();
 			for ( let i = 0, len = components.length; i < len; i ++ ) {
 
 				const type = components[ i ];
 
-				const multiple = TARO.ComponentManager.components[ type ].config.multiple;
+				const multiple = ComponentManager.components[ type ].config.multiple;
 				const componentData = entity.componentData;
 				if ( multiple !== true && componentData !== undefined ) {
 
@@ -1306,12 +1349,12 @@ export function SidebarInspector( editor ) {
 
 		const componentData = entity.componentData;
 
-		const component = { type, data, uuid: TARO.MathUtils.generateUUID(), enabled: true };
-		const config = TARO.ComponentManager.components[ type ].config;
+		const component = { type, data, uuid: MathUtils.generateUUID(), enabled: true };
+		const config = ComponentManager.components[ type ].config;
 		const schema = config.schema;
 		const runInEditor = config.runInEditor === true;
 
-		if ( schema !== undefined ) TARO.ComponentManager.sanitizeData( component.data, schema );
+		if ( schema !== undefined ) ComponentManager.sanitizeData( component.data, schema );
 
 		if ( config.dependencies !== undefined ) {
 
@@ -1339,13 +1382,18 @@ export function SidebarInspector( editor ) {
 
 		if ( runInEditor ) {
 
-			const _component = entity.addComponent( type, Object.assign( {}, component.data ) );
+			const _component = entity.addComponent( type, component.data );
 			// used by editor to select component by uuid (maybe standardize to TARO engine?)
 			_component.uuid = component.uuid;
 
 		}
 
-		if ( entity === currentEntity ) inspector.appendChild( this.addSection( component, config ) );
+		if ( entity === currentEntity ) {
+
+			inspector.appendChild( this.addSection( component, config ) );
+			editor.viewport.updateOutliner( entity );
+
+		}
 
 		entity.componentData.push( component );
 		this.updateIcon( entity );
@@ -1356,7 +1404,7 @@ export function SidebarInspector( editor ) {
 
 	this.removeComponent = function ( entity, component ) {
 
-		const config = TARO.ComponentManager.components[ component.type ].config;
+		const config = ComponentManager.components[ component.type ].config;
 
 		const index = entity.componentData.indexOf( component );
 		entity.componentData.splice( index, 1 );
@@ -1406,7 +1454,7 @@ export function SidebarInspector( editor ) {
 
 	function createSprite( entity, type ) {
 
-		const sprite = new TARO.Sprite( iconMaterials[ type ] );
+		const sprite = new Sprite( iconMaterials[ type ] );
 		sprite.name = type;
 		icons.push( sprite );
 		entity.add( sprite );

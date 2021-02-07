@@ -36,7 +36,7 @@ export function Navbar( editor ) {
 				inspector.addComponent( entity, 'material', { type: 'phong' } );
 				break;
 			case 'Model':
-				inspector.addComponent( entity, 'model' );
+				inspector.addComponent( entity, 'model', { asset: 'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/models/gltf/Duck/glTF-Binary/Duck.glb' } );
 				break;
 			case 'Light':
 				inspector.addComponent( entity, 'light' );

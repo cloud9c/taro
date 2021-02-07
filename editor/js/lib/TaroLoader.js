@@ -1,4 +1,16 @@
-import { Application, Entity, Scene, Loader, Color, Fog, FogExp2, ComponentManager, Vector2, Vector3, Vector4 } from '../../../build/taro.module.js';
+import {
+	Application,
+	Entity,
+	Scene,
+	Loader,
+	Color,
+	Fog,
+	FogExp2,
+	ComponentManager,
+	Vector2,
+	Vector3,
+	Vector4
+} from '../../../build/taro.module.js';
 
 export class TaroLoader extends Loader {
 
@@ -108,13 +120,12 @@ export class TaroLoader extends Loader {
 
 	parseEntity( data, parent ) {
 
-		const object = new Entity();
+		const object = new Entity( data.name, parent );
 		object.uuid = data.uuid;
 		object.matrix.fromArray( data.matrix );
 		object.matrix.decompose( object.position, object.quaternion, object.scale );
 
 		if ( data.tags !== undefined ) object.tags = data.tags;
-		if ( data.name !== undefined ) object.name = data.name;
 		if ( data.castShadow !== undefined ) object.castShadow = data.castShadow;
 		if ( data.receiveShadow !== undefined ) object.receiveShadow = data.receiveShadow;
 		if ( data.visible !== undefined ) object.visible = data.visible;
@@ -172,8 +183,6 @@ export class TaroLoader extends Loader {
 			}
 
 		}
-
-		parent.add( object );
 
 		return object;
 

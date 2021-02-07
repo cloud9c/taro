@@ -18,10 +18,7 @@ export function Sidebar() {
 	}
 
 	const tabs = document.getElementsByClassName( 'tabs' );
-	for ( let i = 0, len = tabs.length; i < len; i ++ ) {
-
+	for ( let i = 0, len = tabs.length; i < len; i ++ )
 		tabs[ i ].addEventListener( 'pointerdown', onPointerDown );
-
-	}
 
 }
