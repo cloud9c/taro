@@ -54189,7 +54189,7 @@ class Material$1 {
 		if ( parameters.side !== undefined )
 			parameters.side = sides.indexOf( parameters.side );
 		if ( parameters.depthPacking !== undefined )
-			parameters.depthPacking = depthPacking.indexOf( parameters.depthPacking );
+			parameters.depthPacking = depthPacking.indexOf( parameters.depthPacking ) + 3200;
 
 		switch ( type ) {
 
