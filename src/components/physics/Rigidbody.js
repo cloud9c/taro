@@ -34,13 +34,13 @@ class Rigidbody {
 
 	onEnable() {
 
-		this.scene.physicsWorld.addBody( this.ref );
+		this.app.physics.addBody( this.ref );
 
 	}
 
 	onDisable() {
 
-		this.scene.physicsWorld.removeBody( this.ref );
+		this.app.physics.removeBody( this.ref );
 
 	}
 
@@ -62,7 +62,7 @@ class Rigidbody {
 			sleepTimeLimit: { default: 1, min: 0, if: { type: [ 'dynamic', 'kinematic' ] } },
 
 			// overrides the individual shapes
-			physicsMaterial: { type: 'asset', default: null },
+			physicsMaterial: { type: 'asset' },
 			collisionResponse: { default: true },
 			collisionFilterGroup: { type: 'int', default: 1 },
 			collisionFilterMask: { type: 'int', default: - 1 },

@@ -92,7 +92,7 @@ class Shape {
 	static config = {
 		schema: {
 			type: { type: 'select', default: 'box', select: [ 'box', 'sphere', 'plane', 'cylinder', 'convex', 'particle', 'heightfield' ] },
-			physicsMaterial: { type: 'asset', default: null },
+			physicsMaterial: { type: 'asset' },
 
 			halfExtents: { type: 'vector3', min: 0, default: [ 0.5, 0.5, 0.5 ], if: { type: [ 'box' ] } },
 			radius: { default: 1, min: 0, if: { type: [ 'sphere' ] } },

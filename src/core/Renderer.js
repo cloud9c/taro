@@ -7,12 +7,19 @@ export class Renderer extends WebGLRenderer {
 		super( parameters );
 
 		this.scene = undefined;
-		this.cameras = {};
+		this.cameras = [];
 
 		this.setPixelRatio( window.devicePixelRatio );
 
 		this.observer = new ResizeObserver( () => this._onResize() );
 		this.observer.observe( this.domElement );
+
+	}
+
+	_updateScene( scene ) {
+
+		this.cameras = scene.components.camera;
+		this.scene = scene;
 
 	}
 
@@ -27,13 +34,6 @@ export class Renderer extends WebGLRenderer {
 			cameras[ i ]._updateRegion( canvas );
 
 		this.update();
-
-	}
-
-	_updateScene( scene ) {
-
-		this.cameras = scene.components.camera;
-		this.scene = scene;
 
 	}
 

@@ -1,6 +1,5 @@
 import { Scene as TS } from '../lib/three.module.js';
 import { Application } from './Application.js';
-import { World } from '../lib/cannon.js';
 
 export class Scene extends TS {
 
@@ -9,7 +8,6 @@ export class Scene extends TS {
 		super();
 
 		this.components = { rigidbody: [], camera: [] };
-		this.physicsWorld = new World( { allowSleep: true } );
 
 		if ( name !== undefined )
 			this.name = name;

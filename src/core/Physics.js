@@ -1,4 +1,5 @@
 import { Quaternion, Vector3, Matrix4 } from '../lib/three.module.js';
+import { World } from '../lib/cannon.js';
 
 const _v1 = new Vector3();
 const _v2 = new Vector3();
@@ -6,33 +7,41 @@ const _q1 = new Quaternion();
 const _m1 = new Matrix4();
 const SLEEPING = 2;
 
-export class Physics {
+export class Physics extends World {
 
 	constructor( parameters ) {
 
-		this._gravity = parameters.gravity !== undefined ? parameters.gravity : new Vector3( 0, - 9.80665, 0 );
-		this.world = undefined;
-		this.rigidbodies = undefined;
-
-	}
-	get gravity() {
-
-		return this._gravity;
-
-	}
-	set gravity( gravity ) {
-
-		this.world.gravity.copy( gravity );
-		this._gravity = gravity;
+		super( parameters );
+		this.epsilon = parameters.epsilon !== undefined ? parameters.epsilon : 0.001;
+		this.gravity = parameters.gravity !== undefined ? parameters.gravity : new Vector3( 0, - 9.78033, 0 );
+		this.rigidbodies = [];
 
 	}
 
 	_updateScene( scene ) {
 
-		this.world = scene.physicsWorld;
-		this.world.gravity.copy( this._gravity );
+		// remove old bodies and constraints
+		for ( let i = 0, len = this.bodies.length; i < len; i ++ )
+			physics.removeBody( this.bodies[ i ] );
+
+		for ( let i = 0, len = this.constraints.length; i < len; i ++ )
+			physics.removeConstraint( this.constraints[ i ] );
+
+		// add new bodies and constraints
 
 		this.rigidbodies = scene.components.rigidbody;
+
+		for ( let i = 0, len = this.rigidbodies.length; i < len; i ++ )
+			physics.addBody( this.rigidbodies[ i ].ref );
+
+		const constraints = scene.components.constraints;
+
+		if ( constraints !== undefined ) {
+
+			for ( let i = 0, len = bodies.length; i < len; i ++ )
+				physics.addConstraint( constraints[ i ].ref );
+
+		}
 
 	}
 
@@ -87,9 +96,9 @@ export class Physics {
 
 		}
 
-		this.world.step( fixedTimestep, deltaTime );
+		this.step( fixedTimestep, deltaTime );
 
-		if ( this.world.hasActiveBodies ) {
+		if ( this.hasActiveBodies ) {
 
 			for ( let i = 0, len = rigidbodies.length; i < len; i ++ ) {
 
@@ -126,18 +135,15 @@ export class Physics {
 
 	hasVectorChanged( v1, v2 ) {
 
-		return ! ( Math.abs( v1.x - v2.x ) < 0.001 &&
-				 Math.abs( v1.y - v2.y ) < 0.001 &&
-				 Math.abs( v1.z - v2.z ) < 0.001 );
+		const e = this.epsilon;
+		return ! ( Math.abs( v1.x - v2.x ) < e && Math.abs( v1.y - v2.y ) < e && Math.abs( v1.z - v2.z ) < e );
 
 	}
 
 	hasQuaternionChanged( q1, q2 ) {
 
-		return ! ( Math.abs( q1.x - q2.x ) < 0.001 &&
-				 Math.abs( q1.y - q2.y ) < 0.001 &&
-				 Math.abs( q1.z - q2.z ) < 0.001 &&
-				 Math.abs( q1.w - q2.w ) < 0.001 );
+		const e = this.epsilon;
+		return ! ( Math.abs( q1.x - q2.x ) < e && Math.abs( q1.y - q2.y ) < e && Math.abs( q1.z - q2.z ) < e && Math.abs( q1.w - q2.w ) < e );
 
 	}
 

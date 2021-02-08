@@ -85,14 +85,20 @@ export class Application {
 
 	setScene( scene ) {
 
-		if ( this.scenes.indexOf( scene ) === - 1 )
-			this.addScene( scene );
+		if ( this.currentScene !== scene ) {
 
-		this.components = scene.components;
-		this.currentScene = scene;
+			if ( this.scenes.indexOf( scene ) === - 1 )
+				this.addScene( scene );
 
-		this.renderer._updateScene( scene );
-		this.physics._updateScene( scene );
+			const oldScene = this.currentScene;
+
+			this.components = scene.components;
+			this.currentScene = scene;
+
+			this.renderer._updateScene( scene );
+			this.physics._updateScene( scene );
+
+		}
 
 		return scene;
 

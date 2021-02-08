@@ -77,13 +77,13 @@ class Constraint {
 
 	onEnable() {
 
-		this.entity.scene.physicsWorld.addConstraint( this.ref );
+		this.app.physics.addConstraint( this.ref );
 
 	}
 
 	onDisable() {
 
-		this.entity.scene.physicsWorld.removeConstraint( this.ref );
+		this.app.physics.removeConstraint( this.ref );
 
 	}
 
