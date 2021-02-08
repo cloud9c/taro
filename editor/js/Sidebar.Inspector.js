@@ -643,7 +643,7 @@ export function SidebarInspector( editor ) {
 				input.type = 'text';
 				input.style.width = '140px';
 				input.style.marginRight = '6px';
-				console.log( value, input.value );
+				console.log( data );
 				input.value = value.split( '/' ).pop();
 				input.addEventListener( 'change', () => {
 
