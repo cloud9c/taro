@@ -641,8 +641,10 @@ export function SidebarInspector( editor ) {
 			case 'asset': // TODO
 				input = document.createElement( 'INPUT' );
 				input.type = 'text';
-				input.style.width = '162px';
-				input.value = value;
+				input.style.width = '140px';
+				input.style.marginRight = '6px';
+				console.log( value, input.value );
+				input.value = value.split( '/' ).pop();
 				input.addEventListener( 'change', () => {
 
 					const oldValue = data[ currentType ];
@@ -650,7 +652,22 @@ export function SidebarInspector( editor ) {
 					this.onInspectorChange( fieldset, type, data, oldValue, config );
 
 				} );
+				input.addEventListener( 'focus', () => {
+
+					input.value = data[ currentType ];
+
+				} );
+				input.addEventListener( 'focusout', () => {
+
+					input.value = input.value.split( '/' ).pop();
+
+				} );
 				fieldset.appendChild( input );
+
+				const icon = document.createElement( 'IMG' );
+				icon.src = 'img/add.svg';
+				icon.classList.add( 'asset-icon' );
+				fieldset.appendChild( icon );
 				break;
 			case 'entity': // TODO
 				break;
@@ -811,13 +828,9 @@ export function SidebarInspector( editor ) {
 		section.addEventListener( 'drop', onDrop );
 		section.addEventListener( 'dragleave', onDragLeave );
 
-		const trash = document.createElement( 'A' );
+		const trash = document.createElement( 'IMG' );
 		trash.classList.add( 'trash' );
-		fetch( 'img/trash.svg' ).then( r => r.text() ).then( text => {
-
-			trash.insertAdjacentHTML( 'beforeend', text );
-
-		} );
+		trash.src = 'img/trash.svg';
 
 		const title = document.createElement( 'H1' );
 		title.textContent = component.type;

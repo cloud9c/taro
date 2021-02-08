@@ -16,7 +16,7 @@ export function Viewport( editor ) {
 	let currentDrag;
 	this.currentEntity = undefined;
 
-	const onDragStart = this.onDragStart = function ( event ) {
+	const onDragStart = this.onDragStart = ( event ) => {
 
 		currentDrag = this;
 		if ( event !== undefined ) event.dataTransfer.effectAllowed = 'move';
@@ -51,7 +51,7 @@ export function Viewport( editor ) {
 
 	}
 
-	const onDrop = this.onDrop = function ( event ) {
+	const onDrop = this.onDrop = ( event ) => {
 
 		if ( currentDrag !== undefined && currentDrag !== this ) {
 
@@ -311,19 +311,18 @@ export function Viewport( editor ) {
 	camera.lookAt( 0, 200, 0 );
 
 	const orbit = this.orbit = new OrbitControls( camera, dom );
-	orbit.update();
-
-	orbit.addEventListener( 'change', function ( event ) {
+	orbit.addEventListener( 'change', ( event ) => {
 
 		dragging = true;
 		render();
 
 	} );
+	orbit.update();
 
 	const control = this.control = new TransformControls( camera, dom );
 	let onControl = false;
 
-	control.addEventListener( 'change', function ( event ) {
+	control.addEventListener( 'change', ( event ) => {
 
 		const section = document.getElementById( 'entity-section' );
 		const entity = event.target.object;
@@ -343,7 +342,7 @@ export function Viewport( editor ) {
 		render();
 
 	} );
-	control.addEventListener( 'dragging-changed', function ( event ) {
+	control.addEventListener( 'dragging-changed', ( event ) => {
 
 		onControl = event.value;
 		orbit.enabled = ! event.value;
