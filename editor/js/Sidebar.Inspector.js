@@ -14,7 +14,12 @@ import {
 	FogExp2,
 	Color,
 	MathUtils,
-	Box3
+	Box3,
+	PlaneGeometry,
+	Mesh,
+	BoxGeometry,
+	SphereGeometry,
+	CylinderGeometry,
 } from '../../build/taro.module.js';
 
 export function SidebarInspector( editor ) {
@@ -35,59 +40,120 @@ export function SidebarInspector( editor ) {
 
 	function addHelpers( entity ) {
 
-		const components = entity.components;
+		const components = entity.componentData;
+		const editorComponent = entity.components;
 		for ( let i = 0, len = components.length; i < len; i ++ ) {
 
-			const object = components[ i ];
+			const component = components[ i ];
+			const _component = editorComponent[ i ];
 
-			if ( closedComponents[ object.componentType ] === true || object.enabled === false ) continue;
+			if ( closedComponents[ component.type ] === true || component.enabled === false ) continue;
 
-			let helper;
+			let helper = undefined;
 
-			if ( object.componentType === 'camera' && object.ref !== undefined ) {
+			if ( component.type === 'camera' && _component.ref !== undefined ) {
 
-				helper = new CameraHelper( object.ref );
+				helper = new CameraHelper( _component.ref );
 
-			} else if ( object.componentType === 'light' && object.ref !== undefined ) {
+			} else if ( component.type === 'light' && _component.ref !== undefined ) {
 
-				const ref = object.ref;
+				const ref = _component.ref;
 
-				if ( ref.isPointLight ) {
+				switch ( ref.type ) {
 
-					helper = new PointLightHelper( object.ref, 1 );
-
-				} else if ( ref.isDirectionalLight ) {
-
-					helper = new DirectionalLightHelper( object.ref, 1 );
-
-				} else if ( ref.isSpotLight ) {
-
-					helper = new SpotLightHelper( object.ref, 1 );
-
-				} else if ( ref.isHemisphereLight ) {
-
-					helper = new HemisphereLightHelper( object.ref, 1 );
-
-				} else {
-
-					continue;
+					case 'DirectionalLight':
+						helper = new DirectionalLightHelper( ref, 1 );
+						break;
+					case 'HemisphereLight':
+						helper = new HemisphereLightHelper( ref, 1 );
+						break;
+					case 'PointLight':
+						helper = new PointLightHelper( ref, 1 );
+						break;
+					case 'SpotLight':
+						helper = new SpotLightHelper( ref, 1 );
+						break;
 
 				}
 
-			} else if ( object.componentType === 'model' && object.ref !== undefined ) {
+			} else if ( component.type === 'model' && _component.ref !== undefined ) {
 
 				// helper = new SkeletonHelper( object.ref.skeleton.bones[ 0 ] );
-				continue;
 
-			} else {
+			} else if ( component.type === 'shape' ) {
 
-				// no helper for this object type
-				continue;
+				let geo;
+				const data = component.data;
+
+				switch ( component.data.type ) {
+
+					case 'box':
+						geo = new BoxGeometry( data.halfExtents.x * 2, data.halfExtents.y * 2, data.halfExtents.z * 2 );
+						helper = new Mesh( geo );
+						helper.material.color.set( 0x00ff00 );
+						helper.material.wireframe = true;
+						helper.position.copy( component.data.offset );
+						helper.rotation.setFromVector3( component.data.orientation );
+						entity.add( helper );
+						break;
+					case 'sphere':
+						geo = new SphereGeometry( data.radius, 16, 16 );
+						helper = new Mesh( geo );
+						helper.material.color.set( 0x00ff00 );
+						helper.material.wireframe = true;
+						helper.position.copy( component.data.offset );
+						helper.rotation.setFromVector3( component.data.orientation );
+						entity.add( helper );
+						break;
+					case 'plane':
+						geo = new PlaneGeometry( 10, 10 );
+						helper = new Mesh( geo );
+						helper.material.color.set( 0x00ff00 );
+						helper.material.wireframe = true;
+						helper.position.copy( data.offset );
+						helper.rotation.setFromVector3( data.orientation );
+						entity.add( helper );
+						break;
+					case 'cylinder':
+						geo = new CylinderGeometry( data.radiusTop, data.radiusBottom, data.height, data.numSegments );
+						helper = new Mesh( geo );
+						helper.material.color.set( 0x00ff00 );
+						helper.material.wireframe = true;
+						helper.position.copy( data.offset );
+						helper.rotation.setFromVector3( data.orientation );
+						entity.add( helper );
+						break;
+					case 'convex': // TODO
+						// this.ref = new ConvexPolyhedron( data.vertices, data.faces, data.normals );
+						break;
+					case 'particle':
+						geo = new SphereGeometry( 0.1, 8, 8 );
+						helper = new Mesh( geo );
+						helper.material.color.set( 0x00ff00 );
+						helper.material.wireframe = true;
+						helper.position.copy( component.data.offset );
+						helper.rotation.setFromVector3( component.data.orientation );
+						entity.add( helper );
+						break;
+					case 'heightfield': // TODO
+						// this.ref = new Heightfield( data.data, { elementSize: data.elementSize } );
+						break;
+
+				}
 
 			}
 
-			helpers.push( helper );
-			scene.add( helper );
+			if ( helper !== undefined ) {
+
+				helpers.push( helper );
+
+				if ( helper.parent === null ) {
+
+					scene.add( helper );
+
+				}
+
+			}
 
 		}
 
@@ -96,7 +162,7 @@ export function SidebarInspector( editor ) {
 	function removeHelpers() {
 
 		for ( let i = 0, len = helpers.length; i < len; i ++ )
-			scene.remove( helpers[ i ] );
+			helpers[ i ].parent.remove( helpers[ i ] );
 
 		// empty array while maintaing reference in viewport
 		helpers.length = 0;
@@ -319,12 +385,11 @@ export function SidebarInspector( editor ) {
 
 			}
 
-			removeHelpers();
-			addHelpers( component.entity );
-
-			editor.render();
-
 		}
+
+		removeHelpers();
+		addHelpers( currentEntity );
+		editor.render();
 
 	};
 
@@ -1424,7 +1489,18 @@ export function SidebarInspector( editor ) {
 
 				}
 
-				if ( found === false ) this.addComponent( entity, type );
+				if ( found === false ) {
+
+					this.addComponent( entity, type );
+					closedComponents[ type ] = true;
+
+					if ( entity === currentEntity ) {
+
+						delete inspector.lastChild.firstChild.dataset.opened;
+
+					}
+
+				}
 
 			}
 
@@ -1436,7 +1512,6 @@ export function SidebarInspector( editor ) {
 
 			// for components that require loading
 			_component.addEventListener( 'load', editor.render );
-
 
 			// used by editor to select component by uuid (maybe standardize to TARO engine?)
 			_component.uuid = component.uuid;
@@ -1451,6 +1526,9 @@ export function SidebarInspector( editor ) {
 
 		entity.componentData.push( component );
 		this.updateIcon( entity );
+
+		removeHelpers();
+		addHelpers( entity );
 
 		editor.render();
 
@@ -1494,6 +1572,9 @@ export function SidebarInspector( editor ) {
 		}
 
 		this.updateIcon( entity );
+
+		removeHelpers();
+		addHelpers( entity );
 
 		if ( currentEntity === entity ) {
 

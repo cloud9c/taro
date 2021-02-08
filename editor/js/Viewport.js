@@ -5,11 +5,9 @@ import {
 	Scene,
 	Vector2,
 	Raycaster,
-	BoxHelper,
 	GridHelper,
 	Color,
 	PerspectiveCamera,
-	Box3,
 	MathUtils
 } from '../../build/taro.module.js';
 
@@ -232,10 +230,10 @@ export function Viewport( editor ) {
 
 	attribute.needsUpdate = true;
 
+	scene.add( grid );
+
 	const helpers = this.helpers = [ ];
 	const icons = this.icons = [];
-
-	scene.add( grid );
 
 	const renderer = app.renderer;
 	const dom = renderer.domElement;
@@ -277,7 +275,8 @@ export function Viewport( editor ) {
 		if ( this.currentEntity !== undefined ) {
 
 			for ( let i = 0, len = helpers.length; i < len; i ++ )
-				helpers[ i ].update();
+				if ( helpers[ i ].update !== undefined )
+					helpers[ i ].update();
 
 
 		}
@@ -352,7 +351,6 @@ export function Viewport( editor ) {
 	} );
 
 	sceneHelper.add( control );
-	const box = this.box = new Box3();
 
 	const attach = this.attach = ( entity ) => {
 

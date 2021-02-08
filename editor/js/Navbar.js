@@ -38,9 +38,7 @@ export function Navbar( editor ) {
 			case 'Cone':
 				inspector.addComponent( entity, 'geometry', { type: 'cone' } );
 				inspector.addComponent( entity, 'material', { type: 'phong' } );
-				const data = { type: 'cylinder' };
-				inspector.addComponent( entity, 'shape', data );
-				data.radiusTop = 0;
+				inspector.addComponent( entity, 'shape', { type: 'cylinder', physicsMaterial: '', radiusTop: 0 } );
 				break;
 			case 'Cylinder':
 				inspector.addComponent( entity, 'geometry', { type: 'cylinder' } );
