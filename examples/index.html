@@ -3,200 +3,83 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width,initial-scale=1" />
-		<title>Example</title>
+		<title>Taro Examples</title>
+		<link rel="stylesheet" href="../files/main.css" />
 		<style>
 			html,
 			body {
-				margin: 0;
 				height: 100%;
 			}
 
-			#c {
-				width: 100%;
+			h1 {
+				margin: 0 0 16px;
+			}
+
+			a {
+				text-decoration: none;
+				color: inherit;
+			}
+
+			#examples a {
+				color: var(--secondary-text-color);
+				display: inline;
+				font-weight: 500;
+			}
+
+			#examples a:hover {
+				color: var(--theme-color);
+			}
+
+			.sidebar {
+				position: fixed;
+				left: 0px;
+				width: 300px;
+				border-right: 1px solid var(--border-color);
 				height: 100%;
+				z-index: 100;
+			}
+
+			.content {
+				padding: 20px;
+			}
+
+			.sidebar span {
+				display: block;
+				margin-bottom: 10px;
+			}
+
+			#viewer {
+				margin-left: 300px;
+			}
+
+			#viewer, iframe {
+				position: absolute;
+				border: 0px;
+				left: 0;
+				right: 0;
+				width: calc(100% - 300px);
+				height: 100%;
+				overflow: auto;
+			}
+
+			.selected {
+				text-decoration: underline;
 			}
 		</style>
 	</head>
 	<body>
-		<canvas id="c"></canvas>
-		<script type="module">
-			import * as TARO from "../build/taro.module.js";
-
-			let entity, geo, mat, mesh;
-
-			const app = new TARO.Application({canvas: document.getElementById("c")});
-
-			TARO.ComponentManager.register(
-				"cameraController",
-				class CameraController {
-					init() {
-						this.direction = new TARO.Vector3();
-						this.input = this.entity.scene.app.input;
-						this.entity.rotation.order = "YXZ";
-						this.ball = this.entity.scene.getEntityByName("ball");
-
-						window.addEventListener("pointerdown", () => {
-							this.entity.app.renderer.domElement.requestPointerLock();
-						});
-						this.ball.addEventListener("collide", function (c) {
-							console.log(c);
-						});
-					}
-					update() {
-						const ball = this.ball;
-
-						if (this.input.getKeyDown("ArrowUp")) {
-							ball.getComponent("rigidbody").ref.applyForce(
-								new TARO.Vector3(0, 0, -200)
-							);
-						}
-						if (this.input.getKeyDown("ArrowDown")) {
-							ball.getComponent("rigidbody").ref.applyForce(
-								new TARO.Vector3(0, 0, 200)
-							);
-						}
-						if (this.input.getKeyDown("ArrowLeft")) {
-							ball.getComponent("rigidbody").ref.applyForce(
-								new TARO.Vector3(-200, 0, 0)
-							);
-						}
-						if (this.input.getKeyDown("ArrowRight")) {
-							ball.getComponent("rigidbody").ref.applyForce(
-								new TARO.Vector3(200, 0, 0)
-							);
-						}
-
-						if (this.input.getKey("KeyW")) {
-							this.entity.translateZ(-0.1);
-						}
-						if (this.input.getKey("KeyS")) {
-							this.entity.translateZ(0.1);
-						}
-						if (this.input.getKey("KeyA")) {
-							this.entity.translateX(-0.1);
-						}
-						if (this.input.getKey("KeyD")) {
-							this.entity.translateX(0.1);
-						}
-						if (this.input.getKey("Space")) {
-							this.entity.translateY(0.1);
-						}
-						if (this.input.getKey("ShiftLeft")) {
-							this.entity.translateY(-0.1);
-						}
-						this.entity.rotation.x -=
-							this.input.pointerDelta.y * 0.001;
-						this.entity.rotation.y -=
-							this.input.pointerDelta.x * 0.001;
-					}
-				}
-			);
-
-			const scene = new TARO.Scene();
-			app.setScene(scene);
-
-			app.currentScene.background = new TARO.Color("skyblue");
-			console.log(app);
-
-			// lighting
-			entity = new TARO.Entity();
-			const hemiLight = entity.addComponent("light", {type: 'hemisphere', intensity: 0.6}).ref
-
-			hemiLight.color.setHSL(0.6, 1, 0.6);
-			hemiLight.groundColor.setHSL(0.095, 1, 0.75);
-
-			entity.position.set(0, 100, 0);
-
-			entity = new TARO.Entity();
-			const dirLight = entity.addComponent("light").ref;
-
-			dirLight.color.setHSL(0.1, 1, 0.95);
-
-			dirLight.castShadow = true;
-
-			dirLight.shadow.mapSize.width = 2048;
-			dirLight.shadow.mapSize.height = 2048;
-
-			const d = 50;
-
-			dirLight.shadow.camera.left = -d;
-			dirLight.shadow.camera.right = d;
-			dirLight.shadow.camera.top = d;
-			dirLight.shadow.camera.bottom = -d;
-
-			dirLight.shadow.camera.far = 3500;
-			dirLight.shadow.bias = -0.0001;
-
-			entity.position.set(-100, 175, 100);
-
-			// floor
-			geo = new TARO.PlaneBufferGeometry(200, 200);
-			mat = new TARO.MeshPhongMaterial({
-				color: 0x718e3e,
-			});
-			mesh = new TARO.Mesh(geo, mat);
-			mesh.receiveShadow = true;
-
-			entity = new TARO.Entity("floor");
-			entity.addComponent("renderable", mesh);
-			entity.addComponent("rigidbody", { type: 'static' })
-			entity.addComponent("shape", { type: "plane" });
-			entity.rotation.set(-Math.PI / 2, 0, 0);
-
-			new TARO.Entity().addComponent("renderable",
-				new TARO.GridHelper(200, 200, 0x0000ff, 0x808080)
-			);
-
-			// ball
-			geo = new TARO.SphereGeometry(1, 32, 32);
-			mat = new TARO.MeshPhongMaterial({ color: 0xffff00 });
-			mesh = new TARO.Mesh(geo, mat);
-			entity = new TARO.Entity("ball");
-			entity.addComponent("renderable", mesh);
-			entity.position.set(0, 5, 2);
-			entity.addComponent("rigidbody", {
-				mass: 1
-			});
-			entity.addComponent("shape", {
-				type: 'sphere',
-				radius: 1,
-			});
-
-			// blocks
-			const position = new TARO.Vector3(-2, 1, -5);
-			geo = new TARO.BoxBufferGeometry(1, 1, 1);
-			mat = new TARO.MeshPhongMaterial({ color: 0x2194ce });
-			let last;
-			for (let k = 0; k < 5; k++) {
-				for (let i = 0; i < 5; i++) {
-					for (let j = 0; j < 5; j++) {
-						entity = new TARO.Entity();
-						mesh = new TARO.Mesh(geo, mat);
-						entity.addComponent("renderable", mesh);
-						entity.position.copy(position);
-						entity.addComponent("rigidbody", { mass: 0.01 });
-						entity.addComponent("shape");
-						position.x += 1;
-
-						if (last !== undefined)
-							entity.addComponent('constraint', {type: 'hinge', connectedBody: last})
-
-						last = entity;
-					}
-					position.y += 1;
-					position.x = -2;
-				}
-				position.y = 1;
-				position.z += 1;
-			}
-
-			// camera
-			entity = new TARO.Entity("camera");
-			entity.addComponent("camera");
-			entity.addComponent("cameraController");
-			entity.position.set(0, 5, 10);
-
-			app.start();
-		</script>
+		<div class="flex-container">
+		<div class="sidebar">
+			<div class="content">
+				<div style="text-align: center">
+					<h1><a href="../index.html">Taro</a></h1>
+				</div>
+				<span id="examples">
+					<a href="snake.html" target="viewer">Snake</a>
+				</span>
+			</div>
+		</div>
+		<iframe id="viewer" name="viewer" allowfullscreen="" allowvr="" onmousewheel="" src="snake.html"></iframe>
+	</div>
 	</body>
 </html>
