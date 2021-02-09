@@ -32,17 +32,11 @@
 
 			// lighting
 			entity = new TARO.Entity();
-			const hemiLight = entity.addComponent('light', {type: 'hemisphere', intensity: 0.6}).ref
-
-			hemiLight.color.setHSL(0.6, 1, 0.6);
-			hemiLight.groundColor.setHSL(0.095, 1, 0.75);
-
+			entity.addComponent('light', {type: 'hemisphere', intensity: 0.6});
 			entity.position.set(0, 100, 0);
 
 			entity = new TARO.Entity();
-			const dirLight = entity.addComponent('light').ref;
-			
-			dirLight.color.setHSL(0.1, 1, 0.95);
+			entity.addComponent('light');
 			entity.position.set(-100, 175, 100);
 
 			// floor
@@ -64,13 +58,8 @@
 			entity = new TARO.Entity('ball');
 			entity.addComponent('renderable', mesh);
 			entity.position.set(0, 5, 2);
-			entity.addComponent('rigidbody', {
-				mass: 1
-			});
-			entity.addComponent('shape', {
-				type: 'sphere',
-				radius: 1,
-			});
+			entity.addComponent('rigidbody', { mass: 1 });
+			entity.addComponent('shape', { type: 'sphere', radius: 1 });
 
 			// blocks
 			const position = new TARO.Vector3(-2, 1, -5);

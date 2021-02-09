@@ -22,13 +22,13 @@
 				color: inherit;
 			}
 
-			#examples a {
+			.example a {
 				color: var(--secondary-text-color);
 				display: inline;
 				font-weight: 500;
 			}
 
-			#examples a:hover {
+			.example a:hover {
 				color: var(--theme-color);
 			}
 
@@ -76,13 +76,64 @@
 				<div style="text-align: center">
 					<h1><a href="../index.html">Taro</a></h1>
 				</div>
-				<div id="examples">
-					<span><a href="probability.html" target="viewer">Probability</a></span>
-					<span><a href="snake.html" target="viewer">Snake</a></span>
-				</div>
 			</div>
 		</div>
 		<iframe id="viewer" name="viewer" allowfullscreen="" allowvr="" onmousewheel="" src="probability.html"></iframe>
 	</div>
+	<script>
+		let examples = [{
+			name: "Probability",
+			url: "probability.html"
+		}, {
+			name: "Snake",
+			url: "snake.html"
+		}, ];
+
+		let hash = window.location.hash;
+		let selectedIndex = -1;
+		if (hash) {
+			selectedIndex = examples.findIndex(example => "#" + encodeURI(example.name) == hash);
+		}
+
+		let container = document.getElementsByClassName("content")[0];
+
+		let selectedLine = null;
+
+		//make example list with this template
+		//<span><a href="demo/index.html" target="viewer">Name</a> <a href="source link" target="_blank">(source)</a></span>
+		for (let i = 0; i < examples.length; i++) {
+			const example = examples[i];
+
+			let demoLink = document.createElement("a");
+			demoLink.href = example.url;
+			demoLink.target = "viewer";
+			demoLink.innerHTML = example.name;
+			demoLink.addEventListener('click', function(event) {
+				if (event.button !== 0 || event.ctrlKey || event.altKey || event.metaKey) return;
+				window.location.hash = encodeURI(example.name);
+
+				if (selectedLine)
+					selectedLine.classList.remove("selected");
+				let line = event.currentTarget.parentNode;
+				line.classList.add("selected");
+				selectedLine = line;
+			});
+
+			let exampleLine = document.createElement("span");
+			exampleLine.classList.add('example');
+			exampleLine.appendChild(demoLink);
+
+			if (selectedIndex === i) {
+				exampleLine.classList.add("selected");
+				let viewer = document.getElementById("viewer");
+				viewer.src = example.url;
+
+				selectedLine = exampleLine;
+			}
+
+			container.appendChild(exampleLine);
+		}
+	</script>
+
 	</body>
 </html>
