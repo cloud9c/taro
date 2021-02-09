@@ -1,5 +1,5 @@
-import { TransformControls } from './lib/TransformControls.js';
-import { OrbitControls } from './lib/OrbitControls.js';
+import { TransformControls } from '../../examples/js/TransformControls.js';
+import { OrbitControls } from '../../examples/js/OrbitControls.js';
 import {
 	Entity,
 	Scene,

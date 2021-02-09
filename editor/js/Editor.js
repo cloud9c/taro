@@ -7,7 +7,7 @@ import { SidebarScene } from './Sidebar.Scene.js';
 import { SidebarInspector } from './Sidebar.Inspector.js';
 import { Navbar } from './Navbar.js';
 
-import './lib/EditorComponents.js';
+import '../../examples/js/EditorComponents.js';
 
 function Editor() {
 

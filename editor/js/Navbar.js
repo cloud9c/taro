@@ -1,5 +1,5 @@
-import { applicationToJSON } from './lib/Jsonify.js';
-import { TaroLoader } from './lib/TaroLoader.js';
+import { applicationToJSON } from '../../examples/js/Jsonify.js';
+import { TaroLoader } from '../../examples/js/TaroLoader.js';
 import { Renderer } from '../../build/taro.module.js';
 
 export function Navbar( editor ) {

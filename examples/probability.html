@@ -3,7 +3,7 @@
 	<head>
 		<meta charset='UTF-8' />
 		<meta name='viewport' content='width=device-width,initial-scale=1' />
-		<title>Snake</title>
+		<title>Probability</title>
 		<style>
 			html,
 			body {
@@ -42,7 +42,6 @@
 			entity = new TARO.Entity();
 			const dirLight = entity.addComponent('light').ref;
 			
-			dirLight.castShadow = true;
 			dirLight.color.setHSL(0.1, 1, 0.95);
 			dirLight.shadow.mapSize.width = 2048;
 			dirLight.shadow.mapSize.height = 2048;
@@ -70,7 +69,6 @@
 			entity.addComponent('rigidbody', { type: 'static' })
 			entity.addComponent('shape', { type: 'plane' });
 			entity.rotation.set(-Math.PI / 2, 0, 0);
-			entity.recieveShadow = true;
 
 			// ball
 			geo = new TARO.SphereGeometry(1, 32, 32);
@@ -96,11 +94,7 @@
 				for (let i = 0; i < 5; i++) {
 					for (let j = 0; j < 5; j++) {
 						entity = new TARO.Entity();
-						entity.castShadow = true;
-						entity.recieveShadow = true;
 						mesh = new TARO.Mesh(geo, mat);
-						mesh.castShadow = true;
-						mesh.recieveShadow = true;
 						entity.addComponent('renderable', mesh);
 						entity.position.copy(position);
 						entity.addComponent('rigidbody', { mass: 0.01 });
