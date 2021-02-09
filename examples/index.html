@@ -78,16 +78,11 @@
 				</div>
 			</div>
 		</div>
-		<iframe id="viewer" name="viewer" allowfullscreen="" allowvr="" onmousewheel="" src="probability.html"></iframe>
+		<iframe id="viewer" name="viewer" allowfullscreen="" allowvr="" onmousewheel=""></iframe>
 	</div>
 	<script>
-		let examples = [{
-			name: "Probability",
-			url: "probability.html"
-		}, {
-			name: "Snake",
-			url: "snake.html"
-		}, ];
+		let examples = [ {name: "Probability", url: "probability.html"},
+						{name: "Snake", url: "snake.html"} ];
 
 		let hash = window.location.hash;
 		let selectedIndex = -1;
