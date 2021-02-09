@@ -1,26 +1,28 @@
 import { ComponentManager } from '../../core/ComponentManager.js';
-import { Body } from '../../lib/cannon.js';
-import { Vector3 } from '../../lib/three.module.js';
+import { Body, Material } from '../../lib/cannon.js';
+import { Vector3, FileLoader } from '../../lib/three.module.js';
 
 const types = [ 'dynamic', 'static', 'kinematic' ];
 const indexedTypes = [ undefined, 'dynamic', 'static', undefined, 'kinematic' ];
-
+const fileLoader = new FileLoader();
 class Rigidbody {
 
 	init( data ) {
 
-		// temporary changes to data
 		data.type = indexedTypes.indexOf( data.type );
-
-		if ( data.physicsMaterial !== undefined ) data.material = data.physicsMaterial;
 
 		this.ref = new Body( data );
 		this.cachedScale = this.entity.getWorldScale( new Vector3() );
 
-		// fixing it
-		if ( data.material !== undefined ) delete data.material;
-
 		data.type = indexedTypes[ data.type ];
+
+		if ( data.material.length > 0 ) {
+
+			this.ref.material = this.app.assets.get( data.material );
+			if ( this.ref.material === undefined )
+				fileLoader.load( data.material, ( json ) => this.onMaterialLoad( data.material, json ) );
+
+		}
 
 		this.ref.addEventListener( 'collide', event => this.entity.dispatchEvent( event ) );
 		this.ref.addEventListener( 'wakeup', event => this.entity.dispatchEvent( event ) );
@@ -29,6 +31,14 @@ class Rigidbody {
 
 		this.addEventListener( 'enable', this.onEnable );
 		this.addEventListener( 'disable', this.onDisable );
+
+	}
+
+	onMaterialLoad( key, json ) {
+
+		const material = new Material( json );
+		this.ref.material = material;
+		this.app.assets.add( key, material );
 
 	}
 
@@ -61,8 +71,7 @@ class Rigidbody {
 			sleepSpeedLimit: { default: 0.1, min: 0, if: { type: [ 'dynamic', 'kinematic' ] } },
 			sleepTimeLimit: { default: 1, min: 0, if: { type: [ 'dynamic', 'kinematic' ] } },
 
-			// overrides the individual shapes
-			physicsMaterial: { type: 'asset' },
+			material: { type: 'asset' },
 			collisionResponse: { default: true },
 			collisionFilterGroup: { type: 'int', default: 1 },
 			collisionFilterMask: { type: 'int', default: - 1 },

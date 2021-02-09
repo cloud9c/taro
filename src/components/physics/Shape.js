@@ -45,22 +45,37 @@ class Shape {
 				break;
 			case 'heightfield':
 				// TODO
-				this.ref = new Heightfield( data.data, { elementSize: data.elementSize } );
+				const minValue = data.minValue !== 0 ? data.minValue : null;
+				const maxValue = data.maxValue !== 0 ? data.maxValue : null;
+				this.ref = new Heightfield( data.data, { elementSize: data.elementSize, minValue, maxValue } );
 				break;
 			default:
 				console.error( 'Shape: invalid shape type ' + data.type );
 
 		}
 
-		this.ref.material = data.physicsMaterial;
+		if ( data.material.length > 0 ) {
+
+			this.ref.material = this.app.assets.get( data.material );
+			if ( this.ref.material === undefined )
+				fileLoader.load( data.material, ( json ) => this.onMaterialLoad( data.material, json ) );
+
+		}
+
 		this.ref.collisionResponse = data.collisionResponse;
 		this.ref.collisionFilterGroup = data.collisionFilterGroup;
 		this.ref.collisionFilterMask = data.collisionFilterMask;
 
-		this.data = data;
-
 		this.addEventListener( 'enable', this.onEnable );
 		this.addEventListener( 'disable', this.onDisable );
+
+	}
+
+	onMaterialLoad( key, json ) {
+
+		const material = new Material( json );
+		this.ref.material = material;
+		this.app.assets.add( key, material );
 
 	}
 
@@ -92,7 +107,6 @@ class Shape {
 	static config = {
 		schema: {
 			type: { type: 'select', default: 'box', select: [ 'box', 'sphere', 'plane', 'cylinder', 'convex', 'particle', 'heightfield' ] },
-			physicsMaterial: { type: 'asset' },
 
 			halfExtents: { type: 'vector3', min: 0, default: [ 0.5, 0.5, 0.5 ], if: { type: [ 'box' ] } },
 			radius: { default: 1, min: 0, if: { type: [ 'sphere' ] } },
@@ -104,12 +118,14 @@ class Shape {
 
 			asset: { type: 'asset', if: { type: [ 'convex', 'heightfield' ] } },
 
-			// TODO: see how to integrate maxValue and minValue, since they're both null by default...
 			elementSize: { default: 1, if: { type: 'heightfield' } },
+			minValue: { default: 0, if: { type: 'heightfield' } },
+			maxValue: { default: 0, if: { type: 'heightfield' } },
 
 			offset: { type: 'vector3' },
 			orientation: { type: 'vector3' },
 
+			material: { type: 'asset' },
 			collisionResponse: { default: true },
 			collisionFilterGroup: { type: 'int', default: 1 },
 			collisionFilterMask: { type: 'int', default: - 1 },

@@ -51,8 +51,9 @@ class Geometry {
 				this.ref = new TorusKnotGeometry( data.radius, data.tube, data.tubularSegments, data.radialSegments, data.p, data.q );
 				break;
 			case 'asset':
-				this.ref = undefined;
-				geometryLoader.load( data.asset, ( g ) => this.onLoad( g ), ( p ) => this.onProgress( p ), () => this.onError() );
+				this.ref = this.app.assets.get( parameters.asset );
+				if ( this.ref === undefined )
+					geometryLoader.load( data.asset, ( g ) => this.onLoad( data.asset, g ), ( p ) => this.onProgress( p ), () => this.onError() );
 				break;
 			default:
 				console.error( 'Geometry: invalid geometry type ' + type );
@@ -96,7 +97,9 @@ class Geometry {
 
 	}
 
-	onLoad( geometry ) {
+	onLoad( key, geometry ) {
+
+		this.app.assets.add( key, geometry );
 
 		this.ref = geometry;
 		if ( this.mesh !== undefined )

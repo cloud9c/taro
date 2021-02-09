@@ -8466,7 +8466,7 @@ class Face3 {
 
 let materialId = 0;
 
-function Material() {
+function Material$1() {
 
 	Object.defineProperty( this, 'id', { value: materialId ++ } );
 
@@ -8534,9 +8534,9 @@ function Material() {
 
 }
 
-Material.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
+Material$1.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
 
-	constructor: Material,
+	constructor: Material$1,
 
 	isMaterial: true,
 
@@ -8898,7 +8898,7 @@ Material.prototype = Object.assign( Object.create( EventDispatcher.prototype ), 
 
 } );
 
-Object.defineProperty( Material.prototype, 'needsUpdate', {
+Object.defineProperty( Material$1.prototype, 'needsUpdate', {
 
 	set: function ( value ) {
 
@@ -8942,7 +8942,7 @@ Object.defineProperty( Material.prototype, 'needsUpdate', {
 
 function MeshBasicMaterial( parameters ) {
 
-	Material.call( this );
+	Material$1.call( this );
 
 	this.type = 'MeshBasicMaterial';
 
@@ -8977,14 +8977,14 @@ function MeshBasicMaterial( parameters ) {
 
 }
 
-MeshBasicMaterial.prototype = Object.create( Material.prototype );
+MeshBasicMaterial.prototype = Object.create( Material$1.prototype );
 MeshBasicMaterial.prototype.constructor = MeshBasicMaterial;
 
 MeshBasicMaterial.prototype.isMeshBasicMaterial = true;
 
 MeshBasicMaterial.prototype.copy = function ( source ) {
 
-	Material.prototype.copy.call( this, source );
+	Material$1.prototype.copy.call( this, source );
 
 	this.color.copy( source.color );
 
@@ -11335,7 +11335,7 @@ var default_fragment = "void main() {\n\tgl_FragColor = vec4( 1.0, 0.0, 0.0, 1.0
 
 function ShaderMaterial( parameters ) {
 
-	Material.call( this );
+	Material$1.call( this );
 
 	this.type = 'ShaderMaterial';
 
@@ -11392,14 +11392,14 @@ function ShaderMaterial( parameters ) {
 
 }
 
-ShaderMaterial.prototype = Object.create( Material.prototype );
+ShaderMaterial.prototype = Object.create( Material$1.prototype );
 ShaderMaterial.prototype.constructor = ShaderMaterial;
 
 ShaderMaterial.prototype.isShaderMaterial = true;
 
 ShaderMaterial.prototype.copy = function ( source ) {
 
-	Material.prototype.copy.call( this, source );
+	Material$1.prototype.copy.call( this, source );
 
 	this.fragmentShader = source.fragmentShader;
 	this.vertexShader = source.vertexShader;
@@ -11429,7 +11429,7 @@ ShaderMaterial.prototype.copy = function ( source ) {
 
 ShaderMaterial.prototype.toJSON = function ( meta ) {
 
-	const data = Material.prototype.toJSON.call( this, meta );
+	const data = Material$1.prototype.toJSON.call( this, meta );
 
 	data.glslVersion = this.glslVersion;
 	data.uniforms = {};
@@ -18508,7 +18508,7 @@ function WebGLRenderStates( extensions, capabilities ) {
 
 function MeshDepthMaterial( parameters ) {
 
-	Material.call( this );
+	Material$1.call( this );
 
 	this.type = 'MeshDepthMaterial';
 
@@ -18534,14 +18534,14 @@ function MeshDepthMaterial( parameters ) {
 
 }
 
-MeshDepthMaterial.prototype = Object.create( Material.prototype );
+MeshDepthMaterial.prototype = Object.create( Material$1.prototype );
 MeshDepthMaterial.prototype.constructor = MeshDepthMaterial;
 
 MeshDepthMaterial.prototype.isMeshDepthMaterial = true;
 
 MeshDepthMaterial.prototype.copy = function ( source ) {
 
-	Material.prototype.copy.call( this, source );
+	Material$1.prototype.copy.call( this, source );
 
 	this.depthPacking = source.depthPacking;
 
@@ -18586,7 +18586,7 @@ MeshDepthMaterial.prototype.copy = function ( source ) {
 
 function MeshDistanceMaterial( parameters ) {
 
-	Material.call( this );
+	Material$1.call( this );
 
 	this.type = 'MeshDistanceMaterial';
 
@@ -18611,14 +18611,14 @@ function MeshDistanceMaterial( parameters ) {
 
 }
 
-MeshDistanceMaterial.prototype = Object.create( Material.prototype );
+MeshDistanceMaterial.prototype = Object.create( Material$1.prototype );
 MeshDistanceMaterial.prototype.constructor = MeshDistanceMaterial;
 
 MeshDistanceMaterial.prototype.isMeshDistanceMaterial = true;
 
 MeshDistanceMaterial.prototype.copy = function ( source ) {
 
-	Material.prototype.copy.call( this, source );
+	Material$1.prototype.copy.call( this, source );
 
 	this.referencePosition.copy( source.referencePosition );
 	this.nearDistance = source.nearDistance;
@@ -25439,7 +25439,7 @@ Object.assign( InterleavedBufferAttribute.prototype, {
 
 function SpriteMaterial( parameters ) {
 
-	Material.call( this );
+	Material$1.call( this );
 
 	this.type = 'SpriteMaterial';
 
@@ -25459,13 +25459,13 @@ function SpriteMaterial( parameters ) {
 
 }
 
-SpriteMaterial.prototype = Object.create( Material.prototype );
+SpriteMaterial.prototype = Object.create( Material$1.prototype );
 SpriteMaterial.prototype.constructor = SpriteMaterial;
 SpriteMaterial.prototype.isSpriteMaterial = true;
 
 SpriteMaterial.prototype.copy = function ( source ) {
 
-	Material.prototype.copy.call( this, source );
+	Material$1.prototype.copy.call( this, source );
 
 	this.color.copy( source.color );
 
@@ -26396,7 +26396,7 @@ InstancedMesh.prototype = Object.assign( Object.create( Mesh.prototype ), {
 
 function LineBasicMaterial( parameters ) {
 
-	Material.call( this );
+	Material$1.call( this );
 
 	this.type = 'LineBasicMaterial';
 
@@ -26412,14 +26412,14 @@ function LineBasicMaterial( parameters ) {
 
 }
 
-LineBasicMaterial.prototype = Object.create( Material.prototype );
+LineBasicMaterial.prototype = Object.create( Material$1.prototype );
 LineBasicMaterial.prototype.constructor = LineBasicMaterial;
 
 LineBasicMaterial.prototype.isLineBasicMaterial = true;
 
 LineBasicMaterial.prototype.copy = function ( source ) {
 
-	Material.prototype.copy.call( this, source );
+	Material$1.prototype.copy.call( this, source );
 
 	this.color.copy( source.color );
 
@@ -26764,7 +26764,7 @@ LineLoop.prototype = Object.assign( Object.create( Line.prototype ), {
 
 function PointsMaterial( parameters ) {
 
-	Material.call( this );
+	Material$1.call( this );
 
 	this.type = 'PointsMaterial';
 
@@ -26783,14 +26783,14 @@ function PointsMaterial( parameters ) {
 
 }
 
-PointsMaterial.prototype = Object.create( Material.prototype );
+PointsMaterial.prototype = Object.create( Material$1.prototype );
 PointsMaterial.prototype.constructor = PointsMaterial;
 
 PointsMaterial.prototype.isPointsMaterial = true;
 
 PointsMaterial.prototype.copy = function ( source ) {
 
-	Material.prototype.copy.call( this, source );
+	Material$1.prototype.copy.call( this, source );
 
 	this.color.copy( source.color );
 
@@ -30983,7 +30983,7 @@ var Geometries = /*#__PURE__*/Object.freeze({
 
 function ShadowMaterial( parameters ) {
 
-	Material.call( this );
+	Material$1.call( this );
 
 	this.type = 'ShadowMaterial';
 
@@ -30994,14 +30994,14 @@ function ShadowMaterial( parameters ) {
 
 }
 
-ShadowMaterial.prototype = Object.create( Material.prototype );
+ShadowMaterial.prototype = Object.create( Material$1.prototype );
 ShadowMaterial.prototype.constructor = ShadowMaterial;
 
 ShadowMaterial.prototype.isShadowMaterial = true;
 
 ShadowMaterial.prototype.copy = function ( source ) {
 
-	Material.prototype.copy.call( this, source );
+	Material$1.prototype.copy.call( this, source );
 
 	this.color.copy( source.color );
 
@@ -31074,7 +31074,7 @@ RawShaderMaterial.prototype.isRawShaderMaterial = true;
 
 function MeshStandardMaterial( parameters ) {
 
-	Material.call( this );
+	Material$1.call( this );
 
 	this.defines = { 'STANDARD': '' };
 
@@ -31133,14 +31133,14 @@ function MeshStandardMaterial( parameters ) {
 
 }
 
-MeshStandardMaterial.prototype = Object.create( Material.prototype );
+MeshStandardMaterial.prototype = Object.create( Material$1.prototype );
 MeshStandardMaterial.prototype.constructor = MeshStandardMaterial;
 
 MeshStandardMaterial.prototype.isMeshStandardMaterial = true;
 
 MeshStandardMaterial.prototype.copy = function ( source ) {
 
-	Material.prototype.copy.call( this, source );
+	Material$1.prototype.copy.call( this, source );
 
 	this.defines = { 'STANDARD': '' };
 
@@ -31352,7 +31352,7 @@ MeshPhysicalMaterial.prototype.copy = function ( source ) {
 
 function MeshPhongMaterial( parameters ) {
 
-	Material.call( this );
+	Material$1.call( this );
 
 	this.type = 'MeshPhongMaterial';
 
@@ -31405,14 +31405,14 @@ function MeshPhongMaterial( parameters ) {
 
 }
 
-MeshPhongMaterial.prototype = Object.create( Material.prototype );
+MeshPhongMaterial.prototype = Object.create( Material$1.prototype );
 MeshPhongMaterial.prototype.constructor = MeshPhongMaterial;
 
 MeshPhongMaterial.prototype.isMeshPhongMaterial = true;
 
 MeshPhongMaterial.prototype.copy = function ( source ) {
 
-	Material.prototype.copy.call( this, source );
+	Material$1.prototype.copy.call( this, source );
 
 	this.color.copy( source.color );
 	this.specular.copy( source.specular );
@@ -31504,7 +31504,7 @@ MeshPhongMaterial.prototype.copy = function ( source ) {
 
 function MeshToonMaterial( parameters ) {
 
-	Material.call( this );
+	Material$1.call( this );
 
 	this.defines = { 'TOON': '' };
 
@@ -31551,14 +31551,14 @@ function MeshToonMaterial( parameters ) {
 
 }
 
-MeshToonMaterial.prototype = Object.create( Material.prototype );
+MeshToonMaterial.prototype = Object.create( Material$1.prototype );
 MeshToonMaterial.prototype.constructor = MeshToonMaterial;
 
 MeshToonMaterial.prototype.isMeshToonMaterial = true;
 
 MeshToonMaterial.prototype.copy = function ( source ) {
 
-	Material.prototype.copy.call( this, source );
+	Material$1.prototype.copy.call( this, source );
 
 	this.color.copy( source.color );
 
@@ -31627,7 +31627,7 @@ MeshToonMaterial.prototype.copy = function ( source ) {
 
 function MeshNormalMaterial( parameters ) {
 
-	Material.call( this );
+	Material$1.call( this );
 
 	this.type = 'MeshNormalMaterial';
 
@@ -31655,14 +31655,14 @@ function MeshNormalMaterial( parameters ) {
 
 }
 
-MeshNormalMaterial.prototype = Object.create( Material.prototype );
+MeshNormalMaterial.prototype = Object.create( Material$1.prototype );
 MeshNormalMaterial.prototype.constructor = MeshNormalMaterial;
 
 MeshNormalMaterial.prototype.isMeshNormalMaterial = true;
 
 MeshNormalMaterial.prototype.copy = function ( source ) {
 
-	Material.prototype.copy.call( this, source );
+	Material$1.prototype.copy.call( this, source );
 
 	this.bumpMap = source.bumpMap;
 	this.bumpScale = source.bumpScale;
@@ -31723,7 +31723,7 @@ MeshNormalMaterial.prototype.copy = function ( source ) {
 
 function MeshLambertMaterial( parameters ) {
 
-	Material.call( this );
+	Material$1.call( this );
 
 	this.type = 'MeshLambertMaterial';
 
@@ -31763,14 +31763,14 @@ function MeshLambertMaterial( parameters ) {
 
 }
 
-MeshLambertMaterial.prototype = Object.create( Material.prototype );
+MeshLambertMaterial.prototype = Object.create( Material$1.prototype );
 MeshLambertMaterial.prototype.constructor = MeshLambertMaterial;
 
 MeshLambertMaterial.prototype.isMeshLambertMaterial = true;
 
 MeshLambertMaterial.prototype.copy = function ( source ) {
 
-	Material.prototype.copy.call( this, source );
+	Material$1.prototype.copy.call( this, source );
 
 	this.color.copy( source.color );
 
@@ -31838,7 +31838,7 @@ MeshLambertMaterial.prototype.copy = function ( source ) {
 
 function MeshMatcapMaterial( parameters ) {
 
-	Material.call( this );
+	Material$1.call( this );
 
 	this.defines = { 'MATCAP': '' };
 
@@ -31871,14 +31871,14 @@ function MeshMatcapMaterial( parameters ) {
 
 }
 
-MeshMatcapMaterial.prototype = Object.create( Material.prototype );
+MeshMatcapMaterial.prototype = Object.create( Material$1.prototype );
 MeshMatcapMaterial.prototype.constructor = MeshMatcapMaterial;
 
 MeshMatcapMaterial.prototype.isMeshMatcapMaterial = true;
 
 MeshMatcapMaterial.prototype.copy = function ( source ) {
 
-	Material.prototype.copy.call( this, source );
+	Material$1.prototype.copy.call( this, source );
 
 	this.defines = { 'MATCAP': '' };
 
@@ -31972,7 +31972,7 @@ var Materials = /*#__PURE__*/Object.freeze({
 	MeshMatcapMaterial: MeshMatcapMaterial,
 	LineDashedMaterial: LineDashedMaterial,
 	LineBasicMaterial: LineBasicMaterial,
-	Material: Material
+	Material: Material$1
 });
 
 const AnimationUtils = {
@@ -48267,7 +48267,7 @@ Object.defineProperties( Uniform.prototype, {
 
 //
 
-Object.defineProperties( Material.prototype, {
+Object.defineProperties( Material$1.prototype, {
 
 	wrapAround: {
 		get: function () {
@@ -51610,7 +51610,7 @@ var GLTFLoader = ( function () {
 			if ( ! pointsMaterial ) {
 
 				pointsMaterial = new PointsMaterial();
-				Material.prototype.copy.call( pointsMaterial, material );
+				Material$1.prototype.copy.call( pointsMaterial, material );
 				pointsMaterial.color.copy( material.color );
 				pointsMaterial.map = material.map;
 				pointsMaterial.sizeAttenuation = false; // glTF spec says points should be 1px
@@ -51630,7 +51630,7 @@ var GLTFLoader = ( function () {
 			if ( ! lineMaterial ) {
 
 				lineMaterial = new LineBasicMaterial();
-				Material.prototype.copy.call( lineMaterial, material );
+				Material$1.prototype.copy.call( lineMaterial, material );
 				lineMaterial.color.copy( material.color );
 
 				this.cache.add( cacheKey, lineMaterial );
@@ -53970,8 +53970,9 @@ class Geometry {
 				this.ref = new TorusKnotGeometry( data.radius, data.tube, data.tubularSegments, data.radialSegments, data.p, data.q );
 				break;
 			case 'asset':
-				this.ref = undefined;
-				geometryLoader.load( data.asset, ( g ) => this.onLoad( g ), ( p ) => this.onProgress( p ), () => this.onError() );
+				this.ref = this.app.assets.get( parameters.asset );
+				if ( this.ref === undefined )
+					geometryLoader.load( data.asset, ( g ) => this.onLoad( data.asset, g ), ( p ) => this.onProgress( p ), () => this.onError() );
 				break;
 			default:
 				console.error( 'Geometry: invalid geometry type ' + type );
@@ -54015,7 +54016,9 @@ class Geometry {
 
 	}
 
-	onLoad( geometry ) {
+	onLoad( key, geometry ) {
+
+		this.app.assets.add( key, geometry );
 
 		this.ref = geometry;
 		if ( this.mesh !== undefined )
@@ -54168,19 +54171,33 @@ const blendingModes = [ 'NoBlending', 'NormalBlending', 'AdditiveBlending', 'Sub
 const sides = [ 'FrontSide', 'BackSide', 'DoubleSide' ];
 const depthPacking = [ 'BasicDepthPacking', 'RGBADepthPacking' ];
 
-class Material$1 {
+class Material$2 {
 
 	init( data ) {
 
 		const type = data.type;
 		const parameters = {};
 
+		const assetManager = this.app.assets;
+
 		for ( const name in data ) {
 
-			if ( Material$1.config.schema[ name ].type === 'asset' && data[ name ].length > 0 )
-				parameters[ name ] = textureLoader.load( data[ name ] );
-			else
+			if ( Material$2.config.schema[ name ].type === 'asset' && data[ name ].length > 0 ) {
+
+				parameters[ name ] = assetManager.get( data[ name ] );
+
+				if ( parameters[ name ] === undefined ) {
+
+					parameters[ name ] = textureLoader.load( data[ name ] );
+					assetManager.add( data[ name ], parameters[ name ] );
+
+				}
+
+			} else {
+
 				parameters[ name ] = data[ name ];
+
+			}
 
 		}
 
@@ -54223,8 +54240,9 @@ class Material$1 {
 				this.ref = new MeshToonMaterial( parameters );
 				break;
 			case 'asset':
-				this.ref = undefined;
-				materialLoader.load( parameters.asset, ( m ) => this.onLoad( m ), ( p ) => this.onProgress( p ), ( e ) => this.onError( e ) );
+				this.ref = this.app.assets.get( parameters.asset );
+				if ( this.ref === undefined )
+					materialLoader.load( parameters.asset, ( m ) => this.onLoad( parameters.asset, m ), ( p ) => this.onProgress( p ), ( e ) => this.onError( e ) );
 				break;
 			default:
 				console.error( 'Material: invalid material type ' + type );
@@ -54268,7 +54286,9 @@ class Material$1 {
 
 	}
 
-	onLoad( material ) {
+	onLoad( key, material ) {
+
+		this.app.assets.add( key, material );
 
 		this.ref = material;
 		if ( this.mesh !== undefined )
@@ -54355,11 +54375,11 @@ class Material$1 {
 
 }
 
-Material$1.prototype.DefaultMaterial = new MeshBasicMaterial();
-Material$1.prototype.DefaultMaterial.transparent = true;
-Material$1.prototype.DefaultMaterial.opacity = 0;
+Material$2.prototype.DefaultMaterial = new MeshBasicMaterial();
+Material$2.prototype.DefaultMaterial.transparent = true;
+Material$2.prototype.DefaultMaterial.opacity = 0;
 
-ComponentManager.register( 'material', Material$1 );
+ComponentManager.register( 'material', Material$2 );
 
 // githubusercontent dependency
 const dracoLoader = new DRACOLoader();
@@ -54374,28 +54394,31 @@ class Model {
 
 	init( data ) {
 
-		delete this.ref;
-		if ( data.asset === '' ) return;
+		this.ref = this.app.assets.get( data.asset );
 
-		const extension = data.asset.split( '.' ).pop().toLowerCase();
+		if ( this.ref === undefined ) {
 
-		switch ( extension ) {
+			const extension = data.asset.split( '.' ).pop().toLowerCase();
 
-			case 'glb':
-			case 'gltf':
-				this.promise = gltfLoader.load( data.asset, ( m ) => this.onGLTFLoad( m ), ( p ) => this.onProgress( p ), ( e ) => this.onError( e ) );
-				break;
-			case 'js':
-			case 'json':
-			case '3geo':
-			case '3mat':
-			case '3obj':
-			case '3scn':
-				this.promise = objectLoader.load( data.asset, ( m ) => this.onLoad( m ), ( p ) => this.onProgress( p ), () => this.onError() );
-				break;
+			switch ( extension ) {
 
-			default:
-				console.error( 'Model: invalid model extension ' + extension );
+				case 'glb':
+				case 'gltf':
+					this.promise = gltfLoader.load( data.asset, ( m ) => this.onGLTFLoad( data.asset, m ), ( p ) => this.onProgress( p ), ( e ) => this.onError( e ) );
+					break;
+				case 'js':
+				case 'json':
+				case '3geo':
+				case '3mat':
+				case '3obj':
+				case '3scn':
+					this.promise = objectLoader.load( data.asset, ( m ) => this.onLoad( data.asset, m ), ( p ) => this.onProgress( p ), () => this.onError() );
+					break;
+
+				default:
+					console.error( 'Model: invalid model extension ' + extension );
+
+			}
 
 		}
 
@@ -54418,18 +54441,20 @@ class Model {
 
 	}
 
-	onGLTFLoad( result ) {
+	onGLTFLoad( key, result ) {
 
 		const scene = result.scene;
 		scene.animations.push( ...result.animations );
 		scene.castShadow = true;
 		scene.receiveShadow = true;
 
-		this.onLoad( scene );
+		this.onLoad( key, scene );
 
 	}
 
-	onLoad( result ) {
+	onLoad( key, result ) {
+
+		this.app.assets.add( key, result );
 
 		this.ref = result;
 
@@ -60240,7 +60265,7 @@ ContactMaterial.idCounter = 0;
  * @param {object} [options]
  * @author schteppe
  */
-class Material$2 {
+class Material$3 {
   // Material name.
   // Material id.
   // Friction for this material. If non-negative, it will be used instead of the friction given by ContactMaterials. If there's no matching ContactMaterial, the value from .defaultContactMaterial in the World will be used.
@@ -60254,13 +60279,13 @@ class Material$2 {
     }
 
     this.name = name;
-    this.id = Material$2.idCounter++;
+    this.id = Material$3.idCounter++;
     this.friction = typeof options.friction !== 'undefined' ? options.friction : -1;
     this.restitution = typeof options.restitution !== 'undefined' ? options.restitution : -1;
   }
 
 }
-Material$2.idCounter = 0;
+Material$3.idCounter = 0;
 const tmpRay = new Ray$1();
 
 /**
@@ -63212,7 +63237,7 @@ class World extends EventTarget {
     this.materials = [];
     this.contactmaterials = [];
     this.contactMaterialTable = new TupleDictionary();
-    this.defaultMaterial = new Material$2('default');
+    this.defaultMaterial = new Material$3('default');
     this.defaultContactMaterial = new ContactMaterial(this.defaultMaterial, this.defaultMaterial, {
       friction: 0.3,
       restitution: 0.0
@@ -64083,22 +64108,37 @@ class Shape$2 {
 				break;
 			case 'heightfield':
 				// TODO
-				this.ref = new Heightfield( data.data, { elementSize: data.elementSize } );
+				const minValue = data.minValue !== 0 ? data.minValue : null;
+				const maxValue = data.maxValue !== 0 ? data.maxValue : null;
+				this.ref = new Heightfield( data.data, { elementSize: data.elementSize, minValue, maxValue } );
 				break;
 			default:
 				console.error( 'Shape: invalid shape type ' + data.type );
 
 		}
 
-		this.ref.material = data.physicsMaterial;
+		if ( data.material.length > 0 ) {
+
+			this.ref.material = this.app.assets.get( data.material );
+			if ( this.ref.material === undefined )
+				fileLoader.load( data.material, ( json ) => this.onMaterialLoad( data.material, json ) );
+
+		}
+
 		this.ref.collisionResponse = data.collisionResponse;
 		this.ref.collisionFilterGroup = data.collisionFilterGroup;
 		this.ref.collisionFilterMask = data.collisionFilterMask;
 
-		this.data = data;
-
 		this.addEventListener( 'enable', this.onEnable );
 		this.addEventListener( 'disable', this.onDisable );
+
+	}
+
+	onMaterialLoad( key, json ) {
+
+		const material = new Material( json );
+		this.ref.material = material;
+		this.app.assets.add( key, material );
 
 	}
 
@@ -64130,7 +64170,6 @@ class Shape$2 {
 	static config = {
 		schema: {
 			type: { type: 'select', default: 'box', select: [ 'box', 'sphere', 'plane', 'cylinder', 'convex', 'particle', 'heightfield' ] },
-			physicsMaterial: { type: 'asset', default: null },
 
 			halfExtents: { type: 'vector3', min: 0, default: [ 0.5, 0.5, 0.5 ], if: { type: [ 'box' ] } },
 			radius: { default: 1, min: 0, if: { type: [ 'sphere' ] } },
@@ -64142,12 +64181,14 @@ class Shape$2 {
 
 			asset: { type: 'asset', if: { type: [ 'convex', 'heightfield' ] } },
 
-			// TODO: see how to integrate maxValue and minValue, since they're both null by default...
 			elementSize: { default: 1, if: { type: 'heightfield' } },
+			minValue: { default: 0, if: { type: 'heightfield' } },
+			maxValue: { default: 0, if: { type: 'heightfield' } },
 
 			offset: { type: 'vector3' },
 			orientation: { type: 'vector3' },
 
+			material: { type: 'asset' },
 			collisionResponse: { default: true },
 			collisionFilterGroup: { type: 'int', default: 1 },
 			collisionFilterMask: { type: 'int', default: - 1 },
@@ -64237,13 +64278,13 @@ class Constraint$1 {
 
 	onEnable() {
 
-		this.entity.scene.physicsWorld.addConstraint( this.ref );
+		this.app.physics.addConstraint( this.ref );
 
 	}
 
 	onDisable() {
 
-		this.entity.scene.physicsWorld.removeConstraint( this.ref );
+		this.app.physics.removeConstraint( this.ref );
 
 	}
 
@@ -64276,23 +64317,25 @@ ComponentManager.register( 'constraint', Constraint$1 );
 
 const types = [ 'dynamic', 'static', 'kinematic' ];
 const indexedTypes = [ undefined, 'dynamic', 'static', undefined, 'kinematic' ];
-
+const fileLoader$1 = new FileLoader();
 class Rigidbody {
 
 	init( data ) {
 
-		// temporary changes to data
 		data.type = indexedTypes.indexOf( data.type );
-
-		if ( data.physicsMaterial !== undefined ) data.material = data.physicsMaterial;
 
 		this.ref = new Body( data );
 		this.cachedScale = this.entity.getWorldScale( new Vector3() );
 
-		// fixing it
-		if ( data.material !== undefined ) delete data.material;
-
 		data.type = indexedTypes[ data.type ];
+
+		if ( data.material.length > 0 ) {
+
+			this.ref.material = this.app.assets.get( data.material );
+			if ( this.ref.material === undefined )
+				fileLoader$1.load( data.material, ( json ) => this.onMaterialLoad( data.material, json ) );
+
+		}
 
 		this.ref.addEventListener( 'collide', event => this.entity.dispatchEvent( event ) );
 		this.ref.addEventListener( 'wakeup', event => this.entity.dispatchEvent( event ) );
@@ -64304,15 +64347,23 @@ class Rigidbody {
 
 	}
 
+	onMaterialLoad( key, json ) {
+
+		const material = new Material$3( json );
+		this.ref.material = material;
+		this.app.assets.add( key, material );
+
+	}
+
 	onEnable() {
 
-		this.scene.physicsWorld.addBody( this.ref );
+		this.app.physics.addBody( this.ref );
 
 	}
 
 	onDisable() {
 
-		this.scene.physicsWorld.removeBody( this.ref );
+		this.app.physics.removeBody( this.ref );
 
 	}
 
@@ -64333,8 +64384,7 @@ class Rigidbody {
 			sleepSpeedLimit: { default: 0.1, min: 0, if: { type: [ 'dynamic', 'kinematic' ] } },
 			sleepTimeLimit: { default: 1, min: 0, if: { type: [ 'dynamic', 'kinematic' ] } },
 
-			// overrides the individual shapes
-			physicsMaterial: { type: 'asset', default: null },
+			material: { type: 'asset' },
 			collisionResponse: { default: true },
 			collisionFilterGroup: { type: 'int', default: 1 },
 			collisionFilterMask: { type: 'int', default: - 1 },
@@ -64351,33 +64401,41 @@ const _q1$2 = new Quaternion();
 const _m1$3 = new Matrix4();
 const SLEEPING = 2;
 
-class Physics {
+class Physics extends World {
 
 	constructor( parameters ) {
 
-		this._gravity = parameters.gravity !== undefined ? parameters.gravity : new Vector3( 0, - 9.80665, 0 );
-		this.world = undefined;
-		this.rigidbodies = undefined;
-
-	}
-	get gravity() {
-
-		return this._gravity;
-
-	}
-	set gravity( gravity ) {
-
-		this.world.gravity.copy( gravity );
-		this._gravity = gravity;
+		super( parameters );
+		this.epsilon = parameters.epsilon !== undefined ? parameters.epsilon : 0.001;
+		this.gravity = parameters.gravity !== undefined ? parameters.gravity : new Vector3( 0, - 9.78033, 0 );
+		this.rigidbodies = [];
 
 	}
 
 	_updateScene( scene ) {
 
-		this.world = scene.physicsWorld;
-		this.world.gravity.copy( this._gravity );
+		// remove old bodies and constraints
+		for ( let i = 0, len = this.bodies.length; i < len; i ++ )
+			physics.removeBody( this.bodies[ i ] );
+
+		for ( let i = 0, len = this.constraints.length; i < len; i ++ )
+			physics.removeConstraint( this.constraints[ i ] );
+
+		// add new bodies and constraints
 
 		this.rigidbodies = scene.components.rigidbody;
+
+		for ( let i = 0, len = this.rigidbodies.length; i < len; i ++ )
+			physics.addBody( this.rigidbodies[ i ].ref );
+
+		const constraints = scene.components.constraints;
+
+		if ( constraints !== undefined ) {
+
+			for ( let i = 0, len = bodies.length; i < len; i ++ )
+				physics.addConstraint( constraints[ i ].ref );
+
+		}
 
 	}
 
@@ -64432,9 +64490,9 @@ class Physics {
 
 		}
 
-		this.world.step( fixedTimestep, deltaTime );
+		this.step( fixedTimestep, deltaTime );
 
-		if ( this.world.hasActiveBodies ) {
+		if ( this.hasActiveBodies ) {
 
 			for ( let i = 0, len = rigidbodies.length; i < len; i ++ ) {
 
@@ -64471,18 +64529,15 @@ class Physics {
 
 	hasVectorChanged( v1, v2 ) {
 
-		return ! ( Math.abs( v1.x - v2.x ) < 0.001 &&
-				 Math.abs( v1.y - v2.y ) < 0.001 &&
-				 Math.abs( v1.z - v2.z ) < 0.001 );
+		const e = this.epsilon;
+		return ! ( Math.abs( v1.x - v2.x ) < e && Math.abs( v1.y - v2.y ) < e && Math.abs( v1.z - v2.z ) < e );
 
 	}
 
 	hasQuaternionChanged( q1, q2 ) {
 
-		return ! ( Math.abs( q1.x - q2.x ) < 0.001 &&
-				 Math.abs( q1.y - q2.y ) < 0.001 &&
-				 Math.abs( q1.z - q2.z ) < 0.001 &&
-				 Math.abs( q1.w - q2.w ) < 0.001 );
+		const e = this.epsilon;
+		return ! ( Math.abs( q1.x - q2.x ) < e && Math.abs( q1.y - q2.y ) < e && Math.abs( q1.z - q2.z ) < e && Math.abs( q1.w - q2.w ) < e );
 
 	}
 
@@ -64495,12 +64550,19 @@ class Renderer extends WebGLRenderer {
 		super( parameters );
 
 		this.scene = undefined;
-		this.cameras = {};
+		this.cameras = [];
 
 		this.setPixelRatio( window.devicePixelRatio );
 
 		this.observer = new ResizeObserver( () => this._onResize() );
 		this.observer.observe( this.domElement );
+
+	}
+
+	_updateScene( scene ) {
+
+		this.cameras = scene.components.camera;
+		this.scene = scene;
 
 	}
 
@@ -64515,13 +64577,6 @@ class Renderer extends WebGLRenderer {
 			cameras[ i ]._updateRegion( canvas );
 
 		this.update();
-
-	}
-
-	_updateScene( scene ) {
-
-		this.cameras = scene.components.camera;
-		this.scene = scene;
 
 	}
 
@@ -64547,6 +64602,40 @@ class Renderer extends WebGLRenderer {
 
 		super.dispose();
 		this.observer.disconnect();
+
+	}
+
+}
+
+class AssetManager {
+
+	constructor() {
+
+		this.files = {};
+
+	}
+
+	add( key, file ) {
+
+		this.files[ key ] = file;
+
+	}
+
+	get( key ) {
+
+		return this.files[ key ];
+
+	}
+
+	remove( key ) {
+
+		delete this.files[ key ];
+
+	}
+
+	clear() {
+
+		this.files = {};
 
 	}
 
@@ -64767,6 +64856,7 @@ class Application {
 		this.renderer = parameters.renderer !== undefined ? parameters.renderer : new Renderer( parameters );
 		this.domElement = this.renderer.domElement;
 
+		this.assets = new AssetManager();
 		this.time = new Time( parameters );
 		this.physics = new Physics( parameters );
 		this.input = new Input( this.domElement );
@@ -64840,14 +64930,20 @@ class Application {
 
 	setScene( scene ) {
 
-		if ( this.scenes.indexOf( scene ) === - 1 )
-			this.addScene( scene );
+		if ( this.currentScene !== scene ) {
 
-		this.components = scene.components;
-		this.currentScene = scene;
+			if ( this.scenes.indexOf( scene ) === - 1 )
+				this.addScene( scene );
 
-		this.renderer._updateScene( scene );
-		this.physics._updateScene( scene );
+			const oldScene = this.currentScene;
+
+			this.components = scene.components;
+			this.currentScene = scene;
+
+			this.renderer._updateScene( scene );
+			this.physics._updateScene( scene );
+
+		}
 
 		return scene;
 
@@ -64894,7 +64990,6 @@ class Scene$1 extends Scene {
 		super();
 
 		this.components = { rigidbody: [], camera: [] };
-		this.physicsWorld = new World( { allowSleep: true } );
 
 		if ( name !== undefined )
 			this.name = name;
@@ -65357,4 +65452,4 @@ class Entity extends Group {
 
 Entity.prototype.isEntity = true;
 
-export { ACESFilmicToneMapping, AddEquation, AddOperation, AdditiveAnimationBlendMode, AdditiveBlending, AlphaFormat, AlwaysDepth, AlwaysStencilFunc, AmbientLight, AmbientLightProbe, AnimationClip, AnimationLoader, AnimationMixer, AnimationObjectGroup, AnimationUtils, Application, ArcCurve, ArrayCamera, ArrowHelper, Audio, AudioAnalyser, AudioContext, AudioListener, AudioLoader, AxesHelper, AxisHelper, BackSide, BasicDepthPacking, BasicShadowMap, BinaryTextureLoader, Bone, BooleanKeyframeTrack, BoundingBoxHelper, Box2, Box3, Box3Helper, BoxGeometry as BoxBufferGeometry, BoxGeometry, BoxHelper, BufferAttribute, BufferGeometry, BufferGeometryLoader, ByteType, Cache, Camera, CameraHelper, CanvasRenderer, CanvasTexture, CatmullRomCurve3, CineonToneMapping, CircleGeometry as CircleBufferGeometry, CircleGeometry, ClampToEdgeWrapping, Clock, ClosedSplineCurve3, Color, ColorKeyframeTrack, ComponentManager, CompressedTexture, CompressedTextureLoader, ConeGeometry as ConeBufferGeometry, ConeGeometry, CubeCamera, CubeReflectionMapping, CubeRefractionMapping, CubeTexture, CubeTextureLoader, CubeUVReflectionMapping, CubeUVRefractionMapping, CubicBezierCurve, CubicBezierCurve3, CubicInterpolant, CullFaceBack, CullFaceFront, CullFaceFrontBack, CullFaceNone, Curve, CurvePath, CustomBlending, CustomToneMapping, CylinderGeometry as CylinderBufferGeometry, CylinderGeometry, Cylindrical, DRACOLoader, DataTexture, DataTexture2DArray, DataTexture3D, DataTextureLoader, DataUtils, DecrementStencilOp, DecrementWrapStencilOp, DefaultLoadingManager, DepthFormat, DepthStencilFormat, DepthTexture, DirectionalLight, DirectionalLightHelper, DiscreteInterpolant, DodecahedronGeometry as DodecahedronBufferGeometry, DodecahedronGeometry, DoubleSide, DstAlphaFactor, DstColorFactor, DynamicBufferAttribute, DynamicCopyUsage, DynamicDrawUsage, DynamicReadUsage, EdgesGeometry, EdgesHelper, EllipseCurve, Entity, EqualDepth, EqualStencilFunc, EquirectangularReflectionMapping, EquirectangularRefractionMapping, Euler, EventDispatcher, ExtrudeGeometry as ExtrudeBufferGeometry, ExtrudeGeometry, Face3, Face4, FaceColors, FileLoader, FlatShading, Float16BufferAttribute, Float32Attribute, Float32BufferAttribute, Float64Attribute, Float64BufferAttribute, FloatType, Fog, FogExp2, Font, FontLoader, FrontSide, Frustum, GLBufferAttribute, GLSL1, GLSL3, GLTFLoader, GammaEncoding, GeometryUtils, GreaterDepth, GreaterEqualDepth, GreaterEqualStencilFunc, GreaterStencilFunc, GridHelper, Group, HalfFloatType, HemisphereLight, HemisphereLightHelper, HemisphereLightProbe, IcosahedronGeometry as IcosahedronBufferGeometry, IcosahedronGeometry, ImageBitmapLoader, ImageLoader, ImageUtils, ImmediateRenderObject, IncrementStencilOp, IncrementWrapStencilOp, InstancedBufferAttribute, InstancedBufferGeometry, InstancedInterleavedBuffer, InstancedMesh, Int16Attribute, Int16BufferAttribute, Int32Attribute, Int32BufferAttribute, Int8Attribute, Int8BufferAttribute, IntType, InterleavedBuffer, InterleavedBufferAttribute, Interpolant, InterpolateDiscrete, InterpolateLinear, InterpolateSmooth, InvertStencilOp, JSONLoader, KeepStencilOp, KeyframeTrack, LOD, LatheGeometry as LatheBufferGeometry, LatheGeometry, Layers, LensFlare, LessDepth, LessEqualDepth, LessEqualStencilFunc, LessStencilFunc, Light, LightProbe, Line, Line3, LineBasicMaterial, LineCurve, LineCurve3, LineDashedMaterial, LineLoop, LinePieces, LineSegments, LineStrip, LinearEncoding, LinearFilter, LinearInterpolant, LinearMipMapLinearFilter, LinearMipMapNearestFilter, LinearMipmapLinearFilter, LinearMipmapNearestFilter, LinearToneMapping, Loader, LoaderUtils, LoadingManager, LogLuvEncoding, LoopOnce, LoopPingPong, LoopRepeat, LuminanceAlphaFormat, LuminanceFormat, MOUSE, Material, MaterialLoader, MathUtils as Math, MathUtils, Matrix3, Matrix4, MaxEquation, Mesh, MeshBasicMaterial, MeshDepthMaterial, MeshDistanceMaterial, MeshFaceMaterial, MeshLambertMaterial, MeshMatcapMaterial, MeshNormalMaterial, MeshPhongMaterial, MeshPhysicalMaterial, MeshStandardMaterial, MeshToonMaterial, MinEquation, MirroredRepeatWrapping, MixOperation, MultiMaterial, MultiplyBlending, MultiplyOperation, NearestFilter, NearestMipMapLinearFilter, NearestMipMapNearestFilter, NearestMipmapLinearFilter, NearestMipmapNearestFilter, NeverDepth, NeverStencilFunc, NoBlending, NoColors, NoToneMapping, NormalAnimationBlendMode, NormalBlending, NotEqualDepth, NotEqualStencilFunc, NumberKeyframeTrack, Object3D, ObjectLoader, ObjectSpaceNormalMap, OctahedronGeometry as OctahedronBufferGeometry, OctahedronGeometry, OneFactor, OneMinusDstAlphaFactor, OneMinusDstColorFactor, OneMinusSrcAlphaFactor, OneMinusSrcColorFactor, OrthographicCamera, PCFShadowMap, PCFSoftShadowMap, PMREMGenerator, ParametricGeometry as ParametricBufferGeometry, ParametricGeometry, Particle, ParticleBasicMaterial, ParticleSystem, ParticleSystemMaterial, Path, PerspectiveCamera, Plane, PlaneGeometry as PlaneBufferGeometry, PlaneGeometry, PlaneHelper, PointCloud, PointCloudMaterial, PointLight, PointLightHelper, Points, PointsMaterial, PolarGridHelper, PolyhedronGeometry as PolyhedronBufferGeometry, PolyhedronGeometry, PositionalAudio, PropertyBinding, PropertyMixer, QuadraticBezierCurve, QuadraticBezierCurve3, Quaternion, QuaternionKeyframeTrack, QuaternionLinearInterpolant, REVISION, RGBADepthPacking, RGBAFormat, RGBAIntegerFormat, RGBA_ASTC_10x10_Format, RGBA_ASTC_10x5_Format, RGBA_ASTC_10x6_Format, RGBA_ASTC_10x8_Format, RGBA_ASTC_12x10_Format, RGBA_ASTC_12x12_Format, RGBA_ASTC_4x4_Format, RGBA_ASTC_5x4_Format, RGBA_ASTC_5x5_Format, RGBA_ASTC_6x5_Format, RGBA_ASTC_6x6_Format, RGBA_ASTC_8x5_Format, RGBA_ASTC_8x6_Format, RGBA_ASTC_8x8_Format, RGBA_BPTC_Format, RGBA_ETC2_EAC_Format, RGBA_PVRTC_2BPPV1_Format, RGBA_PVRTC_4BPPV1_Format, RGBA_S3TC_DXT1_Format, RGBA_S3TC_DXT3_Format, RGBA_S3TC_DXT5_Format, RGBDEncoding, RGBEEncoding, RGBEFormat, RGBFormat, RGBIntegerFormat, RGBM16Encoding, RGBM7Encoding, RGB_ETC1_Format, RGB_ETC2_Format, RGB_PVRTC_2BPPV1_Format, RGB_PVRTC_4BPPV1_Format, RGB_S3TC_DXT1_Format, RGFormat, RGIntegerFormat, RawShaderMaterial, Ray, Raycaster, RectAreaLight, RedFormat, RedIntegerFormat, ReinhardToneMapping, Renderer, RepeatWrapping, ReplaceStencilOp, ReverseSubtractEquation, RingGeometry as RingBufferGeometry, RingGeometry, SRGB8_ALPHA8_ASTC_10x10_Format, SRGB8_ALPHA8_ASTC_10x5_Format, SRGB8_ALPHA8_ASTC_10x6_Format, SRGB8_ALPHA8_ASTC_10x8_Format, SRGB8_ALPHA8_ASTC_12x10_Format, SRGB8_ALPHA8_ASTC_12x12_Format, SRGB8_ALPHA8_ASTC_4x4_Format, SRGB8_ALPHA8_ASTC_5x4_Format, SRGB8_ALPHA8_ASTC_5x5_Format, SRGB8_ALPHA8_ASTC_6x5_Format, SRGB8_ALPHA8_ASTC_6x6_Format, SRGB8_ALPHA8_ASTC_8x5_Format, SRGB8_ALPHA8_ASTC_8x6_Format, SRGB8_ALPHA8_ASTC_8x8_Format, Scene$1 as Scene, SceneUtils, ShaderChunk, ShaderLib, ShaderMaterial, ShadowMaterial, Shape, ShapeGeometry as ShapeBufferGeometry, ShapeGeometry, ShapePath, ShapeUtils, ShortType, Skeleton, SkeletonHelper, SkinnedMesh, SmoothShading, Sphere, SphereGeometry as SphereBufferGeometry, SphereGeometry, Spherical, SphericalHarmonics3, Spline, SplineCurve, SplineCurve3, SpotLight, SpotLightHelper, Sprite, SpriteMaterial, SrcAlphaFactor, SrcAlphaSaturateFactor, SrcColorFactor, StaticCopyUsage, StaticDrawUsage, StaticReadUsage, StereoCamera, StreamCopyUsage, StreamDrawUsage, StreamReadUsage, StringKeyframeTrack, SubtractEquation, SubtractiveBlending, TOUCH, TangentSpaceNormalMap, TetrahedronGeometry as TetrahedronBufferGeometry, TetrahedronGeometry, TextGeometry as TextBufferGeometry, TextGeometry, Texture, TextureLoader, TorusGeometry as TorusBufferGeometry, TorusGeometry, TorusKnotGeometry as TorusKnotBufferGeometry, TorusKnotGeometry, Triangle, TriangleFanDrawMode, TriangleStripDrawMode, TrianglesDrawMode, TubeGeometry as TubeBufferGeometry, TubeGeometry, UVMapping, Uint16Attribute, Uint16BufferAttribute, Uint32Attribute, Uint32BufferAttribute, Uint8Attribute, Uint8BufferAttribute, Uint8ClampedAttribute, Uint8ClampedBufferAttribute, Uniform, UniformsLib, UniformsUtils, UnsignedByteType, UnsignedInt248Type, UnsignedIntType, UnsignedShort4444Type, UnsignedShort5551Type, UnsignedShort565Type, UnsignedShortType, VSMShadowMap, Vector2, Vector3, Vector4, VectorKeyframeTrack, Vertex, VertexColors, VideoTexture, WebGL1Renderer, WebGLCubeRenderTarget, WebGLMultisampleRenderTarget, WebGLRenderTarget, WebGLRenderTargetCube, WebGLRenderer, WebGLUtils, WireframeGeometry, WireframeHelper, WrapAroundEnding, XHRLoader, ZeroCurvatureEnding, ZeroFactor, ZeroSlopeEnding, ZeroStencilOp, sRGBEncoding };
+export { ACESFilmicToneMapping, AddEquation, AddOperation, AdditiveAnimationBlendMode, AdditiveBlending, AlphaFormat, AlwaysDepth, AlwaysStencilFunc, AmbientLight, AmbientLightProbe, AnimationClip, AnimationLoader, AnimationMixer, AnimationObjectGroup, AnimationUtils, Application, ArcCurve, ArrayCamera, ArrowHelper, Audio, AudioAnalyser, AudioContext, AudioListener, AudioLoader, AxesHelper, AxisHelper, BackSide, BasicDepthPacking, BasicShadowMap, BinaryTextureLoader, Bone, BooleanKeyframeTrack, BoundingBoxHelper, Box2, Box3, Box3Helper, BoxGeometry as BoxBufferGeometry, BoxGeometry, BoxHelper, BufferAttribute, BufferGeometry, BufferGeometryLoader, ByteType, Cache, Camera, CameraHelper, CanvasRenderer, CanvasTexture, CatmullRomCurve3, CineonToneMapping, CircleGeometry as CircleBufferGeometry, CircleGeometry, ClampToEdgeWrapping, Clock, ClosedSplineCurve3, Color, ColorKeyframeTrack, ComponentManager, CompressedTexture, CompressedTextureLoader, ConeGeometry as ConeBufferGeometry, ConeGeometry, CubeCamera, CubeReflectionMapping, CubeRefractionMapping, CubeTexture, CubeTextureLoader, CubeUVReflectionMapping, CubeUVRefractionMapping, CubicBezierCurve, CubicBezierCurve3, CubicInterpolant, CullFaceBack, CullFaceFront, CullFaceFrontBack, CullFaceNone, Curve, CurvePath, CustomBlending, CustomToneMapping, CylinderGeometry as CylinderBufferGeometry, CylinderGeometry, Cylindrical, DRACOLoader, DataTexture, DataTexture2DArray, DataTexture3D, DataTextureLoader, DataUtils, DecrementStencilOp, DecrementWrapStencilOp, DefaultLoadingManager, DepthFormat, DepthStencilFormat, DepthTexture, DirectionalLight, DirectionalLightHelper, DiscreteInterpolant, DodecahedronGeometry as DodecahedronBufferGeometry, DodecahedronGeometry, DoubleSide, DstAlphaFactor, DstColorFactor, DynamicBufferAttribute, DynamicCopyUsage, DynamicDrawUsage, DynamicReadUsage, EdgesGeometry, EdgesHelper, EllipseCurve, Entity, EqualDepth, EqualStencilFunc, EquirectangularReflectionMapping, EquirectangularRefractionMapping, Euler, EventDispatcher, ExtrudeGeometry as ExtrudeBufferGeometry, ExtrudeGeometry, Face3, Face4, FaceColors, FileLoader, FlatShading, Float16BufferAttribute, Float32Attribute, Float32BufferAttribute, Float64Attribute, Float64BufferAttribute, FloatType, Fog, FogExp2, Font, FontLoader, FrontSide, Frustum, GLBufferAttribute, GLSL1, GLSL3, GLTFLoader, GammaEncoding, GeometryUtils, GreaterDepth, GreaterEqualDepth, GreaterEqualStencilFunc, GreaterStencilFunc, GridHelper, Group, HalfFloatType, HemisphereLight, HemisphereLightHelper, HemisphereLightProbe, IcosahedronGeometry as IcosahedronBufferGeometry, IcosahedronGeometry, ImageBitmapLoader, ImageLoader, ImageUtils, ImmediateRenderObject, IncrementStencilOp, IncrementWrapStencilOp, InstancedBufferAttribute, InstancedBufferGeometry, InstancedInterleavedBuffer, InstancedMesh, Int16Attribute, Int16BufferAttribute, Int32Attribute, Int32BufferAttribute, Int8Attribute, Int8BufferAttribute, IntType, InterleavedBuffer, InterleavedBufferAttribute, Interpolant, InterpolateDiscrete, InterpolateLinear, InterpolateSmooth, InvertStencilOp, JSONLoader, KeepStencilOp, KeyframeTrack, LOD, LatheGeometry as LatheBufferGeometry, LatheGeometry, Layers, LensFlare, LessDepth, LessEqualDepth, LessEqualStencilFunc, LessStencilFunc, Light, LightProbe, Line, Line3, LineBasicMaterial, LineCurve, LineCurve3, LineDashedMaterial, LineLoop, LinePieces, LineSegments, LineStrip, LinearEncoding, LinearFilter, LinearInterpolant, LinearMipMapLinearFilter, LinearMipMapNearestFilter, LinearMipmapLinearFilter, LinearMipmapNearestFilter, LinearToneMapping, Loader, LoaderUtils, LoadingManager, LogLuvEncoding, LoopOnce, LoopPingPong, LoopRepeat, LuminanceAlphaFormat, LuminanceFormat, MOUSE, Material$1 as Material, MaterialLoader, MathUtils as Math, MathUtils, Matrix3, Matrix4, MaxEquation, Mesh, MeshBasicMaterial, MeshDepthMaterial, MeshDistanceMaterial, MeshFaceMaterial, MeshLambertMaterial, MeshMatcapMaterial, MeshNormalMaterial, MeshPhongMaterial, MeshPhysicalMaterial, MeshStandardMaterial, MeshToonMaterial, MinEquation, MirroredRepeatWrapping, MixOperation, MultiMaterial, MultiplyBlending, MultiplyOperation, NearestFilter, NearestMipMapLinearFilter, NearestMipMapNearestFilter, NearestMipmapLinearFilter, NearestMipmapNearestFilter, NeverDepth, NeverStencilFunc, NoBlending, NoColors, NoToneMapping, NormalAnimationBlendMode, NormalBlending, NotEqualDepth, NotEqualStencilFunc, NumberKeyframeTrack, Object3D, ObjectLoader, ObjectSpaceNormalMap, OctahedronGeometry as OctahedronBufferGeometry, OctahedronGeometry, OneFactor, OneMinusDstAlphaFactor, OneMinusDstColorFactor, OneMinusSrcAlphaFactor, OneMinusSrcColorFactor, OrthographicCamera, PCFShadowMap, PCFSoftShadowMap, PMREMGenerator, ParametricGeometry as ParametricBufferGeometry, ParametricGeometry, Particle, ParticleBasicMaterial, ParticleSystem, ParticleSystemMaterial, Path, PerspectiveCamera, Plane, PlaneGeometry as PlaneBufferGeometry, PlaneGeometry, PlaneHelper, PointCloud, PointCloudMaterial, PointLight, PointLightHelper, Points, PointsMaterial, PolarGridHelper, PolyhedronGeometry as PolyhedronBufferGeometry, PolyhedronGeometry, PositionalAudio, PropertyBinding, PropertyMixer, QuadraticBezierCurve, QuadraticBezierCurve3, Quaternion, QuaternionKeyframeTrack, QuaternionLinearInterpolant, REVISION, RGBADepthPacking, RGBAFormat, RGBAIntegerFormat, RGBA_ASTC_10x10_Format, RGBA_ASTC_10x5_Format, RGBA_ASTC_10x6_Format, RGBA_ASTC_10x8_Format, RGBA_ASTC_12x10_Format, RGBA_ASTC_12x12_Format, RGBA_ASTC_4x4_Format, RGBA_ASTC_5x4_Format, RGBA_ASTC_5x5_Format, RGBA_ASTC_6x5_Format, RGBA_ASTC_6x6_Format, RGBA_ASTC_8x5_Format, RGBA_ASTC_8x6_Format, RGBA_ASTC_8x8_Format, RGBA_BPTC_Format, RGBA_ETC2_EAC_Format, RGBA_PVRTC_2BPPV1_Format, RGBA_PVRTC_4BPPV1_Format, RGBA_S3TC_DXT1_Format, RGBA_S3TC_DXT3_Format, RGBA_S3TC_DXT5_Format, RGBDEncoding, RGBEEncoding, RGBEFormat, RGBFormat, RGBIntegerFormat, RGBM16Encoding, RGBM7Encoding, RGB_ETC1_Format, RGB_ETC2_Format, RGB_PVRTC_2BPPV1_Format, RGB_PVRTC_4BPPV1_Format, RGB_S3TC_DXT1_Format, RGFormat, RGIntegerFormat, RawShaderMaterial, Ray, Raycaster, RectAreaLight, RedFormat, RedIntegerFormat, ReinhardToneMapping, Renderer, RepeatWrapping, ReplaceStencilOp, ReverseSubtractEquation, RingGeometry as RingBufferGeometry, RingGeometry, SRGB8_ALPHA8_ASTC_10x10_Format, SRGB8_ALPHA8_ASTC_10x5_Format, SRGB8_ALPHA8_ASTC_10x6_Format, SRGB8_ALPHA8_ASTC_10x8_Format, SRGB8_ALPHA8_ASTC_12x10_Format, SRGB8_ALPHA8_ASTC_12x12_Format, SRGB8_ALPHA8_ASTC_4x4_Format, SRGB8_ALPHA8_ASTC_5x4_Format, SRGB8_ALPHA8_ASTC_5x5_Format, SRGB8_ALPHA8_ASTC_6x5_Format, SRGB8_ALPHA8_ASTC_6x6_Format, SRGB8_ALPHA8_ASTC_8x5_Format, SRGB8_ALPHA8_ASTC_8x6_Format, SRGB8_ALPHA8_ASTC_8x8_Format, Scene$1 as Scene, SceneUtils, ShaderChunk, ShaderLib, ShaderMaterial, ShadowMaterial, Shape, ShapeGeometry as ShapeBufferGeometry, ShapeGeometry, ShapePath, ShapeUtils, ShortType, Skeleton, SkeletonHelper, SkinnedMesh, SmoothShading, Sphere, SphereGeometry as SphereBufferGeometry, SphereGeometry, Spherical, SphericalHarmonics3, Spline, SplineCurve, SplineCurve3, SpotLight, SpotLightHelper, Sprite, SpriteMaterial, SrcAlphaFactor, SrcAlphaSaturateFactor, SrcColorFactor, StaticCopyUsage, StaticDrawUsage, StaticReadUsage, StereoCamera, StreamCopyUsage, StreamDrawUsage, StreamReadUsage, StringKeyframeTrack, SubtractEquation, SubtractiveBlending, TOUCH, TangentSpaceNormalMap, TetrahedronGeometry as TetrahedronBufferGeometry, TetrahedronGeometry, TextGeometry as TextBufferGeometry, TextGeometry, Texture, TextureLoader, TorusGeometry as TorusBufferGeometry, TorusGeometry, TorusKnotGeometry as TorusKnotBufferGeometry, TorusKnotGeometry, Triangle, TriangleFanDrawMode, TriangleStripDrawMode, TrianglesDrawMode, TubeGeometry as TubeBufferGeometry, TubeGeometry, UVMapping, Uint16Attribute, Uint16BufferAttribute, Uint32Attribute, Uint32BufferAttribute, Uint8Attribute, Uint8BufferAttribute, Uint8ClampedAttribute, Uint8ClampedBufferAttribute, Uniform, UniformsLib, UniformsUtils, UnsignedByteType, UnsignedInt248Type, UnsignedIntType, UnsignedShort4444Type, UnsignedShort5551Type, UnsignedShort565Type, UnsignedShortType, VSMShadowMap, Vector2, Vector3, Vector4, VectorKeyframeTrack, Vertex, VertexColors, VideoTexture, WebGL1Renderer, WebGLCubeRenderTarget, WebGLMultisampleRenderTarget, WebGLRenderTarget, WebGLRenderTargetCube, WebGLRenderer, WebGLUtils, WireframeGeometry, WireframeHelper, WrapAroundEnding, XHRLoader, ZeroCurvatureEnding, ZeroFactor, ZeroSlopeEnding, ZeroStencilOp, sRGBEncoding };

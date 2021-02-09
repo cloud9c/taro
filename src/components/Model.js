@@ -16,28 +16,31 @@ class Model {
 
 	init( data ) {
 
-		delete this.ref;
-		if ( data.asset === '' ) return;
+		this.ref = this.app.assets.get( data.asset );
 
-		const extension = data.asset.split( '.' ).pop().toLowerCase();
+		if ( this.ref === undefined ) {
 
-		switch ( extension ) {
+			const extension = data.asset.split( '.' ).pop().toLowerCase();
 
-			case 'glb':
-			case 'gltf':
-				this.promise = gltfLoader.load( data.asset, ( m ) => this.onGLTFLoad( m ), ( p ) => this.onProgress( p ), ( e ) => this.onError( e ) );
-				break;
-			case 'js':
-			case 'json':
-			case '3geo':
-			case '3mat':
-			case '3obj':
-			case '3scn':
-				this.promise = objectLoader.load( data.asset, ( m ) => this.onLoad( m ), ( p ) => this.onProgress( p ), () => this.onError() );
-				break;
+			switch ( extension ) {
 
-			default:
-				console.error( 'Model: invalid model extension ' + extension );
+				case 'glb':
+				case 'gltf':
+					this.promise = gltfLoader.load( data.asset, ( m ) => this.onGLTFLoad( data.asset, m ), ( p ) => this.onProgress( p ), ( e ) => this.onError( e ) );
+					break;
+				case 'js':
+				case 'json':
+				case '3geo':
+				case '3mat':
+				case '3obj':
+				case '3scn':
+					this.promise = objectLoader.load( data.asset, ( m ) => this.onLoad( data.asset, m ), ( p ) => this.onProgress( p ), () => this.onError() );
+					break;
+
+				default:
+					console.error( 'Model: invalid model extension ' + extension );
+
+			}
 
 		}
 
@@ -60,18 +63,20 @@ class Model {
 
 	}
 
-	onGLTFLoad( result ) {
+	onGLTFLoad( key, result ) {
 
 		const scene = result.scene;
 		scene.animations.push( ...result.animations );
 		scene.castShadow = true;
 		scene.receiveShadow = true;
 
-		this.onLoad( scene );
+		this.onLoad( key, scene );
 
 	}
 
-	onLoad( result ) {
+	onLoad( key, result ) {
+
+		this.app.assets.add( key, result );
 
 		this.ref = result;
 

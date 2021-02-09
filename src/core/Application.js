@@ -1,5 +1,6 @@
 import { Physics } from './Physics.js';
 import { Renderer } from './Renderer.js';
+import { AssetManager } from './AssetManager.js';
 import { Time } from './Time.js';
 import { Input } from './Input.js';
 
@@ -12,6 +13,7 @@ export class Application {
 		this.renderer = parameters.renderer !== undefined ? parameters.renderer : new Renderer( parameters );
 		this.domElement = this.renderer.domElement;
 
+		this.assets = new AssetManager();
 		this.time = new Time( parameters );
 		this.physics = new Physics( parameters );
 		this.input = new Input( this.domElement );

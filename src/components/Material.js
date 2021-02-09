@@ -15,12 +15,26 @@ class Material {
 		const type = data.type;
 		const parameters = {};
 
+		const assetManager = this.app.assets;
+
 		for ( const name in data ) {
 
-			if ( Material.config.schema[ name ].type === 'asset' && data[ name ].length > 0 )
-				parameters[ name ] = textureLoader.load( data[ name ] );
-			else
+			if ( Material.config.schema[ name ].type === 'asset' && data[ name ].length > 0 ) {
+
+				parameters[ name ] = assetManager.get( data[ name ] );
+
+				if ( parameters[ name ] === undefined ) {
+
+					parameters[ name ] = textureLoader.load( data[ name ] );
+					assetManager.add( data[ name ], parameters[ name ] );
+
+				}
+
+			} else {
+
 				parameters[ name ] = data[ name ];
+
+			}
 
 		}
 
@@ -63,8 +77,9 @@ class Material {
 				this.ref = new MeshToonMaterial( parameters );
 				break;
 			case 'asset':
-				this.ref = undefined;
-				materialLoader.load( parameters.asset, ( m ) => this.onLoad( m ), ( p ) => this.onProgress( p ), ( e ) => this.onError( e ) );
+				this.ref = this.app.assets.get( parameters.asset );
+				if ( this.ref === undefined )
+					materialLoader.load( parameters.asset, ( m ) => this.onLoad( parameters.asset, m ), ( p ) => this.onProgress( p ), ( e ) => this.onError( e ) );
 				break;
 			default:
 				console.error( 'Material: invalid material type ' + type );
@@ -108,7 +123,9 @@ class Material {
 
 	}
 
-	onLoad( material ) {
+	onLoad( key, material ) {
+
+		this.app.assets.add( key, material );
 
 		this.ref = material;
 		if ( this.mesh !== undefined )

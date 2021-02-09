@@ -134,8 +134,6 @@
 			entity.addComponent("geometry", {type: 'plane', width: 200, height: 200});
 			entity.addComponent("material", {type: 'phong', color: 0x718e3e}).mesh.receiveShadow = true;
 
-			entity.addComponent("model", { asset: 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Avocado/glTF-Draco/Avocado.gltf'})
-
 			entity.addComponent("rigidbody", { type: 'static' })
 			entity.addComponent("shape", { type: "plane" });
 			entity.rotation.set(-Math.PI / 2, 0, 0);
