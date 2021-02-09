@@ -65201,6 +65201,9 @@ class Entity extends Group {
 
 		super();
 
+		this.castShadow = true;
+		this.receiveShadow = true;
+
 		this.components = [];
 		this.queue = [];
 		this.tags = [];
