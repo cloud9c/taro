@@ -16,7 +16,7 @@ export function Viewport( editor ) {
 	let currentDrag;
 	this.currentEntity = undefined;
 
-	const onDragStart = this.onDragStart = ( event ) => {
+	const onDragStart = this.onDragStart = function ( event ) {
 
 		currentDrag = this;
 		if ( event !== undefined ) event.dataTransfer.effectAllowed = 'move';
@@ -51,7 +51,7 @@ export function Viewport( editor ) {
 
 	}
 
-	const onDrop = this.onDrop = ( event ) => {
+	const onDrop = this.onDrop = function ( event ) {
 
 		if ( currentDrag !== undefined && currentDrag !== this ) {
 
