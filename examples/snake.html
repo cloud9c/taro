@@ -42,22 +42,7 @@
 			entity = new TARO.Entity();
 			const dirLight = entity.addComponent('light').ref;
 			
-			entity.castShadow = true;
-			dirLight.castShadow = true;
 			dirLight.color.setHSL(0.1, 1, 0.95);
-			dirLight.shadow.mapSize.width = 2048;
-			dirLight.shadow.mapSize.height = 2048;
-
-			const d = 50;
-
-			dirLight.shadow.camera.left = -d;
-			dirLight.shadow.camera.right = d;
-			dirLight.shadow.camera.top = d;
-			dirLight.shadow.camera.bottom = -d;
-
-			dirLight.shadow.camera.far = 3500;
-			dirLight.shadow.bias = -0.0001;
-
 			entity.position.set(-100, 175, 100);
 
 			// floor
@@ -71,8 +56,6 @@
 			entity.addComponent('rigidbody', { type: 'static' })
 			entity.addComponent('shape', { type: 'plane' });
 			entity.rotation.set(-Math.PI / 2, 0, 0);
-			entity.recieveShadow = true;
-			grid.recieveShadow = true;
 
 			// ball
 			geo = new TARO.SphereGeometry(1, 32, 32);
@@ -99,8 +82,6 @@
 					for (let j = 0; j < 5; j++) {
 						entity = new TARO.Entity();
 						mesh = new TARO.Mesh(geo, mat);
-						mesh.castShadow = true;
-						mesh.recieveShadow = true;
 						entity.addComponent('renderable', mesh);
 						entity.position.copy(position);
 						entity.addComponent('rigidbody', { mass: 0.01 });
