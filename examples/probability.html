@@ -23,36 +23,125 @@
 			import * as TARO from '../build/taro.module.js';
 			import { OrbitControls } from './js/OrbitControls.js'
 
-			let entity, geo, mat, mesh;
+			let entity, mesh;
 
 			const app = new TARO.Application({canvas: document.getElementById('canvas')});
+			app.renderer.shadowMap.enabled = true;
+			app.physics.gravity.y = -20;
 			const scene = new TARO.Scene();
 			app.setScene(scene);
 			scene.background = new TARO.Color( 0xa0a0a0 );
 
 			// lighting
 			entity = new TARO.Entity();
-			entity.addComponent('light', {type: 'hemisphere', intensity: 0.6, skyColor: 0xffffff, groundColor: 0x444444})
+			entity.addComponent('light', {type: 'hemisphere', intensity: 0.6, skyColor: 0xffffff, groundColor: 0x444444});
 			entity.position.set(0, 20, 0);
 
 			entity = new TARO.Entity();
-			entity.addComponent('light', {type: 'directional'});
+			const dirLight = entity.addComponent('light', {type: 'directional'}).ref;
+			dirLight.castShadow = true;
 			entity.position.set( 3, 10, 10 );
 
 			// floor
-			mesh = new TARO.Mesh(new TARO.PlaneGeometry(200, 200), new TARO.MeshPhongMaterial( {color: 0x999999}))
+			mesh = new TARO.Mesh(new TARO.PlaneGeometry(50, 50), new TARO.MeshPhongMaterial( {color: 0x999999}))
+			mesh.receiveShadow = true;
 			entity = new TARO.Entity('floor');
 			entity.addComponent('renderable', mesh);
 			entity.addComponent('rigidbody', { type: 'static' })
 			entity.addComponent('shape', { type: 'plane' });
 			entity.rotation.set(-Math.PI / 2, 0, 0);
 
+			// create dice
+			const textureLoader = new TARO.TextureLoader();
+			const diceArray = [
+				new TARO.MeshPhongMaterial({map: textureLoader.load('textures/dice1.jpg')}),
+				new TARO.MeshPhongMaterial({map: textureLoader.load('textures/dice2.jpg')}),
+				new TARO.MeshPhongMaterial({map: textureLoader.load('textures/dice3.jpg')}),
+				new TARO.MeshPhongMaterial({map: textureLoader.load('textures/dice4.jpg')}),
+				new TARO.MeshPhongMaterial({map: textureLoader.load('textures/dice5.jpg')}),
+				new TARO.MeshPhongMaterial({map: textureLoader.load('textures/dice6.jpg')})
+			];
+
+			mesh = new TARO.Mesh(new TARO.BoxGeometry(1, 1, 1), diceArray);
+			mesh.castShadow = true;
+			mesh.receiveShadow = true;
+
+			const dice = new TARO.Entity();
+			dice.addComponent('renderable', mesh);
+			dice.addComponent('rigidbody', {mass: 5});
+			dice.addComponent('shape', {type: 'box', halfExtents: new TARO.Vector3(0.5, 0.5, 0.5)});
+			dice.position.set(0, 5, 0);
+
+			// create "hand"
+			const hand = new TARO.Entity();
+			hand.addComponent('material', {color: 'red'});
+			hand.addComponent('geometry', {type: 'sphere', radius: 0.1});
+			hand.addComponent('rigidbody', {type: 'kinematic', collisionFilterGroup: 0, collisionFilterMask: 0});
+			hand.addComponent('shape', {type: 'sphere', radius: 0.1});
+			const joint = hand.addComponent('constraint', {connectedBody: dice, type: 'point', maxForce: new TARO.Vector3(0, 0, 0)}).ref;
+			hand.enabled = false;
+
 			// camera
 			entity = new TARO.Entity('camera');
 			const camera = entity.addComponent('camera').ref;
-			camera.position.set(40, 40, 30);
-			const controls = new OrbitControls( camera, app.renderer.domElement );
-			controls.maxPolarAngle = Math.PI * 0.5;
+			camera.position.set(0, 5, 10)
+			camera.rotation.x = -0.3;
+
+			// movement plane
+			const movementPlane = new TARO.Mesh(new TARO.PlaneBufferGeometry(100, 100))
+
+			// raycaster
+			const raycaster = new TARO.Raycaster();
+			const mouse = new TARO.Vector2();
+
+			function raycast(object, clientX, clientY) {
+				// Get 3D point form the client x y
+				mouse.x = ( clientX / window.innerWidth ) * 2 - 1;
+				mouse.y = - ( clientY / window.innerHeight ) * 2 + 1;
+
+				// Get the picking ray from the point
+				raycaster.setFromCamera(mouse, camera)
+
+				// Find out if there's a hit
+				const hits = raycaster.intersectObject(object);
+
+				// Return the closest hit or undefined
+				return hits.length > 0 ? hits[0].point : undefined;
+			}
+
+			function onPointerMove( event ) {
+				const point = raycast(movementPlane, event.clientX, event.clientY)
+
+				if (point !== undefined) {
+					hand.position.copy(point);
+				}
+			}
+
+			function onPointerUp() {
+				hand.enabled = false;
+				window.removeEventListener('pointermove', onPointerMove);
+				window.removeEventListener('pointerup', onPointerUp);
+			}
+
+			window.addEventListener('pointerdown', (event) => {
+				const point = raycast(mesh, event.clientX, event.clientY);
+
+				if (point !== undefined) {
+
+					const vector = new TARO.Vector3().copy(point).sub(dice.position);
+					const antiRotation = new TARO.Quaternion().copy(dice.quaternion).invert();
+					const pivot = vector.applyQuaternion(antiRotation);
+
+					joint.pivotA = pivot;
+
+					hand.position.copy(point);
+					hand.enabled = true;
+
+					movementPlane.position.copy(point);
+					window.addEventListener('pointermove', onPointerMove);
+					window.addEventListener('pointerup', onPointerUp);
+				}
+			})
 
 			// start the app
 			app.start();
