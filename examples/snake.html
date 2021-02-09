@@ -42,6 +42,7 @@
 			entity = new TARO.Entity();
 			const dirLight = entity.addComponent('light').ref;
 			
+			entity.castShadow = true;
 			dirLight.castShadow = true;
 			dirLight.color.setHSL(0.1, 1, 0.95);
 			dirLight.shadow.mapSize.width = 2048;
@@ -71,6 +72,7 @@
 			entity.addComponent('shape', { type: 'plane' });
 			entity.rotation.set(-Math.PI / 2, 0, 0);
 			entity.recieveShadow = true;
+			grid.recieveShadow = true;
 
 			// ball
 			geo = new TARO.SphereGeometry(1, 32, 32);
@@ -96,8 +98,6 @@
 				for (let i = 0; i < 5; i++) {
 					for (let j = 0; j < 5; j++) {
 						entity = new TARO.Entity();
-						entity.castShadow = true;
-						entity.recieveShadow = true;
 						mesh = new TARO.Mesh(geo, mat);
 						mesh.castShadow = true;
 						mesh.recieveShadow = true;
