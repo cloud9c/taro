@@ -41,11 +41,8 @@
 
 			entity = new TARO.Entity();
 			const dirLight = entity.addComponent('light').ref;
-
+			
 			dirLight.color.setHSL(0.1, 1, 0.95);
-
-			dirLight.castShadow = true;
-
 			dirLight.shadow.mapSize.width = 2048;
 			dirLight.shadow.mapSize.height = 2048;
 
@@ -119,7 +116,7 @@
 			// camera
 			entity = new TARO.Entity('camera');
 			const camera = entity.addComponent('camera').ref;
-			camera.position.set(10, 10, 10);
+			camera.position.set(40, 40, 30);
 			const controls = new OrbitControls( camera, app.renderer.domElement );
 			controls.maxPolarAngle = Math.PI * 0.5;
 			entity.addComponent('orbitcontroller')
