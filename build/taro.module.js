@@ -64416,24 +64416,24 @@ class Physics extends World {
 
 		// remove old bodies and constraints
 		for ( let i = 0, len = this.bodies.length; i < len; i ++ )
-			physics.removeBody( this.bodies[ i ] );
+			this.removeBody( this.bodies[ i ] );
 
 		for ( let i = 0, len = this.constraints.length; i < len; i ++ )
-			physics.removeConstraint( this.constraints[ i ] );
+			this.removeConstraint( this.constraints[ i ] );
 
 		// add new bodies and constraints
 
 		this.rigidbodies = scene.components.rigidbody;
 
 		for ( let i = 0, len = this.rigidbodies.length; i < len; i ++ )
-			physics.addBody( this.rigidbodies[ i ].ref );
+			this.addBody( this.rigidbodies[ i ].ref );
 
 		const constraints = scene.components.constraints;
 
 		if ( constraints !== undefined ) {
 
 			for ( let i = 0, len = bodies.length; i < len; i ++ )
-				physics.addConstraint( constraints[ i ].ref );
+				this.addConstraint( constraints[ i ].ref );
 
 		}
 
