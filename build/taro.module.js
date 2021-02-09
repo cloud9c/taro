@@ -64415,10 +64415,10 @@ class Physics extends World {
 	_updateScene( scene ) {
 
 		// remove old bodies and constraints
-		for ( let i = 0, len = this.bodies.length; i < len; i ++ )
+		for ( let i = this.bodies.length - 1; i >= 0; i -- )
 			this.removeBody( this.bodies[ i ] );
 
-		for ( let i = 0, len = this.constraints.length; i < len; i ++ )
+		for ( let i = this.constraints.length - 1; i >= 0; i -- )
 			this.removeConstraint( this.constraints[ i ] );
 
 		// add new bodies and constraints
