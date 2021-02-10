@@ -28,7 +28,6 @@ export class Physics extends World {
 			this.removeConstraint( this.constraints[ i ] );
 
 		// add new bodies and constraints
-
 		this.rigidbodies = scene.components.rigidbody;
 
 		for ( let i = 0, len = this.rigidbodies.length; i < len; i ++ )
@@ -48,6 +47,7 @@ export class Physics extends World {
 	update( fixedTimestep, deltaTime ) {
 
 		const rigidbodies = this.rigidbodies;
+		const constraints = this.constraints;
 
 		for ( let i = 0, len = rigidbodies.length; i < len; i ++ ) {
 
@@ -57,12 +57,14 @@ export class Physics extends World {
 			entity.updateWorldMatrix( true, false );
 			entity.matrixWorld.decompose( _v1, _q1, _v2 );
 
+			let needsUpdate = false;
+
 			if ( this.hasVectorChanged( body.interpolatedPosition, _v1 ) ) {
 
 				body.position.copy( _v1 );
 				body.previousPosition.copy( _v1 );
 				body.interpolatedPosition.copy( _v1 );
-				body.wakeUp();
+				needsUpdate = true;
 
 			}
 
@@ -71,7 +73,17 @@ export class Physics extends World {
 				body.quaternion.copy( _q1 );
 				body.previousQuaternion.copy( _q1 );
 				body.interpolatedQuaternion.copy( _q1 );
+				needsUpdate = true;
+
+			}
+
+			if ( needsUpdate ) {
+
 				body.wakeUp();
+
+				for ( let i = 0, len = constraints.length; i < len; i ++ )
+					if ( constraints[ i ].bodyA === body || constraints[ i ].bodyB === body )
+						constraints[ i ].update();
 
 			}
 
