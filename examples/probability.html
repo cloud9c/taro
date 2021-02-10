@@ -84,11 +84,14 @@
 			// camera
 			entity = new TARO.Entity('camera');
 			const camera = entity.addComponent('camera').ref;
-			camera.position.set(0, 5, 10)
-			camera.rotation.x = -0.3;
+			camera.position.set(-6, 10, 10)
+			const controls = new OrbitControls( camera, app.renderer.domElement );
+			controls.maxPolarAngle = Math.PI * 0.5;
 
 			// movement plane
-			const movementPlane = new TARO.Mesh(new TARO.PlaneBufferGeometry(100, 100))
+			entity = new TARO.Entity()
+			const movementPlane = entity.addComponent('renderable', new TARO.Mesh(new TARO.PlaneBufferGeometry(100, 100))).ref;
+			movementPlane.visible = false;
 
 			// raycaster
 			const raycaster = new TARO.Raycaster();
@@ -118,6 +121,7 @@
 			}
 
 			function onPointerUp() {
+				controls.enabled = true;
 				hand.enabled = false;
 
 				hand.removeComponent(joint);
@@ -129,7 +133,7 @@
 				const point = raycast(mesh, event.clientX, event.clientY);
 
 				if (point !== undefined) {
-
+					controls.enabled = false;
 					const vector = new TARO.Vector3().copy(point).sub(dice.position);
 					const antiRotation = dice.quaternion.invert();
 					const pivot = vector.applyQuaternion(antiRotation);
@@ -147,6 +151,40 @@
 					window.addEventListener('pointerup', onPointerUp);
 				}
 			})
+
+			// galton model
+
+			for (let i = 0; i < 2; i++) {
+
+				let plane = new TARO.Entity();
+				plane.position.set(0, 7, -5.25 + i*0.3)
+				plane.addComponent('rigidbody', {type: 'static'});
+				plane.addComponent('shape', {type: 'box', halfExtents: new TARO.Vector3(5, 7, 0.05)});
+				plane.addComponent('material', {color: 'red', transparent: true, opacity: 0.05});
+				plane.addComponent('geometry', { type: 'box', width: 10, height: 14, depth: 0.1});
+
+			}
+
+			for (let i = 0; i < 2; i++) {
+
+				let plane = new TARO.Entity();
+				plane.position.set(0, 7, -5.25 + i*0.3)
+				plane.addComponent('rigidbody', {type: 'static'});
+				plane.addComponent('shape', {type: 'box', halfExtents: new TARO.Vector3(5, 7, 0.05)});
+				plane.addComponent('material', {color: 'red', transparent: true, opacity: 0.05});
+				plane.addComponent('geometry', { type: 'box', width: 10, height: 14, depth: 0.1});
+
+			}
+
+			for ( let i = 0; i < 10; i++) {
+				entity = new TARO.Entity();
+				entity.position.set(0 + 0.2* i, 6, -5.1);
+				entity.scale.set(0.1, 0.1, 0.1);
+				entity.addComponent('material');
+				entity.addComponent('geometry', { type: 'sphere'});
+				entity.addComponent('rigidbody');
+				entity.addComponent('shape', {type: 'sphere'});
+			}
 
 			// start the app
 			app.start();

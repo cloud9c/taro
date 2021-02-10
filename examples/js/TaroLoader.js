@@ -10,7 +10,7 @@ import {
 	Vector2,
 	Vector3,
 	Vector4
-} from '../../../build/taro.module.js';
+} from '../../build/taro.module.js';
 
 export class TaroLoader extends Loader {
 

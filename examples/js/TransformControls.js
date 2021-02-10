@@ -19,7 +19,7 @@ import {
 	SphereBufferGeometry,
 	TorusBufferGeometry,
 	Vector3
-} from '../../../build/taro.module.js';
+} from '../../build/taro.module.js';
 
 var TransformControls = function ( camera, domElement ) {
 
