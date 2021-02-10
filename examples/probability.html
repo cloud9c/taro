@@ -77,9 +77,9 @@
 			hand.addComponent('material', {color: 'red'});
 			hand.addComponent('geometry', {type: 'sphere', radius: 0.1});
 			hand.addComponent('rigidbody', {type: 'kinematic', collisionFilterGroup: 0, collisionFilterMask: 0});
-			hand.addComponent('shape', {type: 'sphere', radius: 0.1});
-			const joint = hand.addComponent('constraint', {connectedBody: dice, type: 'point', maxForce: new TARO.Vector3(0, 0, 0)}).ref;
 			hand.enabled = false;
+
+			let joint;
 
 			// camera
 			entity = new TARO.Entity('camera');
@@ -119,6 +119,8 @@
 
 			function onPointerUp() {
 				hand.enabled = false;
+
+				hand.removeComponent(joint);
 				window.removeEventListener('pointermove', onPointerMove);
 				window.removeEventListener('pointerup', onPointerUp);
 			}
@@ -129,16 +131,18 @@
 				if (point !== undefined) {
 
 					const vector = new TARO.Vector3().copy(point).sub(dice.position);
-					const antiRotation = new TARO.Quaternion().copy(dice.quaternion).invert();
+					const antiRotation = dice.quaternion.invert();
 					const pivot = vector.applyQuaternion(antiRotation);
-
-					joint.pivotA = pivot;
-					joint.update();
 
 					hand.position.copy(point);
 					hand.enabled = true;
 
+
+					joint = hand.addComponent('constraint', {connectedBody: dice, type: 'point', maxForce: new TARO.Vector3(0, 0, 0), pivot }).ref;
+
 					movementPlane.position.copy(point);
+					movementPlane.quaternion.copy(camera.quaternion);
+
 					window.addEventListener('pointermove', onPointerMove);
 					window.addEventListener('pointerup', onPointerUp);
 				}
