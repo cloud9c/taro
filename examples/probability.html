@@ -133,6 +133,7 @@
 					const pivot = vector.applyQuaternion(antiRotation);
 
 					joint.pivotA = pivot;
+					joint.update();
 
 					hand.position.copy(point);
 					hand.enabled = true;
