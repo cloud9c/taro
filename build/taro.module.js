@@ -64072,6 +64072,7 @@ class Shape$2 {
 
 	init( data ) {
 
+		this.type = data.type;
 		this.offset = data.offset;
 		this.orientation = data.orientation;
 
@@ -64079,7 +64080,7 @@ class Shape$2 {
 		const scale = this.body.cachedScale;
 		const maxScale = Math.max( scale.x, scale.y, scale.z );
 
-		switch ( data.type ) {
+		switch ( this.type ) {
 
 			case 'box':
 				const halfExtents = new Vec3().copy( data.halfExtents );
@@ -64113,7 +64114,7 @@ class Shape$2 {
 				this.ref = new Heightfield( data.data, { elementSize: data.elementSize, minValue, maxValue } );
 				break;
 			default:
-				console.error( 'Shape: invalid shape type ' + data.type );
+				console.error( 'Shape: invalid shape type ' + this.type );
 
 		}
 
@@ -64131,6 +64132,40 @@ class Shape$2 {
 
 		this.addEventListener( 'enable', this.onEnable );
 		this.addEventListener( 'disable', this.onDisable );
+
+	}
+
+	updateScale( scale ) {
+
+		const maxScale = Math.max( scale.x, scale.y, scale.z );
+		const shape = this.ref;
+		switch ( this.type ) {
+
+			case 'box':
+				const halfExtents = shape.halfExtents;
+				halfExtents.vmul( scale, halfExtents );
+				shape.updateConvexPolyhedronRepresentation();
+				shape.updateBoundingSphereRadius();
+				break;
+			case 'sphere':
+				shape.radius *= maxScale;
+				shape.updateBoundingSphereRadius();
+				break;
+			case 'plane':
+				break;
+			case 'cylinder':
+				shape.radiusTop *= maxScale;
+				shape.radiusBottom *= maxScale;
+				shape.height *= maxScale;
+				shape.updateBoundingSphereRadius();
+				shape.worldVerticesNeedsUpdate = true;
+				shape.worldFaceNormalsNeedsUpdate = true;
+				break;
+				// TODO
+
+		}
+
+		shape.body.updateMassProperties();
 
 	}
 
@@ -64489,10 +64524,7 @@ class Physics extends World {
 
 				for ( let i = 0, len = shapes.length; i < len; i ++ ) {
 
-					const data = shapes[ i ].data;
-					shapes[ i ].enabled = false;
-					shapes[ i ].init( data );
-					shapes[ i ].enabled = true;
+					shapes[ i ].updateScale( _v2$4 );
 
 				}
 

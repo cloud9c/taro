@@ -95,10 +95,7 @@ export class Physics extends World {
 
 				for ( let i = 0, len = shapes.length; i < len; i ++ ) {
 
-					const data = shapes[ i ].data;
-					shapes[ i ].enabled = false;
-					shapes[ i ].init( data );
-					shapes[ i ].enabled = true;
+					shapes[ i ].updateScale( _v2 );
 
 				}
 
