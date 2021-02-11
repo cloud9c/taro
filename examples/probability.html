@@ -15,10 +15,28 @@
 				width: 100%;
 				height: 100%;
 			}
+
+			div {
+				position: absolute;
+				left: 16px;
+				bottom: 16px;
+				font-family: Monospace;
+				user-select: none;
+			}
+
+			#open {
+				text-decoration: underline;
+				color: blue;
+				cursor: pointer;
+			}
 		</style>
 	</head>
 	<body>
 		<canvas id='canvas'></canvas>
+		<div>
+			Click <a id="open">here</a> to open the Galton Model<br>
+			Click and drag on the dice to throw it
+		</div>
 		<script type='module'>
 			import * as TARO from '../build/taro.module.js';
 			import { OrbitControls } from './js/OrbitControls.js'
@@ -204,6 +222,12 @@
 
 			}
 
+			// opens up the slanted planes
+			document.getElementById('open').addEventListener('pointerdown', (event) => {
+				slants[0].rotation.y += 0.05;
+				slants[1].rotation.y -= 0.05;
+			})
+
 			// add the walls
 			for (let i = 0; i < 2; i++) {
 
@@ -211,10 +235,24 @@
 				plane.addComponent('rigidbody', {type: 'static'});
 
 				plane.position.set(5 - i*10, 7, -5);
-				plane.rotation.set(0, -Math.PI/2, 0);
-				plane.scale.set(1, 0.1, 1);
+				plane.rotation.set(0, -Math.PI/2, -Math.PI/2);
+				plane.scale.set(1.4, 0.04, 1);
 				plane.addComponent('renderable', new TARO.Mesh(wallGeometry, redMaterial));
 				plane.addComponent('shape', {type: 'box', halfExtents: new TARO.Vector3(5, 7, 0.05)});
+
+			}
+
+			// add the slots
+			for (let i = 0; i < 18; i++) {
+
+				let slot = new TARO.Entity();
+				slot.addComponent('rigidbody', {type: 'static'});
+
+				slot.position.set(-5 + i*0.5+0.5, 1.8, -5);
+				slot.rotation.set(0, -Math.PI/2, -Math.PI/2);
+				slot.scale.set(0.4, 0.04, 1);
+				slot.addComponent('renderable', new TARO.Mesh(wallGeometry, redMaterial));
+				slot.addComponent('shape', {type: 'box', halfExtents: new TARO.Vector3(5, 7, 0.05)});
 
 			}
 
