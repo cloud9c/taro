@@ -64,6 +64,8 @@ export class Entity extends Group {
 		for ( let i = 0, len = components.length; i < len; i ++ )
 			if ( components[ i ].componentType === type ) return components[ i ];
 
+		return undefined;
+
 
 	}
 
@@ -116,12 +118,15 @@ export class Entity extends Group {
 
 	removeComponent( component ) {
 
+		const index = this.components.indexOf( component );
+
+		if ( index === - 1 ) return this;
 		if ( component.enabled === true ) component.enabled = false;
 
-		const components = this.components;
-		components.splice( components.indexOf( component ), 1 );
-
+		this.components.splice( index, 1 );
 		this.dispatchEvent( { type: 'remove' } );
+
+		return this;
 
 	}
 
@@ -129,6 +134,7 @@ export class Entity extends Group {
 
 		super.add( ...arguments );
 		if ( this.scene !== undefined ) this.scene._addToScene( object );
+
 		return this;
 
 	}
@@ -137,6 +143,7 @@ export class Entity extends Group {
 
 		super.remove( ...arguments );
 		if ( this.scene !== undefined ) this.scene._removeFromScene( object );
+
 		return this;
 
 	}
