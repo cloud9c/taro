@@ -19,7 +19,7 @@
 			div {
 				position: absolute;
 				left: 16px;
-				bottom: 16px;
+				top: 16px;
 				font-family: Monospace;
 				user-select: none;
 			}
@@ -202,7 +202,7 @@
 
 				plane.position.set(0, 7, -5.25 + i*0.31);
 				plane.addComponent('renderable', new TARO.Mesh(wallGeometry, redMaterial));
-				plane.addComponent('shape', {type: 'box', halfExtents: new TARO.Vector3(5, 19, 0.05)});
+				plane.addComponent('shape', {type: 'box', halfExtents: new TARO.Vector3(5, 7, 0.05)});
 
 			}
 
