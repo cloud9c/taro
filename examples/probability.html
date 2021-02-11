@@ -117,6 +117,7 @@
 
 				if (point !== undefined) {
 					hand.position.copy(point);
+        			joint.ref.update()
 				}
 			}
 
@@ -124,7 +125,7 @@
 				controls.enabled = true;
 				hand.enabled = false;
 
-				hand.removeComponent(joint);
+				dice.removeComponent(joint);
 				window.removeEventListener('pointermove', onPointerMove);
 				window.removeEventListener('pointerup', onPointerUp);
 			}
@@ -134,24 +135,33 @@
 
 				if (point !== undefined) {
 					controls.enabled = false;
-					const vector = new TARO.Vector3().copy(point).sub(dice.position);
-					const antiRotation = dice.quaternion.invert();
-					const pivot = vector.applyQuaternion(antiRotation);
 
-					hand.position.copy(point);
+					// make hand visible
 					hand.enabled = true;
 
+					// move movementPlane
+					movementPlane.position.copy(point);
+					movementPlane.quaternion.copy(camera.quaternion);
 
-					joint = hand.addComponent('constraint', {
-						connectedBody: dice,
+					// Vector that goes from the body to the clicked point
+					const vector = new TARO.Vector3().copy(point).sub(dice.position);
+
+					// Apply anti-quaternion to vector to tranform it into the local body coordinate system
+					const antiRotation = new TARO.Quaternion().copy(dice.quaternion).invert();
+					const pivot = vector.applyQuaternion(antiRotation);
+
+					// Move the hand to the click position
+					hand.position.copy(point);
+
+					// Create a new constraint
+        			// The pivot for the body is zero
+					joint = dice.addComponent('constraint', {
 						type: 'point',
 						maxForce: new TARO.Vector3(0, 0, 0),
 						pivot,
+						connectedBody: hand,
 						connectedPivot: new TARO.Vector3()
 					});
-
-					movementPlane.position.copy(point);
-					movementPlane.quaternion.copy(camera.quaternion);
 
 					window.addEventListener('pointermove', onPointerMove);
 					window.addEventListener('pointerup', onPointerUp);
@@ -161,43 +171,74 @@
 			// galton model
 
 			const redMaterial = new TARO.MeshPhongMaterial({color: 'red', transparent: true, opacity: 0.05});
-			const wallGeometry = new TARO.BoxGeometry(8, 0.5, 0.2);
-			const slantGeometry = new TARO.BoxGeometry(10, 14, 0.1);
+			const yellowMaterial = new TARO.MeshPhongMaterial({color: 'yellow'});
+			const slantGeometry = new TARO.BoxGeometry(8, 0.5, 0.2);
+			const wallGeometry = new TARO.BoxGeometry(10, 14, 0.1);
+			const pinGeometry = new TARO.CylinderGeometry(0.1, 0.1);
+			const slants = [];
 
-			for (let i = 0; i < 4; i++) {
+			// add the planes
+			for (let i = 0; i < 2; i++) {
 
 				let plane = new TARO.Entity();
 				plane.addComponent('rigidbody', {type: 'static'});
 
-				if (i > 1) {
-					plane.position.set(-1 + (i - 2)*3, 18, -5)
-					plane.rotation.set(Math.PI/2, (0.5 - i) * Math.PI/4, 0);
-					plane.addComponent('renderable', new TARO.Mesh(wallGeometry, redMaterial));
-					plane.addComponent('geometry', { type: 'box', width: 8, height: 0.5, depth: 0.2});
-					plane.addComponent('shape', {type: 'box', halfExtents: new TARO.Vector3(4, 0.25, 0.1)});
-				} else {
-					plane.position.set(0, 7, -5.25 + i*0.5);
-					plane.addComponent('renderable', new TARO.Mesh(slantGeometry, redMaterial));
-					plane.addComponent('shape', {type: 'box', halfExtents: new TARO.Vector3(5, 7, 0.05)});
+				plane.position.set(0, 7, -5.25 + i*0.5);
+				plane.addComponent('renderable', new TARO.Mesh(wallGeometry, redMaterial));
+				plane.addComponent('shape', {type: 'box', halfExtents: new TARO.Vector3(5, 7, 0.05)});
+
+			}
+
+			// add the slanted planes
+			for (let i = 0; i < 2; i++) {
+
+				let slant = new TARO.Entity();
+				slant.addComponent('rigidbody', {type: 'static'});
+				slant.position.set((1-i*2)*2.828, 18, -5)
+				slant.rotation.set(Math.PI/2, (1-i*2)*Math.PI/4, 0);
+				slant.addComponent('renderable', new TARO.Mesh(slantGeometry, redMaterial));
+				slant.addComponent('geometry', { type: 'box', width: 8, height: 0.5, depth: 0.2});
+				slant.addComponent('shape', {type: 'box', halfExtents: new TARO.Vector3(4, 0.25, 0.1)});
+
+				slants.push(slant);
+
+			}
+
+			// add the walls
+			for (let i = 0; i < 2; i++) {
+
+				let plane = new TARO.Entity();
+				plane.addComponent('rigidbody', {type: 'static'});
+
+				plane.position.set(5 - i*10, 7, -5);
+				plane.rotation.set(0, -Math.PI/2, 0);
+				plane.scale.set(1, 0.1, 1);
+				plane.addComponent('renderable', new TARO.Mesh(wallGeometry, redMaterial));
+				plane.addComponent('shape', {type: 'box', halfExtents: new TARO.Vector3(5, 7, 0.05)});
+
+			}
+
+			// add the pins
+			for (let i = 1; i < 20; i += 2) {
+				const k = 3 - i / 4;
+				for (let j = 0; j < i; j++) {
+					let pin = new TARO.Entity();
+					pin.position.set(k + 0.5 * j - 2.75, 14 - i/2, -5);
+					pin.rotation.set(-Math.PI/2, 0, 0)
+					pin.addComponent('renderable', new TARO.Mesh(pinGeometry, yellowMaterial));
+					pin.addComponent('rigidbody', {type: 'static'});
+					pin.addComponent('shape', {type: 'cylinder', radiusTop: 0.1, radiusBottom: 0.1});
 				}
-
 			}
 
-			for (let i = 1; i < 8; i++) {
-
-				let plane = new TARO.Entity();
-				plane.addComponent('rigidbody', {type: 'static'});
-				plane.addComponent('material', {color: 'red', transparent: true, opacity: 0.05});
-
-			}
-
+			// add the balls
 			const sphereGeometry = new TARO.SphereGeometry();
 			const phongMaterial = new TARO.MeshPhongMaterial();
 
 			for ( let i = 0; i < 40; i++) {
 				for ( let j = 0; j < 6; j++) {
 					entity = new TARO.Entity();
-					entity.position.set(j*0.2 - 0.2, 18+0.2*i, -5.1);
+					entity.position.set(j*0.2 - 0.5, 18+0.2*i, -5.1);
 					entity.scale.set(0.1, 0.1, 0.1);
 					entity.addComponent('renderable', new TARO.Mesh(sphereGeometry, phongMaterial))
 					entity.addComponent('rigidbody');
