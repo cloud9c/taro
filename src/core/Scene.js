@@ -12,10 +12,14 @@ export class Scene extends TS {
 		if ( name !== undefined )
 			this.name = name;
 
-		if ( app !== undefined )
-			app.addScene( this );
-		else if ( Application.currentApp !== undefined )
-			Application.currentApp.addScene( this );
+		if ( app !== false ) {
+
+			if ( app !== undefined )
+				app.addScene( this );
+			else if ( Application.currentApp !== undefined )
+				Application.currentApp.addScene( this );
+
+		}
 
 
 	}

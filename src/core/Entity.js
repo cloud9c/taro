@@ -23,10 +23,19 @@ export class Entity extends Group {
 		if ( name !== undefined )
 			this.name = name;
 
-		if ( parent !== undefined )
-			parent.add( this );
-		 else if ( Application.currentApp !== undefined && Application.currentApp.currentScene !== undefined )
-			Application.currentApp.currentScene.add( this );
+		if ( parent !== false ) {
+
+			if ( parent !== undefined ) {
+
+				parent.add( this );
+
+			} else if ( Application.currentApp !== undefined && Application.currentApp.currentScene !== undefined ) {
+
+				Application.currentApp.currentScene.add( this );
+
+			}
+
+		}
 
 	}
 
