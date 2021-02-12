@@ -59,8 +59,8 @@ export function Navbar( editor ) {
 
 		if ( editor.viewport.currentEntity !== undefined ) {
 
-			const child = document.querySelector( '#scene-tree [data-id="' + entity.id + '"]' );
-			const parent = document.querySelector( '#scene-tree [data-id="' + editor.viewport.currentEntity.id + '"]' );
+			const child = document.querySelector( '#scene [data-id="' + entity.id + '"]' );
+			const parent = document.querySelector( '#scene [data-id="' + editor.viewport.currentEntity.id + '"]' );
 
 			editor.viewport.onDragStart.call( child );
 			editor.viewport.onDrop.call( parent );

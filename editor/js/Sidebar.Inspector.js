@@ -1272,7 +1272,7 @@ export function SidebarInspector( editor ) {
 		type.addEventListener( 'change', function () {
 
 			entity.name = this.value;
-			document.querySelector( '#scene-tree div[data-id="' + entity.id + '"' ).textContent = this.value;
+			document.querySelector( '#scene div[data-id="' + entity.id + '"' ).textContent = this.value;
 			editor.render();
 
 		} );
@@ -1477,8 +1477,6 @@ export function SidebarInspector( editor ) {
 	};
 
 	this.addComponent = function ( entity, type, data = {} ) {
-
-		if ( entity.componentData === undefined ) entity.componentData = [];
 
 		const componentData = entity.componentData;
 

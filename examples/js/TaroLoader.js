@@ -14,6 +14,14 @@ import {
 
 export class TaroLoader extends Loader {
 
+	constructor() {
+
+		super();
+		this.queue = [];
+		this.parsingScene = false;
+
+	}
+
 	load( url, onLoad, onProgress, onError ) {
 
 		const scope = this;
@@ -73,17 +81,19 @@ export class TaroLoader extends Loader {
 
 	parseScene( data, app ) {
 
-		const object = new Scene();
+		this.parsingScene = true;
 
-		app.addScene( object );
+		const scene = new Scene();
 
-		object.uuid = data.uuid;
+		app.addScene( scene );
+
+		scene.uuid = data.uuid;
 
 		if ( data.background !== undefined ) {
 
 			if ( Number.isInteger( data.background ) ) {
 
-				object.background = new Color( data.background );
+				scene.background = new Color( data.background );
 
 			}
 
@@ -93,11 +103,11 @@ export class TaroLoader extends Loader {
 
 			if ( data.fog.type === 'Fog' ) {
 
-				object.fog = new Fog( data.fog.color, data.fog.near, data.fog.far );
+				scene.fog = new Fog( data.fog.color, data.fog.near, data.fog.far );
 
 			} else if ( data.fog.type === 'FogExp2' ) {
 
-				object.fog = new FogExp2( data.fog.color, data.fog.density );
+				scene.fog = new FogExp2( data.fog.color, data.fog.density );
 
 			}
 
@@ -108,19 +118,41 @@ export class TaroLoader extends Loader {
 			const children = data.children;
 			for ( let i = 0, len = children.length; i < len; i ++ ) {
 
-				this.parseEntity( children[ i ], object );
+				this.parseEntity( children[ i ], scene );
+
+			}
+
+			let i = this.queue.length;
+			while ( i -- ) {
+
+				scene.add( this.queue[ i ] );
+				this.queue.splice( i, 1 );
 
 			}
 
 		}
 
-		return object;
+		this.parsingScene = false;
+
+		return scene;
 
 	}
 
 	parseEntity( data, parent ) {
 
-		const object = new Entity( data.name, parent );
+		let object;
+
+		if ( this.parsingScene && parent.isScene === true ) {
+
+			object = new Entity( data.name, false );
+			this.queue.push( object );
+
+		} else {
+
+			object = new Entity( data.name, parent );
+
+		}
+
 		object.uuid = data.uuid;
 		object.matrix.fromArray( data.matrix );
 		object.matrix.decompose( object.position, object.quaternion, object.scale );

@@ -1,5 +1,6 @@
 import { TransformControls } from '../../examples/js/TransformControls.js';
 import { OrbitControls } from '../../examples/js/OrbitControls.js';
+import { TaroLoader } from '../../examples/js/TaroLoader.js';
 import {
 	Entity,
 	Scene,
@@ -10,6 +11,8 @@ import {
 	PerspectiveCamera,
 	MathUtils
 } from '../../build/taro.module.js';
+
+const taroLoader = new TaroLoader();
 
 export function Viewport( editor ) {
 
@@ -60,7 +63,7 @@ export function Viewport( editor ) {
 
 				 if ( element.dataset.parent === currentDrag.dataset.id ) return this.classList.remove( 'drag-into', 'drag-above', 'drag-below' );
 
-				element = document.querySelector( '#scene-tree [data-id="' + element.dataset.parent + '"]' );
+				element = document.querySelector( '#scene [data-id="' + element.dataset.parent + '"]' );
 
 			}
 
@@ -74,9 +77,9 @@ export function Viewport( editor ) {
 				const id = currentDrag.dataset.parent;
 				delete currentDrag.dataset.parent;
 
-				if ( document.querySelectorAll( '#scene-tree [data-parent="' + id + '"]' ).length === 0 ) {
+				if ( document.querySelectorAll( '#scene [data-parent="' + id + '"]' ).length === 0 ) {
 
-					const parent = document.querySelector( '#scene-tree [data-id="' + id + '"]' );
+					const parent = document.querySelector( '#scene [data-id="' + id + '"]' );
 					parent.classList.remove( 'parent' );
 					delete parent.dataset.opened;
 
@@ -102,7 +105,7 @@ export function Viewport( editor ) {
 
 				} else if ( this.dataset.parent !== undefined ) {
 
-					const parent = document.querySelector( '#scene-tree [data-id="' + this.dataset.parent + '"]' );
+					const parent = document.querySelector( '#scene [data-id="' + this.dataset.parent + '"]' );
 					currentDrag.dataset.parent = parent.dataset.id;
 					currentDrag.style.paddingLeft = parseFloat( window.getComputedStyle( parent ).getPropertyValue( 'padding-left' ) ) + 16 + 'px';
 
@@ -112,7 +115,7 @@ export function Viewport( editor ) {
 
 			} else {
 
-				const children = document.querySelectorAll( '#scene-tree [data-parent="' + this.dataset.id + '"]' );
+				const children = document.querySelectorAll( '#scene [data-parent="' + this.dataset.id + '"]' );
 
 				if ( children.length > 0 ) {
 
@@ -135,7 +138,7 @@ export function Viewport( editor ) {
 
 			const recursion = ( element ) => {
 
-				const children = document.querySelectorAll( '#scene-tree [data-parent="' + element.dataset.id + '"]' );
+				const children = document.querySelectorAll( '#scene [data-parent="' + element.dataset.id + '"]' );
 
 				if ( children.length > 0 ) {
 
@@ -180,8 +183,9 @@ export function Viewport( editor ) {
 	const sceneHelper = new Scene();
 	app.setScene( scene );
 
-	this.addEntity = ( name = 'Entity' ) => {
+	this.addEntity = ( name = 'Entity', json, parent = scene ) => {
 
+		// append (1) if the name is a duplicate
 		let counter = 1;
 		while ( scene.getEntityByName( name ) !== undefined ) {
 
@@ -193,7 +197,20 @@ export function Viewport( editor ) {
 
 		}
 
-		const entity = new Entity( name, scene );
+		let entity;
+
+		if ( json !== undefined && parent !== undefined ) {
+
+			entity = taroLoader.parseEntity( json, parent );
+			entity.componentData = json.components !== undefined ? json.components : [];
+
+		} else {
+
+			entity = new Entity( name, parent );
+			entity.componentData = [];
+
+		}
+
 		const div = document.createElement( 'div' );
 
 		div.innerText = name;
@@ -205,7 +222,7 @@ export function Viewport( editor ) {
 		div.addEventListener( 'drop', onDrop );
 		div.addEventListener( 'dragleave', onDragLeave );
 
-		document.getElementById( 'scene-tree' ).appendChild( div );
+		document.getElementById( 'scene' ).appendChild( div );
 
 		return entity;
 
@@ -355,7 +372,7 @@ export function Viewport( editor ) {
 
 		if ( this.currentEntity !== undefined ) detach();
 
-		document.querySelector( '#scene-tree [data-id="' + entity.id + '"]' ).dataset.selected = '';
+		document.querySelector( '#scene [data-id="' + entity.id + '"]' ).dataset.selected = '';
 
 		this.currentEntity = entity;
 		control.enabled = true;
@@ -364,9 +381,9 @@ export function Viewport( editor ) {
 
 	};
 
-	const detach = () => {
+	const detach = this.detach = () => {
 
-		const target = document.querySelector( '#scene-tree [data-selected]' );
+		const target = document.querySelector( '#scene [data-selected]' );
 
 		if ( target !== null )
 			delete target.dataset.selected;

@@ -182,7 +182,7 @@ select {
 	color: inherit;
 	padding: 1px 24px 1px 4px;
 	appearance: none;
-	background: url("../img/chevron-down.svg") no-repeat right 4px center, var(--gray-5);
+	background: url("img/chevron-down.svg") no-repeat right 4px center, var(--gray-5);
 	background-size: 16px;
 	height: 22px;
 	outline: 0;
@@ -254,11 +254,11 @@ input[type="checkbox"]:disabled {
 	cursor:not-allowed;
 }
 
-input[type="checkbox"]:disabled:before {
+input[type="checkbox"]:disabled::before {
 	border: 1px solid var(--gray-3);
 }
 
-input[type="checkbox"]:before {
+input[type="checkbox"]::before {
 	position: relative;
 	display: block;
 	width: 14px;
@@ -268,11 +268,11 @@ input[type="checkbox"]:before {
 	border-radius: 0;
 }
 
-input[type="checkbox"]:checked:before {
+input[type="checkbox"]:checked::before {
 	background: var(--text-color);
 }
 
-input[type="checkbox"]:after {
+input[type="checkbox"]::after {
 	position: absolute;
     top: 2px;
     left: 4px;
@@ -287,7 +287,7 @@ input[type="checkbox"]:after {
     content: "";
 }
 
-input[type="checkbox"]:checked:after {
+input[type="checkbox"]:checked::after {
 	transform: scale(1) rotate(-45deg);
 }
 
@@ -341,14 +341,15 @@ input[type="checkbox"]:checked:after {
 
 #scene {
 	min-width: 100%;
+	height: 100%;
 }
 
-#scene-tree {
+#scene {
 	background: var(--gray-5);
 	padding: 12px 0;
 }
 
-#scene-tree div {
+#scene div {
 	margin: 0;
 	padding: 4px 0 4px 24px;
 	position: relative;
@@ -358,46 +359,78 @@ input[type="checkbox"]:checked:after {
 	white-space: nowrap;
 }
 
-#scene-tree .drag-into {
+#scene .drag-into {
 	border-color: var(--theme-color);
 }
 
-#scene-tree .drag-above, .component.drag-above {
+#scene .drag-above, .component.drag-above {
 	border-top-color: var(--theme-color);
 }
 
-#scene-tree .drag-below, .component.drag-below {
+#scene .drag-below, .component.drag-below {
 	border-bottom-color: var(--theme-color);
 	border-bottom-style: dashed;
 }
 
-#scene-tree div:hover {
+#scene div:hover {
 	background: var(--gray-4);
 }
 
-#scene-tree div[data-selected] {
+#scene div[data-selected] {
 	background: var(--gray-3);
 }
 
-.parent[data-opened]:before {
+.parent[data-opened]::before {
 	transform: rotate(90deg)
 }
 
-.parent:before {
+.parent::before {
     content: "";
     display: inline-block;
     width: 16px;
     height: 16px;
-    background-image: url("../img/caret.svg");
+    background-image: url("img/caret.svg");
     background-repeat: no-repeat;
     position: absolute;
     margin-left: -20px;
     top: 5px;
 }
 
-#scene-tree li {
+#scene li {
 	list-style-type: none;
 	position: relative;
+}
+
+#contextmenu {
+	background: var(--black);
+	color: var(--white);
+	position: absolute;
+	padding: 4px 0;
+	box-shadow: 0 2px 6px rgb(0 0 0 / 20%);
+	border-radius: 2px;
+	display: none;
+	z-index: 2;
+}
+
+#contextmenu div {
+	cursor: pointer;
+	width: 240px;
+	padding: 4px 12px;
+	user-select: none;
+}
+
+#contextmenu div[data-line] {
+	border-bottom: 1px solid var(--gray-1);
+}
+
+
+#contextmenu div::after {
+	content: attr(data-shortcut);
+	float: right;
+}
+
+#contextmenu div:hover {
+	background: var(--gray-1);
 }
 
 /*inspector*/
@@ -411,7 +444,7 @@ input[type="checkbox"]:checked:after {
 	margin: 0 auto;
 	height: initial;
 	padding: 6px 8px;
-	background: url(../img/chevron-down.svg) no-repeat right 8px center, var(--gray-5);
+	background: url(img/chevron-down.svg) no-repeat right 8px center, var(--gray-5);
 	width: 169px;
 }
 
@@ -463,7 +496,7 @@ section.component {
 	display: flex;
 }
 
-.component h1[data-opened]:before {
+.component h1[data-opened]::before {
 	transform: rotate(90deg)
 }
 
@@ -471,12 +504,12 @@ section.component {
 	display: none;
 }
 
-.component h1:before {
+.component h1::before {
     content: "";
     display: inline-block;
     width: 16px;
     height: 16px;
-    background-image: url("../img/caret.svg");
+    background-image: url("img/caret.svg");
     background-repeat: no-repeat;
     position: absolute;
     left: 7px;

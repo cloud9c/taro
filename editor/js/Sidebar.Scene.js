@@ -1,3 +1,5 @@
+import { entityToJSON } from '../../examples/js/Jsonify.js';
+
 export function SidebarScene( editor ) {
 
 	const inspector = editor.inspector;
@@ -14,7 +16,7 @@ export function SidebarScene( editor ) {
 
 				children[ i ].style.setProperty( 'display', 'none' );
 
-				const grandChildren = document.querySelectorAll( '#scene-tree [data-parent="' + children[ i ].dataset.id + '"]' );
+				const grandChildren = document.querySelectorAll( '#scene [data-parent="' + children[ i ].dataset.id + '"]' );
 
 				if ( grandChildren.length > 0 ) {
 
@@ -26,7 +28,7 @@ export function SidebarScene( editor ) {
 
 		};
 
-		recursion( document.querySelectorAll( '#scene-tree [data-parent="' + target.dataset.id + '"]' ) );
+		recursion( document.querySelectorAll( '#scene [data-parent="' + target.dataset.id + '"]' ) );
 
 		delete target.dataset.opened;
 
@@ -42,7 +44,7 @@ export function SidebarScene( editor ) {
 
 				if ( children[ i ].dataset.opened !== undefined ) {
 
-					const grandChildren = document.querySelectorAll( '#scene-tree [data-parent="' + children[ i ].dataset.id + '"]' );
+					const grandChildren = document.querySelectorAll( '#scene [data-parent="' + children[ i ].dataset.id + '"]' );
 
 					if ( grandChildren.length > 0 ) {
 
@@ -56,7 +58,7 @@ export function SidebarScene( editor ) {
 
 		};
 
-		recursion( document.querySelectorAll( '#scene-tree [data-parent="' + target.dataset.id + '"]' ) );
+		recursion( document.querySelectorAll( '#scene [data-parent="' + target.dataset.id + '"]' ) );
 
 		target.dataset.opened = '';
 
@@ -64,44 +66,126 @@ export function SidebarScene( editor ) {
 
 	this.openParent = openParent;
 
-	document.getElementById( 'scene-tree' ).addEventListener( 'contextmenu', ( event ) => {
+	const contextmenu = document.getElementById( 'contextmenu' );
+	function clearContext() {
 
-		event.preventDefault();
+		while ( contextmenu.firstChild !== null ) {
 
-	} );
+			contextmenu.removeChild( contextmenu.lastChild );
 
-	document.getElementById( 'scene-tree' ).addEventListener( 'pointerup', ( event ) => {
+		}
+
+		contextmenu.style.display = '';
+
+	}
+
+	const sceneElement = document.getElementById( 'scene' );
+
+	contextmenu.addEventListener( 'contextmenu', event => event.preventDefault() );
+	sceneElement.addEventListener( 'contextmenu', event => event.preventDefault() );
+
+	let clipboard;
+	let clipboardParent;
+
+	document.addEventListener( 'pointerup', ( event ) => {
+
+		clearContext();
 
 		const target = event.target;
 
-		if ( target.tagName !== 'SECTION' ) {
+		if ( sceneElement.contains( target ) ) {
 
-			switch ( event.button ) {
+			// if clicking on empty space
+			if ( target === sceneElement ) {
 
-				case 0:
-					if ( target.classList.contains( 'parent' ) && event.clientX - target.getBoundingClientRect().left < parseFloat( window.getComputedStyle( target ).getPropertyValue( 'padding-left' ) ) ) {
+				const oldTarget = document.querySelector( '#scene [data-selected]' );
+				if ( oldTarget !== null ) delete oldTarget.dataset.selected;
 
-						if ( target.dataset.opened !== undefined ) closeParent( target );
-						else openParent( target );
-						return;
+				viewport.detach();
+				editor.render();
+
+			} else { // if clicking in the scene tree area
+
+				// if clicking on the dropdown button
+				if ( target.classList.contains( 'parent' ) && event.clientX - target.getBoundingClientRect().left < parseFloat( window.getComputedStyle( target ).getPropertyValue( 'padding-left' ) ) ) {
+
+					if ( target.dataset.opened !== undefined ) closeParent( target );
+					else openParent( target );
+
+				} else {
+
+					// select the entity
+					const oldTarget = document.querySelector( '#scene [data-selected]' );
+					if ( oldTarget !== target ) {
+
+						if ( oldTarget !== null ) delete oldTarget.dataset.selected;
+						target.dataset.selected = '';
+
+						const entity = scene.getEntityById( parseInt( target.dataset.id ) );
+
+						viewport.attach( entity );
+						editor.render();
 
 					}
 
-					break;
-				case 2:
-					console.log( 'here' );
+					// if right click, open contextmenu
+
+					if ( event.button === 2 ) {
+
+						contextmenu.style.left = event.clientX + 'px';
+						contextmenu.style.top = event.clientY + 'px';
+
+						const copyButton = document.createElement( 'DIV' );
+						copyButton.textContent = 'Copy';
+						copyButton.dataset.shortcut = 'Ctrl+C';
+						copyButton.addEventListener( 'pointerup', () => {
+
+							clipboard = entityToJSON( viewport.currentEntity );
+							clipboardParent = viewport.currentEntity.parent;
+							console.log( clipboard );
+
+						} );
+
+						const pasteButton = document.createElement( 'DIV' );
+						pasteButton.textContent = 'Paste';
+						pasteButton.dataset.shortcut = 'Ctrl+V';
+						pasteButton.addEventListener( 'pointerup', () => {
+
+							editor.addEntity( clipboard.name, clipboard, clipboardParent );
+
+						} );
+
+						const pasteAsChildButton = document.createElement( 'DIV' );
+						pasteAsChildButton.textContent = 'Paste as Child';
+						pasteAsChildButton.dataset.shortcut = 'Ctrl+Shift+V';
+						pasteAsChildButton.dataset.line = '';
+						pasteAsChildButton.addEventListener( 'pointerup', () => {
+
+							console.log( 'here' );
+
+						} );
+
+						const deleteButton = document.createElement( 'DIV' );
+						deleteButton.textContent = 'Delete';
+						deleteButton.dataset.shortcut = 'Del';
+						deleteButton.addEventListener( 'pointerup', () => {
+
+							console.log( 'here' );
+
+						} );
+
+						contextmenu.append( copyButton );
+						contextmenu.append( pasteButton );
+						contextmenu.append( pasteAsChildButton );
+						contextmenu.append( deleteButton );
+
+						contextmenu.style.display = 'block';
+
+					}
+
+				}
 
 			}
-
-			const oldTarget = document.querySelector( '#scene-tree [data-selected]' );
-			if ( oldTarget === target ) return;
-			if ( oldTarget !== null ) delete oldTarget.dataset.selected;
-			target.dataset.selected = '';
-
-			const entity = scene.getEntityById( parseInt( target.dataset.id ) );
-
-			viewport.attach( entity );
-			editor.render();
 
 		}
 

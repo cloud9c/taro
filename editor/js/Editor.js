@@ -31,17 +31,17 @@ function Editor() {
 
 	let entity;
 
-	entity = this.addEntity( 'Camera' );
+	entity = this.viewport.addEntity( 'Camera' );
 	this.inspector.addComponent( entity, 'camera' );
 	entity.position.set( 0, 0, 5 );
 
-	entity = this.addEntity( 'Light' );
+	entity = this.viewport.addEntity( 'Light' );
 	this.inspector.addComponent( entity, 'light', {
 		type: 'directional'
 	} );
 	entity.position.set( 0, 5, 1 );
 
-	entity = this.addEntity( 'Torus Knot' );
+	entity = this.viewport.addEntity( 'Torus Knot' );
 	this.inspector.addComponent( entity, 'geometry', {
 		type: 'torusKnot'
 	} );

@@ -17,7 +17,7 @@ export function applicationToJSON( app ) {
 
 }
 
-function sceneToJSON( scene ) {
+export function sceneToJSON( scene ) {
 
 	const data = {};
 
@@ -39,7 +39,7 @@ function sceneToJSON( scene ) {
 
 }
 
-function entityToJSON( entity ) {
+export function entityToJSON( entity ) {
 
 	const data = {};
 
@@ -64,11 +64,11 @@ function entityToJSON( entity ) {
 			const dependenciesA = ComponentManager.components[ a.type ].config.dependencies;
 			const dependenciesB = ComponentManager.components[ b.type ].config.dependencies;
 
-			if ( dependenciesA === undefined )
+			if ( dependenciesA === undefined && dependenciesA === undefined )
+				return 0;
+			else if ( dependenciesA === undefined )
 				return 1;
-			else if ( dependenciesB === undefined )
-				return - 1;
-			return 0;
+			return - 1;
 
 		} );
 
