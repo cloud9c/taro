@@ -65038,10 +65038,14 @@ class Scene$1 extends Scene {
 		if ( name !== undefined )
 			this.name = name;
 
-		if ( app !== undefined )
-			app.addScene( this );
-		else if ( Application.currentApp !== undefined )
-			Application.currentApp.addScene( this );
+		if ( app !== false ) {
+
+			if ( app !== undefined )
+				app.addScene( this );
+			else if ( Application.currentApp !== undefined )
+				Application.currentApp.addScene( this );
+
+		}
 
 
 	}
@@ -65259,10 +65263,19 @@ class Entity extends Group {
 		if ( name !== undefined )
 			this.name = name;
 
-		if ( parent !== undefined )
-			parent.add( this );
-		 else if ( Application.currentApp !== undefined && Application.currentApp.currentScene !== undefined )
-			Application.currentApp.currentScene.add( this );
+		if ( parent !== false ) {
+
+			if ( parent !== undefined ) {
+
+				parent.add( this );
+
+			} else if ( Application.currentApp !== undefined && Application.currentApp.currentScene !== undefined ) {
+
+				Application.currentApp.currentScene.add( this );
+
+			}
+
+		}
 
 	}
 
