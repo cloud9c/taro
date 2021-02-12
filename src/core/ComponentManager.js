@@ -203,11 +203,8 @@ export const ComponentManager = {
 						if ( index > - 1 ) object = object[ index ];
 						else continue;
 
-					} else {
+					} else if ( this.loopDependency( array, data, object.if, i ) ) continue;
 
-						if ( this.loopDependency( array, data, object.if, i ) ) continue;
-
-					}
 
 					data[ name ] = this.addDefault( object.type, object.default );
 
