@@ -64,30 +64,44 @@ export function SidebarScene( editor ) {
 
 	this.openParent = openParent;
 
-	document.getElementById( 'scene-tree' ).addEventListener( 'pointerup', function ( event ) {
+	document.getElementById( 'scene-tree' ).addEventListener( 'contextmenu', ( event ) => {
+
+		event.preventDefault();
+
+	} );
+
+	document.getElementById( 'scene-tree' ).addEventListener( 'pointerup', ( event ) => {
 
 		const target = event.target;
 
 		if ( target.tagName !== 'SECTION' ) {
 
-			if ( target.classList.contains( 'parent' ) && event.clientX - target.getBoundingClientRect().left < parseFloat( window.getComputedStyle( target ).getPropertyValue( 'padding-left' ) ) ) {
+			switch ( event.button ) {
 
-				if ( target.dataset.opened !== undefined ) closeParent( target );
-				else openParent( target );
+				case 0:
+					if ( target.classList.contains( 'parent' ) && event.clientX - target.getBoundingClientRect().left < parseFloat( window.getComputedStyle( target ).getPropertyValue( 'padding-left' ) ) ) {
 
-			} else {
+						if ( target.dataset.opened !== undefined ) closeParent( target );
+						else openParent( target );
+						return;
 
-				const oldTarget = document.querySelector( '#scene-tree [data-selected]' );
-				if ( oldTarget === target ) return;
-				if ( oldTarget !== null ) delete oldTarget.dataset.selected;
-				target.dataset.selected = '';
+					}
 
-				const entity = scene.getEntityById( parseInt( target.dataset.id ) );
-
-				viewport.attach( entity );
-				editor.render();
+					break;
+				case 2:
+					console.log( 'here' );
 
 			}
+
+			const oldTarget = document.querySelector( '#scene-tree [data-selected]' );
+			if ( oldTarget === target ) return;
+			if ( oldTarget !== null ) delete oldTarget.dataset.selected;
+			target.dataset.selected = '';
+
+			const entity = scene.getEntityById( parseInt( target.dataset.id ) );
+
+			viewport.attach( entity );
+			editor.render();
 
 		}
 
