@@ -386,6 +386,7 @@ export function Viewport( editor ) {
 		if ( element === null ) return;
 
 		element.dataset.selected = '';
+		editor.sidebarScene.oldTarget = element;
 
 		this.currentEntity = entity;
 		control.enabled = true;
@@ -398,8 +399,12 @@ export function Viewport( editor ) {
 
 		const target = document.querySelector( '#scene [data-selected]' );
 
-		if ( target !== null )
+		if ( target !== null ) {
+
 			delete target.dataset.selected;
+			editor.sidebarScene.oldTarget = undefined;
+
+		}
 
 		this.currentEntity = undefined;
 		editor.inspector.detach();

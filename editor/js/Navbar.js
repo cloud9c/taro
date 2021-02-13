@@ -1,12 +1,70 @@
 import { applicationToJSON } from '../../examples/js/Jsonify.js';
 import { TaroLoader } from '../../examples/js/TaroLoader.js';
+import { GLTFExporter } from '../../examples/js/GLTFExporter.js';
 import { Renderer } from '../../build/taro.module.js';
+
+const exporter = new GLTFExporter();
+const link = document.createElement( 'a' );
 
 export function Navbar( editor ) {
 
 	const inspector = editor.inspector;
 	const viewport = editor.viewport;
 	const sidebarScene = editor.sidebarScene;
+
+	// File
+	const fileOptions = document.getElementsByClassName( 'menu' )[ 0 ].getElementsByClassName( 'options' )[ 0 ].children;
+
+	function getAnimations( scene ) {
+
+		var animations = [];
+
+		scene.traverse( function ( object ) {
+
+			animations.push( ... object.animations );
+
+		} );
+
+		return animations;
+
+	}
+
+	function save( blob, filename ) {
+
+		link.href = URL.createObjectURL( blob );
+		link.download = filename || 'data.json';
+		link.dispatchEvent( new MouseEvent( 'click' ) );
+
+		// URL.revokeObjectURL( url ); breaks Firefox...
+
+	}
+
+	// Export GLB
+	fileOptions[ 3 ].addEventListener( 'pointerdown', () => {
+
+		exporter.parse( viewport.scene, ( result ) => {
+
+			const blob = new Blob( [ result ], { type: 'application/octet-stream' } );
+
+			save( blob, 'scene.glb' );
+
+		}, { binary: true, animations: getAnimations( viewport.scene ) } );
+
+	} );
+
+	// Export GLTF
+	fileOptions[ 4 ].addEventListener( 'pointerdown', () => {
+
+		exporter.parse( viewport.scene, ( result ) => {
+
+			const text = JSON.stringify( result, null, 2 );
+			const blob = new Blob( [ text ], { type: 'text/plain' } );
+
+			save( blob, 'scene.gltf' );
+
+		}, { animations: getAnimations( viewport.scene ) } );
+
+	} );
 
 	// Edit
 	const editMenu = document.getElementsByClassName( 'menu' )[ 1 ];
@@ -26,22 +84,22 @@ export function Navbar( editor ) {
 			editOptions[ 5 ].dataset.disabled = true;
 
 		// Rename
-		if ( viewport.currentEntity === undefined )
-			editOptions[ 6 ].dataset.disabled = true;
+		// if ( viewport.currentEntity === undefined )
+		// 	editOptions[ 6 ].dataset.disabled = true;
 
 		// Clone
 		if ( viewport.currentEntity === undefined )
-			editOptions[ 7 ].dataset.disabled = true;
+			editOptions[ 6 ].dataset.disabled = true;
 
 		// Delete
 		if ( viewport.currentEntity === undefined )
-			editOptions[ 8 ].dataset.disabled = true;
+			editOptions[ 7 ].dataset.disabled = true;
 
 	} );
 
 	editMenu.addEventListener( 'focusout', ( event ) => {
 
-		for ( let i = 3, len = 9; i < len; i ++ )
+		for ( let i = 3, len = editOptions.length; i < len; i ++ )
 			delete editOptions[ i ].dataset.disabled;
 
 	} );
@@ -70,21 +128,21 @@ export function Navbar( editor ) {
 	} );
 
 	// Rename
-	editOptions[ 6 ].addEventListener( 'pointerdown', () => {
+	// editOptions[ 6 ].addEventListener( 'pointerdown', () => {
 
-		sidebarScene.onRename();
+	// 	sidebarScene.onRename();
 
-	} );
+	// } );
 
 	// Clone
-	editOptions[ 7 ].addEventListener( 'pointerdown', () => {
+	editOptions[ 6 ].addEventListener( 'pointerdown', () => {
 
 		sidebarScene.onClone();
 
 	} );
 
 	// Delete
-	editOptions[ 8 ].addEventListener( 'pointerdown', () => {
+	editOptions[ 7 ].addEventListener( 'pointerdown', () => {
 
 		sidebarScene.onDelete();
 
@@ -198,6 +256,21 @@ export function Navbar( editor ) {
 		}
 
 		isPlaying = ! isPlaying;
+
+	} );
+
+	// Help
+	const helpMenu = document.getElementsByClassName( 'menu' )[ 4 ].getElementsByClassName( 'options' )[ 0 ].children;
+
+	helpMenu[ 0 ].addEventListener( 'pointerdown', () => {
+
+		window.open( 'https://www.echou.xyz/taro/docs', '_blank' );
+
+	} );
+
+	helpMenu[ 1 ].addEventListener( 'pointerdown', () => {
+
+		window.open( 'https://github.com/Cloud9c/taro', '_blank' );
 
 	} );
 

@@ -1538,13 +1538,13 @@ export function SidebarInspector( editor ) {
 
 			inspector.appendChild( this.addSection( component, config ) );
 
+			removeHelpers();
+			addHelpers( entity );
+
 		}
 
 		entity.componentData.push( component );
 		this.updateIcon( entity );
-
-		removeHelpers();
-		addHelpers( entity );
 
 		editor.render();
 

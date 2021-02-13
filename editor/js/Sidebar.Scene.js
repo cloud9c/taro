@@ -98,11 +98,13 @@ export function SidebarScene( editor ) {
 	contextmenu.addEventListener( 'contextmenu', event => event.preventDefault() );
 	sceneElement.addEventListener( 'contextmenu', event => event.preventDefault() );
 
-	let oldTarget;
+	this.oldTarget;
 	this.clipboard;
 	this.clipboardEntity;
 
 	this.onCopy = () => {
+
+		if ( viewport.currentEntity === undefined ) return;
 
 		this.clipboard = entityToJSON( viewport.currentEntity, false );
 		this.clipboardEntity = viewport.currentEntity;
@@ -125,13 +127,13 @@ export function SidebarScene( editor ) {
 		}
 
 		viewport.attach( entity );
-		oldTarget = element;
+		this.oldTarget = element;
 
 	};
 
 	this.onPasteAsChild = () => {
 
-		if ( this.clipboard === undefined ) return;
+		if ( this.clipboard === undefined || viewport.currentEntity === undefined ) return;
 
 		const entity = editor.addEntity( this.clipboard.name, this.clipboard );
 		const element = document.querySelector( '#scene div[data-id="' + entity.id + '"' );
@@ -146,13 +148,12 @@ export function SidebarScene( editor ) {
 		}
 
 		viewport.attach( entity );
-		oldTarget = element;
+		this.oldTarget = element;
 
 	};
 
 	function endRename( event ) {
 
-		console.log( 'here' );
 		const element = document.querySelector( '#scene div[data-id="' + viewport.currentEntity.id + '"' );
 		element.removeAttribute( 'contentEditable' );
 		element.removeAttribute( 'spellcheck' );
@@ -166,11 +167,11 @@ export function SidebarScene( editor ) {
 
 	this.onRename = () => {
 
+		if ( viewport.currentEntity === undefined ) return;
+
 		const element = document.querySelector( '#scene div[data-id="' + viewport.currentEntity.id + '"' );
 		element.contentEditable = true;
 		element.spellcheck = false;
-		element.tabindex = 1;
-		element.focus();
 
 		let selection = document.getSelection();
 		let range = document.createRange();
@@ -191,11 +192,13 @@ export function SidebarScene( editor ) {
 
 		} );
 
-		element.addEventListener( 'focusout', endRename );
+		// element.addEventListener( 'focusout', endRename );
 
 	};
 
 	this.onClone = () => {
+
+		if ( viewport.currentEntity === undefined ) return;
 
 		this.onCopy();
 		this.onPaste();
@@ -221,6 +224,45 @@ export function SidebarScene( editor ) {
 
 	};
 
+	document.addEventListener( 'keydown', ( event ) => {
+
+		switch ( event.code ) {
+
+			// Copy
+			case 'KeyC':
+				console.log( event.ctrlKey );
+				if ( event.ctrlKey ) this.onCopy();
+				break;
+
+			// Paste
+			// Paste as Child
+			case 'KeyV':
+				console.log( 'here' );
+				if ( event.ctrlKey ) {
+
+					if ( event.shiftKey )
+						this.onPasteAsChild();
+					else
+						this.onPaste();
+
+				}
+
+				break;
+
+			// Clone
+			case 'KeyD':
+				if ( event.ctrlKey ) this.onClone();
+				break;
+
+			// Delete
+			case 'Delete':
+			case 'Backspace':
+				this.onDelete();
+
+		}
+
+	} );
+
 	sceneElement.addEventListener( 'pointerup', ( event ) => {
 
 		const target = event.target;
@@ -231,12 +273,10 @@ export function SidebarScene( editor ) {
 			switch ( event.button ) {
 
 				case 0:
-					if ( oldTarget !== undefined ) delete oldTarget.dataset.selected;
-
 					viewport.detach();
 					editor.render();
 
-					oldTarget = undefined;
+					this.oldTarget = undefined;
 					break;
 				case 2:
 					const pasteButton = document.createElement( 'DIV' );
@@ -263,11 +303,7 @@ export function SidebarScene( editor ) {
 			} else {
 
 				// select the entity
-				if ( oldTarget !== target ) {
-
-					if ( oldTarget !== undefined ) delete oldTarget.dataset.selected;
-					target.dataset.selected = '';
-					oldTarget = target;
+				if ( this.oldTarget !== target ) {
 
 					const entity = scene.getEntityById( parseInt( target.dataset.id ) );
 
