@@ -9,7 +9,9 @@ import {
 	ComponentManager,
 	Vector2,
 	Vector3,
-	Vector4
+	Vector4,
+	LoaderUtils,
+	FileLoader
 } from '../../build/taro.module.js';
 
 export class TaroLoader extends Loader {

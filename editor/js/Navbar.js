@@ -150,6 +150,8 @@ export function Navbar( editor ) {
 		} );
 		loader.load( '../examples/js/TaroLoader.js', ( content ) => {
 
+			content = content.replace( '../../build/taro.module.js', './taro.module.js' );
+
 			toZip[ 'js/TaroLoader.js' ] = strToU8( content );
 
 		} );
