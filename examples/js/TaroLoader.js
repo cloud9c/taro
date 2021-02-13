@@ -70,7 +70,6 @@ export class TaroLoader extends Loader {
 			if ( scene.uuid === json.currentScene )
 				app.setScene( scene );
 
-
 		}
 
 		onLoad( app );

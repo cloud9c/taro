@@ -1,4 +1,6 @@
-import { entityToJSON } from '../../examples/js/Jsonify.js';
+import { TaroExporter } from '../../examples/js/TaroExporter.js';
+
+exporter = new TaroExporter();
 
 export function SidebarScene( editor ) {
 
@@ -106,7 +108,7 @@ export function SidebarScene( editor ) {
 
 		if ( viewport.currentEntity === undefined ) return;
 
-		this.clipboard = entityToJSON( viewport.currentEntity, false );
+		this.clipboard = exporter.parseEntity( viewport.currentEntity, false );
 		this.clipboardEntity = viewport.currentEntity;
 
 	};
@@ -230,14 +232,12 @@ export function SidebarScene( editor ) {
 
 			// Copy
 			case 'KeyC':
-				console.log( event.ctrlKey );
 				if ( event.ctrlKey ) this.onCopy();
 				break;
 
 			// Paste
 			// Paste as Child
 			case 'KeyV':
-				console.log( 'here' );
 				if ( event.ctrlKey ) {
 
 					if ( event.shiftKey )
