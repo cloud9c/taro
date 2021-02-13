@@ -1,7 +1,7 @@
 import { TaroExporter } from '../../examples/js/TaroExporter.js';
 import { TaroLoader } from '../../examples/js/TaroLoader.js';
 import { GLTFExporter } from '../../examples/js/GLTFExporter.js';
-import { Renderer } from '../../build/taro.module.js';
+import { Renderer, LoadingManager, FileLoader, } from '../../build/taro.module.js';
 import { zipSync, strToU8 } from '../../examples/js/fflate.module.min.js';
 
 const exporter = new GLTFExporter();
@@ -16,6 +16,15 @@ export function Navbar( editor ) {
 
 	// File
 	const fileOptions = document.getElementsByClassName( 'menu' )[ 0 ].getElementsByClassName( 'options' )[ 0 ].children;
+
+	function parseNumber( key, value ) {
+
+		// const precision = config.getKey( 'exportPrecision' );
+		const precision = 6;
+
+		return typeof value === 'number' ? parseFloat( value.toFixed( precision ) ) : value;
+
+	}
 
 	function getAnimations( scene ) {
 
@@ -85,9 +94,10 @@ export function Navbar( editor ) {
 
 		//
 
-		var title = config.getKey( 'project/title' );
+		// var title = config.getKey( 'app/title' );
+		const title = '';
 
-		var manager = new THREE.LoadingManager( function () {
+		var manager = new LoadingManager( function () {
 
 			var zipped = zipSync( toZip, { level: 9 } );
 
@@ -97,8 +107,8 @@ export function Navbar( editor ) {
 
 		} );
 
-		var loader = new THREE.FileLoader( manager );
-		loader.load( 'js/libs/app/index.html', function ( content ) {
+		var loader = new FileLoader( manager );
+		loader.load( 'js/lib/app/index.html', function ( content ) {
 
 			content = content.replace( '<!-- title -->', title );
 
@@ -106,41 +116,41 @@ export function Navbar( editor ) {
 
 			content = content.replace( '<!-- includes -->', includes.join( '\n\t\t' ) );
 
-			var editButton = '';
+			// var editButton = '';
 
-			if ( config.getKey( 'project/editable' ) ) {
+			// if ( config.getKey( 'app/editable' ) ) {
 
-				editButton = [
-					'',
-					'			var button = document.createElement( \'a\' );',
-					'			button.href = \'https://threejs.org/editor/#file=\' + location.href.split( \'/\' ).slice( 0, - 1 ).join( \'/\' ) + \'/app.json\';',
-					'			button.style.cssText = \'position: absolute; bottom: 20px; right: 20px; padding: 10px 16px; color: #fff; border: 1px solid #fff; border-radius: 20px; text-decoration: none;\';',
-					'			button.target = \'_blank\';',
-					'			button.textContent = \'EDIT\';',
-					'			document.body.appendChild( button );',
-					''
-				].join( '\n' );
+			// editButton = [
+			// 	'',
+			// 	'	var button = document.createElement( \'a\' );',
+			// 	'	button.href = \'https://TAROjs.org/editor/#file=\' + location.href.split( \'/\' ).slice( 0, - 1 ).join( \'/\' ) + \'/app.json\';',
+			// 	'	button.style.cssText = \'position: absolute; bottom: 20px; right: 20px; padding: 10px 16px; color: #fff; border: 1px solid #fff; border-radius: 20px; text-decoration: none;\';',
+			// 	'	button.target = \'_blank\';',
+			// 	'	button.textContent = \'EDIT\';',
+			// 	'	document.body.appendChild( button );',
+			// 	''
+			// ].join( '\n' );
 
-			}
+			// }
 
-			content = content.replace( '\n\t\t\t/* edit button */\n', editButton );
+			// content = content.replace( '\n\t\t\t/* edit button */\n', editButton );
 
 			toZip[ 'index.html' ] = strToU8( content );
 
 		} );
-		loader.load( 'js/libs/app.js', function ( content ) {
+		loader.load( '../build/taro.module.js', ( content ) => {
 
-			toZip[ 'js/app.js' ] = strToU8( content );
-
-		} );
-		loader.load( '../build/three.module.js', function ( content ) {
-
-			toZip[ 'js/three.module.js' ] = strToU8( content );
+			toZip[ 'js/taro.module.js' ] = strToU8( content );
 
 		} );
-		loader.load( '../examples/jsm/webxr/VRButton.js', function ( content ) {
+		loader.load( '../examples/js/VRButton.js', ( content ) => {
 
 			toZip[ 'js/VRButton.js' ] = strToU8( content );
+
+		} );
+		loader.load( '../examples/js/TaroLoader.js', ( content ) => {
+
+			toZip[ 'js/TaroLoader.js' ] = strToU8( content );
 
 		} );
 

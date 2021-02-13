@@ -1,6 +1,6 @@
 import { TaroExporter } from '../../examples/js/TaroExporter.js';
 
-exporter = new TaroExporter();
+const exporter = new TaroExporter();
 
 export function SidebarScene( editor ) {
 

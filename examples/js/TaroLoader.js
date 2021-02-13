@@ -1,5 +1,5 @@
 import {
-	Application,
+	App,
 	Entity,
 	Scene,
 	Loader,
@@ -59,7 +59,7 @@ export class TaroLoader extends Loader {
 
 	parse( json, onLoad ) {
 
-		const app = this.app = new Application( json.parameters );
+		const app = this.app = new App( json.parameters );
 		this._componentManager = this.app.componentManager;
 		const scenes = json.scenes;
 

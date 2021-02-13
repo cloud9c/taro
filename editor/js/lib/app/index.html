@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title><!-- title --></title>
+		<meta charset="utf-8">
+		<meta name="generator" content="Taro Editor">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			body {
+				font-family: sans-serif;
+				font-size: 11px;
+				background-color: #000;
+				margin: 0px;
+			}
+			canvas {
+				display: block;
+			}
+		</style>
+	</head>
+	<body ontouchstart=""> 
+		<script type="module">
+
+			import * as TARO from './js/taro.module.js';
+			import { TaroLoader } from './js/TaroLoader.js';
+			import { VRButton } from './js/VRButton.js';
+
+			window.TARO = TARO; // Used by components.
+
+			var loader = new TARO.TaroLoader();
+			loader.load( 'app.json', function ( text ) {
+
+				var player = new APP.Player();
+				player.load( JSON.parse( text ) );
+				player.setSize( window.innerWidth, window.innerHeight );
+				player.play();
+
+				document.body.appendChild( player.domElement );
+
+			} );
+
+			/* edit button */
+
+			app.renderer.outputEncoding = TARO.sRGBEncoding;
+
+			var vrButton = VRButton.createButton( renderer ); // eslint-disable-line no-undef
+
+			this.dom = dom;
+
+			this.load = function ( json ) {
+
+				var project = json.project;
+
+				if ( project.vr !== undefined ) renderer.xr.enabled = project.vr;
+				if ( project.shadows !== undefined ) renderer.shadowMap.enabled = project.shadows;
+				if ( project.shadowType !== undefined ) renderer.shadowMap.type = project.shadowType;
+				if ( project.toneMapping !== undefined ) renderer.toneMapping = project.toneMapping;
+				if ( project.toneMappingExposure !== undefined ) renderer.toneMappingExposure = project.toneMappingExposure;
+				if ( project.physicallyCorrectLights !== undefined ) renderer.physicallyCorrectLights = project.physicallyCorrectLights;
+
+				this.setScene( loader.parse( json.scene ) );
+				this.setCamera( loader.parse( json.camera ) );
+
+				var scriptWrapResult = JSON.stringify( scriptWrapResultObj ).replace( /\"/g, '' );
+
+				for ( var uuid in json.scripts ) {
+
+					var object = scene.getObjectByProperty( 'uuid', uuid, true );
+
+					if ( object === undefined ) {
+
+						console.warn( 'APP.Player: Script without object.', uuid );
+						continue;
+
+					}
+
+					var scripts = json.scripts[ uuid ];
+
+					for ( var i = 0; i < scripts.length; i ++ ) {
+
+						var script = scripts[ i ];
+
+						var functions = ( new Function( scriptWrapParams, script.source + '\nreturn ' + scriptWrapResult + ';' ).bind( object ) )( this, renderer, scene, camera );
+
+						for ( var name in functions ) {
+
+							if ( functions[ name ] === undefined ) continue;
+
+							if ( events[ name ] === undefined ) {
+
+								console.warn( 'APP.Player: Event type not supported (', name, ')' );
+								continue;
+
+							}
+
+							events[ name ].push( functions[ name ].bind( object ) );
+
+						}
+
+					}
+
+				}
+
+			};
+
+		</script>
+	</body>
+</html>

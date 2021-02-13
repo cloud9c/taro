@@ -18,7 +18,7 @@ export class TaroExporter {
 		const data = {
 			metadata: {
 				'version': 1,
-				'type': 'Application',
+				'type': 'App',
 				'generator': 'TaroExporter'
 			},
 			scenes: [],
