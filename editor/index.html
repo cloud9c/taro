@@ -22,11 +22,15 @@
 			<div class="menu" tabindex="0">
 				<div class="title">Edit</div>
 				<div class="options">
-					<div class="option">Undo (Ctrl+Z)</div>
-					<div class="option">Redo (Ctrl+Shift+Z)</div>
+					<div class="option" data-shortcut='(Ctrl+Z)'>Undo</div>
+					<div class="option" data-shortcut='(Ctrl+Shift+Z)'>Redo</div>
 					<div class="option" data-line>Clear History</div>
-					<div class="option">Clone</div>
-					<div class="option">Delete (Del)</div>
+					<div class="option" data-shortcut='(Ctrl+C)'>Copy</div>
+					<div class="option" data-shortcut='(Ctrl+V)'>Paste</div>
+					<div class="option" data-line data-shortcut='(Ctrl+Shift+V)'>Paste as Child</div>
+					<div class="option">Rename</div>
+					<div class="option" data-shortcut='(Ctrl+D)'>Clone</div>
+					<div class="option" data-shortcut='(Del)'>Delete</div>
 				</div>
 			</div>
 			<div class="menu" tabindex="0">
@@ -63,7 +67,7 @@
 					<div class="tab" data-tab="app">App</div>
 				</section>
 				<div class="panel">
-					<div id="scene" style="display: inline-block;">
+					<div id="scene" style="display: block;">
 					</div>
 					<div id="app">2</div>
 					<div id="assets">3</div>
@@ -167,7 +171,7 @@
 					</section>
 				</div>
 			</aside>
-			<div id="contextmenu"></div>
+			<div id="contextmenu" tabindex="0"></div>
 		</main>
 		<script type="module" src="js/Editor.js"></script>
 	</body>

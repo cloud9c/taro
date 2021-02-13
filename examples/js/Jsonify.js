@@ -39,7 +39,7 @@ export function sceneToJSON( scene ) {
 
 }
 
-export function entityToJSON( entity ) {
+export function entityToJSON( entity, reorder ) {
 
 	const data = {};
 
@@ -56,54 +56,62 @@ export function entityToJSON( entity ) {
 	if ( entity.componentData !== undefined ) {
 
 		const array = JSON.parse( JSON.stringify( entity.componentData ) );
-		data.components = [];
+		if ( reorder === false ) {
 
-		// sorting array to place non-dependency components last
-		array.sort( ( a, b ) => {
+			data.components = array;
 
-			const dependenciesA = ComponentManager.components[ a.type ].config.dependencies;
-			const dependenciesB = ComponentManager.components[ b.type ].config.dependencies;
+		} else {
 
-			if ( dependenciesA === undefined && dependenciesA === undefined )
+			data.components = [];
+
+			// sorting array to place non-dependency components last
+			array.sort( ( a, b ) => {
+
+				const dependenciesA = ComponentManager.components[ a.type ].config.dependencies;
+				const dependenciesB = ComponentManager.components[ b.type ].config.dependencies;
+
+				if ( dependenciesA === undefined )
+					return 1;
+				else if ( dependenciesB === undefined )
+					return - 1;
 				return 0;
-			else if ( dependenciesA === undefined )
-				return 1;
-			return - 1;
 
-		} );
+			} );
 
-		while ( array.length > 0 ) {
+			while ( array.length > 0 ) {
 
-			let i = array.length;
+				let i = array.length;
 
-			while ( i -- ) {
+				while ( i -- ) {
 
-				const dependencies = ComponentManager.components[ array[ i ].type ].config.dependencies;
+					const dependencies = ComponentManager.components[ array[ i ].type ].config.dependencies;
 
-				if ( dependencies !== undefined ) {
+					if ( dependencies !== undefined ) {
 
-					let wait = false;
-					for ( let j = 0, len = dependencies.length; j < len; j ++ ) {
+						let wait = false;
+						for ( let j = 0, len = dependencies.length; j < len; j ++ ) {
 
-						if ( array.includes( dependencies[ j ] ) ) {
+							if ( array.includes( dependencies[ j ] ) ) {
 
-							wait = true;
-							break;
+								wait = true;
+								break;
+
+							}
+
+						}
+
+						if ( wait === true ) {
+
+							continue;
 
 						}
 
 					}
 
-					if ( wait === true ) {
-
-						continue;
-
-					}
+					data.components.push( array[ i ] );
+					array.splice( i, 1 );
 
 				}
-
-				data.components.push( array[ i ] );
-				array.splice( i, 1 );
 
 			}
 

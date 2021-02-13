@@ -183,7 +183,13 @@ export function Viewport( editor ) {
 	const sceneHelper = new Scene();
 	app.setScene( scene );
 
-	this.addEntity = ( name = 'Entity', json, parent = scene ) => {
+	this.addEntity = ( name, json ) => {
+
+		if ( json !== undefined && json.name !== undefined ) name = json.name;
+		else if ( name === undefined ) name = entity;
+
+		// remove (X) from end of name
+		name = name.replace( / \([0-9]+\)+$/, '' );
 
 		// append (1) if the name is a duplicate
 		let counter = 1;
@@ -199,14 +205,15 @@ export function Viewport( editor ) {
 
 		let entity;
 
-		if ( json !== undefined && parent !== undefined ) {
+		if ( json !== undefined ) {
 
-			entity = taroLoader.parseEntity( json, parent );
+			json.name = name;
+			entity = taroLoader.parseEntity( json, scene );
 			entity.componentData = json.components !== undefined ? json.components : [];
 
 		} else {
 
-			entity = new Entity( name, parent );
+			entity = new Entity( name, scene );
 			entity.componentData = [];
 
 		}
@@ -223,6 +230,8 @@ export function Viewport( editor ) {
 		div.addEventListener( 'dragleave', onDragLeave );
 
 		document.getElementById( 'scene' ).appendChild( div );
+
+		render();
 
 		return entity;
 
@@ -372,7 +381,11 @@ export function Viewport( editor ) {
 
 		if ( this.currentEntity !== undefined ) detach();
 
-		document.querySelector( '#scene [data-id="' + entity.id + '"]' ).dataset.selected = '';
+		const element = document.querySelector( '#scene [data-id="' + entity.id + '"]' );
+
+		if ( element === null ) return;
+
+		element.dataset.selected = '';
 
 		this.currentEntity = entity;
 		control.enabled = true;

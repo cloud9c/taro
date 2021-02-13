@@ -1247,7 +1247,6 @@ export function SidebarInspector( editor ) {
 
 			}
 
-			console.log( disable );
 			if ( disable ) {
 
 				enabled.disabled = true;
@@ -1266,6 +1265,7 @@ export function SidebarInspector( editor ) {
 
 		const type = document.createElement( 'INPUT' );
 		type.type = 'text';
+		type.id = 'entity-name';
 		type.value = entity.name;
 		type.style.marginLeft = '8px';
 		type.style.width = '100%';

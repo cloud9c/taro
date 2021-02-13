@@ -5,6 +5,90 @@ import { Renderer } from '../../build/taro.module.js';
 export function Navbar( editor ) {
 
 	const inspector = editor.inspector;
+	const viewport = editor.viewport;
+	const sidebarScene = editor.sidebarScene;
+
+	// Edit
+	const editMenu = document.getElementsByClassName( 'menu' )[ 1 ];
+	const editOptions = document.getElementsByClassName( 'menu' )[ 1 ].getElementsByClassName( 'options' )[ 0 ].children;
+	editMenu.addEventListener( 'focus', ( event ) => {
+
+		// Copy
+		if ( viewport.currentEntity === undefined )
+			editOptions[ 3 ].dataset.disabled = true;
+
+		// Paste
+		if ( sidebarScene.clipboard === undefined )
+			editOptions[ 4 ].dataset.disabled = true;
+
+		// Paste as Child
+		if ( sidebarScene.clipboard === undefined || viewport.currentEntity === undefined )
+			editOptions[ 5 ].dataset.disabled = true;
+
+		// Rename
+		if ( viewport.currentEntity === undefined )
+			editOptions[ 6 ].dataset.disabled = true;
+
+		// Clone
+		if ( viewport.currentEntity === undefined )
+			editOptions[ 7 ].dataset.disabled = true;
+
+		// Delete
+		if ( viewport.currentEntity === undefined )
+			editOptions[ 8 ].dataset.disabled = true;
+
+	} );
+
+	editMenu.addEventListener( 'focusout', ( event ) => {
+
+		for ( let i = 3, len = 9; i < len; i ++ )
+			delete editOptions[ i ].dataset.disabled;
+
+	} );
+
+	// Copy
+	editOptions[ 3 ].addEventListener( 'pointerdown', () => {
+
+		sidebarScene.onCopy();
+		editMenu.blur();
+		editMenu.focus();
+
+	} );
+
+	// Paste
+	editOptions[ 4 ].addEventListener( 'pointerdown', () => {
+
+		sidebarScene.onPaste();
+
+	} );
+
+	// Paste as Child
+	editOptions[ 5 ].addEventListener( 'pointerdown', () => {
+
+		sidebarScene.onPasteAsChild();
+
+	} );
+
+	// Rename
+	editOptions[ 6 ].addEventListener( 'pointerdown', () => {
+
+		sidebarScene.onRename();
+
+	} );
+
+	// Clone
+	editOptions[ 7 ].addEventListener( 'pointerdown', () => {
+
+		sidebarScene.onClone();
+
+	} );
+
+	// Delete
+	editOptions[ 8 ].addEventListener( 'pointerdown', () => {
+
+		sidebarScene.onDelete();
+
+	} );
 
 	// Entity
 	const entityMenu = document.getElementsByClassName( 'menu' )[ 2 ].getElementsByClassName( 'options' )[ 0 ];
@@ -53,7 +137,6 @@ export function Navbar( editor ) {
 				break;
 			case 'Camera':
 				inspector.addComponent( entity, 'camera' );
-				break;
 
 		}
 

@@ -35,12 +35,6 @@ function Editor() {
 	this.inspector.addComponent( entity, 'camera' );
 	entity.position.set( 0, 0, 5 );
 
-	entity = this.viewport.addEntity( 'Light' );
-	this.inspector.addComponent( entity, 'light', {
-		type: 'directional'
-	} );
-	entity.position.set( 0, 5, 1 );
-
 	entity = this.viewport.addEntity( 'Torus Knot' );
 	this.inspector.addComponent( entity, 'geometry', {
 		type: 'torusKnot'
@@ -48,6 +42,12 @@ function Editor() {
 	this.inspector.addComponent( entity, 'material', {
 		type: 'phong'
 	} );
+
+	entity = this.viewport.addEntity( 'Light' );
+	this.inspector.addComponent( entity, 'light', {
+		type: 'directional'
+	} );
+	entity.position.set( 0, 5, 1 );
 
 }
 

@@ -8,27 +8,31 @@ export function SidebarScene( editor ) {
 	const render = editor.render;
 	const scene = viewport.scene;
 
-	function closeParent( target ) {
+	function traverse( children, callback ) {
 
-		const recursion = ( children ) => {
+		for ( let i = 0, len = children.length; i < len; i ++ ) {
 
-			for ( let i = 0, len = children.length; i < len; i ++ ) {
+			callback( children[ i ] );
 
-				children[ i ].style.setProperty( 'display', 'none' );
+			const grandChildren = document.querySelectorAll( '#scene [data-parent="' + children[ i ].dataset.id + '"]' );
 
-				const grandChildren = document.querySelectorAll( '#scene [data-parent="' + children[ i ].dataset.id + '"]' );
+			if ( grandChildren.length > 0 ) {
 
-				if ( grandChildren.length > 0 ) {
-
-					recursion( grandChildren );
-
-				}
+				traverse( grandChildren, callback );
 
 			}
 
-		};
+		}
 
-		recursion( document.querySelectorAll( '#scene [data-parent="' + target.dataset.id + '"]' ) );
+	}
+
+	function closeParent( target ) {
+
+		traverse( document.querySelectorAll( '#scene [data-parent="' + target.dataset.id + '"]' ), ( child ) => {
+
+			child.style.setProperty( 'display', 'none' );
+
+		} );
 
 		delete target.dataset.opened;
 
@@ -36,29 +40,11 @@ export function SidebarScene( editor ) {
 
 	function openParent( target ) {
 
-		const recursion = ( children ) => {
+		traverse( document.querySelectorAll( '#scene [data-parent="' + target.dataset.id + '"]' ), ( child ) => {
 
-			for ( let i = 0, len = children.length; i < len; i ++ ) {
+			child.style.removeProperty( 'display' );
 
-				children[ i ].style.removeProperty( 'display' );
-
-				if ( children[ i ].dataset.opened !== undefined ) {
-
-					const grandChildren = document.querySelectorAll( '#scene [data-parent="' + children[ i ].dataset.id + '"]' );
-
-					if ( grandChildren.length > 0 ) {
-
-						recursion( grandChildren );
-
-					}
-
-				}
-
-			}
-
-		};
-
-		recursion( document.querySelectorAll( '#scene [data-parent="' + target.dataset.id + '"]' ) );
+		} );
 
 		target.dataset.opened = '';
 
@@ -67,15 +53,43 @@ export function SidebarScene( editor ) {
 	this.openParent = openParent;
 
 	const contextmenu = document.getElementById( 'contextmenu' );
+
 	function clearContext() {
 
-		while ( contextmenu.firstChild !== null ) {
-
+		while ( contextmenu.firstChild !== null )
 			contextmenu.removeChild( contextmenu.lastChild );
+
+		contextmenu.style.display = '';
+
+	}
+
+	contextmenu.addEventListener( 'focusout', clearContext );
+	contextmenu.addEventListener( 'pointerup', clearContext );
+
+	function openContextMenu( count ) {
+
+		if ( 240 + event.clientX > window.innerWidth ) {
+
+			contextmenu.style.left = event.clientX - 240 + 'px';
+
+		} else {
+
+			contextmenu.style.left = event.clientX + 'px';
 
 		}
 
-		contextmenu.style.display = '';
+		if ( count * 26 + 8 + event.clientY > window.innerHeight ) {
+
+			contextmenu.style.top = event.clientY - ( count * 26 + 8 + 8 ) + 'px';
+
+		} else {
+
+			contextmenu.style.top = event.clientY + 'px';
+
+		}
+
+		contextmenu.style.display = 'block';
+		contextmenu.focus();
 
 	}
 
@@ -84,104 +98,225 @@ export function SidebarScene( editor ) {
 	contextmenu.addEventListener( 'contextmenu', event => event.preventDefault() );
 	sceneElement.addEventListener( 'contextmenu', event => event.preventDefault() );
 
-	let clipboard;
-	let clipboardParent;
+	let oldTarget;
+	this.clipboard;
+	this.clipboardEntity;
 
-	document.addEventListener( 'pointerup', ( event ) => {
+	this.onCopy = () => {
 
-		clearContext();
+		this.clipboard = entityToJSON( viewport.currentEntity, false );
+		this.clipboardEntity = viewport.currentEntity;
+
+	};
+
+	this.onPaste = () => {
+
+		if ( this.clipboard === undefined ) return;
+
+		const entity = editor.addEntity( this.clipboard.name, this.clipboard );
+		const element = document.querySelector( '#scene div[data-id="' + entity.id + '"' );
+
+		if ( viewport.currentEntity !== undefined && viewport.currentEntity.parent !== scene ) {
+
+			parent = document.querySelector( '#scene div[data-id="' + viewport.currentEntity.parent.id + '"' );
+			editor.viewport.onDragStart.call( element );
+			editor.viewport.onDrop.call( parent );
+
+		}
+
+		viewport.attach( entity );
+		oldTarget = element;
+
+	};
+
+	this.onPasteAsChild = () => {
+
+		if ( this.clipboard === undefined ) return;
+
+		const entity = editor.addEntity( this.clipboard.name, this.clipboard );
+		const element = document.querySelector( '#scene div[data-id="' + entity.id + '"' );
+
+		if ( viewport.currentEntity !== scene ) {
+
+			const parent = viewport.currentEntity !== undefined ? document.querySelector( '#scene div[data-id="' + viewport.currentEntity.id + '"' ) : sceneElement;
+
+			editor.viewport.onDragStart.call( element );
+			editor.viewport.onDrop.call( parent );
+
+		}
+
+		viewport.attach( entity );
+		oldTarget = element;
+
+	};
+
+	function endRename( event ) {
+
+		console.log( 'here' );
+		const element = document.querySelector( '#scene div[data-id="' + viewport.currentEntity.id + '"' );
+		element.removeAttribute( 'contentEditable' );
+		element.removeAttribute( 'spellcheck' );
+		element.removeAttribute( 'tabindex' );
+
+		viewport.currentEntity.name = element.textContent;
+
+		document.getElementById( 'entity-name' ).value = element.textContent;
+
+	}
+
+	this.onRename = () => {
+
+		const element = document.querySelector( '#scene div[data-id="' + viewport.currentEntity.id + '"' );
+		element.contentEditable = true;
+		element.spellcheck = false;
+		element.tabindex = 1;
+		element.focus();
+
+		let selection = document.getSelection();
+		let range = document.createRange();
+
+		range.setStart( element.childNodes[ 0 ], element.innerText.length );
+		range.collapse( true );
+		selection.removeAllRanges();
+		selection.addRange( range );
+
+		element.addEventListener( 'keydown', ( event ) => {
+
+			if ( event.code === 'Enter' ) {
+
+				endRename( event );
+				return false;
+
+			}
+
+		} );
+
+		element.addEventListener( 'focusout', endRename );
+
+	};
+
+	this.onClone = () => {
+
+		this.onCopy();
+		this.onPaste();
+
+	};
+
+	this.onDelete = () => {
+
+		const entity = viewport.currentEntity;
+		if ( entity === undefined ) return;
+
+		viewport.detach();
+
+		entity.traverseEntities( ( child ) => {
+
+			document.querySelector( '#scene div[data-id="' + child.id + '"' ).remove();
+
+		} );
+
+		scene.remove( entity );
+
+		render();
+
+	};
+
+	sceneElement.addEventListener( 'pointerup', ( event ) => {
 
 		const target = event.target;
 
-		if ( sceneElement.contains( target ) ) {
+		// if clicking on empty space
+		if ( target === sceneElement ) {
 
-			// if clicking on empty space
-			if ( target === sceneElement ) {
+			switch ( event.button ) {
 
-				const oldTarget = document.querySelector( '#scene [data-selected]' );
-				if ( oldTarget !== null ) delete oldTarget.dataset.selected;
+				case 0:
+					if ( oldTarget !== undefined ) delete oldTarget.dataset.selected;
 
-				viewport.detach();
-				editor.render();
+					viewport.detach();
+					editor.render();
 
-			} else { // if clicking in the scene tree area
+					oldTarget = undefined;
+					break;
+				case 2:
+					const pasteButton = document.createElement( 'DIV' );
+					pasteButton.textContent = 'Paste';
+					pasteButton.dataset.shortcut = 'Ctrl+V';
+					pasteButton.addEventListener( 'pointerup', this.onPaste );
+					if ( this.clipboard === undefined )
+						pasteButton.dataset.disabled = '';
 
-				// if clicking on the dropdown button
-				if ( target.classList.contains( 'parent' ) && event.clientX - target.getBoundingClientRect().left < parseFloat( window.getComputedStyle( target ).getPropertyValue( 'padding-left' ) ) ) {
+					contextmenu.append( pasteButton );
 
-					if ( target.dataset.opened !== undefined ) closeParent( target );
-					else openParent( target );
+					openContextMenu( 1 );
 
-				} else {
+			}
 
-					// select the entity
-					const oldTarget = document.querySelector( '#scene [data-selected]' );
-					if ( oldTarget !== target ) {
+		} else { // if clicking in the scene tree area
 
-						if ( oldTarget !== null ) delete oldTarget.dataset.selected;
-						target.dataset.selected = '';
+			// if clicking on the dropdown button
+			if ( target.classList.contains( 'parent' ) && event.clientX - target.getBoundingClientRect().left < parseFloat( window.getComputedStyle( target ).getPropertyValue( 'padding-left' ) ) ) {
 
-						const entity = scene.getEntityById( parseInt( target.dataset.id ) );
+				if ( target.dataset.opened !== undefined ) closeParent( target );
+				else openParent( target );
 
-						viewport.attach( entity );
-						editor.render();
+			} else {
 
-					}
+				// select the entity
+				if ( oldTarget !== target ) {
 
-					// if right click, open contextmenu
+					if ( oldTarget !== undefined ) delete oldTarget.dataset.selected;
+					target.dataset.selected = '';
+					oldTarget = target;
 
-					if ( event.button === 2 ) {
+					const entity = scene.getEntityById( parseInt( target.dataset.id ) );
 
-						contextmenu.style.left = event.clientX + 'px';
-						contextmenu.style.top = event.clientY + 'px';
+					viewport.attach( entity );
+					editor.render();
 
-						const copyButton = document.createElement( 'DIV' );
-						copyButton.textContent = 'Copy';
-						copyButton.dataset.shortcut = 'Ctrl+C';
-						copyButton.addEventListener( 'pointerup', () => {
+				}
 
-							clipboard = entityToJSON( viewport.currentEntity );
-							clipboardParent = viewport.currentEntity.parent;
-							console.log( clipboard );
+				// if right click, open contextmenu
+				if ( event.button === 2 ) {
 
-						} );
+					const copyButton = document.createElement( 'DIV' );
+					copyButton.textContent = 'Copy';
+					copyButton.dataset.shortcut = 'Ctrl+C';
+					copyButton.addEventListener( 'pointerup', this.onCopy );
 
-						const pasteButton = document.createElement( 'DIV' );
-						pasteButton.textContent = 'Paste';
-						pasteButton.dataset.shortcut = 'Ctrl+V';
-						pasteButton.addEventListener( 'pointerup', () => {
+					const pasteButton = document.createElement( 'DIV' );
+					pasteButton.textContent = 'Paste';
+					pasteButton.dataset.shortcut = 'Ctrl+V';
+					pasteButton.addEventListener( 'pointerup', this.onPaste );
+					if ( this.clipboard === undefined )
+						pasteButton.dataset.disabled = '';
 
-							editor.addEntity( clipboard.name, clipboard, clipboardParent );
+					const pasteAsChildButton = document.createElement( 'DIV' );
+					pasteAsChildButton.textContent = 'Paste as Child';
+					pasteAsChildButton.dataset.shortcut = 'Ctrl+Shift+V';
+					pasteAsChildButton.dataset.line = '';
+					pasteAsChildButton.addEventListener( 'pointerup', this.onPasteAsChild );
+					if ( this.clipboard === undefined )
+						pasteAsChildButton.dataset.disabled = '';
 
-						} );
+					const renameButton = document.createElement( 'DIV' );
+					renameButton.textContent = 'Rename';
+					renameButton.addEventListener( 'pointerup', this.onRename );
 
-						const pasteAsChildButton = document.createElement( 'DIV' );
-						pasteAsChildButton.textContent = 'Paste as Child';
-						pasteAsChildButton.dataset.shortcut = 'Ctrl+Shift+V';
-						pasteAsChildButton.dataset.line = '';
-						pasteAsChildButton.addEventListener( 'pointerup', () => {
+					const cloneButton = document.createElement( 'DIV' );
+					cloneButton.textContent = 'Clone';
+					cloneButton.dataset.shortcut = 'Ctrl+D';
+					cloneButton.addEventListener( 'pointerup', this.onClone );
 
-							console.log( 'here' );
+					const deleteButton = document.createElement( 'DIV' );
+					deleteButton.textContent = 'Delete';
+					deleteButton.dataset.shortcut = 'Del';
+					deleteButton.addEventListener( 'pointerup', this.onDelete );
 
-						} );
+					contextmenu.append( copyButton, pasteButton, pasteAsChildButton, renameButton, cloneButton, deleteButton );
 
-						const deleteButton = document.createElement( 'DIV' );
-						deleteButton.textContent = 'Delete';
-						deleteButton.dataset.shortcut = 'Del';
-						deleteButton.addEventListener( 'pointerup', () => {
+					openContextMenu( 5 );
 
-							console.log( 'here' );
-
-						} );
-
-						contextmenu.append( copyButton );
-						contextmenu.append( pasteButton );
-						contextmenu.append( pasteAsChildButton );
-						contextmenu.append( deleteButton );
-
-						contextmenu.style.display = 'block';
-
-					}
 
 				}
 

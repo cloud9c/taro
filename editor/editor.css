@@ -35,7 +35,6 @@ main {
 	outline: 0;
 	position: relative;
 	color: var(--white);
-	cursor: pointer;
 }
 
 .menu .title {
@@ -56,16 +55,29 @@ main {
 .options {
 	display: none;
 	position: absolute;
-	width: 150px;
+	min-width: 240px;
 	background: var(--black);
-	z-index: 1;
 	box-shadow: 0 4px 8px 0 rgb(0 0 0 / 50%);
+	z-index: 2;
 }
 
 .option {
 	user-select: none;
 	padding: 6px 12px;
 	color: var(--white);
+	white-space: nowrap;
+	cursor: pointer;
+}
+
+.option[data-disabled] {
+	pointer-events: none;
+	cursor: default;
+	color: var(--gray-2);
+}
+
+.option::after {
+	content: attr(data-shortcut);
+	float: right;
 }
 
 .option:hover {
@@ -335,6 +347,9 @@ input[type="checkbox"]:checked::after {
 
 #left-sidebar .panel > div {
 	display: none;
+	float: left;
+	min-height: 100%;
+	height: max-content;
 }
 
 /**/
@@ -342,21 +357,19 @@ input[type="checkbox"]:checked::after {
 #scene {
 	min-width: 100%;
 	height: 100%;
-}
-
-#scene {
 	background: var(--gray-5);
 	padding: 12px 0;
 }
 
 #scene div {
 	margin: 0;
-	padding: 4px 0 4px 24px;
+	padding: 4px 8px 4px 24px;
 	position: relative;
 	cursor: pointer;
 	user-select: none;
 	border: 1px dashed transparent;
 	white-space: nowrap;
+	outline: none;
 }
 
 #scene .drag-into {
@@ -410,6 +423,7 @@ input[type="checkbox"]:checked::after {
 	border-radius: 2px;
 	display: none;
 	z-index: 2;
+	outline: none;
 }
 
 #contextmenu div {
@@ -423,13 +437,17 @@ input[type="checkbox"]:checked::after {
 	border-bottom: 1px solid var(--gray-1);
 }
 
+#contextmenu div[data-disabled] {
+	cursor: default;
+	color: var(--gray-2);
+}
 
 #contextmenu div::after {
 	content: attr(data-shortcut);
 	float: right;
 }
 
-#contextmenu div:hover {
+#contextmenu div:not([data-disabled]):hover {
 	background: var(--gray-1);
 }
 
