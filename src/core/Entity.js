@@ -1,6 +1,6 @@
 import { Group, MathUtils } from '../lib/three.module.js';
 import { Scene } from './Scene.js';
-import { Application } from './Application.js';
+import { App } from './App.js';
 import { ComponentManager } from './ComponentManager.js';
 
 export class Entity extends Group {
@@ -29,9 +29,9 @@ export class Entity extends Group {
 
 				parent.add( this );
 
-			} else if ( Application.currentApp !== undefined && Application.currentApp.currentScene !== undefined ) {
+			} else if ( App.currentApp !== undefined && App.currentApp.currentScene !== undefined ) {
 
-				Application.currentApp.currentScene.add( this );
+				App.currentApp.currentScene.add( this );
 
 			}
 

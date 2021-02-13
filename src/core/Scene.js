@@ -1,5 +1,5 @@
 import { Scene as TS } from '../lib/three.module.js';
-import { Application } from './Application.js';
+import { App } from './App.js';
 
 export class Scene extends TS {
 
@@ -16,8 +16,8 @@ export class Scene extends TS {
 
 			if ( app !== undefined )
 				app.addScene( this );
-			else if ( Application.currentApp !== undefined )
-				Application.currentApp.addScene( this );
+			else if ( App.currentApp !== undefined )
+				App.currentApp.addScene( this );
 
 		}
 

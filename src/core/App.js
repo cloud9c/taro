@@ -4,7 +4,7 @@ import { AssetManager } from './AssetManager.js';
 import { Time } from './Time.js';
 import { Input } from './Input.js';
 
-export class Application {
+export class App {
 
 	constructor( parameters = {} ) {
 
@@ -21,7 +21,7 @@ export class Application {
 		this.scenes = [];
 		this.currentScene = undefined;
 
-		Application.currentApp = this;
+		App.currentApp = this;
 
 	}
 
@@ -131,13 +131,14 @@ export class Application {
 
 	}
 
-	static getApplication( id ) {
+	static getApp( id ) {
 
-		return Application._apps[ id ];
+		return App._apps[ id ];
 
 	}
 
 }
 
-Application.currentApp;
-Application.apps = {};
+App.prototype.isApp = true;
+App.currentApp;
+App.apps = {};
