@@ -1,6 +1,6 @@
 import { Resizer } from './Resizer.js';
 import { Sidebar } from './Sidebar.js';
-import { Application, ComponentManager } from '../../build/taro.module.js';
+import { App, ComponentManager } from '../../build/taro.module.js';
 import { Viewport } from './Viewport.js';
 import { Toolbar } from './Toolbar.js';
 import { SidebarScene } from './Sidebar.Scene.js';
@@ -14,7 +14,7 @@ function Editor() {
 	this.resizer = new Resizer();
 	this.sidebar = new Sidebar();
 
-	this.app = new Application( { canvas: document.getElementById( 'canvas' ), antialias: true } );
+	this.app = new App( { canvas: document.getElementById( 'canvas' ), antialias: true } );
 	this.viewport = new Viewport( this );
 	this.inspector = new SidebarInspector( this );
 	this.render = this.viewport.render;
