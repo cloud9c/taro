@@ -1,3 +1,4 @@
+import { Storage } from './Storage.js';
 import { Resizer } from './Resizer.js';
 import { Sidebar } from './Sidebar.js';
 import { App, ComponentManager } from '../../build/taro.module.js';
@@ -10,6 +11,8 @@ import { Navbar } from './Navbar.js';
 import './EditorComponents.js';
 
 function Editor() {
+
+	this.storage = new Storage();
 
 	this.resizer = new Resizer();
 	this.sidebar = new Sidebar();

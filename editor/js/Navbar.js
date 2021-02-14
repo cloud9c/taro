@@ -2,7 +2,7 @@ import { TaroExporter } from '../../examples/js/TaroExporter.js';
 import { TaroLoader } from '../../examples/js/TaroLoader.js';
 import { GLTFExporter } from '../../examples/js/GLTFExporter.js';
 import { Renderer, LoadingManager, FileLoader, } from '../../build/taro.module.js';
-import { zipSync, strToU8 } from '../../examples/js/fflate.module.min.js';
+import { zipSync, strToU8 } from './lib/fflate.module.min.js';
 
 const exporter = new GLTFExporter();
 const taroExporter = new TaroExporter();
