@@ -40,8 +40,24 @@ export class App {
 	update( timestamp = performance.now() ) {
 
 		const deltaTime = this.time.update( timestamp / 1000 );
-		this.physics.update( this.time.scaledFixedTimestep, deltaTime );
 
+		let steps = this.physics.update( this.time.scaledFixedTimestep, deltaTime );
+
+		// fixed update (0 - multiple times per frame)
+		while ( steps -- ) {
+
+			for ( const type in this.components ) {
+
+				const container = this.components[ type ];
+				if ( container[ 0 ] !== undefined && container[ 0 ].fixedUpdate !== undefined )
+					for ( let j = 0, lenj = container.length; j < lenj; j ++ )
+						container[ j ].fixedUpdate( deltaTime );
+
+			}
+
+		}
+
+		// update (once per frame)
 		for ( const type in this.components ) {
 
 			const container = this.components[ type ];

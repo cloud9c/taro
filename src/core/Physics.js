@@ -105,7 +105,11 @@ export class Physics extends World {
 
 		}
 
+		const beforeSteps = this.stepnumber;
+
 		this.step( fixedTimestep, deltaTime );
+
+		const steps = this.stepnumber - beforeSteps;
 
 		if ( this.hasActiveBodies ) {
 
@@ -139,6 +143,8 @@ export class Physics extends World {
 			}
 
 		}
+
+		return steps;
 
 	}
 
