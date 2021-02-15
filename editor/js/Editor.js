@@ -5,6 +5,7 @@ import { App, ComponentManager } from '../../build/taro.module.js';
 import { Viewport } from './Viewport.js';
 import { Toolbar } from './Toolbar.js';
 import { SidebarScene } from './Sidebar.Scene.js';
+import { SidebarAssets } from './Sidebar.Assets.js';
 import { SidebarInspector } from './Sidebar.Inspector.js';
 import { Navbar } from './Navbar.js';
 
@@ -25,6 +26,7 @@ function Editor() {
 
 	this.toolbar = new Toolbar( this );
 	this.sidebarScene = new SidebarScene( this );
+	this.sidebarAssets = new SidebarAssets( this );
 
 	this.navbar = new Navbar( this );
 
