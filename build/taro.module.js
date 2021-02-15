@@ -64439,7 +64439,7 @@ class Physics extends World {
 
 		super( parameters );
 		this.epsilon = parameters.epsilon !== undefined ? parameters.epsilon : 0.001;
-		this.gravity = parameters.gravity !== undefined ? parameters.gravity : new Vector3( 0, - 9.78033, 0 );
+		this.gravity = parameters.gravity !== undefined ? parameters.gravity : new Vector3( 0, - 9.80665, 0 );
 		this.rigidbodies = [];
 
 	}
