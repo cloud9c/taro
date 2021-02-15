@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang='en'>
+	<head>
+		<meta charset='UTF-8' />
+		<meta name='viewport' content='width=device-width,initial-scale=1' />
+		<title>Drone</title>
+		<style>
+			html,
+			body {
+				margin: 0;
+				height: 100%;
+			}
+
+			#canvas {
+				width: 100%;
+				height: 100%;
+			}
+		</style>
+	</head>
+	<body>
+		<canvas id='canvas'></canvas>
+		<script type='module'>
+			import * as TARO from '../build/taro.module.js';
+			import { OrbitControls } from './js/OrbitControls.js'
+
+			// app setup
+			let entity, geo, mat, mesh;
+
+			const app = new TARO.App({
+				canvas: document.getElementById('canvas'),
+				antialias: true
+			});
+			const scene = new TARO.Scene();
+			app.setScene(scene);
+			scene.background = new TARO.Color( 0xe0e0e0 );
+
+			// lighting
+			entity = new TARO.Entity();
+			entity.addComponent('light', {type: 'hemisphere', intensity: 0.6});
+			entity.position.set(0, 100, 0);
+
+			entity = new TARO.Entity();
+			entity.addComponent('light');
+			entity.position.set(-100, 175, 100);
+
+			// drone component
+			TARO.ComponentManager.register('droneControls', class DroneControls {
+
+				init() {
+					this.rigidbody = this.entity.getComponent('rigidbody').ref;
+					this.force = new TARO.Vector3(0, 9.8, 0).multiplyScalar(1.380);
+				}
+
+				update() {
+					console.log(this.app.physics.stepnumber)
+					this.rigidbody.applyLocalForce(this.force);
+				}
+
+			});
+
+			// drone
+			const loader = new TARO.ObjectLoader();
+			loader.load( "models/drone.json", ( obj ) => {
+
+					obj.scale.set(0.00271157519, 0.00271157519, 0.00271157519);
+
+					const drone = new TARO.Entity();
+					drone.addComponent('renderable', obj);
+					drone.addComponent('rigidbody', {
+						type: 'dynamic',
+						mass: 1.380
+					})
+					drone.addComponent('shape', {
+						type: 'box',
+						halfExtents: new TARO.Vector3(0.14475, 0.098, 0.14475)
+					})
+					drone.addComponent('droneControls')
+
+					scene.add( drone );
+
+				}
+			);
+
+			// camera
+			entity = new TARO.Entity('camera');
+			const camera = entity.addComponent('camera').ref;
+			camera.position.set(0.5, 0.5, 0.5);
+			const controls = new OrbitControls( camera, app.renderer.domElement );
+			controls.maxPolarAngle = Math.PI * 0.5;
+
+			// start the app
+			app.start();
+		</script>
+	</body>
+</html>
