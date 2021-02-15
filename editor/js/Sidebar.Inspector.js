@@ -668,7 +668,7 @@ export function SidebarInspector( editor ) {
 					fieldset.appendChild( input );
 
 					const icon = document.createElement( 'IMG' );
-					icon.src = 'img/add.svg';
+					icon.src = 'img/add-alt.svg';
 					icon.classList.add( 'asset-icon' );
 					fieldset.appendChild( icon );
 					break;

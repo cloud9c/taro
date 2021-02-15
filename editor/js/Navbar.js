@@ -209,6 +209,8 @@ export function Navbar( editor ) {
 	editOptions[ 4 ].addEventListener( 'pointerdown', () => {
 
 		sidebarScene.onPaste();
+		editMenu.blur();
+		editMenu.focus();
 
 	} );
 

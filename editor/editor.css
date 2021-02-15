@@ -411,6 +411,66 @@ input[type="checkbox"]:checked::after {
 	position: relative;
 }
 
+#add-assets {
+	display: block;
+	padding: 0;
+	border: none;
+	margin: -6px 6px 0 auto;
+	cursor: pointer;
+	outline: none;
+}
+
+#add-assets svg {
+	fill: var(--gray-2);
+	transition: fill .11s cubic-bezier(.2,0,.38,.9);
+}
+
+#add-assets:hover svg {
+	fill: var(--black);
+}
+
+#add-assets:focus + #add-assets-list {
+	display: block;
+}
+
+#add-assets-list {
+	display: none;
+	position: absolute;
+	right: -216px;
+	margin: -4px 0 0 0;
+	background: var(--black);
+	color: var(--white);
+	z-index: 2;
+	box-shadow: 0 2px 6px rgb(0 0 0 / 20%);
+	border-radius: 2px;
+	list-style-type: none;
+	padding: 4px 0;
+}
+
+#add-assets-list li {
+	cursor: pointer;
+	width: 240px;
+	padding: 4px 12px;
+	user-select: none;
+	display: flex;
+}
+
+#add-assets-list li:hover {
+	background: var(--gray-1);
+}
+
+#add-assets-list li[data-line] {
+	border-bottom: 1px solid var(--gray-1);
+}
+
+
+#add-assets-list li svg {
+	width: 16px;
+	height: 16px;
+	margin: auto 8px auto 0;
+	fill: var(--white);
+}
+
 #contextmenu {
 	background: var(--black);
 	color: var(--white);
