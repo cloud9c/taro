@@ -48,11 +48,10 @@
 
 				init() {
 					this.rigidbody = this.entity.getComponent('rigidbody').ref;
-					this.force = new TARO.Vector3(0, 9.8, 0).multiplyScalar(1.380);
+					this.force = new TARO.Vector3(0, 9.7, 0).multiplyScalar(1.380);
 				}
 
-				update() {
-					console.log(this.app.physics.stepnumber)
+				fixedUpdate() {
 					this.rigidbody.applyLocalForce(this.force);
 				}
 
