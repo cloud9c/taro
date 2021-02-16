@@ -86,11 +86,14 @@
 
 				fixedUpdate() {
 
-					this.vector.copy(this.rigidbody.velocity).negate();
+					this.vector.set(0, -this.rigidbody.velocity.y, 0);
 					this.vector.y += 9.80665
 					this.vector.multiplyScalar(1.380);
+					this.vector.applyQuaternion(this.entity.quaternion);
 
 					this.rigidbody.applyForce(this.vector);
+
+					this.rigidbody.force.copy(this.vector.copy(this.rigidbody.force).clampLength(-35, 35))
 
 					const input = this.app.input;
 
@@ -117,25 +120,25 @@
 					}
 
 					if (input.getKey('KeyI')) {
-						this.vector.set(0, -0.001, 0)
+						this.vector.set(0, -0.0001, 0)
 						this.vector2.set(0, 0, 100)
 						this.rigidbody.applyLocalForce( this.vector, this.vector2 )
 					}
 
 					if (input.getKey('KeyK')) {
-						this.vector.set(0, 0.001, 0)
+						this.vector.set(0, 0.0001, 0)
 						this.vector2.set(0, 0, 100)
 						this.rigidbody.applyLocalForce( this.vector, this.vector2 )
 					}
 
 					if (input.getKey('KeyJ')) {
-						this.vector.set(0, 0.001, 0)
+						this.vector.set(0, 0.0001, 0)
 						this.vector2.set(100, 0, 0)
 						this.rigidbody.applyLocalForce( this.vector, this.vector2 )
 					}
 
 					if (input.getKey('KeyL')) {
-						this.vector.set(0, -0.001, 0)
+						this.vector.set(0, -0.0001, 0)
 						this.vector2.set(100, 0, 0)
 						this.rigidbody.applyLocalForce( this.vector, this.vector2 )
 					}
