@@ -43,27 +43,136 @@
 			entity.addComponent('light');
 			entity.position.set(-100, 175, 100);
 
-			// drone component
+			// skybox
+			const loader = new TARO.TextureLoader();
+
+			// load a resource
+			loader.load('textures/terrain.jpg', ( texture ) => {
+					const textureEquirect = new TARO.WebGLCubeRenderTarget( texture.image.height );
+					textureEquirect.fromEquirectangularTexture( app.renderer, texture );
+					scene.background = textureEquirect;
+				}
+			);
+
+			// camera
+			entity = new TARO.Entity('camera');
+			const camera = entity.addComponent('camera').ref;
+			camera.position.set(0.5, 0.5, 0.5);
+			const controls = new OrbitControls( camera, app.renderer.domElement );
+			controls.maxPolarAngle = Math.PI * 0.5;
+
+			// components
 			TARO.ComponentManager.register('droneControls', class DroneControls {
 
 				init() {
 					this.rigidbody = this.entity.getComponent('rigidbody').ref;
-					this.force = new TARO.Vector3(0, 9.7, 0).multiplyScalar(1.380);
+					this.vector = new TARO.Vector3();
+					this.vector2 = new TARO.Vector3();
+
+					const parts = this.entity.getComponent('renderable').ref.children;
+					this.fans = [parts[30], parts[31], parts[32], parts[33]];
+				}
+
+				update( delta ) {
+
+					const rotation = delta * 40;
+
+					this.fans[0].rotateZ( rotation );
+					this.fans[1].rotateZ( -rotation );
+					this.fans[2].rotateZ( rotation );
+					this.fans[3].rotateZ( -rotation );
+
 				}
 
 				fixedUpdate() {
-					this.rigidbody.applyLocalForce(this.force);
+
+					this.vector.copy(this.rigidbody.velocity).negate();
+					this.vector.y += 9.80665
+					this.vector.multiplyScalar(1.380);
+
+					this.rigidbody.applyForce(this.vector);
+
+					const input = this.app.input;
+
+					if (input.getKey('KeyW')) {
+						this.vector.set(0, 1, 0)
+						this.rigidbody.applyForce( this.vector )
+					}
+
+					if (input.getKey('KeyS')) {
+						this.vector.set(0, -1, 0)
+						this.rigidbody.applyForce( this.vector )
+					}
+
+					if (input.getKey('KeyA')) {
+						this.vector.set(0.001, 0, 0)
+						this.vector2.set(0, 0, -100)
+						this.rigidbody.applyLocalForce( this.vector, this.vector2 )
+					}
+
+					if (input.getKey('KeyD')) {
+						this.vector.set(0.001, 0, 0)
+						this.vector2.set(0, 0, 100)
+						this.rigidbody.applyLocalForce( this.vector, this.vector2 )
+					}
+
+					if (input.getKey('KeyI')) {
+						this.vector.set(0, -0.001, 0)
+						this.vector2.set(0, 0, 100)
+						this.rigidbody.applyLocalForce( this.vector, this.vector2 )
+					}
+
+					if (input.getKey('KeyK')) {
+						this.vector.set(0, 0.001, 0)
+						this.vector2.set(0, 0, 100)
+						this.rigidbody.applyLocalForce( this.vector, this.vector2 )
+					}
+
+					if (input.getKey('KeyJ')) {
+						this.vector.set(0, 0.001, 0)
+						this.vector2.set(100, 0, 0)
+						this.rigidbody.applyLocalForce( this.vector, this.vector2 )
+					}
+
+					if (input.getKey('KeyL')) {
+						this.vector.set(0, -0.001, 0)
+						this.vector2.set(100, 0, 0)
+						this.rigidbody.applyLocalForce( this.vector, this.vector2 )
+					}
+
 				}
 
 			});
 
-			// drone
-			const loader = new TARO.ObjectLoader();
-			loader.load( "models/drone.json", ( obj ) => {
+			TARO.ComponentManager.register('followDrone', class FollowDrone {
 
+				init() {
+					this.drone = scene.getEntityByName('drone');
+					this.oldPosition = new TARO.Vector3();
+					this.newPosition = new TARO.Vector3();
+					this.offset = new TARO.Vector3();
+				}
+
+				update( delta ) {
+
+					// this.newPosition.copy(this.drone.position);
+					// this.offset.subVectors(this.newPosition, this.oldPosition);
+
+					// entity.position.add(this.offset);
+					// controls.update();
+
+					// this.oldPosition.copy(this.newPosition);
+				}
+
+			});
+
+			const objectLoader = new TARO.ObjectLoader();
+			objectLoader.load( "models/drone.json", ( obj ) => {
+
+					// drone
 					obj.scale.set(0.00271157519, 0.00271157519, 0.00271157519);
 
-					const drone = new TARO.Entity();
+					const drone = new TARO.Entity('drone');
 					drone.addComponent('renderable', obj);
 					drone.addComponent('rigidbody', {
 						type: 'dynamic',
@@ -75,20 +184,17 @@
 					})
 					drone.addComponent('droneControls')
 
-					scene.add( drone );
+					entity.addComponent('followDrone');
+
+					controls.target = entity.position;
+					controls.update();
 
 				}
 			);
 
-			// camera
-			entity = new TARO.Entity('camera');
-			const camera = entity.addComponent('camera').ref;
-			camera.position.set(0.5, 0.5, 0.5);
-			const controls = new OrbitControls( camera, app.renderer.domElement );
-			controls.maxPolarAngle = Math.PI * 0.5;
-
 			// start the app
 			app.start();
+
 		</script>
 	</body>
 </html>
