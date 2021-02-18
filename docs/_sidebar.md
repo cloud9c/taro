@@ -1,9 +1,7 @@
 Manual
 
 -   [Getting started](manual/Getting-started.md)
--   [Creating components](manual/Creating-components.md)
 -   [Installation](manual/Installation.md)
--   [Browser Support](manual/Browser-Support.md)
 -   [How to run things locally](manual/How-to-run-things-locally.md)
 -   [Loading 3D models](manual/Loading-3D-models.md)
 -   [Libraries](manual/Libraries.md)
@@ -18,6 +16,7 @@ API References
 -   Core
 -   [App](api/core/App.md)
 -   [AssetManager](api/core/AssetManager.md)
+-   [Component](api/core/Component.md)
 -   [ComponentManager](api/core/ComponentManager.md)
 -   [Entity](api/core/Entity.md)
 -   [Input](api/core/Input.md)

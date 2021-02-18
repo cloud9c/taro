@@ -4,7 +4,7 @@
 Taro is an Entity Component System (ECS) engine for web applications. The basic idea of this pattern is to move from defining application entities using a class hierarchy to using composition in a Data Oriented Programming paradigm. ([More info on wikipedia](https://en.wikipedia.org/wiki/Entity_component_system)). Programming with an ECS can result in code that is more efficient and easier to extend over time. Some common terms within Taro are:
 
 - [entities](/api/core/Entity): an object with a unique ID that can have multiple components attached to it.
-- [components](/manual/Creating-components): different facets of an entity. ex: geometry, rigidbody, hit points.
+- [components](/api/core/Component): different facets of an entity. ex: geometry, rigidbody, hit points.
 - [scene](/api/core/Scene): a container for entities and their components.
 - [app](/api/core/App): a container of scenes and other core classes.
 
@@ -71,7 +71,7 @@ Then we need to register components to use them.
 TARO.registerComponent('cubeController', CubeController);
 ```
 
-[More info on how to create components](/manual/Creating-components).
+[More info on how to create components](/api/core/Component).
 
 ## Creating entities
 Having our world and some components already defined, let's create [entities](/api/core/Entity) and attach these components to them:
