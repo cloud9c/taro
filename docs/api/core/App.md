@@ -45,10 +45,17 @@ The most recent app created; scenes created without a specified app uses this pr
 ## Methods
 
 ### .<a>start</a> () : <span class="param">null</span>
-Provides access to user-defined or component-added assets.
+Starts executing an update loop that will called every available frame.
 
 ### .<a>stop</a> () : <span class="param">null</span>
-The scene that is currently active in the app. Default is **undefined**.
+Stops the ongoing update loop.
 
-### .<a>update</a> ( timestamp : <span class="param">Float</span> ) : <span class="param">null</span>
-The scene that is currently active in the app. Default is **undefined**.
+### .<a>update</a> ( timestamp : <span class="param">DOMHighResTimeStamp</span> ) : <span class="param">null</span>
+Updates the application. This function will update systems and call the update/fixedUpdate functions of all enabled components.
+If a timestamp is not provided, the function will use performance.now().
+
+### .<a>dispose</a> () : <span class="param">null</span>
+Remove the current rendering context and all the event listeners.
+
+### .<a>addScene</a> ( scene : <span class="param">[Scene](api/core/Scene)</span>, ... ) : <span class="param">this</span>
+Adds object as child of this object. An arbitrary number of scenes may be added.
