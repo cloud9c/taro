@@ -1,29 +1,43 @@
 Manual
 
--   Getting Started
--   [Quick start](quickstart.md)
--   [Writing more pages](more-pages.md)
--   [Custom navbar](custom-navbar.md)
--   [Cover page](cover.md)
+-   [Getting started](manual/Getting-started.md)
+-   [Installation](manual/Installation.md)
+-   [Browser Support](manual/Browser-Support.md)
+-   [How to run things locally](manual/How-to-run-things-locally.md)
+-   [Loading 3D models](manual/Loading-3D-models.md)
+-   [Libraries](manual/Libraries.md)
+
 
 <br>
 
 ---
 
-References
+API References
 
 -   Core
--   [Configuration](configuration.md)
--   [Themes](themes.md)
--   [Using plugins](plugins.md)
--   [Markdown configuration](markdown.md)
--   [Language highlight](language-highlight.md)
+-   [App](api/core/App.md)
+-   [AssetManager](api/core/AssetManager.md)
+-   [ComponentManager](api/core/ComponentManager.md)
+-   [Entity](api/core/Entity.md)
+-   [Input](api/core/Input.md)
+-   [Physics](api/core/Physics.md)
+-   [Renderer](api/core/Renderer.md)
+-   [Scene](api/core/Scene.md)
+-   [Time](api/core/Time.md)
 
 <br>
 
--   Core
--   [Configuration](configuration.md)
--   [Themes](themes.md)
--   [Using plugins](plugins.md)
--   [Markdown configuration](markdown.md)
--   [Language highlight](language-highlight.md)
+-   Standard Components
+-   [Camera](api/components/Camera.md)
+-   [Geometry](api/components/Geometry.md)
+-   [Light](api/components/Light.md)
+-   [Material](api/components/Material.md)
+-   [Model](api/components/Model.md)
+-   [Renderable](api/components/Renderable.md)
+
+<br>
+
+-   Physics Components
+-   [Constraint](api/components/physics/Constraint.md)
+-   [Rigidbody](api/components/physics/Rigidbody.md)
+-   [Shape](api/components/physics/Shape.md)
