@@ -43,3 +43,12 @@ Reference to the time system.
 The most recent app created; scenes created without a specified app uses this property.
 
 ## Methods
+
+### .<a>start</a> () : <span class="param">null</span>
+Provides access to user-defined or component-added assets.
+
+### .<a>stop</a> () : <span class="param">null</span>
+The scene that is currently active in the app. Default is **undefined**.
+
+### .<a>update</a> ( timestamp : <span class="param">Float</span> ) : <span class="param">null</span>
+The scene that is currently active in the app. Default is **undefined**.
