@@ -54380,9 +54380,9 @@ Material$2.prototype.DefaultMaterial.opacity = 0;
 
 ComponentManager.registerComponent( 'material', Material$2 );
 
-// githubusercontent dependency
+// gstatic dependency
 const dracoLoader = new DRACOLoader();
-dracoLoader.setDecoderPath( 'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/js/libs/draco/' );
+dracoLoader.setDecoderPath( 'https://www.gstatic.com/draco/versioned/decoders/1.4.1/' );
 
 const gltfLoader = new GLTFLoader();
 gltfLoader.setDRACOLoader( dracoLoader );
@@ -54401,6 +54401,8 @@ class Model {
 
 			switch ( extension ) {
 
+				case 'drc':
+					this.promise = dracoLoader.load( data.asset, ( m ) => this.onDracoLoad( data.asset, m ), ( p ) => this.onProgress( p ), ( e ) => this.onError( e ) );
 				case 'glb':
 				case 'gltf':
 					this.promise = gltfLoader.load( data.asset, ( m ) => this.onGLTFLoad( data.asset, m ), ( p ) => this.onProgress( p ), ( e ) => this.onError( e ) );
@@ -54444,10 +54446,17 @@ class Model {
 
 		const scene = result.scene;
 		scene.animations.push( ...result.animations );
-		scene.castShadow = true;
-		scene.receiveShadow = true;
 
 		this.onLoad( key, scene );
+
+	}
+
+	onDracoLoad( key, geometry ) {
+
+		const material = new THREE.MeshStandardMaterial();
+		const object = new THREE.Mesh( geometry, material );
+
+		this.onLoad( key, object );
 
 	}
 
