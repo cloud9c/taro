@@ -1,55 +1,33 @@
 # Loading 3D models
-If you use just procedural geometries and don't load any textures, webpages should work straight from the file system, just double-click on HTML file in a file manager and it should appear working in the browser (you'll see file:///yourFile.html in the address bar).
+3D models are available in hundreds of file formats, each with different purposes, assorted features, and varying complexity.
 
-Whichever you choose, be consistent and import all files from the same version of the library. Mixing files from different sources may cause duplicate code to be included, or even break the application in unexpected ways.
+If you're new to running a local server, begin with how to run things locally first. Many common errors viewing 3D models can be avoided by hosting files correctly.
 
-All methods of installing three.js depend on ES modules (see [Eloquent JavaScript: ECMAScript Modules](https://eloquentjavascript.net/10_modules.html#h_hF2FmOVxw7)), which allow you to include only the parts of the library needed in the final project.
+## Loading
 
-## Content loaded from external files
-If you load models or textures from external files, due to browsers' same origin policy security restrictions, loading from a file system will fail with a security exception.
+We recommend using glTF (GL Transmission Format). Both .GLB and .GLTF versions of the format are well supported. Because glTF is focused on runtime asset delivery, it is compact to transmit and fast to load. Features include meshes, materials, textures, skins, skeletons, morph targets, animations, lights, and cameras. 
 
-There are two ways to solve this:
+Public-domain glTF files are available on sites like Sketchfab, or various tools include glTF export:
 
-1. Change security for local files in a browser. This allows you to access your page as:
+- [Blender](https://www.blender.org/) by the Blender Foundation
+- [Substance](https://www.substance3d.com/products/substance-painter) Painter by Allegorithmic
+- [Modo](https://www.foundry.com/products/modo) by Foundry
+- [Toolbag](https://marmoset.co/toolbag/) by Marmoset
+- [Houdini](https://www.sidefx.com/products/houdini/) by SideFX
+- [Cinema 4D](https://labs.maxon.net/?p=3360) by MAXON
+- [COLLADA2GLTF](https://github.com/KhronosGroup/COLLADA2GLTF) by the Khronos Group
+- [FBX2GLTF](https://github.com/facebookincubator/FBX2glTF) by Facebook
+- [OBJ2GLTF](https://github.com/CesiumGS/obj2gltf) by Analytical Graphics Inc
+- …and [many more](http://github.khronos.org/glTF-Project-Explorer/)
 
-```http
-file:///yourFile.html
-```
+Only three loaders (ObjectLoader, DracoLoader, GLTFLoader) are included by default with taro.js — others should be added to your app individually as custom components.
 
-2. Run files from a local web server. This allows you to access your page as:
+See [Model component](api/components/Model.md) for further details.
 
-```http
-http://localhost/yourFile.html
-```
+## Troubleshooting
+You've spent hours modeling an artisanal masterpiece, you load it into the webpage, and — oh no! 😭 It's distorted, miscolored, or missing entirely. Start with these troubleshooting steps:
 
-## Run a local server
-Many programming languages have simple HTTP servers built in. They are not as full featured as production servers such as Apache or NGINX, however they should be sufficient for testing your three.js application.
-
-
-### Servez
-[Servez](https://greggman.github.io/servez/) is a simple server with a GUI.
-
-### Node.js http-server
-Node.js has a simple HTTP server package. To install:
-```bash
-npm install http-server -g
-```
-To run (from your local directory):
-```bash
-http-server . -p 8000
-```
-
-### Python server
-If you have Python installed, it should be enough to run this from a command line (from your working directory):
-```python
-//Python 2.x
-python -m SimpleHTTPServer
-
-//Python 3.x
-python -m http.server
-```
-This will serve files from the current directory at localhost under port 8000, i.e in the address bar type:
-
-http://localhost:8000/
-
-Other simple alternatives are [discussed here](https://stackoverflow.com/questions/12905426/what-is-a-faster-alternative-to-pythons-http-server-or-simplehttpserver) on Stack Overflow.
+1. View the model in another application. For glTF, drag-and-drop viewers are available for [three.js](https://gltf-viewer.donmccurdy.com/) and [babylon.js](https://sandbox.babylonjs.com/).
+2. Try scaling the model up or down by a factor of 1000. Many models are scaled differently, and large models may not appear if the camera is inside the model.
+3. Try to add and position a light component. The model may be hidden in the dark.
+4. Look for failed texture requests in the network tab, like C:\\Path\To\Model\texture.jpg. Use paths relative to your model instead, such as images/texture.jpg — this may require editing the model file in a text editor.
