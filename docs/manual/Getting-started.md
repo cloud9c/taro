@@ -8,12 +8,12 @@ Taro is an Entity Component System (ECS) engine for web applications. The basic 
 - [scene](/api/core/Scene): a container for entities and their components.
 - [app](/api/core/App): a container of scenes and other core classes.
 
-The usual workflow when building a Taro.js program:
+The usual workflow when building a taro.js program:
 - Create the `components` that shape the data and functions you need to use in your application.
 - Create `entities` and attach `components` to them.
 
 ## Before we start
-Before you can use Taro.js, you need somewhere to display it. Save the following HTML to a file on your computer, along with a copy of taro.module.js in the js/ directory, and open it in your browser:
+Before you can use taro.js, you need somewhere to display it. Save the following HTML to a file on your computer, along with a copy of taro.module.js in the js/ directory, and open it in your browser:
 ```html
 <!DOCTYPE html>
 <html>

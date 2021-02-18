@@ -1,10 +1,6 @@
 # How to run things locally
 If you use just procedural geometries and don't load any textures, webpages should work straight from the file system, just double-click on HTML file in a file manager and it should appear working in the browser (you'll see file:///yourFile.html in the address bar).
 
-Whichever you choose, be consistent and import all files from the same version of the library. Mixing files from different sources may cause duplicate code to be included, or even break the application in unexpected ways.
-
-All methods of installing three.js depend on ES modules (see [Eloquent JavaScript: ECMAScript Modules](https://eloquentjavascript.net/10_modules.html#h_hF2FmOVxw7)), which allow you to include only the parts of the library needed in the final project.
-
 ## Content loaded from external files
 If you load models or textures from external files, due to browsers' same origin policy security restrictions, loading from a file system will fail with a security exception.
 
@@ -23,7 +19,7 @@ http://localhost/yourFile.html
 ```
 
 ## Run a local server
-Many programming languages have simple HTTP servers built in. They are not as full featured as production servers such as Apache or NGINX, however they should be sufficient for testing your three.js application.
+Many programming languages have simple HTTP servers built in. They are not as full featured as production servers such as Apache or NGINX, however they should be sufficient for testing your taro.js application.
 
 
 ### Servez
