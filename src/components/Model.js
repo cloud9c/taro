@@ -3,9 +3,9 @@ import { ObjectLoader } from '../lib/three.module.js';
 import { GLTFLoader } from '../lib/GLTFLoader.js';
 import { DRACOLoader } from '../lib/DRACOLoader.js';
 
-// githubusercontent dependency
+// gstatic dependency
 const dracoLoader = new DRACOLoader();
-dracoLoader.setDecoderPath( 'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/js/libs/draco/' );
+dracoLoader.setDecoderPath( 'https://www.gstatic.com/draco/versioned/decoders/1.4.1/' );
 
 const gltfLoader = new GLTFLoader();
 gltfLoader.setDRACOLoader( dracoLoader );
