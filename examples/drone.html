@@ -62,7 +62,7 @@
 			controls.maxPolarAngle = Math.PI * 0.5;
 
 			// components
-			TARO.ComponentManager.register('droneControls', class DroneControls {
+			TARO.registerComponent('droneControls', class DroneControls {
 
 				init() {
 					this.rigidbody = this.entity.getComponent('rigidbody').ref;
@@ -147,7 +147,7 @@
 
 			});
 
-			TARO.ComponentManager.register('followDrone', class FollowDrone {
+			TARO.registerComponent('followDrone', class FollowDrone {
 
 				init() {
 					this.drone = scene.getEntityByName('drone');

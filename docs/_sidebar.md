@@ -1,6 +1,7 @@
 Manual
 
 -   [Getting started](manual/Getting-started.md)
+-   [Creating components](manual/Creating-components.md)
 -   [Installation](manual/Installation.md)
 -   [Browser Support](manual/Browser-Support.md)
 -   [How to run things locally](manual/How-to-run-things-locally.md)

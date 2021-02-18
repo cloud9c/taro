@@ -1,36 +1,64 @@
 # Getting started
 
 ## Taro basics
-- [entities](../api/core/Entity): an object with a unique ID that can have multiple components attached to it.
-- [components](../api/core/ComponentManager): different facets of an entity. ex: geometry, physics, hit points.
-- [app](../api/core/App): a container for entities, components, and other core classes.
+- [entities](/api/core/Entity): an object with a unique ID that can have multiple components attached to it.
+- [components](/manual/Creating-components): different facets of an entity. ex: geometry, physics, hit points.
+- [scene](/api/core/Scene): a container for entities and their components.
+- [app](/api/core/App): a container of scenes and other core classes.
 
-The usual workflow when building a Taro program:
+The usual workflow when building a Taro.js program:
 - Create the `components` that shape the data and functions you need to use in your application.
 - Create `entities` and attach `components` to them.
 
+## Before we start
+Before you can use Taro.js, you need somewhere to display it. Save the following HTML to a file on your computer, along with a copy of Taro.module.js in the js/ directory, and open it in your browser:
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>My first taro.js app</title>
+    <style>
+      body { margin: 0; }
+    </style>
+  </head>
+  <body>
+    <script>
+      import * as TARO from "js/taro.module.js";
+      // Our Javascript will go here.
+    </script>
+  </body>
+</html>
+```
+
 ## Creating an app
-Let's start creating our first app:
+Let's start creating our first app and add the element to our HTML document:
 ```javascript
-app = new TARO.App();
+var app = new TARO.App();
+document.body.appendChild( app.domElement );
 ```
 
 ## Creating a scene
 Scenes contain a set of entities:
 ```javascript
-app = new TARO.App();
+var scene = new TARO.Scene();
+app.setScene(scene);
 ```
 
 ## Creating components
 Components are objects that hold data and functions. We can use any way to define them, for example using ES6 class syntax (recommended):
 ```javascript
 class CubeController {
-
-  update() {
-    this.entity.rotation.x += 0.01;
-    this.entity.rotation.y += 0.01;
+  init() {
+    // fires when the component is attached to an entity
+    this.rotation = this.entity.rotation;
   }
 
+  update() {
+    // fires once per frame
+    this.rotation.x += 0.01;
+    this.rotation.y += 0.01;
+  }
 }
 
 ```
@@ -38,238 +66,84 @@ class CubeController {
 Then we need to register components to use them.
 
 ```javascript
-  TARO
-    .ComponentManager
-    .register(Rotater);
+TARO.registerComponent('cubeController', CubeController);
 ```
 
-[More info on how to create components](Creating-components?id=components).
+[More info on how to create components](/manual/Creating-components).
 
 ## Creating entities
-Having our world and some components already defined, let's create [entities](/manual/Architecture?id=entities) and attach these components to them:
+Having our world and some components already defined, let's create [entities](/api/core/Entity) and attach these components to them:
 ```javascript
-var entityA = world
-  .createEntity()
-  .addComponent(Position);
+var cube = new TARO.Entity('cube');
+cube.addComponent('material', { color: 0x00ff00 });
+cube.addComponent('geometry', { type: 'box' });
+cube.addComponent('cubeController');
 
-for (let i = 0; i < 10; i++) {
-  world
-    .createEntity()
-    .addComponent(Acceleration)
-    .addComponent(Position, { x: Math.random() * 10, y: Math.random() * 10, z: 0});
-}
+var camera = new TARO.Entity('camera');
+camera.position.z = 5;
+camera.addComponent('camera');
 ```
 
-With that, we have just created 11 entities. 10 with the `Acceleration` and `Position` components, and one with just the `Position` component.
-Notice that the `Position` component is added using custom parameters. If we didn't use the parameters then the
-component would use the default values declared in the `Position` class.
-
-## Creating a system
-Now we are going to define a [system](/manual/Architecture?id=systems) to process the components we just created.
-A system should extend the `System` interface and can implement the following methods:
-- `init`: This will get called when the system is registered in a world.
-- `execute(delta, time)`: This is called on every frame.
-
-We could also define the [queries](/manual/Architecture?id=queries) of entities we are interested in based on the components they own. The `queries` attribute should be a static attribute of your system.
-
-We will start by creating a system that will loop through all the entities that have a `Position` component (11 in our example) and log their positions.
-
-```javascript
-class PositionLogSystem extends System {
-  init() { /* Do whatever you need here */ }
-
-  // This method will get called on every frame
-  execute(delta, time) {
-    // Iterate through all the entities on the query
-    this.queries.position.results.forEach(entity => {
-      // Access the component `Position` on the current entity
-      let pos = entity.getComponent(Position);
-
-      console.log(`Entity with ID: ${entity.id} has component Position={x: ${pos.x}, y: ${pos.y}, z: ${pos.z}}`);
-    });
-  }
-}
-
-// Define a query of entities that have the "Position" component
-PositionLogSystem.queries = {
-  position: {
-    components: [Position]
-  }
-}
-```
-
-The next system moves each entity that has both a Position and an Acceleration.
-
-```javascript
-class MovableSystem extends System {
-  init() { /* Do whatever you need here */ }
-
-  // This method will get called on every frame by default
-  execute(delta, time) {
-
-    // Iterate through all the entities on the query
-    this.queries.moving.results.forEach(entity => {
-
-      // Get the `Acceleration` component as Read-only
-      let acceleration = entity.getComponent(Acceleration).value;
-
-      // Get the `Position` component as Writable
-      let position = entity.getMutableComponent(Position);
-      position.x += acceleration * delta;
-      position.y += acceleration * delta;
-      position.z += acceleration * delta;
-    });
-  }
-}
-```
-
-Please note that we are accessing components on an entity by calling:
-- `getComponent(Component)`: If the component will be used as read-only.
-- `getMutableComponent(Component)`: If we plan to modify the values on the component.
-
-```javascript
-// Define a query of entities that have "Acceleration" and "Position" components
-MovableSystem.queries = {
-  moving: {
-    components: [Acceleration, Position]
-  }
-}
-```
-
-This system's query `moving` holds a list of entities that have both `Acceleration` and `Position`; 10 in total in our example.
-
-Please notice that we could create an arbitrary number of queries if needed and process them in `execute`, ex:
-```javascript
-class SystemDemo extends System {
-  execute() {
-    this.queries.boxes.results.forEach(entity => { /* do things */});
-    this.queries.balls.results.forEach(entity => { /* do things */});
-  }
-}
-
-SystemDemo.queries = {
-  boxes: { components: [Box] },
-  balls: { components: [Ball] },
-};
-```
-
-Now let's register them in the world so they get initialized and added to the default scheduler to execute them on each frame.
-
-```javascript
-world
-  .registerSystem(MovableSystem)
-  .registerSystem(PositionLogSystem);
-```
-
-For more information this please check the architecture documentation: [Accessing and modifying components](/manual/Architecture?id=accessing-components-and-modify-components) and [Reactive Queries](/manual/Architecture?id=reactive-queries)
-
+With that, we have just created 2 entities: one with the `Material`, `Geometry` and `CubeController` components, and another with just the `Camera` component.
+Notice that the `Geometry` and `Material` components are added with parameter objects. If we didn't use the parameters then the
+components would use the default values declared in their schemas.
 
 ## Start!
-Now you just need to invoke `world.execute(delta, time)` per frame. Currently ECSY doesn't provide a default scheduler, so you must do it yourself. eg:
+Now you just need to invoke `app.start()`, and the app will begin automatically updating every frame:
 ```javascript
-let  lastTime = performance.now();
-function  run() {
-  // Compute delta and elapsed time
-  let time = performance.now();
-  let delta = time - lastTime;
-
-  // Run all the systems
-  world.execute(delta, time);
-
-  lastTime = time;
-  requestAnimationFrame(run);
-}
-
-run();
+app.start();
 ```
 
 ## Putting everything together
-```javascript
-import { World, System } from 'ecsy';
+Congratulations! You have now completed your first taro.js application. It's simple, you have to start somewhere.
 
-let world = new World();
+The full code is available below and as an editable [live example](https://jsfiddle.net/aL3d0s7j/). Play around with it to get a better understanding of how it works.
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>My first taro.js app</title>
+    <style>
+      body { margin: 0; }
+    </style>
+  </head>
+  <body>
+    <script>
+      import * as TARO from "js/taro.module.js";
 
-class Acceleration extends Component {}
+      var app = new TARO.App();
+      document.body.appendChild( app.domElement );
 
-Acceleration.schema = {
-  value: { type: Types.Number, default: 0.1 }
-};
+      var scene = new TARO.Scene();
+      app.setScene(scene);
 
-class Position extends Component {}
+      class CubeController {
+        init() {
+          // fires when the component is attached to an entity
+          this.rotation = this.entity.rotation;
+        }
 
-Position.schema = {
-  x: { type: Types.Number },
-  y: { type: Types.Number },
-  z: { type: Types.Number }
-};
+        update() {
+          // fires once per frame
+          this.rotation.x += 0.01;
+          this.rotation.y += 0.01;
+        }
+      }
 
-world
-  .registerComponent(Acceleration)
-  .registerComponent(Position);
+      TARO.registerComponent('cubeController', CubeController);
 
-class PositionLogSystem extends System {
-  init() {}
-  execute(delta, time) {
-    this.queries.position.results.forEach(entity => {
-      let pos = entity.getComponent(Position);
-      console.log(`Entity with ID: ${entity.id} has component Position={x: ${pos.x}, y: ${pos.y}, z: ${pos.z}}`);
-    });
-  }
-}
+      var cube = new TARO.Entity('cube');
+      cube.addComponent('material', { color: 0x00ff00 });
+      cube.addComponent('geometry', { type: 'box' });
+      cube.addComponent('cubeController');
 
-PositionLogSystem.queries = {
-  position: {
-    components: [Position]
-  }
-}
+      var camera = new TARO.Entity('camera');
+      camera.position.z = 5;
+      camera.addComponent('camera');
 
-class MovableSystem extends System {
-  init() {}
-  execute(delta, time) {
-    this.queries.moving.results.forEach(entity => {
-      let acceleration = entity.getComponent(Acceleration).value;
-      let position = entity.getMutableComponent(Position);
-      position.x += acceleration * delta;
-      position.y += acceleration * delta;
-      position.z += acceleration * delta;
-    });
-  }
-}
-
-MovableSystem.queries = {
-  moving: {
-    components: [Acceleration, Position]
-  }
-}
-
-world
-  .registerSystem(MovableSystem)
-  .registerSystem(PositionLogSystem)
-
-world
-  .createEntity()
-  .addComponent(Position);
-
-for (let i = 0; i < 10; i++) {
-  world
-    .createEntity()
-    .addComponent(Acceleration)
-    .addComponent(Position, { x: Math.random() * 10, y: Math.random() * 10, z: 0});
-}
-
-let lastTime = performance.now();
-function run() {
-  let time = performance.now();
-  let delta = time - lastTime;
-
-  world.execute(delta, time);
-
-  lastTime = time;
-  requestAnimationFrame(run);
-}
-
-run();
+      app.start();
+    </script>
+  </body>
+</html>
 ```
-
-## What's next?
-This was a quick overview on how things are structured using ECSY, but we encourage you to [read the architecture documentation](/manual/Architecture) for more detailed information.
