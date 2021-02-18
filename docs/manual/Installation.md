@@ -11,17 +11,13 @@ The three.js library can be used without any build system, either by uploading f
 ```html
 <script type="module">
 
-  // Option 1: Import the entire taro.js core library.
+  // Ex 1: Import the entire taro.js core library from a CDN
   import * as TARO from 'https://www.echou.xyz/taro/build/taro.module.js';
   const app = new App();
 
-  // Option 2: Import just the parts you need.
+  // Ex 2: Import just the parts you need from static hosting
   import { App } from 'js/taro.module.js';
   const app = new App();
 
 </script>
 ```
-
-The usual workflow when building a Taro.js program:
-- Create the `components` that shape the data and functions you need to use in your application.
-- Create `entities` and attach `components` to them.
