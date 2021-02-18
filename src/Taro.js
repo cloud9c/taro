@@ -15,9 +15,6 @@ import './components/physics/Shape.js';
 import './components/physics/Constraint.js';
 import './components/physics/Rigidbody.js';
 
-// cannon.js
-export * as CANNON from './lib/cannon.js';
-
 // core
 export { Entity } from './core/Entity.js';
 export { Scene } from './core/Scene.js';
