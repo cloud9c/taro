@@ -147,14 +147,6 @@ export class App {
 
 	}
 
-	static getApp( id ) {
-
-		return App._apps[ id ];
-
-	}
-
 }
 
 App.prototype.isApp = true;
-App.currentApp;
-App.apps = {};
