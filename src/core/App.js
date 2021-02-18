@@ -37,7 +37,7 @@ export class App {
 
 	}
 
-	update( timestamp = 0 ) {
+	update( timestamp = performance.now() ) {
 
 		const deltaTime = this.time.update( timestamp / 1000 );
 
