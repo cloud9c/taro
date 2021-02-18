@@ -1,5 +1,5 @@
 import { ComponentManager } from '../../core/ComponentManager.js';
-import { Body, Vec3, DistanceConstraint, PointToPointConstraint, ConeTwistConstraint, LockConstraint, HingeConstraint } from '../../lib/cannon.js';
+import { Body, Vec3, DistanceConstraint, PointToPointConstraint, ConeTwistConstraint, LockConstraint, HingeConstraint } from '../../lib/cannon-es.js';
 import { MathUtils } from '../../lib/three.module.js';
 
 const DEFAULT_CONNECTED_BODY = new Body();

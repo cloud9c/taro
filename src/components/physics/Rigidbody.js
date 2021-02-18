@@ -1,5 +1,5 @@
 import { ComponentManager } from '../../core/ComponentManager.js';
-import { Body, Material } from '../../lib/cannon.js';
+import { Body, Material } from '../../lib/cannon-es.js';
 import { Vector3, FileLoader } from '../../lib/three.module.js';
 
 const types = [ 'dynamic', 'static', 'kinematic' ];

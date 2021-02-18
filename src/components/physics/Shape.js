@@ -1,5 +1,5 @@
 import { ComponentManager } from '../../core/ComponentManager.js';
-import { Box, Sphere, Plane, Cylinder, ConvexPolyhedron, Particle, Heightfield, Vec3 } from '../../lib/cannon.js';
+import { Box, Sphere, Plane, Cylinder, ConvexPolyhedron, Particle, Heightfield, Vec3 } from '../../lib/cannon-es.js';
 import { Euler, Quaternion } from '../../lib/three.module.js';
 
 const _e1 = new Euler();
