@@ -179,4 +179,4 @@ class Shape {
 }
 
 // TODO: Research how to implement Trimesh type
-ComponentManager.register( 'shape', Shape );
+ComponentManager.registerComponent( 'shape', Shape );

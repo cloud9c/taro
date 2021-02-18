@@ -1,5 +1,44 @@
 import { EventDispatcher, Vector4, Vector3, Vector2, Color } from '../lib/three.module.js';
 
+export function registerComponent( type, constructor ) {
+
+	if ( ComponentManager.components.type !== undefined ) return console.error( 'component ' + type + ' already exists' );
+
+	// add config static variable if the constructor doesn't have it
+	if ( constructor.config === undefined )
+		constructor.config = {};
+
+	const schema = constructor.config.schema;
+
+	if ( schema !== undefined ) {
+
+		for ( const name in schema ) {
+
+			const prop = schema[ name ];
+
+			if ( Array.isArray( prop ) ) {
+
+				for ( let i = 0, len = prop.length; i < len; i ++ )
+					ComponentManager.sanitizeSchema( prop[ i ] );
+
+			} else {
+
+				ComponentManager.sanitizeSchema( prop );
+
+			}
+
+		}
+
+	}
+
+	ComponentManager.properties.componentType.value = type;
+	Object.defineProperties( constructor.prototype, ComponentManager.properties );
+	Object.assign( constructor.prototype, EventDispatcher.prototype );
+
+	ComponentManager.components[ type ] = constructor;
+
+}
+
 export const ComponentManager = {
 	components: {},
 	properties: {
@@ -53,44 +92,7 @@ export const ComponentManager = {
 			}
 		}
 	},
-	register: function ( type, constructor ) {
-
-		if ( this.components.type !== undefined ) return console.error( 'component ' + type + ' already exists' );
-
-		// add config static variable if the constructor doesn't have it
-		if ( constructor.config === undefined )
-			constructor.config = {};
-
-		const schema = constructor.config.schema;
-
-		if ( schema !== undefined ) {
-
-			for ( const name in schema ) {
-
-				const prop = schema[ name ];
-
-				if ( Array.isArray( prop ) ) {
-
-					for ( let i = 0, len = prop.length; i < len; i ++ )
-						this.sanitizeSchema( prop[ i ] );
-
-				} else {
-
-					this.sanitizeSchema( prop );
-
-				}
-
-			}
-
-		}
-
-		this.properties.componentType.value = type;
-		Object.defineProperties( constructor.prototype, this.properties );
-		Object.assign( constructor.prototype, EventDispatcher.prototype );
-
-		this.components[ type ] = constructor;
-
-	},
+	registerComponent,
 	sanitizeSchema: function ( prop ) {
 
 		if ( prop.default === undefined && prop.type === undefined ) {

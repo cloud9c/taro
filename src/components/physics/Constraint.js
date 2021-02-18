@@ -112,4 +112,4 @@ class Constraint {
 }
 
 // TODO: Research how to implement Trimesh type
-ComponentManager.register( 'constraint', Constraint );
+ComponentManager.registerComponent( 'constraint', Constraint );

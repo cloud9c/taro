@@ -32,4 +32,4 @@ class Renderable {
 
 }
 
-ComponentManager.register( 'renderable', Renderable );
+ComponentManager.registerComponent( 'renderable', Renderable );

@@ -26,7 +26,7 @@
 
 			const app = new TARO.App({canvas: document.getElementById("c")});
 
-			TARO.ComponentManager.register(
+			TARO.registerComponent(
 				"cameraController",
 				class CameraController {
 					init() {

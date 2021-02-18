@@ -80,4 +80,4 @@ class Rigidbody {
 
 }
 
-ComponentManager.register( 'rigidbody', Rigidbody );
+ComponentManager.registerComponent( 'rigidbody', Rigidbody );

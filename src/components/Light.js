@@ -67,4 +67,4 @@ class Light {
 
 }
 
-ComponentManager.register( 'light', Light );
+ComponentManager.registerComponent( 'light', Light );

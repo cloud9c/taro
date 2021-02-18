@@ -216,4 +216,4 @@ Material.prototype.DefaultMaterial = new MeshBasicMaterial();
 Material.prototype.DefaultMaterial.transparent = true;
 Material.prototype.DefaultMaterial.opacity = 0;
 
-ComponentManager.register( 'material', Material );
+ComponentManager.registerComponent( 'material', Material );

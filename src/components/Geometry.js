@@ -175,4 +175,4 @@ class Geometry {
 
 Geometry.prototype.DefaultGeometry = new BufferGeometry();
 
-ComponentManager.register( 'geometry', Geometry );
+ComponentManager.registerComponent( 'geometry', Geometry );

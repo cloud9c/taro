@@ -92,4 +92,4 @@ class Camera {
 
 }
 
-ComponentManager.register( 'camera', Camera );
+ComponentManager.registerComponent( 'camera', Camera );

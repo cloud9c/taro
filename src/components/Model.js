@@ -107,4 +107,4 @@ class Model {
 
 }
 
-ComponentManager.register( 'model', Model );
+ComponentManager.registerComponent( 'model', Model );
