@@ -81,14 +81,39 @@ export class App {
 
 	addScene( scene ) {
 
+		if ( arguments.length > 1 ) {
+
+			for ( let i = 0; i < arguments.length; i ++ ) {
+
+				this.addScene( arguments[ i ] );
+
+			}
+
+			return this;
+
+		}
+
 		scene.app = this;
 		this.scenes.push( scene );
 		scene.dispatchEvent( { type: 'appadd' } );
-		return scene;
+
+		return this;
 
 	}
 
 	removeScene( scene ) {
+
+		if ( arguments.length > 1 ) {
+
+			for ( let i = 0; i < arguments.length; i ++ ) {
+
+				this.removeScene( arguments[ i ] );
+
+			}
+
+			return this;
+
+		}
 
 		const index = this.scenes.indexOf( scene );
 
@@ -98,6 +123,8 @@ export class App {
 			delete scene.app;
 
 		}
+
+		return this;
 
 	}
 
