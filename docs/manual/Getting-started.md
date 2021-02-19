@@ -12,7 +12,7 @@ The usual workflow when building a taro.js program:
 - Create `entities` and attach `components` to them.
 
 ## Before we start
-Before you can use taro.js, you need somewhere to display it. Save the following HTML to a file on your computer, along with a copy of taro.module.js in the js/ directory, and open it in your browser:
+Before you can use taro.js, you need somewhere to display it. Save the following HTML to a file on your computer, along with a copy of taro.js in the js/ directory, and open it in your browser:
 ```html
 <!DOCTYPE html>
 <html>
@@ -24,8 +24,8 @@ Before you can use taro.js, you need somewhere to display it. Save the following
     </style>
   </head>
   <body>
+    <script src="js/three.js"></script>
     <script>
-      import * as TARO from "js/taro.module.js";
       // Our Javascript will go here.
     </script>
   </body>
@@ -110,9 +110,8 @@ The full code is available below and as an editable [live example](https://jsfid
     </style>
   </head>
   <body>
+    <script src="js/three.js"></script>
     <script>
-      import * as TARO from "js/taro.module.js";
-
       var app = new TARO.App();
       document.body.appendChild( app.domElement );
 
