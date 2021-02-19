@@ -9,6 +9,8 @@ export class Entity extends Group {
 
 		super();
 
+		this.scene = null;
+		
 		this.castShadow = true;
 		this.receiveShadow = true;
 
@@ -118,7 +120,7 @@ export class Entity extends Group {
 
 		this.components.push( component );
 
-		if ( this.scene !== undefined ) this._activateComponent( type, component, data );
+		if ( this.scene !== null ) this._activateComponent( type, component, data );
 		else this.queue.push( { type, component, data } );
 
 		return component;
@@ -142,7 +144,7 @@ export class Entity extends Group {
 	add( object ) {
 
 		super.add( ...arguments );
-		if ( this.scene !== undefined ) this.scene._addToScene( object );
+		if ( this.scene !== null ) this.scene._addToScene( object );
 
 		return this;
 
@@ -151,7 +153,7 @@ export class Entity extends Group {
 	remove( object ) {
 
 		super.remove( ...arguments );
-		if ( this.scene !== undefined ) this.scene._removeFromScene( object );
+		if ( this.scene !== null ) this.scene._removeFromScene( object );
 
 		return this;
 
