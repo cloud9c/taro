@@ -7,6 +7,7 @@ export class Scene extends TS {
 
 		super();
 
+		this.scene = null;
 		this.components = { rigidbody: [], camera: [] };
 
 		if ( name !== undefined )
@@ -65,9 +66,9 @@ export class Scene extends TS {
 
 		if ( object.isEntity !== undefined ) {
 
-			if ( object.scene !== undefined ) {
+			if ( object.scene !== null ) {
 
-				object.scene._removeComponents( object.components );
+				object.scene._removeFromScene( object );
 
 			}
 
@@ -93,7 +94,7 @@ export class Scene extends TS {
 
 			this._removeComponents( object.components );
 
-			delete object.scene;
+			object.scene = null;
 			object.dispatchEvent( { type: 'sceneremove' } );
 
 			const children = object.children;
