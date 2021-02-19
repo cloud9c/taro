@@ -145,8 +145,6 @@ export class App {
 
 		}
 
-		return scene;
-
 	}
 
 	getEntityById( id ) {
