@@ -92,7 +92,13 @@ export class App {
 			return this;
 
 		}
-
+		
+		if ( scene.app !== null ) {
+			
+			scene.app.removeScene( scene );
+			
+		}
+		
 		scene.app = this;
 		this.scenes.push( scene );
 		scene.dispatchEvent( { type: 'appadd' } );
@@ -120,7 +126,7 @@ export class App {
 		if ( index !== - 1 ) {
 
 			this.scenes.splice( index, 1 );
-			delete scene.app;
+			scene.app = null;
 
 		}
 
