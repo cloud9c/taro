@@ -151,9 +151,9 @@ export class App {
 
 	}
 
-	getEntityById( id ) {
+	getSceneById( id ) {
 
-		return this.getEntityByProperty( 'id', id );
+		return this.getSceneByProperty( 'id', id );
 
 	}
 
