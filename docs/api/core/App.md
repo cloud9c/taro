@@ -1,11 +1,9 @@
 # App
-
 App is a collection of scenes and other core classes (Assets, Input, Physics, Renderer, Time) that defines your project.
 
 ## Constructor
 
 ### App( parameters : <span class="param">Object</span> )
-
 **parameters** - (optional) object with properties defining the app's behaviour. The constructor also accepts no parameters at all. In all cases, it will assume defaults when parameters are missing. The following are additional parameters:
 
 **renderer** - This can be used to attach the app to an existing [Renderer](api/core/Renderer). Default is **undefined**.
