@@ -19,7 +19,7 @@ export class App {
 		this.input = new Input( this.domElement );
 
 		this.scenes = [];
-		this.currentScene = undefined;
+		this.currentScene = null;
 
 		App.currentApp = this;
 
