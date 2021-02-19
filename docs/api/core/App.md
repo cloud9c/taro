@@ -1,12 +1,16 @@
 # App
 
+App is a collection of scenes and other core classes (Assets, Input, Physics, Renderer, Time) that defines your project.
+
 ## Constructor
 
 ### App( parameters : <span class="param">Object</span> )
 
-<a>parameters</a> - (optional) object with properties defining the app's behaviour for [Renderer](api/core/Renderer), [Time](api/core/Time), and [Physics](api/core/Physics). The constructor also accepts no parameters at all. In all cases, it will assume defaults when parameters are missing. The following are additional parameters:
+**parameters** - (optional) object with properties defining the app's behaviour. The constructor also accepts no parameters at all. In all cases, it will assume defaults when parameters are missing. The following are additional parameters:
 
-<a>renderer</a> - This can be used to attach the app to an existing [Renderer](api/core/Renderer). Default is **undefined**.
+**renderer** - This can be used to attach the app to an existing [Renderer](api/core/Renderer). Default is **undefined**.
+
+See [Renderer](api/core/Renderer), [Time](api/core/Time), and [Physics](api/core/Physics) for a list of all parameters.
 
 ## Properties
 
@@ -32,7 +36,7 @@ Reference to the physics system.
 Reference to the renderer.
 
 ### .<a>scenes</a> : <span class="param">Array</span>
-Array with app's scenes.
+Array of the app's scenes.
 
 ### .<a>time</a> : <span class="param">[Time](api/core/Time)</span>
 Reference to the time system.
@@ -58,4 +62,7 @@ If a timestamp is not provided, the function will use performance.now().
 Remove the current rendering context and all the event listeners.
 
 ### .<a>addScene</a> ( scene : <span class="param">[Scene](api/core/Scene)</span>, ... ) : <span class="param">this</span>
-Adds object as child of this object. An arbitrary number of scenes may be added.
+Adds **scene** as a part of this app. An arbitrary number of scenes may be added.
+
+### .<a>removeScene</a> ( scene : <span class="param">[Scene](api/core/Scene)</span>, ... ) : <span class="param">this</span>
+Removes **scene** as a part of this app. An arbitrary number of scenes may be removed.

@@ -169,6 +169,7 @@ fieldset {
 	display: flex;
 	align-items: center;
 	margin-bottom: 12px;
+	padding-right: 8px;
 }
 
 legend {
@@ -357,6 +358,10 @@ input[type="checkbox"]:checked::after {
 }
 
 /**/
+
+#entity-name {
+	min-width: 250px;
+}
 
 #scene div, #assets div {
 	margin: 0;
