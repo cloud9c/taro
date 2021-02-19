@@ -64669,17 +64669,22 @@ class AssetManager {
 
 	constructor() {
 
+		this.enabled = false;
 		this.files = {};
 
 	}
 
 	add( key, file ) {
 
+		if ( this.enabled === false ) return;
+		
 		this.files[ key ] = file;
 
 	}
 
 	get( key ) {
+		
+		if ( this.enabled === false ) return;
 
 		return this.files[ key ];
 
@@ -64920,7 +64925,7 @@ class App {
 		this.input = new Input( this.domElement );
 
 		this.scenes = [];
-		this.currentScene = undefined;
+		this.currentScene = null;
 
 		App.currentApp = this;
 
@@ -64982,23 +64987,56 @@ class App {
 
 	addScene( scene ) {
 
+		if ( arguments.length > 1 ) {
+
+			for ( let i = 0; i < arguments.length; i ++ ) {
+
+				this.addScene( arguments[ i ] );
+
+			}
+
+			return this;
+
+		}
+		
+		if ( scene.app !== null ) {
+			
+			scene.app.removeScene( scene );
+			
+		}
+		
 		scene.app = this;
 		this.scenes.push( scene );
 		scene.dispatchEvent( { type: 'appadd' } );
-		return scene;
+
+		return this;
 
 	}
 
 	removeScene( scene ) {
+
+		if ( arguments.length > 1 ) {
+
+			for ( let i = 0; i < arguments.length; i ++ ) {
+
+				this.removeScene( arguments[ i ] );
+
+			}
+
+			return this;
+
+		}
 
 		const index = this.scenes.indexOf( scene );
 
 		if ( index !== - 1 ) {
 
 			this.scenes.splice( index, 1 );
-			delete scene.app;
+			scene.app = null;
 
 		}
+
+		return this;
 
 	}
 
@@ -65009,8 +65047,6 @@ class App {
 			if ( this.scenes.indexOf( scene ) === - 1 )
 				this.addScene( scene );
 
-			const oldScene = this.currentScene;
-
 			this.components = scene.components;
 			this.currentScene = scene;
 
@@ -65019,13 +65055,11 @@ class App {
 
 		}
 
-		return scene;
-
 	}
 
-	getEntityById( id ) {
+	getSceneById( id ) {
 
-		return this.getEntityByProperty( 'id', id );
+		return this.getSceneByProperty( 'id', id );
 
 	}
 
@@ -65048,16 +65082,9 @@ class App {
 
 	}
 
-	static getApp( id ) {
-
-		return App._apps[ id ];
-
-	}
-
 }
 
 App.prototype.isApp = true;
-App.apps = {};
 
 class Scene$1 extends Scene {
 
@@ -65065,6 +65092,7 @@ class Scene$1 extends Scene {
 
 		super();
 
+		this.app = null;
 		this.components = { rigidbody: [], camera: [] };
 
 		if ( name !== undefined )
@@ -65123,9 +65151,9 @@ class Scene$1 extends Scene {
 
 		if ( object.isEntity !== undefined ) {
 
-			if ( object.scene !== undefined ) {
+			if ( object.scene !== null ) {
 
-				object.scene._removeComponents( object.components );
+				object.scene._removeFromScene( object );
 
 			}
 
@@ -65151,7 +65179,7 @@ class Scene$1 extends Scene {
 
 			this._removeComponents( object.components );
 
-			delete object.scene;
+			object.scene = null;
 			object.dispatchEvent( { type: 'sceneremove' } );
 
 			const children = object.children;
@@ -65281,6 +65309,8 @@ class Entity extends Group {
 
 		super();
 
+		this.scene = null;
+		
 		this.castShadow = true;
 		this.receiveShadow = true;
 
@@ -65390,7 +65420,7 @@ class Entity extends Group {
 
 		this.components.push( component );
 
-		if ( this.scene !== undefined ) this._activateComponent( type, component, data );
+		if ( this.scene !== null ) this._activateComponent( type, component, data );
 		else this.queue.push( { type, component, data } );
 
 		return component;
@@ -65414,7 +65444,7 @@ class Entity extends Group {
 	add( object ) {
 
 		super.add( ...arguments );
-		if ( this.scene !== undefined ) this.scene._addToScene( object );
+		if ( this.scene !== null ) this.scene._addToScene( object );
 
 		return this;
 
@@ -65423,7 +65453,7 @@ class Entity extends Group {
 	remove( object ) {
 
 		super.remove( ...arguments );
-		if ( this.scene !== undefined ) this.scene._removeFromScene( object );
+		if ( this.scene !== null ) this.scene._removeFromScene( object );
 
 		return this;
 
