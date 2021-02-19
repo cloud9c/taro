@@ -18,7 +18,7 @@ See [Renderer](api/core/Renderer), [Time](api/core/Time), and [Physics](api/core
 Provides access to user-defined or component-added assets.
 
 ### .<a>currentScene</a> : <span class="param">[Scene](api/core/Scene)</span>
-The scene that is currently active in the app. Default is **undefined**.
+The scene that is currently active in the app.
 
 ### .<a>domElement</a> : <span class="param">DOMElement</span>
 A canvas where the renderer draws its output. This is automatically created by the renderer in the constructor (if not provided already).
@@ -48,6 +48,36 @@ The most recent app created; scenes created without a specified app uses this pr
 
 ## Methods
 
+### .<a>addScene</a> ( scene : <span class="param">[Scene](api/core/Scene)</span>, ... ) : <span class="param">this</span>
+Adds **scene** as a part of this app. An arbitrary number of scenes may be added. Any current app on a scene passed in here will be removed, since a scene can have at most one app.
+
+### .<a>dispose</a> () : <span class="param">null</span>
+Remove the current rendering context and all the event listeners.
+
+### .<a>getSceneById</a> ( id : <span class="param">Integer</span> ) : <span class="param">[Scene](api/core/Scene)</span>
+**id** - Unique number of the scene instance
+
+Searches through the .scenes array and returns the first with a matching id.
+Note that ids are assigned in chronological order: 1, 2, 3, ..., incrementing by one for each new object.
+
+### .<a>getSceneByName</a> ( name : <span class="param">String</span> ) : <span class="param">[Scene](api/core/Scene)</span>
+**name** - String to match to the Scene.name property.
+
+Searches through the .scenes array and returns the first with a matching name.
+Note that for most scenes the name is an empty string by default.
+
+### .<a>getSceneByProperty</a> ( name : <span class="param">String</span>, value : <span class="param">Float</span> ) : <span class="param">[Scene](api/core/Scene)</span>
+**name** - the property name to search for.<br>
+**value** - value of the given property.
+
+Searches through the .scenes array and returns the first with a property that matches the value given.
+
+### .<a>removeScene</a> ( scene : <span class="param">[Scene](api/core/Scene)</span>, ... ) : <span class="param">this</span>
+Removes **scene** as a part of this app. An arbitrary number of scenes may be removed.
+
+### .<a>setScene</a> ( scene : <span class="param">[Scene](api/core/Scene)</span> ) : <span class="param">null</span>
+Sets **scene** as the active scene in the app.
+
 ### .<a>start</a> () : <span class="param">null</span>
 Starts executing an update loop that will called every available frame.
 
@@ -58,11 +88,5 @@ Stops the ongoing update loop.
 Updates the application. This function will update systems and call the update/fixedUpdate functions of all enabled components.
 If a timestamp is not provided, the function will use performance.now().
 
-### .<a>dispose</a> () : <span class="param">null</span>
-Remove the current rendering context and all the event listeners.
-
-### .<a>addScene</a> ( scene : <span class="param">[Scene](api/core/Scene)</span>, ... ) : <span class="param">this</span>
-Adds **scene** as a part of this app. An arbitrary number of scenes may be added.
-
-### .<a>removeScene</a> ( scene : <span class="param">[Scene](api/core/Scene)</span>, ... ) : <span class="param">this</span>
-Removes **scene** as a part of this app. An arbitrary number of scenes may be removed.
+## Source
+[src/core/App.js](https://github.com/Cloud9c/taro/blob/master/src/core/App.js)

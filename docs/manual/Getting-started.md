@@ -4,8 +4,8 @@ Taro is an Entity Component System (ECS) engine for web applications. The basic 
 
 - [entities](/api/core/Entity): an object with a unique ID that can have multiple components attached to it.
 - [components](/api/core/Component): different facets of an entity. ex: geometry, rigidbody, hit points.
-- [scene](/api/core/Scene): a collection of entities and their components.
-- [app](/api/core/App): the root container for scenes and other core classes.
+- [scenes](/api/core/Scene): a collection of entities and their components.
+- [apps](/api/core/App): the root container for scenes and other core classes.
 
 The usual workflow when building a taro.js program:
 - Create the `components` that shape the data and functions you need to use in your application.
