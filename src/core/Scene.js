@@ -7,7 +7,7 @@ export class Scene extends TS {
 
 		super();
 
-		this.scene = null;
+		this.app = null;
 		this.components = { rigidbody: [], camera: [] };
 
 		if ( name !== undefined )
