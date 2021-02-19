@@ -1,0 +1,6 @@
+{
+	"name":"taro",
+	"scripts":{
+		"build":"rollup -c rollup.config.js"
+	}
+}
