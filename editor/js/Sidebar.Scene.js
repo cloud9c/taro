@@ -261,8 +261,6 @@ export function SidebarScene( editor ) {
 
 		}
 
-		event.preventDefault();
-
 	} );
 
 	sceneElement.addEventListener( 'pointerup', ( event ) => {
