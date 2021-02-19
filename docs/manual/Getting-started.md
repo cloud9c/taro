@@ -24,7 +24,7 @@ Before you can use taro.js, you need somewhere to display it. Save the following
     </style>
   </head>
   <body>
-    <script src="js/three.js"></script>
+    <script src="js/taro.js"></script>
     <script>
       // Our Javascript will go here.
     </script>
@@ -98,7 +98,7 @@ app.start();
 ## Putting everything together
 Congratulations! You have now completed your first taro.js application. It's simple, you have to start somewhere.
 
-The full code is available below and as an editable [live example](https://jsfiddle.net/aL3d0s7j/). Play around with it to get a better understanding of how it works.
+The full code is available below and as an editable [live example](https://jsfiddle.net/0jvyadmx/). Play around with it to get a better understanding of how it works.
 ```html
 <!DOCTYPE html>
 <html>
@@ -110,7 +110,7 @@ The full code is available below and as an editable [live example](https://jsfid
     </style>
   </head>
   <body>
-    <script src="js/three.js"></script>
+    <script src="js/taro.js"></script>
     <script>
       var app = new TARO.App();
       document.body.appendChild( app.domElement );
