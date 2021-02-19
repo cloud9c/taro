@@ -141,8 +141,6 @@ export class App {
 			if ( this.scenes.indexOf( scene ) === - 1 )
 				this.addScene( scene );
 
-			const oldScene = this.currentScene;
-
 			this.components = scene.components;
 			this.currentScene = scene;
 
