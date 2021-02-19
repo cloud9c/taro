@@ -2,7 +2,7 @@ export class AssetManager {
 
 	constructor() {
 
-		this.enabled = true;
+		this.enabled = false;
 		this.files = {};
 
 	}
