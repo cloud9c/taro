@@ -208,7 +208,7 @@ export const ComponentManager = {
 					} else if ( this.loopDependency( array, data, object.if, i ) ) continue;
 
 
-					data[ name ] = this.addDefault( object.type, object.default );
+					data[ name ] = this.parseProperty( object.type, object.default );
 
 				}
 
@@ -246,20 +246,20 @@ export const ComponentManager = {
 		return exit;
 
 	},
-	addDefault: function ( type, _default ) {
+	parseProperty: function ( type, value ) {
 
 		switch ( type ) {
 
 			case 'vector2':
-				return new Vector2( ..._default );
+				return new Vector2( ...value );
 			case 'vector3':
-				return new Vector3( ..._default );
+				return new Vector3( ...value );
 			case 'vector4':
-				return new Vector4( ..._default );
+				return new Vector4( ...value );
 			case 'color':
-				return new Color( _default );
+				return new Color( value );
 			default:
-				return _default;
+				return value;
 
 		}
 
