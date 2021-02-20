@@ -4,9 +4,9 @@ App is a collection of scenes and other core classes (Assets, Input, Physics, Re
 ## Constructor
 
 ### App( parameters : <span class="param">Object</span> )
-**parameters** - (optional) object with properties defining the app's behaviour. The constructor also accepts no parameters at all. In all cases, it will assume defaults when parameters are missing. The following are additional parameters:
+**parameters** — (optional) object with properties defining the app's behaviour. The constructor also accepts no parameters at all. In all cases, it will assume defaults when parameters are missing. The following are additional parameters:
 
-**renderer** - This can be used to attach the app to an existing [Renderer](api/core/Renderer). Default is **undefined**.
+**renderer** — This can be used to attach the app to an existing [Renderer](api/core/Renderer). Default is **undefined**.
 
 See [Renderer](api/core/Renderer), [Time](api/core/Time), and [Physics](api/core/Physics) for a list of all parameters.
 
@@ -18,7 +18,7 @@ Provides access to user-defined or component-added assets.
 ### .<a>currentScene</a> : <span class="param">[Scene](api/core/Scene)</span>
 The scene that is currently active in the app.
 
-### .<a>domElement</a> : <span class="param">DOMElement</span>
+### .<a>domElement</a> : <span class="param">HTMLDOMElement</span>
 A canvas where the renderer draws its output. This is automatically created by the renderer in the constructor (if not provided already).
 
 ### .<a>input</a> : <span class="param">[Input](api/core/Input)</span>
@@ -53,20 +53,20 @@ Adds **scene** as a part of this app. An arbitrary number of scenes may be added
 Remove the current rendering context and all the event listeners.
 
 ### .<a>getSceneById</a> ( id : <span class="param">Integer</span> ) : <span class="param">[Scene](api/core/Scene)</span>
-**id** - Unique number of the scene instance
+**id** — Unique number of the scene instance.
 
 Searches through the .scenes array and returns the first with a matching id.
 Note that ids are assigned in chronological order: 1, 2, 3, ..., incrementing by one for each new object.
 
 ### .<a>getSceneByName</a> ( name : <span class="param">String</span> ) : <span class="param">[Scene](api/core/Scene)</span>
-**name** - String to match to the Scene.name property.
+**name** — String to match to the name property.
 
 Searches through the .scenes array and returns the first with a matching name.
 Note that for most scenes the name is an empty string by default.
 
 ### .<a>getSceneByProperty</a> ( name : <span class="param">String</span>, value : <span class="param">Float</span> ) : <span class="param">[Scene](api/core/Scene)</span>
-**name** - the property name to search for.<br>
-**value** - value of the given property.
+**name** — the property name to search for.<br>
+**value** — value of the given property.
 
 Searches through the .scenes array and returns the first with a property that matches the value given.
 

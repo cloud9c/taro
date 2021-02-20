@@ -143,6 +143,7 @@ The full code is available below and as an editable [live example](https://jsfid
       camera.addComponent('camera');
 
       app.start();
+      // beep boop hey look it works
     </script>
   </body>
 </html>

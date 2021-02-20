@@ -67,7 +67,6 @@ export class TaroExporter {
 		data.uuid = entity.uuid;
 		data.matrix = entity.matrix.toArray();
 
-		if ( entity.tags.length !== 0 ) data.tags = entity.tags;
 		if ( entity.name !== '' ) data.name = entity.name;
 		if ( entity.castShadow === true ) data.castShadow = true;
 		if ( entity.receiveShadow === true ) data.receiveShadow = true;

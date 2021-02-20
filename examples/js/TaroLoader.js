@@ -158,7 +158,6 @@ export class TaroLoader extends Loader {
 		object.matrix.fromArray( data.matrix );
 		object.matrix.decompose( object.position, object.quaternion, object.scale );
 
-		if ( data.tags !== undefined ) object.tags = data.tags;
 		if ( data.castShadow !== undefined ) object.castShadow = data.castShadow;
 		if ( data.receiveShadow !== undefined ) object.receiveShadow = data.receiveShadow;
 		if ( data.visible !== undefined ) object.visible = data.visible;

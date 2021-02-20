@@ -56,6 +56,9 @@
 			.markdown-section {
 				max-width: 900px;
 			}
+			.markdown-section a {
+				text-decoration: none;
+			}
 			.markdown-section h1,
 			.markdown-section h2,
 			.markdown-section h3,
@@ -73,26 +76,25 @@
 			.markdown-section h6 a {
 				color: var(--text-color);
 			}
+			.markdown-section h1 {
+				font-size: 2.4rem;
+			}
 			.markdown-section h2 {
 				margin-top: 28px;
 			}
 			.markdown-section h3 {
 				margin-top: 24px;
-			}
-			.markdown-section h4 {
-				margin-top: 20px;
-			}
-			.markdown-section h1 {
-				font-size: 2.4rem;
-			}
-			.markdown-section h3 {
 				font-size: 1.2rem;
+			}
+			.markdown-section h4, .markdown-section h5, .markdown-section h6 {
+				margin-top: 20px;
+				font-size: 1rem;
 			}
 			.markdown-section .param, .markdown-section .param a {
 				color: var(--secondary-text-color);
 				text-decoration: none;
 			}
-			.markdown-section strong {
+			.markdown-section strong, .markdown-section th {
 				font-weight: 500;
 			}
 			.anchor span {
@@ -104,6 +106,9 @@
 			.markdown-section p {
 				margin-top: 16px;
 				margin-bottom: 24px;
+			}
+			.content {
+				padding-top: 0;
 			}
 		</style>
 	</head>

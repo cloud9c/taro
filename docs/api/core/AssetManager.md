@@ -18,24 +18,23 @@ An object that holds cached assets.
 ## Methods
 
 ### .<a>add</a> ( key : <span class="param">String</span>, file : <span class="param">Object</span> ) : <span class="param">null</span>
-key - the key to reference the cached file by.
-file - The file to be cached.
+key — the key to reference the cached file by.
+file — The file to be cached.
 
 Adds an cache entry with a key to reference the file. If this key already holds a file, it is overwritten.
 
 ### .<a>get</a> ( key : <span class="param">String</span> ) : <span class="param">null</span>
-key - A string key
+key — A string key
 
 Get the value of key. If the key does not exist **undefined** is returned.
 
 ### .<a>remove</a> ( key : <span class="param">String</span> ) : <span class="param">null</span>
-key - A string key that references a cached file.
+key — A string key that references a cached file.
 
 Remove the cached file associated with the key.
 
 ### .<a>clear</a> () : <span class="param">null</span>
 Remove all values from the cache.
-
 
 ## Source
 [src/core/AssetManager.js](https://github.com/Cloud9c/taro/blob/master/src/core/AssetManager.js)
