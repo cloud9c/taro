@@ -66,7 +66,7 @@ export class Input extends EventDispatcher {
 
 			this.dispatchEvent( {
 				type: 'wheel',
-				wheelDelta: this.wheelDelta,
+				delta: this.wheelDelta,
 			} );
 
 		};
