@@ -1,14 +1,14 @@
 import { EventDispatcher, Vector4, Vector3, Vector2, Color } from '../lib/three.module.js';
 
-export function registerComponent( type, constructor ) {
+export function registerComponent( type, definition ) {
 
 	if ( ComponentManager.components.type !== undefined ) return console.error( 'component ' + type + ' already exists' );
 
-	// add config static variable if the constructor doesn't have it
-	if ( constructor.config === undefined )
-		constructor.config = {};
+	// add config static variable if the definition doesn't have it
+	if ( definition.config === undefined )
+		definition.config = {};
 
-	const schema = constructor.config.schema;
+	const schema = definition.config.schema;
 
 	if ( schema !== undefined ) {
 
@@ -32,10 +32,10 @@ export function registerComponent( type, constructor ) {
 	}
 
 	ComponentManager.properties.componentType.value = type;
-	Object.defineProperties( constructor.prototype, ComponentManager.properties );
-	Object.assign( constructor.prototype, EventDispatcher.prototype );
+	Object.defineProperties( definition.prototype, ComponentManager.properties );
+	Object.assign( definition.prototype, EventDispatcher.prototype );
 
-	ComponentManager.components[ type ] = constructor;
+	ComponentManager.components[ type ] = definition;
 
 }
 
