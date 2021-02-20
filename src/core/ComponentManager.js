@@ -158,10 +158,10 @@ export const ComponentManager = {
 				case 'object':
 					if ( Array.isArray( prop.default ) )
 						prop.type = 'select';
-					else return console.error( 'ComponentManager: could not infer property type from default ' + prop.default );
+					else console.error( 'ComponentManager: could not infer property type from default ' + prop.default );
 					break;
 				default:
-					return console.error( 'ComponentManager: could not infer property type from default ' + prop.default );
+					console.error( 'ComponentManager: could not infer property type from default ' + prop.default );
 
 			}
 
