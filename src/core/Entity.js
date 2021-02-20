@@ -94,11 +94,11 @@ export class Entity extends Group {
 
 	addComponent( type, data = {} ) {
 
-		const constructor = ComponentManager.components[ type ];
+		const definition = ComponentManager.components[ type ];
 
-		if ( constructor === undefined ) return console.error( 'Entity: component does not exist' );
+		if ( definition === undefined ) return console.error( 'Entity: component does not exist' );
 
-		const config = constructor.config;
+		const config = definition.config;
 
 		if ( config.multiple !== true && this.getComponent( type ) !== undefined )
 			return console.warn( 'Entity: multiple attribute for ' + type + ' component is false/undefined' );
@@ -114,7 +114,7 @@ export class Entity extends Group {
 
 		if ( config.schema !== undefined ) ComponentManager.sanitizeData( data, config.schema );
 
-		const component = new constructor();
+		const component = new definition();
 		component.entity = this;
 		component.uuid = MathUtils.generateUUID();
 
