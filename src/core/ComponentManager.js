@@ -97,7 +97,7 @@ export const ComponentManager = {
 
 		if ( prop.default === undefined && prop.type === undefined ) {
 
-			throw Error( 'ComponentManager: schema property requires a type or default value' );
+			return console.error( 'ComponentManager: schema property requires a type or default value' );
 
 		} else if ( prop.default === undefined ) {
 
@@ -135,7 +135,7 @@ export const ComponentManager = {
 					prop.default = null;
 					break;
 				default:
-					throw Error( 'ComponentManager: invalid schema property type ' + typeof prop.type );
+					return console.error( 'ComponentManager: invalid schema property type ' + typeof prop.type );
 
 			}
 
@@ -158,10 +158,10 @@ export const ComponentManager = {
 				case 'object':
 					if ( Array.isArray( prop.default ) )
 						prop.type = 'select';
-					else throw Error( 'ComponentManager: could not infer property type from default ' + prop.default );
+					else return console.error( 'ComponentManager: could not infer property type from default ' + prop.default );
 					break;
 				default:
-					throw Error( 'ComponentManager: could not infer property type from default ' + prop.default );
+					return console.error( 'ComponentManager: could not infer property type from default ' + prop.default );
 
 			}
 
