@@ -51,7 +51,7 @@ export class App {
 				const container = this.components[ type ];
 				if ( container[ 0 ] !== undefined && container[ 0 ].fixedUpdate !== undefined )
 					for ( let j = 0, lenj = container.length; j < lenj; j ++ )
-						container[ j ].fixedUpdate( deltaTime );
+						container[ j ].fixedUpdate();
 
 			}
 
