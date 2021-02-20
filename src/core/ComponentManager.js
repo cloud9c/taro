@@ -208,7 +208,7 @@ export const ComponentManager = {
 					} else if ( this.loopDependency( array, data, object.if, i ) ) continue;
 
 
-					data[ name ] = this.parseProperty( object.type, object.default );
+					data[ name ] = this.parseDefaults( object.type, object.default );
 
 				}
 
@@ -246,7 +246,7 @@ export const ComponentManager = {
 		return exit;
 
 	},
-	parseProperty: function ( type, value ) {
+	parseDefaults: function ( type, value ) {
 
 		switch ( type ) {
 
