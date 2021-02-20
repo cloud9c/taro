@@ -123,21 +123,21 @@ export class Input extends EventDispatcher {
 
 	}
 
-	getKey( key ) {
+	getKey( code ) {
 
-		return this.key[ key ] === true;
-
-	}
-
-	getKeyDown( key ) {
-
-		return key in this.keyDown;
+		return this.key[ code ] === true;
 
 	}
 
-	getKeyUp( key ) {
+	getKeyDown( code ) {
 
-		return key in this.keyUp;
+		return code in this.keyDown;
+
+	}
+
+	getKeyUp( code ) {
+
+		return code in this.keyUp;
 
 	}
 
