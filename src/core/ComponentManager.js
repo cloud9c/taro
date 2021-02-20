@@ -97,7 +97,7 @@ export const ComponentManager = {
 
 		if ( prop.default === undefined && prop.type === undefined ) {
 
-			return console.error( 'ComponentManager: schema property requires a type or default value' );
+			console.error( 'ComponentManager: schema property requires a type or default value' );
 
 		} else if ( prop.default === undefined ) {
 
@@ -135,7 +135,7 @@ export const ComponentManager = {
 					prop.default = null;
 					break;
 				default:
-					return console.error( 'ComponentManager: invalid schema property type ' + typeof prop.type );
+					console.error( 'ComponentManager: invalid schema property type ' + typeof prop.type );
 
 			}
 
