@@ -174,27 +174,6 @@ export class Scene extends TS {
 
 	}
 
-	getEntityByTag( tag ) {
-
-		const entities = this.getEntities();
-
-		for ( let i = 0, l = entities.length; i < l; i ++ ) {
-
-			const child = entities[ i ];
-			const object = child.getEntityByTag( tag );
-
-			if ( object !== undefined ) {
-
-				return object;
-
-			}
-
-		}
-
-		return undefined;
-
-	}
-
 	getEntityByProperty( name, value ) {
 
 		const entities = this.getEntities();
