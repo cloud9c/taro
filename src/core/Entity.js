@@ -16,7 +16,6 @@ export class Entity extends Group {
 
 		this.components = [];
 		this.queue = [];
-		this.tags = [];
 
 		this._enabled = true;
 
@@ -222,29 +221,6 @@ export class Entity extends Group {
 	getEntityByName( name ) {
 
 		return this.getEntityByProperty( 'name', name );
-
-	}
-
-	getEntityByTag( tag ) {
-
-		if ( this.tags.includes( tag ) ) return this;
-
-		const entities = this.getEntities();
-
-		for ( let i = 0, l = entities.length; i < l; i ++ ) {
-
-			const child = entities[ i ];
-			const object = child.getEntityByTag( tag );
-
-			if ( object !== undefined ) {
-
-				return object;
-
-			}
-
-		}
-
-		return undefined;
 
 	}
 
