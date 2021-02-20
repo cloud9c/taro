@@ -33,15 +33,15 @@ An object that holds registered component definitions.
 ## Methods
 
 ### .<a>registerComponent</a> ( type : <span class="param">String</span>, definition : <span class="param">Object</span> ) : <span class="param">null</span>
-**type** — component type.<br>
-**definition** — constructor function or ES6 class.
+**type** — Component type.<br>
+**definition** — Constructor function or ES6 class.
 
 ## Config
 config is a special static property that can be added to the definition to indicate special behaviour:
 
-**dependencies** — array of components that are automatically added as dependencies.<br>
-**multiple** — allows for a component to have multiple instances of itself on an entity.<br>
-**schema** — sanitizes the init data. Also used by Taro Editor to display data properties.
+**dependencies** — Array of components that are automatically added as dependencies.<br>
+**multiple** — Allows for a component to have multiple instances of itself on an entity.<br>
+**schema** — Sanitizes the init data. Also used by Taro Editor to display data properties.
 
 ### Schema
 The schema is an object that defines and describes the property or properties of the component. The schema’s keys are the names of the property, and the schema’s values define the types and values of the property
@@ -78,9 +78,9 @@ schema: {
 ```
 
 Additional values for Taro Editor:<br>
-**min** — minimum allowed value for number/int (optional).<br>
-**max** — maximum allowed value for number/int (optional).<br>
-**select** — array of options for select type (required).
+**min** — Minimum allowed value for number/int (optional).<br>
+**max** — Maximum allowed value for number/int (optional).<br>
+**select** — Array of options for select type (required).
 
 ## Source
 [src/core/ComponentManager.js](https://github.com/Cloud9c/taro/blob/master/src/core/ComponentManager.js)

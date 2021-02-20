@@ -18,7 +18,7 @@ An object that holds cached assets.
 ## Methods
 
 ### .<a>add</a> ( key : <span class="param">String</span>, file : <span class="param">Object</span> ) : <span class="param">null</span>
-key — the key to reference the cached file by.
+key — The key to reference the cached file by.
 file — The file to be cached.
 
 Adds an cache entry with a key to reference the file. If this key already holds a file, it is overwritten.

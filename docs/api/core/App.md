@@ -4,9 +4,9 @@ App is a collection of scenes and other core classes (Assets, Input, Physics, Re
 ## Constructor
 
 ### App( parameters : <span class="param">Object</span> )
-**parameters** — (optional) object with properties defining the app's behaviour. The constructor also accepts no parameters at all. In all cases, it will assume defaults when parameters are missing. The following are additional parameters:
+**parameters** — (optional) Object with properties defining the app's behaviour. The constructor also accepts no parameters at all. In all cases, it will assume defaults when parameters are missing. The following are additional parameters:
 
-**renderer** — This can be used to attach the app to an existing [Renderer](api/core/Renderer). Default is **undefined**.
+**renderer** — This can be used to attach the app to an existing [Renderer](api/core/Renderer).
 
 See [Renderer](api/core/Renderer), [Time](api/core/Time), and [Physics](api/core/Physics) for a list of all parameters.
 
@@ -14,6 +14,9 @@ See [Renderer](api/core/Renderer), [Time](api/core/Time), and [Physics](api/core
 
 ### .<a>assets</a> : <span class="param">[AssetManager](api/core/AssetManager)</span>
 Provides access to user-defined or component-added assets.
+
+### .<a>components</a> : <span class="param">Object</span>
+An object of enabled components of the currentScene.
 
 ### .<a>currentScene</a> : <span class="param">[Scene](api/core/Scene)</span>
 The scene that is currently active in the app.
@@ -65,8 +68,8 @@ Searches through the .scenes array and returns the first with a matching name.
 Note that for most scenes the name is an empty string by default.
 
 ### .<a>getSceneByProperty</a> ( name : <span class="param">String</span>, value : <span class="param">Float</span> ) : <span class="param">[Scene](api/core/Scene)</span>
-**name** — the property name to search for.<br>
-**value** — value of the given property.
+**name** — The property name to search for.<br>
+**value** — Value of the given property.
 
 Searches through the .scenes array and returns the first with a property that matches the value given.
 

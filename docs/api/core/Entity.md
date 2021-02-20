@@ -6,8 +6,8 @@ Entities are placeholder objects that act as containers for components to provid
 ## Constructor
 
 ### Entity( name : <span class="param">String</span>, parent : <span class="param">Object</span> )
-**name** — (optional) sets the .name property to **name**.<br>
-**parent** — (optional) parent entity or scene. If a parent is not provided, the currentScene will act as the parent (**false** can be passed to specify no parenting)
+**name** — (optional) Sets the .name property.<br>
+**parent** — (optional) Sets the parent entity or scene. If a parent is not provided, the currentScene will act as the parent. **false** can be passed to specify no parenting.
 
 ## Events
 
@@ -86,8 +86,8 @@ Searches through an entity and its children entities, starting with the entity i
 Note that for most entities the name is an empty string by default.
 
 ### .<a>getEntityByProperty</a> ( name : <span class="param">String</span>, value : <span class="param">Float</span> ) : <span class="param">[Entity](api/core/Entity)</span>
-**name** — the property name to search for.<br>
-**value** — value of the given property.
+**name** — The property name to search for.<br>
+**value** — Value of the given property.
 
 Searches through an entity and its children entities, starting with the entity itself, and returns the first with a property that matches the value given.
 

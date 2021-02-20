@@ -64,32 +64,32 @@ The current wheel delta.
 ## Methods
 
 ### .<a>getKey</a> ( code : <span class="param">String</span> ) : <span class="param">Boolean</span>
-code — the keyboard [code](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/code).
+code — The keyboard [code](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/code).
 
 Returns true while the user holds down the key identified by name.
 
 ### .<a>getKeyDown</a> ( code : <span class="param">String</span> ) : <span class="param">Boolean</span>
-code — the keyboard [code](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/code).
+code — The keyboard [code](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/code).
 
 Returns true during the frame the user starts pressing down the key identified by name.
 
 ### .<a>getKeyUp</a> ( code : <span class="param">String</span> ) : <span class="param">Boolean</span>
-code — the keyboard [code](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/code).
+code — The keyboard [code](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/code).
 
 Returns true during the frame the user releases the key identified by name.
 
 ### .<a>getPointer</a> ( button : <span class="param">Integer</span> ) : <span class="param">Boolean</span>
-button — the pointer [button](https://developer.mozilla.org/en-US/docs/Web/API/Pointer_events#determining_button_states).
+button — The pointer [button](https://developer.mozilla.org/en-US/docs/Web/API/Pointer_events#determining_button_states).
 
 Returns whether the given pointer button is held down.
 
 ### .<a>getPointerDown</a> ( button : <span class="param">Integer</span> ) : <span class="param">Boolean</span>
-button — the pointer [button](https://developer.mozilla.org/en-US/docs/Web/API/Pointer_events#determining_button_states).
+button — The pointer [button](https://developer.mozilla.org/en-US/docs/Web/API/Pointer_events#determining_button_states).
 
 Returns true during the frame the user pressed the given pointer button.
 
 ### .<a>getPointerUp</a> ( button : <span class="param">Integer</span> ) : <span class="param">Boolean</span>
-button — the pointer [button](https://developer.mozilla.org/en-US/docs/Web/API/Pointer_events#determining_button_states).
+button — The pointer [button](https://developer.mozilla.org/en-US/docs/Web/API/Pointer_events#determining_button_states).
 
 Returns true during the frame the user releases the given pointer button.
 
