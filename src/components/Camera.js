@@ -33,6 +33,7 @@ class Camera {
 
 	onEnable() {
 
+		this._updateRegion( this.app.domElement );
 		this.entity.add( this.ref );
 
 	}
