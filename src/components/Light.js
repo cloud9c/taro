@@ -1,5 +1,5 @@
 import { ComponentManager } from '../core/ComponentManager.js';
-import { AmbientLight, DirectionalLight, HemisphereLight, PointLight, SpotLight, MathUtils } from '../lib/three.module.js';
+import { AmbientLight, DirectionalLight, HemisphereLight, PointLight, SpotLight } from '../lib/three.module.js';
 
 class Light {
 
@@ -26,7 +26,7 @@ class Light {
 				this.ref = new PointLight( color, intensity, data.distance, data.decay );
 				break;
 			case 'spot':
-				this.ref = new SpotLight( color, intensity, data.distance, MathUtils.degToRad( data.angle ), data.penumbra, data.decay );
+				this.ref = new SpotLight( color, intensity, data.distance, data.angle, data.penumbra, data.decay );
 				this.ref.position.set( 0, 0, 0 );
 				break;
 			default:
@@ -60,7 +60,7 @@ class Light {
 			groundColor: { type: 'color', if: { type: [ 'hemisphere' ] } },
 			distance: { default: 0, if: { type: [ 'point', 'spot' ] } },
 			decay: { default: 1, if: { type: [ 'point', 'spot' ] } },
-			angle: { default: 60, if: { type: [ 'spot' ] } },
+			angle: { default: Math.PI / 3, angle: 'deg', if: { type: [ 'spot' ] } },
 			penumbra: { default: 0, if: { type: [ 'spot' ] } }
 		}
 	};

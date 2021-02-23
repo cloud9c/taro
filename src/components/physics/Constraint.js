@@ -45,8 +45,8 @@ class Constraint {
 					axisA: new Vec3().copy( data.axis ),
 					axisB: new Vec3().copy( data.connectedAxis ),
 					maxForce: data.maxForce,
-					angle: MathUtils.degToRad( data.angle ),
-					twistAngle: MathUtils.degToRad( data.twistAngle ),
+					angle: data.angle,
+					twistAngle: data.twistAngle,
 				} );
 				break;
 			case 'lock':
@@ -99,8 +99,8 @@ class Constraint {
 
 			axis: { type: 'vector3', if: { type: [ 'coneTwist', 'hinge' ] } },
 			connectedAxis: { type: 'vector3', if: { type: [ 'coneTwist', 'hinge' ] } },
-			angle: { default: 0, if: { type: [ 'coneTwist' ] } },
-			twistAngle: { default: 0, if: { type: [ 'coneTwist' ] } },
+			angle: { default: 0, angle: 'deg' if: { type: [ 'coneTwist' ] } },
+			twistAngle: { default: 0, angle: 'deg' if: { type: [ 'coneTwist' ] } },
 
 			maxForce: { type: 'number', default: 1e6, min: 0 },
 			collideConnected: { default: true },
