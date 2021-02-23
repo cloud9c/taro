@@ -63,6 +63,8 @@ The current wheel delta.
 
 ## Methods
 
+See the base [EventDispatcher](https://threejs.org/docs/#api/en/core/EventDispatcher) class for common methods.
+
 ### .<a>getKey</a> ( code : <span class="param">String</span> ) : <span class="param">Boolean</span>
 code — The keyboard [code](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/code).
 

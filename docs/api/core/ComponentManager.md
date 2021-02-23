@@ -40,26 +40,38 @@ An object that holds registered component definitions.
 config is a special static property that can be added to the definition to indicate special behaviour:
 
 **dependencies** — Array of components that are automatically added as dependencies.<br>
-**multiple** — Allows for a component to have multiple instances of itself on an entity.<br>
+**multiple** — Boolean that allows a component to have multiple instances of itself on an entity.<br>
 **schema** — Sanitizes the init data. Also used by Taro Editor to display data properties.
 
 ### Schema
-The schema is an object that defines and describes the property or properties of the component. The schema’s keys are the names of the property, and the schema’s values define the types and values of the property
+The schema is an object that sets default properties for **data** before initialization. The schema’s keys are the names of the property, and the schema’s values define the types and values of the property.
 
-| Schema Type | Description | Default Value |
+Schema values:<br>
+**default** — The default value of the property if no value is passed.<br>
+**if** — An object of properties and an array of possible values that must be included. Otherwise, the property will not be added by default.<br>
+**type** — The property type.
+
+Additional values used for Taro Editor:<br>
+**min** — Minimum allowed value for number/int (optional).<br>
+**max** — Maximum allowed value for number/int (optional).<br>
+**select** — Array of options for select type (required).
+
+### Property Type
+| Property Type | Description | Default Value |
 | ----------- | ----------- | ----------- |
 | asset | For URLs pointing to assets. | '' |
-| boolean   | True or false | false |
-| color   | Converted from a string to a [Color](https://threejs.org/docs/#api/en/math/Color) | #ffffff |
-| entity   | Finds a entity with a matching uuid | '' |
+| boolean | True or false | false |
+| color | Converted from a string to a [Color](https://threejs.org/docs/#api/en/math/Color) | #ffffff |
+| entity | Finds a entity with a matching uuid | '' |
 | int | A whole number | 0 |
 | number | A float number | 0 |
-| select   | Default value from a list | null |
+| select | Default value from a list | null |
 | string | Text | '' |
 | vector2 | Array to [Vector2](https://threejs.org/docs/#api/en/math/Vector2) | [0, 0] |
 | vector3 | Array to [Vector3](https://threejs.org/docs/#api/en/math/Vector3) | [0, 0, 0] |
 | vector4 | Array to [Vector4](https://threejs.org/docs/#api/en/math/Vector4) | [0, 0, 0, 0] |
 
+### Schema Inference
 The schema will try to infer a property type given only a default value:
 ```javascript
 schema: {
@@ -76,11 +88,6 @@ schema: {
 	hairColor: {type: 'color'}  // default: '#ffffff'
 }
 ```
-
-Additional values for Taro Editor:<br>
-**min** — Minimum allowed value for number/int (optional).<br>
-**max** — Maximum allowed value for number/int (optional).<br>
-**select** — Array of options for select type (required).
 
 ## Source
 [src/core/ComponentManager.js](https://github.com/Cloud9c/taro/blob/master/src/core/ComponentManager.js)

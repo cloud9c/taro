@@ -59,7 +59,7 @@ Returns the component of **type** if the entity has one attached.
 Returns all components of **type** in the entity.
 
 ### .<a>addComponent</a> ( type : <span class="param">String</span>, data : <span class="param">Object</span> ) : <span class="param">[Component](api/core/Component)</span>
-Adds a component class of **type** to the entity with a **data** parameter.
+Adds a component class of **type** to the entity with a **data** parameter. If **data** is not provided, an empty object will be passed.
 
 ### .<a>removeComponent</a> ( component : <span class="param">[Component](api/core/Component)</span> ) : <span class="param">this</span>
 Removes **component** from the entity.
