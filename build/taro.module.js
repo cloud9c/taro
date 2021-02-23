@@ -54081,7 +54081,7 @@ class Geometry {
 			tube: { default: 0.2, min: 0, if: { type: [ 'torus', 'torusKnot' ] } },
 			tubularSegments: [ { default: 32, min: 3, type: 'int', if: { type: [ 'torus' ] } },
 							  { default: 64, min: 3, type: 'int', if: { type: [ 'torusKnot' ] } } ],
-			arc: { default: MATH.PI, angle: 'deg', if: { type: [ 'torus' ] } },
+			arc: { default: Math.PI, angle: 'deg', if: { type: [ 'torus' ] } },
 
 			p: { default: 2, min: 1, if: { type: [ 'torusKnot' ] } },
 			q: { default: 3, min: 1, if: { type: [ 'torusKnot' ] } },
