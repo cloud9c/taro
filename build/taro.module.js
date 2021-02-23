@@ -53556,15 +53556,15 @@ DRACOLoader.getDecoderModule = function () {
 
 };
 
-function registerComponent( type, constructor ) {
+function registerComponent( type, definition ) {
 
 	if ( ComponentManager.components.type !== undefined ) return console.error( 'component ' + type + ' already exists' );
 
-	// add config static variable if the constructor doesn't have it
-	if ( constructor.config === undefined )
-		constructor.config = {};
+	// add config static variable if the definition doesn't have it
+	if ( definition.config === undefined )
+		definition.config = {};
 
-	const schema = constructor.config.schema;
+	const schema = definition.config.schema;
 
 	if ( schema !== undefined ) {
 
@@ -53588,10 +53588,10 @@ function registerComponent( type, constructor ) {
 	}
 
 	ComponentManager.properties.componentType.value = type;
-	Object.defineProperties( constructor.prototype, ComponentManager.properties );
-	Object.assign( constructor.prototype, EventDispatcher.prototype );
+	Object.defineProperties( definition.prototype, ComponentManager.properties );
+	Object.assign( definition.prototype, EventDispatcher.prototype );
 
-	ComponentManager.components[ type ] = constructor;
+	ComponentManager.components[ type ] = definition;
 
 }
 
@@ -53653,7 +53653,7 @@ const ComponentManager = {
 
 		if ( prop.default === undefined && prop.type === undefined ) {
 
-			throw Error( 'ComponentManager: schema property requires a type or default value' );
+			console.error( 'ComponentManager: schema property requires a type or default value' );
 
 		} else if ( prop.default === undefined ) {
 
@@ -53691,7 +53691,7 @@ const ComponentManager = {
 					prop.default = null;
 					break;
 				default:
-					throw Error( 'ComponentManager: invalid schema property type ' + typeof prop.type );
+					console.error( 'ComponentManager: invalid schema property type ' + typeof prop.type );
 
 			}
 
@@ -53714,10 +53714,10 @@ const ComponentManager = {
 				case 'object':
 					if ( Array.isArray( prop.default ) )
 						prop.type = 'select';
-					else throw Error( 'ComponentManager: could not infer property type from default ' + prop.default );
+					else console.error( 'ComponentManager: could not infer property type from default ' + prop.default );
 					break;
 				default:
-					throw Error( 'ComponentManager: could not infer property type from default ' + prop.default );
+					console.error( 'ComponentManager: could not infer property type from default ' + prop.default );
 
 			}
 
@@ -53764,7 +53764,7 @@ const ComponentManager = {
 					} else if ( this.loopDependency( array, data, object.if, i ) ) continue;
 
 
-					data[ name ] = this.addDefault( object.type, object.default );
+					data[ name ] = this.parseDefaults( object.type, object.default );
 
 				}
 
@@ -53802,20 +53802,20 @@ const ComponentManager = {
 		return exit;
 
 	},
-	addDefault: function ( type, _default ) {
+	parseDefaults: function ( type, value ) {
 
 		switch ( type ) {
 
 			case 'vector2':
-				return new Vector2( ..._default );
+				return new Vector2( ...value );
 			case 'vector3':
-				return new Vector3( ..._default );
+				return new Vector3( ...value );
 			case 'vector4':
-				return new Vector4( ..._default );
+				return new Vector4( ...value );
 			case 'color':
-				return new Color( _default );
+				return new Color( value );
 			default:
-				return _default;
+				return value;
 
 		}
 
@@ -53858,6 +53858,7 @@ class Camera$1 {
 
 	onEnable() {
 
+		this._updateRegion( this.app.domElement );
 		this.entity.add( this.ref );
 
 	}
@@ -64800,7 +64801,7 @@ class Input extends EventDispatcher {
 
 			this.dispatchEvent( {
 				type: 'wheel',
-				wheelDelta: this.wheelDelta,
+				delta: this.wheelDelta,
 			} );
 
 		};
@@ -64857,21 +64858,21 @@ class Input extends EventDispatcher {
 
 	}
 
-	getKey( key ) {
+	getKey( code ) {
 
-		return this.key[ key ] === true;
-
-	}
-
-	getKeyDown( key ) {
-
-		return key in this.keyDown;
+		return this.key[ code ] === true;
 
 	}
 
-	getKeyUp( key ) {
+	getKeyDown( code ) {
 
-		return key in this.keyUp;
+		return code in this.keyDown;
+
+	}
+
+	getKeyUp( code ) {
+
+		return code in this.keyUp;
 
 	}
 
@@ -64957,7 +64958,7 @@ class App {
 				const container = this.components[ type ];
 				if ( container[ 0 ] !== undefined && container[ 0 ].fixedUpdate !== undefined )
 					for ( let j = 0, lenj = container.length; j < lenj; j ++ )
-						container[ j ].fixedUpdate( deltaTime );
+						container[ j ].fixedUpdate();
 
 			}
 
@@ -65259,27 +65260,6 @@ class Scene$1 extends Scene {
 
 	}
 
-	getEntityByTag( tag ) {
-
-		const entities = this.getEntities();
-
-		for ( let i = 0, l = entities.length; i < l; i ++ ) {
-
-			const child = entities[ i ];
-			const object = child.getEntityByTag( tag );
-
-			if ( object !== undefined ) {
-
-				return object;
-
-			}
-
-		}
-
-		return undefined;
-
-	}
-
 	getEntityByProperty( name, value ) {
 
 		const entities = this.getEntities();
@@ -65316,7 +65296,6 @@ class Entity extends Group {
 
 		this.components = [];
 		this.queue = [];
-		this.tags = [];
 
 		this._enabled = true;
 
@@ -65394,11 +65373,11 @@ class Entity extends Group {
 
 	addComponent( type, data = {} ) {
 
-		const constructor = ComponentManager.components[ type ];
+		const definition = ComponentManager.components[ type ];
 
-		if ( constructor === undefined ) return console.error( 'Entity: component does not exist' );
+		if ( definition === undefined ) return console.error( 'Entity: component does not exist' );
 
-		const config = constructor.config;
+		const config = definition.config;
 
 		if ( config.multiple !== true && this.getComponent( type ) !== undefined )
 			return console.warn( 'Entity: multiple attribute for ' + type + ' component is false/undefined' );
@@ -65414,7 +65393,7 @@ class Entity extends Group {
 
 		if ( config.schema !== undefined ) ComponentManager.sanitizeData( data, config.schema );
 
-		const component = new constructor();
+		const component = new definition();
 		component.entity = this;
 		component.uuid = MathUtils.generateUUID();
 
@@ -65522,29 +65501,6 @@ class Entity extends Group {
 	getEntityByName( name ) {
 
 		return this.getEntityByProperty( 'name', name );
-
-	}
-
-	getEntityByTag( tag ) {
-
-		if ( this.tags.includes( tag ) ) return this;
-
-		const entities = this.getEntities();
-
-		for ( let i = 0, l = entities.length; i < l; i ++ ) {
-
-			const child = entities[ i ];
-			const object = child.getEntityByTag( tag );
-
-			if ( object !== undefined ) {
-
-				return object;
-
-			}
-
-		}
-
-		return undefined;
 
 	}
 
