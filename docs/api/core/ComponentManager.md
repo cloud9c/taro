@@ -63,7 +63,7 @@ Additional values used for Taro Editor:<br>
 | boolean | True or false | false |
 | color | Converted from a string to a [Color](https://threejs.org/docs/#api/en/math/Color) | #ffffff |
 | entity | Finds a entity with a matching uuid | '' |
-| int | A whole number | 0 |
+| int | A whole number (enforced in Taro Editor) | 0 |
 | number | A float number | 0 |
 | select | Default value from a list | null |
 | string | Text | '' |
