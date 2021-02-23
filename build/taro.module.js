@@ -53934,13 +53934,13 @@ class Geometry {
 				this.ref = new BoxGeometry( data.width, data.height, data.depth, data.widthSegments, data.heightSegments, data.depthSegments );
 				break;
 			case 'circle':
-				this.ref = new CircleGeometry( data.radius, data.segments, MathUtils.degToRad( data.thetaStart ), MathUtils.degToRad( data.thetaLength ) );
+				this.ref = new CircleGeometry( data.radius, data.segments, data.thetaStart, data.thetaLength );
 				break;
 			case 'cone':
-				this.ref = new ConeGeometry( data.radius, data.height, data.radialSegments, data.heightSegments, data.openEnded, MathUtils.degToRad( data.thetaStart ), MathUtils.degToRad( data.thetaLength ) );
+				this.ref = new ConeGeometry( data.radius, data.height, data.radialSegments, data.heightSegments, data.openEnded, data.thetaStart, data.thetaLength );
 				break;
 			case 'cylinder':
-				this.ref = new CylinderGeometry( data.radiusTop, data.radiusBottom, data.height, data.radialSegments, data.heightSegments, data.openEnded, MathUtils.degToRad( data.thetaStart ), MathUtils.degToRad( data.thetaLength ) );
+				this.ref = new CylinderGeometry( data.radiusTop, data.radiusBottom, data.height, data.radialSegments, data.heightSegments, data.openEnded, data.thetaStart, data.thetaLength );
 				break;
 			case 'dodecahedron':
 				this.ref = new DodecahedronGeometry( data.radius, data.detail );
@@ -53955,16 +53955,16 @@ class Geometry {
 				this.ref = new PlaneGeometry( data.width, data.height, data.widthSegments, data.heightSegments );
 				break;
 			case 'ring':
-				this.ref = new RingGeometry( data.innerRadius, data.outerRadius, data.thetaSegments, data.phiSegments, MathUtils.degToRad( data.thetaStart ), MathUtils.degToRad( data.thetaLength ) );
+				this.ref = new RingGeometry( data.innerRadius, data.outerRadius, data.thetaSegments, data.phiSegments, data.thetaStart, data.thetaLength );
 				break;
 			case 'sphere':
-				this.ref = new SphereGeometry( data.radius, data.widthSegments, data.heightSegments, MathUtils.degToRad( data.phiStart ), MathUtils.degToRad( data.phiLength ), MathUtils.degToRad( data.thetaStart ), MathUtils.degToRad( data.thetaLength ) );
+				this.ref = new SphereGeometry( data.radius, data.widthSegments, data.heightSegments, data.phiStart, data.phiLength, data.thetaStart, data.thetaLength );
 				break;
 			case 'tetrahedron':
 				this.ref = new TetrahedronGeometry( data.radius, data.detail );
 				break;
 			case 'torus':
-				this.ref = new TorusGeometry( data.radius, data.tube, data.radialSegments, data.tubularSegments, MathUtils.degToRad( data.arc ) );
+				this.ref = new TorusGeometry( data.radius, data.tube, data.radialSegments, data.tubularSegments, data.arc );
 				break;
 			case 'torusKnot':
 				this.ref = new TorusKnotGeometry( data.radius, data.tube, data.tubularSegments, data.radialSegments, data.p, data.q );
@@ -54059,9 +54059,9 @@ class Geometry {
 			radiusTop: { default: 1, min: 0, if: { type: [ 'cylinder' ] } },
 			radiusBottom: { default: 1, min: 0, if: { type: [ 'cylinder' ] } },
 			segments: { default: 32, min: 3, type: 'int', if: { type: [ 'circle' ] } },
-			thetaLength: [ { default: 360, min: 0, if: { type: [ 'circle', 'cone', 'cylinder', 'ring' ] } },
-						  { default: 180, min: 0, if: { type: [ 'sphere' ] } } ],
-			thetaStart: { default: 0, if: { type: [ 'circle', 'cone', 'cylinder', 'ring', 'sphere' ] } },
+			thetaLength: [ { default: 2 * Math.PI, min: 0, angle: 'deg', if: { type: [ 'circle', 'cone', 'cylinder', 'ring' ] } },
+						  { default: Math.PI, min: 0, angle: 'deg', if: { type: [ 'sphere' ] } } ],
+			thetaStart: { default: 0, angle: 'deg', if: { type: [ 'circle', 'cone', 'cylinder', 'ring', 'sphere' ] } },
 
 			openEnded: { default: false, if: { type: [ 'cone', 'cylinder' ] } },
 			radialSegments: [ { default: 36, min: 3, type: 'int', if: { type: [ 'cone', 'cylinder' ] } },
@@ -54075,13 +54075,13 @@ class Geometry {
 			phiSegments: { default: 10, min: 1, type: 'int', if: { type: [ 'ring' ] } },
 			thetaSegments: { default: 32, min: 3, type: 'int', if: { type: [ 'ring' ] } },
 
-			phiLength: { default: 360, if: { type: [ 'sphere' ] } },
-			phiStart: { default: 0, min: 0, if: { type: [ 'sphere' ] } },
+			phiLength: { default: 2 * Math.PI, angle: 'deg', if: { type: [ 'sphere' ] } },
+			phiStart: { default: 0, min: 0, angle: 'deg', if: { type: [ 'sphere' ] } },
 
 			tube: { default: 0.2, min: 0, if: { type: [ 'torus', 'torusKnot' ] } },
 			tubularSegments: [ { default: 32, min: 3, type: 'int', if: { type: [ 'torus' ] } },
 							  { default: 64, min: 3, type: 'int', if: { type: [ 'torusKnot' ] } } ],
-			arc: { default: 360, if: { type: [ 'torus' ] } },
+			arc: { default: MATH.PI, angle: 'deg', if: { type: [ 'torus' ] } },
 
 			p: { default: 2, min: 1, if: { type: [ 'torusKnot' ] } },
 			q: { default: 3, min: 1, if: { type: [ 'torusKnot' ] } },
@@ -54121,7 +54121,7 @@ class Light$1 {
 				this.ref = new PointLight( color, intensity, data.distance, data.decay );
 				break;
 			case 'spot':
-				this.ref = new SpotLight( color, intensity, data.distance, MathUtils.degToRad( data.angle ), data.penumbra, data.decay );
+				this.ref = new SpotLight( color, intensity, data.distance, data.angle, data.penumbra, data.decay );
 				this.ref.position.set( 0, 0, 0 );
 				break;
 			default:
@@ -54155,7 +54155,7 @@ class Light$1 {
 			groundColor: { type: 'color', if: { type: [ 'hemisphere' ] } },
 			distance: { default: 0, if: { type: [ 'point', 'spot' ] } },
 			decay: { default: 1, if: { type: [ 'point', 'spot' ] } },
-			angle: { default: 60, if: { type: [ 'spot' ] } },
+			angle: { default: Math.PI / 3, angle: 'deg', if: { type: [ 'spot' ] } },
 			penumbra: { default: 0, if: { type: [ 'spot' ] } }
 		}
 	};
@@ -64290,8 +64290,8 @@ class Constraint$1 {
 					axisA: new Vec3().copy( data.axis ),
 					axisB: new Vec3().copy( data.connectedAxis ),
 					maxForce: data.maxForce,
-					angle: MathUtils.degToRad( data.angle ),
-					twistAngle: MathUtils.degToRad( data.twistAngle ),
+					angle: data.angle,
+					twistAngle: data.twistAngle,
 				} );
 				break;
 			case 'lock':
@@ -64344,8 +64344,8 @@ class Constraint$1 {
 
 			axis: { type: 'vector3', if: { type: [ 'coneTwist', 'hinge' ] } },
 			connectedAxis: { type: 'vector3', if: { type: [ 'coneTwist', 'hinge' ] } },
-			angle: { default: 0, if: { type: [ 'coneTwist' ] } },
-			twistAngle: { default: 0, if: { type: [ 'coneTwist' ] } },
+			angle: { default: 0, angle: 'deg', if: { type: [ 'coneTwist' ] } },
+			twistAngle: { default: 0, angle: 'deg', if: { type: [ 'coneTwist' ] } },
 
 			maxForce: { type: 'number', default: 1e6, min: 0 },
 			collideConnected: { default: true },
