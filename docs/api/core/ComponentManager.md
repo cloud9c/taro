@@ -52,24 +52,25 @@ Schema values:<br>
 **type** — The property type.
 
 Additional values used for Taro Editor:<br>
+**angle** — If 'deg', the inspector will display numbers in degrees (optional).<br>
 **min** — Minimum allowed value for number/int (optional).<br>
 **max** — Maximum allowed value for number/int (optional).<br>
 **select** — Array of options for select type (required).
 
 ### Property Type
-| Property Type | Description | Default Value |
-| ----------- | ----------- | ----------- |
-| asset | For URLs pointing to assets. | '' |
-| boolean | True or false | false |
-| color | Converted from a string to a [Color](https://threejs.org/docs/#api/en/math/Color) | #ffffff |
-| entity | Finds a entity with a matching uuid | '' |
-| int | A whole number (enforced in Taro Editor) | 0 |
-| number | A float number | 0 |
-| select | Default value from a list | null |
-| string | Text | '' |
-| vector2 | Array to [Vector2](https://threejs.org/docs/#api/en/math/Vector2) | [0, 0] |
-| vector3 | Array to [Vector3](https://threejs.org/docs/#api/en/math/Vector3) | [0, 0, 0] |
-| vector4 | Array to [Vector4](https://threejs.org/docs/#api/en/math/Vector4) | [0, 0, 0, 0] |
+| Property Type | Description                                                                       | Default Value |
+|---------------|-----------------------------------------------------------------------------------|---------------|
+| asset         | For URLs pointing to assets.                                                      | ''            |
+| boolean       | True or false                                                                     | false         |
+| color         | Converted from a string to a [Color](https://threejs.org/docs/#api/en/math/Color) | #ffffff       |
+| entity        | Finds a entity with a matching uuid                                               | ''            |
+| int           | A whole number (enforced in Taro Editor)                                          | 0             |
+| number        | A float number                                                                    | 0             |
+| select        | Default value from a list                                                         | null          |
+| string        | Text                                                                              | ''            |
+| vector2       | Array to [Vector2](https://threejs.org/docs/#api/en/math/Vector2)                 | [0, 0]        |
+| vector3       | Array to [Vector3](https://threejs.org/docs/#api/en/math/Vector3)                 | [0, 0, 0]     |
+| vector4       | Array to [Vector4](https://threejs.org/docs/#api/en/math/Vector4)                 | [0, 0, 0, 0]  |
 
 ### Schema Inference
 The schema will try to infer a property type given only a default value:

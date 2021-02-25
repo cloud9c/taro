@@ -1,9 +1,5 @@
-# Camera
-A Camera is a device through which the player views the world. This is a wrapper class around three.js's [PerspectiveCamera](https://threejs.org/docs/#api/en/cameras/PerspectiveCamera) and [OrthographicCamera](https://threejs.org/docs/#api/en/cameras/OrthographicCamera).
-
-Perspective projection is designed to mimic the way the human eye sees. It is the most common projection mode used for rendering a 3D scene.
-
-In orthographic projection, an object's size in the rendered image stays constant regardless of its distance from the camera. This can be useful for rendering 2D scenes and UI elements, amongst other things.
+# Geometry
+A representation of mesh, line, or point geometry. Includes vertex positions, face indices, normals, colors, UVs, and custom attributes within buffers, reducing the cost of passing all this data to the GPU. This is a wrapper class around three.js's [geometry](https://threejs.org/docs/#api/en/core/BufferGeometry) classes.
 
 ## Code Example
 
@@ -63,4 +59,4 @@ Where on the screen is the camera rendered in normalized coordinates.
 Updates the camera projection matrix. Must be called after any change of parameters (including .viewport).
 
 ## Source
-[src/core/Camera.js](https://github.com/Cloud9c/taro/blob/master/src/components/Camera.js)
+[src/core/Geometry.js](https://github.com/Cloud9c/taro/blob/master/src/components/Geometry.js)

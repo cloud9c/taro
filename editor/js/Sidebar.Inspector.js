@@ -291,7 +291,7 @@ export function SidebarInspector( editor ) {
 
 								if ( oldExit && ! newExit ) {
 
-									data[ name ] = ComponentManager.addDefault( attribute[ i ].type, attribute[ i ].default );
+									data[ name ] = ComponentManager.parseDefaults( attribute[ i ].type, attribute[ i ].default );
 
 									// add
 									matchFound = true;
@@ -329,7 +329,7 @@ export function SidebarInspector( editor ) {
 								if ( data[ name ] === undefined ) {
 
 									// add attribute to data
-									data[ name ] = ComponentManager.addDefault( attribute.type, attribute.default );
+									data[ name ] = ComponentManager.parseDefaults( attribute.type, attribute.default );
 
 								}
 
@@ -596,7 +596,7 @@ export function SidebarInspector( editor ) {
 					input = document.createElement( 'INPUT' );
 					input.type = 'number';
 					input.style.width = '162px';
-					input.value = value;
+					input.value = attribute.angle === 'deg' ? MathUtils.radToDeg( value ) : value;
 					input.addEventListener( 'change', () => {
 
 						const oldValue = data[ currentType ];
@@ -607,7 +607,7 @@ export function SidebarInspector( editor ) {
 						if ( attribute.type === 'int' ) value = Math.round( value );
 						input.value = value;
 
-						data[ currentType ] = value;
+						data[ currentType ] = attribute.angle === 'deg' ? MathUtils.degToRad( value ) : value;
 						this.onInspectorChange( fieldset, type, data, oldValue, config );
 
 					} );
