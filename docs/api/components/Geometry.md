@@ -19,7 +19,7 @@ entity.addComponent('geometry', {
 
 | Property | Description                                                 | Default Value |
 |----------|-------------------------------------------------------------|---------------|
-| type     | 13 built-in geometries and 1 for custom assets (see below). | "box"         |
+| type     | 13 built-in geometries and 1 asset type (see below).        | "box"         |
 
 ### asset
 
