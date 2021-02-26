@@ -1,3 +1,5 @@
+[Component](api/core/Component) ›
+
 # Camera
 A Camera is a device through which the player views the world. This is a wrapper class around three.js's [PerspectiveCamera](https://threejs.org/docs/#api/en/cameras/PerspectiveCamera) and [OrthographicCamera](https://threejs.org/docs/#api/en/cameras/OrthographicCamera).
 
@@ -26,7 +28,7 @@ entity.addComponent('camera', {
 | far      | Depth (in meters) of the sides on the Z axis.  | 2000          |
 | viewport | Number of segmented faces on the z-axis        | [0, 0, 1, 1]  |
 
-### Perspective Parameters
+### perspective
 
 | Property   | Description                                                                    | Default Value |
 |------------|--------------------------------------------------------------------------------|---------------|
@@ -34,7 +36,7 @@ entity.addComponent('camera', {
 | autoAspect | Automatically calculate aspect ratio from the canvas's width / height.         | true          |
 | fov        | Camera frustum vertical field of view, from bottom to top of view, in degrees. | 50            |
 
-### Orthographic Parameters
+### orthographic
 
 | Property   | Description                  | Default Value |
 |------------|------------------------------|---------------|
@@ -44,6 +46,8 @@ entity.addComponent('camera', {
 | top        | Camera frustum top plane.    | 1             |
 
 ## Properties
+
+See the base [Component](api/core/Component) class for common properties.
 
 ### .<a>autoAspect</a> : <span class="param">Float</span>
 Automatically calculate aspect ratio from the canvas's width / height.
@@ -58,6 +62,8 @@ The camera type as determined by the data parameters. Modifying this property do
 Where on the screen is the camera rendered in normalized coordinates.
 
 ## Methods
+
+See the base [Component](api/core/Component) class for common methods.
 
 ### .<a>updateProjectionMatrix</a> () : <span class="param">null</span>
 Updates the camera projection matrix. Must be called after any change of parameters (including .viewport).
