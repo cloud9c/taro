@@ -72,25 +72,25 @@ class Camera {
 
 	}
 
-	static config = {
-		schema: {
-			type: { type: 'select', default: 'perspective', select: [ 'perspective', 'orthographic' ] },
-			near: { default: 0.1 },
-			far: { default: 2000 },
-
-			autoAspect: { default: true, if: { type: [ 'perspective' ] } },
-			aspect: { default: 1, if: { type: [ 'perspective' ], autoAspect: [ false ] } },
-			fov: { default: 50, if: { type: [ 'perspective' ] } },
-
-			left: { default: - 1, if: { type: [ 'orthographic' ] } },
-			right: { default: 1, if: { type: [ 'orthographic' ] } },
-			top: { default: 1, if: { type: [ 'orthographic' ] } },
-			bottom: { default: - 1, if: { type: [ 'orthographic' ] } },
-
-			viewport: { type: 'vector4', default: [ 0, 0, 1, 1 ] },
-		}
-	};
-
 }
+
+Camera.config = {
+	schema: {
+		type: { type: 'select', default: 'perspective', select: [ 'perspective', 'orthographic' ] },
+		near: { default: 0.1 },
+		far: { default: 2000 },
+
+		autoAspect: { default: true, if: { type: [ 'perspective' ] } },
+		aspect: { default: 1, if: { type: [ 'perspective' ], autoAspect: [ false ] } },
+		fov: { default: 50, if: { type: [ 'perspective' ] } },
+
+		left: { default: - 1, if: { type: [ 'orthographic' ] } },
+		right: { default: 1, if: { type: [ 'orthographic' ] } },
+		top: { default: 1, if: { type: [ 'orthographic' ] } },
+		bottom: { default: - 1, if: { type: [ 'orthographic' ] } },
+
+		viewport: { type: 'vector4', default: [ 0, 0, 1, 1 ] },
+	}
+};
 
 ComponentManager.registerComponent( 'camera', Camera );

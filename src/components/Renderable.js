@@ -26,10 +26,10 @@ class Renderable {
 
 	}
 
-	static config = {
-		multiple: true,
-	}
-
 }
+
+Renderable.config = {
+	multiple: true,
+};
 
 ComponentManager.registerComponent( 'renderable', Renderable );

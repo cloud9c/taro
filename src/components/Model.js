@@ -108,12 +108,12 @@ class Model {
 
 	}
 
-	static config = {
-		schema: {
-			asset: { type: 'asset' },
-		}
-	};
-
 }
+
+Model.config = {
+	schema: {
+		asset: { type: 'asset' },
+	}
+};
 
 ComponentManager.registerComponent( 'model', Model );

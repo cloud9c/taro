@@ -145,38 +145,38 @@ class Shape {
 
 	}
 
-	static config = {
-		schema: {
-			type: { type: 'select', default: 'box', select: [ 'box', 'sphere', 'plane', 'cylinder', 'convex', 'particle', 'heightfield' ] },
-
-			halfExtents: { type: 'vector3', min: 0, default: [ 0.5, 0.5, 0.5 ], if: { type: [ 'box' ] } },
-			radius: { default: 1, min: 0, if: { type: [ 'sphere' ] } },
-
-			radiusTop: { default: 1, min: 0, if: { type: [ 'cylinder' ] } },
-			radiusBottom: { default: 1, min: 0, if: { type: [ 'cylinder' ] } },
-			height: { default: 1, min: 0, if: { type: [ 'cylinder' ] } },
-			numSegments: { type: 'int', min: 0, default: 8, if: { type: [ 'cylinder' ] } },
-
-			asset: { type: 'asset', if: { type: [ 'convex', 'heightfield' ] } },
-
-			elementSize: { default: 1, if: { type: 'heightfield' } },
-			minValue: { default: 0, if: { type: 'heightfield' } },
-			maxValue: { default: 0, if: { type: 'heightfield' } },
-
-			offset: { type: 'vector3' },
-			orientation: { type: 'vector3' },
-
-			material: { type: 'asset' },
-			collisionResponse: { default: true },
-			collisionFilterGroup: { type: 'int', default: 1 },
-			collisionFilterMask: { type: 'int', default: - 1 },
-
-		},
-		dependencies: [ 'rigidbody' ],
-		multiple: true,
-	};
-
 }
+
+Shape.config = {
+	schema: {
+		type: { type: 'select', default: 'box', select: [ 'box', 'sphere', 'plane', 'cylinder', 'convex', 'particle', 'heightfield' ] },
+
+		halfExtents: { type: 'vector3', min: 0, default: [ 0.5, 0.5, 0.5 ], if: { type: [ 'box' ] } },
+		radius: { default: 1, min: 0, if: { type: [ 'sphere' ] } },
+
+		radiusTop: { default: 1, min: 0, if: { type: [ 'cylinder' ] } },
+		radiusBottom: { default: 1, min: 0, if: { type: [ 'cylinder' ] } },
+		height: { default: 1, min: 0, if: { type: [ 'cylinder' ] } },
+		numSegments: { type: 'int', min: 0, default: 8, if: { type: [ 'cylinder' ] } },
+
+		asset: { type: 'asset', if: { type: [ 'convex', 'heightfield' ] } },
+
+		elementSize: { default: 1, if: { type: 'heightfield' } },
+		minValue: { default: 0, if: { type: 'heightfield' } },
+		maxValue: { default: 0, if: { type: 'heightfield' } },
+
+		offset: { type: 'vector3' },
+		orientation: { type: 'vector3' },
+
+		material: { type: 'asset' },
+		collisionResponse: { default: true },
+		collisionFilterGroup: { type: 'int', default: 1 },
+		collisionFilterMask: { type: 'int', default: - 1 },
+
+	},
+	dependencies: [ 'rigidbody' ],
+	multiple: true,
+};
 
 // TODO: Research how to implement Trimesh type
 ComponentManager.registerComponent( 'shape', Shape );

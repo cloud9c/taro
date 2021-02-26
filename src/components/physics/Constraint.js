@@ -87,29 +87,29 @@ class Constraint {
 
 	}
 
-	static config = {
-		schema: {
-			type: { type: 'select', default: 'distance', select: [ 'distance', 'point', 'coneTwist', 'lock', 'hinge' ] },
-			connectedBody: { type: 'entity' },
-
-			distance: { default: 1, if: { type: [ 'distance' ] } },
-
-			pivot: { type: 'vector3', if: { type: [ 'point', 'coneTwist', 'hinge' ] } },
-			connectedPivot: { type: 'vector3', if: { type: [ 'point', 'coneTwist', 'hinge' ] } },
-
-			axis: { type: 'vector3', if: { type: [ 'coneTwist', 'hinge' ] } },
-			connectedAxis: { type: 'vector3', if: { type: [ 'coneTwist', 'hinge' ] } },
-			angle: { default: 0, angle: 'deg', if: { type: [ 'coneTwist' ] } },
-			twistAngle: { default: 0, angle: 'deg', if: { type: [ 'coneTwist' ] } },
-
-			maxForce: { type: 'number', default: 1e6, min: 0 },
-			collideConnected: { default: true },
-
-		},
-		dependencies: [ 'rigidbody' ]
-	};
-
 }
+
+Constraint.config = {
+	schema: {
+		type: { type: 'select', default: 'distance', select: [ 'distance', 'point', 'coneTwist', 'lock', 'hinge' ] },
+		connectedBody: { type: 'entity' },
+
+		distance: { default: 1, if: { type: [ 'distance' ] } },
+
+		pivot: { type: 'vector3', if: { type: [ 'point', 'coneTwist', 'hinge' ] } },
+		connectedPivot: { type: 'vector3', if: { type: [ 'point', 'coneTwist', 'hinge' ] } },
+
+		axis: { type: 'vector3', if: { type: [ 'coneTwist', 'hinge' ] } },
+		connectedAxis: { type: 'vector3', if: { type: [ 'coneTwist', 'hinge' ] } },
+		angle: { default: 0, angle: 'deg', if: { type: [ 'coneTwist' ] } },
+		twistAngle: { default: 0, angle: 'deg', if: { type: [ 'coneTwist' ] } },
+
+		maxForce: { type: 'number', default: 1e6, min: 0 },
+		collideConnected: { default: true },
+
+	},
+	dependencies: [ 'rigidbody' ]
+};
 
 // TODO: Research how to implement Trimesh type
 ComponentManager.registerComponent( 'constraint', Constraint );

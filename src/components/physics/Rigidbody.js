@@ -54,30 +54,30 @@ class Rigidbody {
 
 	}
 
-	static config = {
-		schema: {
-			type: { type: 'select', default: 'dynamic', select: types },
-			mass: { default: 1, if: { type: [ 'dynamic' ] } },
-			velocity: { type: 'vector3', if: { type: [ 'dynamic', 'kinematic' ] } },
-			angularVelocity: { type: 'vector3', if: { type: [ 'dynamic', 'kinematic' ] } },
-
-			linearDamping: { default: 0.01, min: 0, max: 1, if: { type: [ 'dynamic', 'kinematic' ] } },
-			angularDamping: { default: 0.01, min: 0, max: 1, if: { type: [ 'dynamic', 'kinematic' ] } },
-
-			fixedRotation: { default: false, if: { type: [ 'dynamic', 'kinematic' ] } },
-			linearFactor: { type: 'vector3', default: [ 1, 1, 1 ], min: 0, max: 1, if: { type: [ 'dynamic', 'kinematic' ] } },
-			angularFactor: { type: 'vector3', default: [ 1, 1, 1 ], min: 0, max: 1, if: { type: [ 'dynamic', 'kinematic' ] } },
-
-			sleepSpeedLimit: { default: 0.1, min: 0, if: { type: [ 'dynamic', 'kinematic' ] } },
-			sleepTimeLimit: { default: 1, min: 0, if: { type: [ 'dynamic', 'kinematic' ] } },
-
-			material: { type: 'asset' },
-			collisionResponse: { default: true },
-			collisionFilterGroup: { type: 'int', default: 1 },
-			collisionFilterMask: { type: 'int', default: - 1 },
-		}
-	}
-
 }
+
+Rigidbody.config = {
+	schema: {
+		type: { type: 'select', default: 'dynamic', select: types },
+		mass: { default: 1, if: { type: [ 'dynamic' ] } },
+		velocity: { type: 'vector3', if: { type: [ 'dynamic', 'kinematic' ] } },
+		angularVelocity: { type: 'vector3', if: { type: [ 'dynamic', 'kinematic' ] } },
+
+		linearDamping: { default: 0.01, min: 0, max: 1, if: { type: [ 'dynamic', 'kinematic' ] } },
+		angularDamping: { default: 0.01, min: 0, max: 1, if: { type: [ 'dynamic', 'kinematic' ] } },
+
+		fixedRotation: { default: false, if: { type: [ 'dynamic', 'kinematic' ] } },
+		linearFactor: { type: 'vector3', default: [ 1, 1, 1 ], min: 0, max: 1, if: { type: [ 'dynamic', 'kinematic' ] } },
+		angularFactor: { type: 'vector3', default: [ 1, 1, 1 ], min: 0, max: 1, if: { type: [ 'dynamic', 'kinematic' ] } },
+
+		sleepSpeedLimit: { default: 0.1, min: 0, if: { type: [ 'dynamic', 'kinematic' ] } },
+		sleepTimeLimit: { default: 1, min: 0, if: { type: [ 'dynamic', 'kinematic' ] } },
+
+		material: { type: 'asset' },
+		collisionResponse: { default: true },
+		collisionFilterGroup: { type: 'int', default: 1 },
+		collisionFilterMask: { type: 'int', default: - 1 },
+	}
+};
 
 ComponentManager.registerComponent( 'rigidbody', Rigidbody );

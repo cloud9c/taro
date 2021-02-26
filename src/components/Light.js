@@ -51,20 +51,20 @@ class Light {
 
 	}
 
-	static config = {
-		schema: {
-			type: { type: 'select', default: 'directional', select: [ 'ambient', 'directional', 'hemisphere', 'point', 'spot' ] },
-			color: { type: 'color', if: { type: [ 'ambient', 'directional', 'point', 'spot' ] } },
-			intensity: { default: 1 },
-			skyColor: { type: 'color', if: { type: [ 'hemisphere' ] } },
-			groundColor: { type: 'color', if: { type: [ 'hemisphere' ] } },
-			distance: { default: 0, if: { type: [ 'point', 'spot' ] } },
-			decay: { default: 1, if: { type: [ 'point', 'spot' ] } },
-			angle: { default: Math.PI / 3, angle: 'deg', if: { type: [ 'spot' ] } },
-			penumbra: { default: 0, if: { type: [ 'spot' ] } }
-		}
-	};
-
 }
+
+Light.config = {
+	schema: {
+		type: { type: 'select', default: 'directional', select: [ 'ambient', 'directional', 'hemisphere', 'point', 'spot' ] },
+		color: { type: 'color', if: { type: [ 'ambient', 'directional', 'point', 'spot' ] } },
+		intensity: { default: 1 },
+		skyColor: { type: 'color', if: { type: [ 'hemisphere' ] } },
+		groundColor: { type: 'color', if: { type: [ 'hemisphere' ] } },
+		distance: { default: 0, if: { type: [ 'point', 'spot' ] } },
+		decay: { default: 1, if: { type: [ 'point', 'spot' ] } },
+		angle: { default: Math.PI / 3, angle: 'deg', if: { type: [ 'spot' ] } },
+		penumbra: { default: 0, if: { type: [ 'spot' ] } }
+	}
+};
 
 ComponentManager.registerComponent( 'light', Light );
