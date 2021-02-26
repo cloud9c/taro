@@ -1,5 +1,22 @@
 import { ComponentManager } from '../core/ComponentManager.js';
-import { BufferGeometry, BufferGeometryLoader, Font, Mesh, BoxGeometry, CircleGeometry, ConeGeometry, CylinderGeometry, DodecahedronGeometry, ExtrudeGeometry, IcosahedronGeometry, LatheGeometry, OctahedronGeometry, ParametricGeometry, PlaneGeometry, PolyhedronGeometry, RingGeometry, ShapeGeometry, SphereGeometry, TetrahedronGeometry, TextGeometry, TorusGeometry, TorusKnotGeometry, TubeGeometry } from '../lib/three.module.js';
+import {
+	BufferGeometry,
+	BufferGeometryLoader,
+	Mesh,
+	BoxGeometry,
+	CircleGeometry,
+	ConeGeometry,
+	CylinderGeometry,
+	DodecahedronGeometry,
+	IcosahedronGeometry,
+	OctahedronGeometry,
+	PlaneGeometry,
+	RingGeometry,
+	SphereGeometry,
+	TetrahedronGeometry,
+	TorusGeometry,
+	TorusKnotGeometry,
+} from '../lib/three.module.js';
 
 const geometryLoader = new BufferGeometryLoader();
 
