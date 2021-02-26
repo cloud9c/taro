@@ -53787,26 +53787,26 @@ class Camera$1 {
 
 	}
 
-	static config = {
-		schema: {
-			type: { type: 'select', default: 'perspective', select: [ 'perspective', 'orthographic' ] },
-			near: { default: 0.1 },
-			far: { default: 2000 },
-
-			autoAspect: { default: true, if: { type: [ 'perspective' ] } },
-			aspect: { default: 1, if: { type: [ 'perspective' ], autoAspect: [ false ] } },
-			fov: { default: 50, if: { type: [ 'perspective' ] } },
-
-			left: { default: - 1, if: { type: [ 'orthographic' ] } },
-			right: { default: 1, if: { type: [ 'orthographic' ] } },
-			top: { default: 1, if: { type: [ 'orthographic' ] } },
-			bottom: { default: - 1, if: { type: [ 'orthographic' ] } },
-
-			viewport: { type: 'vector4', default: [ 0, 0, 1, 1 ] },
-		}
-	};
-
 }
+
+Camera$1.config = {
+	schema: {
+		type: { type: 'select', default: 'perspective', select: [ 'perspective', 'orthographic' ] },
+		near: { default: 0.1 },
+		far: { default: 2000 },
+
+		autoAspect: { default: true, if: { type: [ 'perspective' ] } },
+		aspect: { default: 1, if: { type: [ 'perspective' ], autoAspect: [ false ] } },
+		fov: { default: 50, if: { type: [ 'perspective' ] } },
+
+		left: { default: - 1, if: { type: [ 'orthographic' ] } },
+		right: { default: 1, if: { type: [ 'orthographic' ] } },
+		top: { default: 1, if: { type: [ 'orthographic' ] } },
+		bottom: { default: - 1, if: { type: [ 'orthographic' ] } },
+
+		viewport: { type: 'vector4', default: [ 0, 0, 1, 1 ] },
+	}
+};
 
 ComponentManager.registerComponent( 'camera', Camera$1 );
 
@@ -53931,56 +53931,56 @@ class Geometry {
 
 	}
 
-	static config = {
-		schema: {
-			type: { type: 'select', default: 'box', select: [ 'box', 'circle', 'cone', 'cylinder', 'dodecahedron', 'icosahedron', 'octahedron', 'plane', 'ring', 'sphere', 'tetrahedron', 'torus', 'torusKnot', 'asset' ] },
-
-			depth: { default: 1, min: 0, if: { type: [ 'box' ] } },
-			height: { default: 1, min: 0, if: { type: [ 'box', 'cone', 'cylinder', 'plane' ] } },
-			width: { default: 1, min: 0, if: { type: [ 'box', 'plane' ] } },
-			heightSegments: [ { default: 1, min: 1, max: 20, type: 'int', if: { type: [ 'box', 'plane' ] } },
-							 { default: 18, min: 1, type: 'int', if: { type: [ 'cone', 'cylinder' ] } },
-							 { default: 18, min: 2, type: 'int', if: { type: [ 'sphere' ] } } ],
-			widthSegments: [ { default: 1, min: 1, max: 20, type: 'int', if: { type: [ 'box', 'plane' ] } },
-							 { default: 36, min: 3, type: 'int', if: { type: [ 'sphere' ] } } ],
-			depthSegments: { default: 1, min: 1, max: 20, type: 'int', if: { type: [ 'box' ] } },
-
-			radius: { default: 1, min: 0, if: { type: [ 'circle', 'cone', 'dodecahedron', 'icosahedron', 'octahedron', 'sphere', 'tetrahedron', 'torus', 'torusKnot' ] } },
-			radiusTop: { default: 1, min: 0, if: { type: [ 'cylinder' ] } },
-			radiusBottom: { default: 1, min: 0, if: { type: [ 'cylinder' ] } },
-			segments: { default: 32, min: 3, type: 'int', if: { type: [ 'circle' ] } },
-			thetaLength: [ { default: 2 * Math.PI, min: 0, angle: 'deg', if: { type: [ 'circle', 'cone', 'cylinder', 'ring' ] } },
-						  { default: Math.PI, min: 0, angle: 'deg', if: { type: [ 'sphere' ] } } ],
-			thetaStart: { default: 0, angle: 'deg', if: { type: [ 'circle', 'cone', 'cylinder', 'ring', 'sphere' ] } },
-
-			openEnded: { default: false, if: { type: [ 'cone', 'cylinder' ] } },
-			radialSegments: [ { default: 36, min: 3, type: 'int', if: { type: [ 'cone', 'cylinder' ] } },
-							 { default: 36, min: 2, type: 'int', if: { type: [ 'torus' ] } },
-							 { default: 8, min: 3, type: 'int', if: { type: [ 'torusKnot' ] } } ],
-
-			detail: { default: 0, min: 0, max: 5, type: 'int', if: { type: [ 'dodecahedron', 'icosahedron', 'octahedron', 'tetrahedron' ] } },
-
-			innerRadius: { default: 0.8, min: 0, if: { type: [ 'ring' ] } },
-			outerRadius: { default: 1.2, min: 0, if: { type: [ 'ring' ] } },
-			phiSegments: { default: 10, min: 1, type: 'int', if: { type: [ 'ring' ] } },
-			thetaSegments: { default: 32, min: 3, type: 'int', if: { type: [ 'ring' ] } },
-
-			phiLength: { default: 2 * Math.PI, angle: 'deg', if: { type: [ 'sphere' ] } },
-			phiStart: { default: 0, min: 0, angle: 'deg', if: { type: [ 'sphere' ] } },
-
-			tube: { default: 0.2, min: 0, if: { type: [ 'torus', 'torusKnot' ] } },
-			tubularSegments: [ { default: 32, min: 3, type: 'int', if: { type: [ 'torus' ] } },
-							  { default: 64, min: 3, type: 'int', if: { type: [ 'torusKnot' ] } } ],
-			arc: { default: Math.PI, angle: 'deg', if: { type: [ 'torus' ] } },
-
-			p: { default: 2, min: 1, if: { type: [ 'torusKnot' ] } },
-			q: { default: 3, min: 1, if: { type: [ 'torusKnot' ] } },
-
-			asset: { type: 'asset', if: { type: [ 'asset' ] } },
-		}
-	};
-
 }
+
+Geometry.config = {
+	schema: {
+		type: { type: 'select', default: 'box', select: [ 'box', 'circle', 'cone', 'cylinder', 'dodecahedron', 'icosahedron', 'octahedron', 'plane', 'ring', 'sphere', 'tetrahedron', 'torus', 'torusKnot', 'asset' ] },
+
+		depth: { default: 1, min: 0, if: { type: [ 'box' ] } },
+		height: { default: 1, min: 0, if: { type: [ 'box', 'cone', 'cylinder', 'plane' ] } },
+		width: { default: 1, min: 0, if: { type: [ 'box', 'plane' ] } },
+		heightSegments: [ { default: 1, min: 1, max: 20, type: 'int', if: { type: [ 'box', 'plane' ] } },
+						 { default: 18, min: 1, type: 'int', if: { type: [ 'cone', 'cylinder' ] } },
+						 { default: 18, min: 2, type: 'int', if: { type: [ 'sphere' ] } } ],
+		widthSegments: [ { default: 1, min: 1, max: 20, type: 'int', if: { type: [ 'box', 'plane' ] } },
+						 { default: 36, min: 3, type: 'int', if: { type: [ 'sphere' ] } } ],
+		depthSegments: { default: 1, min: 1, max: 20, type: 'int', if: { type: [ 'box' ] } },
+
+		radius: { default: 1, min: 0, if: { type: [ 'circle', 'cone', 'dodecahedron', 'icosahedron', 'octahedron', 'sphere', 'tetrahedron', 'torus', 'torusKnot' ] } },
+		radiusTop: { default: 1, min: 0, if: { type: [ 'cylinder' ] } },
+		radiusBottom: { default: 1, min: 0, if: { type: [ 'cylinder' ] } },
+		segments: { default: 32, min: 3, type: 'int', if: { type: [ 'circle' ] } },
+		thetaLength: [ { default: 2 * Math.PI, min: 0, angle: 'deg', if: { type: [ 'circle', 'cone', 'cylinder', 'ring' ] } },
+					  { default: Math.PI, min: 0, angle: 'deg', if: { type: [ 'sphere' ] } } ],
+		thetaStart: { default: 0, angle: 'deg', if: { type: [ 'circle', 'cone', 'cylinder', 'ring', 'sphere' ] } },
+
+		openEnded: { default: false, if: { type: [ 'cone', 'cylinder' ] } },
+		radialSegments: [ { default: 36, min: 3, type: 'int', if: { type: [ 'cone', 'cylinder' ] } },
+						 { default: 36, min: 2, type: 'int', if: { type: [ 'torus' ] } },
+						 { default: 8, min: 3, type: 'int', if: { type: [ 'torusKnot' ] } } ],
+
+		detail: { default: 0, min: 0, max: 5, type: 'int', if: { type: [ 'dodecahedron', 'icosahedron', 'octahedron', 'tetrahedron' ] } },
+
+		innerRadius: { default: 0.8, min: 0, if: { type: [ 'ring' ] } },
+		outerRadius: { default: 1.2, min: 0, if: { type: [ 'ring' ] } },
+		phiSegments: { default: 10, min: 1, type: 'int', if: { type: [ 'ring' ] } },
+		thetaSegments: { default: 32, min: 3, type: 'int', if: { type: [ 'ring' ] } },
+
+		phiLength: { default: 2 * Math.PI, angle: 'deg', if: { type: [ 'sphere' ] } },
+		phiStart: { default: 0, min: 0, angle: 'deg', if: { type: [ 'sphere' ] } },
+
+		tube: { default: 0.2, min: 0, if: { type: [ 'torus', 'torusKnot' ] } },
+		tubularSegments: [ { default: 32, min: 3, type: 'int', if: { type: [ 'torus' ] } },
+						  { default: 64, min: 3, type: 'int', if: { type: [ 'torusKnot' ] } } ],
+		arc: { default: Math.PI, angle: 'deg', if: { type: [ 'torus' ] } },
+
+		p: { default: 2, min: 1, if: { type: [ 'torusKnot' ] } },
+		q: { default: 3, min: 1, if: { type: [ 'torusKnot' ] } },
+
+		asset: { type: 'asset', if: { type: [ 'asset' ] } },
+	}
+};
 
 Geometry.prototype.DefaultGeometry = new BufferGeometry();
 
@@ -54036,21 +54036,21 @@ class Light$1 {
 
 	}
 
-	static config = {
-		schema: {
-			type: { type: 'select', default: 'directional', select: [ 'ambient', 'directional', 'hemisphere', 'point', 'spot' ] },
-			color: { type: 'color', if: { type: [ 'ambient', 'directional', 'point', 'spot' ] } },
-			intensity: { default: 1 },
-			skyColor: { type: 'color', if: { type: [ 'hemisphere' ] } },
-			groundColor: { type: 'color', if: { type: [ 'hemisphere' ] } },
-			distance: { default: 0, if: { type: [ 'point', 'spot' ] } },
-			decay: { default: 1, if: { type: [ 'point', 'spot' ] } },
-			angle: { default: Math.PI / 3, angle: 'deg', if: { type: [ 'spot' ] } },
-			penumbra: { default: 0, if: { type: [ 'spot' ] } }
-		}
-	};
-
 }
+
+Light$1.config = {
+	schema: {
+		type: { type: 'select', default: 'directional', select: [ 'ambient', 'directional', 'hemisphere', 'point', 'spot' ] },
+		color: { type: 'color', if: { type: [ 'ambient', 'directional', 'point', 'spot' ] } },
+		intensity: { default: 1 },
+		skyColor: { type: 'color', if: { type: [ 'hemisphere' ] } },
+		groundColor: { type: 'color', if: { type: [ 'hemisphere' ] } },
+		distance: { default: 0, if: { type: [ 'point', 'spot' ] } },
+		decay: { default: 1, if: { type: [ 'point', 'spot' ] } },
+		angle: { default: Math.PI / 3, angle: 'deg', if: { type: [ 'spot' ] } },
+		penumbra: { default: 0, if: { type: [ 'spot' ] } }
+	}
+};
 
 ComponentManager.registerComponent( 'light', Light$1 );
 
@@ -54201,73 +54201,74 @@ class Material$2 {
 
 	}
 
-	static config = {
-		schema: {
-			type: { type: 'select', default: 'basic', select: [ 'basic', 'depth', 'lambert', 'matcap', 'normal', 'phong', 'physical', 'standard', 'toon', 'asset' ] },
-
-			color: { type: 'color', if: { type: [ 'basic', 'lambert', 'matcap', 'phong', 'standard', 'physical', 'toon' ] } },
-			roughness: { default: 1.0, if: { type: [ 'standard', 'physical' ] } },
-			metalness: { default: 0, if: { type: [ 'standard', 'physical' ] } },
-			emissive: { type: 'color', default: '#000000', if: { type: [ 'lambert', 'phong', 'standard', 'physical', 'toon' ] } },
-			emissiveIntensity: { default: 1, if: { type: [ 'lambert', 'phong', 'standard', 'physical', 'toon' ] } },
-			clearcoat: { default: 0.0, if: { type: [ 'physical' ] } },
-			clearcoatRoughness: { default: 0.0, if: { type: [ 'physical' ] } },
-			specular: { type: 'color', default: '#111111', if: { type: [ 'phong' ] } },
-			shininess: { default: 30, if: { type: [ 'phong' ] } },
-			vertexColors: { default: false, if: { type: notAsset } },
-			vertexTangents: { default: false, if: { type: [ 'standard', 'physical' ] } },
-
-			depthPacking: { type: 'select', default: 'BasicDepthPacking', select: depthPacking, if: { type: [ 'depth' ] } },
-			skinning: { default: false, if: { type: [ 'basic', 'depth', 'lambert', 'matcap', 'normal', 'phong', 'standard', 'physical', 'toon' ] } },
-
-			map: { type: 'asset', if: { type: [ 'basic', 'depth', 'lambert', 'matcap', 'phong', 'standard', 'physical', 'toon' ] } },
-			matcap: { type: 'asset', if: { type: [ 'matcap' ] } },
-			alphaMap: { type: 'asset', if: { type: [ 'basic', 'depth', 'lambert', 'matcap', 'phong', 'standard', 'physical', 'toon' ] } },
-			bumpMap: { type: 'asset', if: { type: [ 'matcap', 'normal', 'phong', 'standard', 'physical', 'toon' ] } },
-			bumpScale: { default: 1, if: { type: [ 'matcap', 'normal', 'phong', 'standard', 'physical', 'toon' ] } },
-			normalMap: { type: 'asset', if: { type: [ 'matcap', 'normal', 'phong', 'standard', 'physical', 'toon' ] } },
-			normalScale: { type: 'vector2', default: [ 1, 1 ], if: { type: [ 'matcap', 'normal', 'phong', 'standard', 'physical', 'toon' ] } },
-			clearcoatNormalMap: { type: 'asset', if: { type: [ 'physical' ] } },
-			clearcoatNormalScale: { type: 'vector2', default: [ 1, 1 ], if: { type: [ 'physical' ] } },
-
-			displacementMap: { type: 'asset', if: { type: [ 'depth', 'matcap', 'normal', 'phong', 'standard', 'physical', 'toon' ] } },
-			displacementScale: { default: 1, if: { type: [ 'depth', 'matcap', 'normal', 'phong', 'standard', 'physical', 'toon' ] } },
-			roughnessMap: { type: 'asset', if: { type: [ 'standard', 'physical' ] } },
-			metalnessMap: { type: 'asset', if: { type: [ 'standard', 'physical' ] } },
-
-			specularMap: { type: 'asset', if: { type: [ 'basic', 'lambert', 'phong' ] } },
-
-			envMap: { type: 'asset', if: { type: [ 'basic', 'lambert', 'phong', 'standard', 'physical' ] } },
-			envMapIntensity: { default: 1, if: { type: [ 'standard', 'physical' ] } },
-
-			lightMap: { type: 'asset', if: { type: [ 'basic', 'lambert', 'phong', 'standard', 'physical', 'toon' ] } },
-			lightMapIntensity: { default: 1, if: { type: [ 'basic', 'lambert', 'phong', 'standard', 'physical', 'toon' ] } },
-
-			aoMap: { type: 'asset', if: { type: [ 'basic', 'lambert', 'phong', 'standard', 'physical', 'toon' ] } },
-			aoMapIntensity: { default: 1, if: { type: [ 'basic', 'lambert', 'phong', 'standard', 'physical', 'toon' ] } },
-
-			emissiveMap: { type: 'asset', if: { type: [ 'lambert', 'phong', 'standard', 'physical', 'toon' ] } },
-			gradientMap: { type: 'asset', if: { type: [ 'toon' ] } },
-
-			side: { type: 'select', default: 'FrontSide', select: sides, if: { type: notAsset } },
-			flatShading: { default: false, if: { type: notAsset } },
-			blending: { type: 'select', default: 'NormalBlending', select: blendingModes, if: { type: notAsset } },
-			opacity: { default: 1.0, min: 0.0, max: 1.0, if: { type: notAsset } },
-			transparent: { default: false, if: { type: notAsset } },
-			alphaTest: { default: 0, min: 0, max: 1, if: { type: notAsset } },
-			depthTest: { default: true, if: { type: notAsset } },
-			depthWrite: { default: true, if: { type: notAsset } },
-			wireframe: { default: false, if: { type: [ 'basic', 'depth', 'lambert', 'normal', 'phong', 'standard', 'physical', 'toon' ] } },
-
-			asset: { type: 'asset', if: { type: [ 'asset' ] } },
-		}
-	};
-
 }
 
-Material$2.prototype.DefaultMaterial = new MeshBasicMaterial();
-Material$2.prototype.DefaultMaterial.transparent = true;
-Material$2.prototype.DefaultMaterial.opacity = 0;
+Material$2.config = {
+	schema: {
+		type: { type: 'select', default: 'basic', select: [ 'basic', 'depth', 'lambert', 'matcap', 'normal', 'phong', 'physical', 'standard', 'toon', 'asset' ] },
+
+		color: { type: 'color', if: { type: [ 'basic', 'lambert', 'matcap', 'phong', 'standard', 'physical', 'toon' ] } },
+		roughness: { default: 1.0, if: { type: [ 'standard', 'physical' ] } },
+		metalness: { default: 0, if: { type: [ 'standard', 'physical' ] } },
+		emissive: { type: 'color', default: '#000000', if: { type: [ 'lambert', 'phong', 'standard', 'physical', 'toon' ] } },
+		emissiveIntensity: { default: 1, if: { type: [ 'lambert', 'phong', 'standard', 'physical', 'toon' ] } },
+		clearcoat: { default: 0.0, if: { type: [ 'physical' ] } },
+		clearcoatRoughness: { default: 0.0, if: { type: [ 'physical' ] } },
+		specular: { type: 'color', default: '#111111', if: { type: [ 'phong' ] } },
+		shininess: { default: 30, if: { type: [ 'phong' ] } },
+		vertexColors: { default: false, if: { type: notAsset } },
+		vertexTangents: { default: false, if: { type: [ 'standard', 'physical' ] } },
+
+		depthPacking: { type: 'select', default: 'BasicDepthPacking', select: depthPacking, if: { type: [ 'depth' ] } },
+		skinning: { default: false, if: { type: [ 'basic', 'depth', 'lambert', 'matcap', 'normal', 'phong', 'standard', 'physical', 'toon' ] } },
+
+		map: { type: 'asset', if: { type: [ 'basic', 'depth', 'lambert', 'matcap', 'phong', 'standard', 'physical', 'toon' ] } },
+		matcap: { type: 'asset', if: { type: [ 'matcap' ] } },
+		alphaMap: { type: 'asset', if: { type: [ 'basic', 'depth', 'lambert', 'matcap', 'phong', 'standard', 'physical', 'toon' ] } },
+		bumpMap: { type: 'asset', if: { type: [ 'matcap', 'normal', 'phong', 'standard', 'physical', 'toon' ] } },
+		bumpScale: { default: 1, if: { type: [ 'matcap', 'normal', 'phong', 'standard', 'physical', 'toon' ] } },
+		normalMap: { type: 'asset', if: { type: [ 'matcap', 'normal', 'phong', 'standard', 'physical', 'toon' ] } },
+		normalScale: { type: 'vector2', default: [ 1, 1 ], if: { type: [ 'matcap', 'normal', 'phong', 'standard', 'physical', 'toon' ] } },
+		clearcoatNormalMap: { type: 'asset', if: { type: [ 'physical' ] } },
+		clearcoatNormalScale: { type: 'vector2', default: [ 1, 1 ], if: { type: [ 'physical' ] } },
+
+		displacementMap: { type: 'asset', if: { type: [ 'depth', 'matcap', 'normal', 'phong', 'standard', 'physical', 'toon' ] } },
+		displacementScale: { default: 1, if: { type: [ 'depth', 'matcap', 'normal', 'phong', 'standard', 'physical', 'toon' ] } },
+		roughnessMap: { type: 'asset', if: { type: [ 'standard', 'physical' ] } },
+		metalnessMap: { type: 'asset', if: { type: [ 'standard', 'physical' ] } },
+
+		specularMap: { type: 'asset', if: { type: [ 'basic', 'lambert', 'phong' ] } },
+
+		envMap: { type: 'asset', if: { type: [ 'basic', 'lambert', 'phong', 'standard', 'physical' ] } },
+		envMapIntensity: { default: 1, if: { type: [ 'standard', 'physical' ] } },
+
+		lightMap: { type: 'asset', if: { type: [ 'basic', 'lambert', 'phong', 'standard', 'physical', 'toon' ] } },
+		lightMapIntensity: { default: 1, if: { type: [ 'basic', 'lambert', 'phong', 'standard', 'physical', 'toon' ] } },
+
+		aoMap: { type: 'asset', if: { type: [ 'basic', 'lambert', 'phong', 'standard', 'physical', 'toon' ] } },
+		aoMapIntensity: { default: 1, if: { type: [ 'basic', 'lambert', 'phong', 'standard', 'physical', 'toon' ] } },
+
+		emissiveMap: { type: 'asset', if: { type: [ 'lambert', 'phong', 'standard', 'physical', 'toon' ] } },
+		gradientMap: { type: 'asset', if: { type: [ 'toon' ] } },
+
+		side: { type: 'select', default: 'FrontSide', select: sides, if: { type: notAsset } },
+		flatShading: { default: false, if: { type: notAsset } },
+		blending: { type: 'select', default: 'NormalBlending', select: blendingModes, if: { type: notAsset } },
+		opacity: { default: 1.0, min: 0.0, max: 1.0, if: { type: notAsset } },
+		transparent: { default: false, if: { type: notAsset } },
+		alphaTest: { default: 0, min: 0, max: 1, if: { type: notAsset } },
+		depthTest: { default: true, if: { type: notAsset } },
+		depthWrite: { default: true, if: { type: notAsset } },
+		wireframe: { default: false, if: { type: [ 'basic', 'depth', 'lambert', 'normal', 'phong', 'standard', 'physical', 'toon' ] } },
+
+		asset: { type: 'asset', if: { type: [ 'asset' ] } },
+	}
+};
+
+const DefaultMaterial = new MeshBasicMaterial();
+DefaultMaterial.transparent = true;
+DefaultMaterial.opacity = 0;
+Material$2.prototype.DefaultMaterial = DefaultMaterial;
 
 ComponentManager.registerComponent( 'material', Material$2 );
 
@@ -54376,13 +54377,13 @@ class Model {
 
 	}
 
-	static config = {
-		schema: {
-			asset: { type: 'asset' },
-		}
-	};
-
 }
+
+Model.config = {
+	schema: {
+		asset: { type: 'asset' },
+	}
+};
 
 ComponentManager.registerComponent( 'model', Model );
 
@@ -54411,11 +54412,11 @@ class Renderable {
 
 	}
 
-	static config = {
-		multiple: true,
-	}
-
 }
+
+Renderable.config = {
+	multiple: true,
+};
 
 ComponentManager.registerComponent( 'renderable', Renderable );
 
@@ -64101,38 +64102,38 @@ class Shape$2 {
 
 	}
 
-	static config = {
-		schema: {
-			type: { type: 'select', default: 'box', select: [ 'box', 'sphere', 'plane', 'cylinder', 'convex', 'particle', 'heightfield' ] },
-
-			halfExtents: { type: 'vector3', min: 0, default: [ 0.5, 0.5, 0.5 ], if: { type: [ 'box' ] } },
-			radius: { default: 1, min: 0, if: { type: [ 'sphere' ] } },
-
-			radiusTop: { default: 1, min: 0, if: { type: [ 'cylinder' ] } },
-			radiusBottom: { default: 1, min: 0, if: { type: [ 'cylinder' ] } },
-			height: { default: 1, min: 0, if: { type: [ 'cylinder' ] } },
-			numSegments: { type: 'int', min: 0, default: 8, if: { type: [ 'cylinder' ] } },
-
-			asset: { type: 'asset', if: { type: [ 'convex', 'heightfield' ] } },
-
-			elementSize: { default: 1, if: { type: 'heightfield' } },
-			minValue: { default: 0, if: { type: 'heightfield' } },
-			maxValue: { default: 0, if: { type: 'heightfield' } },
-
-			offset: { type: 'vector3' },
-			orientation: { type: 'vector3' },
-
-			material: { type: 'asset' },
-			collisionResponse: { default: true },
-			collisionFilterGroup: { type: 'int', default: 1 },
-			collisionFilterMask: { type: 'int', default: - 1 },
-
-		},
-		dependencies: [ 'rigidbody' ],
-		multiple: true,
-	};
-
 }
+
+Shape$2.config = {
+	schema: {
+		type: { type: 'select', default: 'box', select: [ 'box', 'sphere', 'plane', 'cylinder', 'convex', 'particle', 'heightfield' ] },
+
+		halfExtents: { type: 'vector3', min: 0, default: [ 0.5, 0.5, 0.5 ], if: { type: [ 'box' ] } },
+		radius: { default: 1, min: 0, if: { type: [ 'sphere' ] } },
+
+		radiusTop: { default: 1, min: 0, if: { type: [ 'cylinder' ] } },
+		radiusBottom: { default: 1, min: 0, if: { type: [ 'cylinder' ] } },
+		height: { default: 1, min: 0, if: { type: [ 'cylinder' ] } },
+		numSegments: { type: 'int', min: 0, default: 8, if: { type: [ 'cylinder' ] } },
+
+		asset: { type: 'asset', if: { type: [ 'convex', 'heightfield' ] } },
+
+		elementSize: { default: 1, if: { type: 'heightfield' } },
+		minValue: { default: 0, if: { type: 'heightfield' } },
+		maxValue: { default: 0, if: { type: 'heightfield' } },
+
+		offset: { type: 'vector3' },
+		orientation: { type: 'vector3' },
+
+		material: { type: 'asset' },
+		collisionResponse: { default: true },
+		collisionFilterGroup: { type: 'int', default: 1 },
+		collisionFilterMask: { type: 'int', default: - 1 },
+
+	},
+	dependencies: [ 'rigidbody' ],
+	multiple: true,
+};
 
 // TODO: Research how to implement Trimesh type
 ComponentManager.registerComponent( 'shape', Shape$2 );
@@ -64222,29 +64223,29 @@ class Constraint$1 {
 
 	}
 
-	static config = {
-		schema: {
-			type: { type: 'select', default: 'distance', select: [ 'distance', 'point', 'coneTwist', 'lock', 'hinge' ] },
-			connectedBody: { type: 'entity' },
-
-			distance: { default: 1, if: { type: [ 'distance' ] } },
-
-			pivot: { type: 'vector3', if: { type: [ 'point', 'coneTwist', 'hinge' ] } },
-			connectedPivot: { type: 'vector3', if: { type: [ 'point', 'coneTwist', 'hinge' ] } },
-
-			axis: { type: 'vector3', if: { type: [ 'coneTwist', 'hinge' ] } },
-			connectedAxis: { type: 'vector3', if: { type: [ 'coneTwist', 'hinge' ] } },
-			angle: { default: 0, angle: 'deg', if: { type: [ 'coneTwist' ] } },
-			twistAngle: { default: 0, angle: 'deg', if: { type: [ 'coneTwist' ] } },
-
-			maxForce: { type: 'number', default: 1e6, min: 0 },
-			collideConnected: { default: true },
-
-		},
-		dependencies: [ 'rigidbody' ]
-	};
-
 }
+
+Constraint$1.config = {
+	schema: {
+		type: { type: 'select', default: 'distance', select: [ 'distance', 'point', 'coneTwist', 'lock', 'hinge' ] },
+		connectedBody: { type: 'entity' },
+
+		distance: { default: 1, if: { type: [ 'distance' ] } },
+
+		pivot: { type: 'vector3', if: { type: [ 'point', 'coneTwist', 'hinge' ] } },
+		connectedPivot: { type: 'vector3', if: { type: [ 'point', 'coneTwist', 'hinge' ] } },
+
+		axis: { type: 'vector3', if: { type: [ 'coneTwist', 'hinge' ] } },
+		connectedAxis: { type: 'vector3', if: { type: [ 'coneTwist', 'hinge' ] } },
+		angle: { default: 0, angle: 'deg', if: { type: [ 'coneTwist' ] } },
+		twistAngle: { default: 0, angle: 'deg', if: { type: [ 'coneTwist' ] } },
+
+		maxForce: { type: 'number', default: 1e6, min: 0 },
+		collideConnected: { default: true },
+
+	},
+	dependencies: [ 'rigidbody' ]
+};
 
 // TODO: Research how to implement Trimesh type
 ComponentManager.registerComponent( 'constraint', Constraint$1 );
@@ -64301,31 +64302,31 @@ class Rigidbody {
 
 	}
 
-	static config = {
-		schema: {
-			type: { type: 'select', default: 'dynamic', select: types },
-			mass: { default: 1, if: { type: [ 'dynamic' ] } },
-			velocity: { type: 'vector3', if: { type: [ 'dynamic', 'kinematic' ] } },
-			angularVelocity: { type: 'vector3', if: { type: [ 'dynamic', 'kinematic' ] } },
-
-			linearDamping: { default: 0.01, min: 0, max: 1, if: { type: [ 'dynamic', 'kinematic' ] } },
-			angularDamping: { default: 0.01, min: 0, max: 1, if: { type: [ 'dynamic', 'kinematic' ] } },
-
-			fixedRotation: { default: false, if: { type: [ 'dynamic', 'kinematic' ] } },
-			linearFactor: { type: 'vector3', default: [ 1, 1, 1 ], min: 0, max: 1, if: { type: [ 'dynamic', 'kinematic' ] } },
-			angularFactor: { type: 'vector3', default: [ 1, 1, 1 ], min: 0, max: 1, if: { type: [ 'dynamic', 'kinematic' ] } },
-
-			sleepSpeedLimit: { default: 0.1, min: 0, if: { type: [ 'dynamic', 'kinematic' ] } },
-			sleepTimeLimit: { default: 1, min: 0, if: { type: [ 'dynamic', 'kinematic' ] } },
-
-			material: { type: 'asset' },
-			collisionResponse: { default: true },
-			collisionFilterGroup: { type: 'int', default: 1 },
-			collisionFilterMask: { type: 'int', default: - 1 },
-		}
-	}
-
 }
+
+Rigidbody.config = {
+	schema: {
+		type: { type: 'select', default: 'dynamic', select: types },
+		mass: { default: 1, if: { type: [ 'dynamic' ] } },
+		velocity: { type: 'vector3', if: { type: [ 'dynamic', 'kinematic' ] } },
+		angularVelocity: { type: 'vector3', if: { type: [ 'dynamic', 'kinematic' ] } },
+
+		linearDamping: { default: 0.01, min: 0, max: 1, if: { type: [ 'dynamic', 'kinematic' ] } },
+		angularDamping: { default: 0.01, min: 0, max: 1, if: { type: [ 'dynamic', 'kinematic' ] } },
+
+		fixedRotation: { default: false, if: { type: [ 'dynamic', 'kinematic' ] } },
+		linearFactor: { type: 'vector3', default: [ 1, 1, 1 ], min: 0, max: 1, if: { type: [ 'dynamic', 'kinematic' ] } },
+		angularFactor: { type: 'vector3', default: [ 1, 1, 1 ], min: 0, max: 1, if: { type: [ 'dynamic', 'kinematic' ] } },
+
+		sleepSpeedLimit: { default: 0.1, min: 0, if: { type: [ 'dynamic', 'kinematic' ] } },
+		sleepTimeLimit: { default: 1, min: 0, if: { type: [ 'dynamic', 'kinematic' ] } },
+
+		material: { type: 'asset' },
+		collisionResponse: { default: true },
+		collisionFilterGroup: { type: 'int', default: 1 },
+		collisionFilterMask: { type: 'int', default: - 1 },
+	}
+};
 
 ComponentManager.registerComponent( 'rigidbody', Rigidbody );
 
