@@ -122,7 +122,7 @@ class Geometry {
 		if ( this.mesh !== undefined )
 			this.mesh.geometry = geometry;
 
-		this.dispatchEvent( { type: 'load' } );
+		this.dispatchEvent( { type: 'load', geometry } );
 
 	}
 
