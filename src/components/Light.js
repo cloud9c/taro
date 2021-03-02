@@ -5,11 +5,11 @@ class Light {
 
 	init( data ) {
 
-		const type = data.type;
+		this.type = data.type;
 		const color = data.color;
 		const intensity = data.intensity;
 
-		switch ( type ) {
+		switch ( this.type ) {
 
 			case 'ambient':
 				this.ref = new AmbientLight( color, intensity );
