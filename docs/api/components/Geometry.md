@@ -15,6 +15,17 @@ entity.addComponent('geometry', {
 });
 ```
 
+## Events
+
+### error
+Fires when an asset failed to load. Property `event` is provided (XMLHttpRequest error event).
+
+### load
+Fires when an asset failed to load. Property `geometry` is provided (loaded geometry).
+
+### progress
+Fires when an asset is loaded. Property `event` is provided (XMLHttpRequest progress event).
+
 ## Data Parameters
 
 | Property | Description                                                 | Default Value |
