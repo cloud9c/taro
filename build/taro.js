@@ -53562,7 +53562,7 @@
 						prop.default = '';
 						break;
 					case 'color':
-						prop.default = '#ffffff';
+						prop.default = 0xffffff;
 						break;
 					case 'vector2':
 						prop.default = [ 0, 0 ];
@@ -53920,20 +53920,20 @@
 			if ( this.mesh !== undefined )
 				this.mesh.geometry = geometry;
 
-			this.dispatchEvent( { type: 'load' } );
+			this.dispatchEvent( { type: 'load', geometry } );
 
 		}
 
 		onProgress( event ) {
 
-			this.dispatchEvent( { type: 'progress', progressEvent: event } );
+			this.dispatchEvent( { type: 'progress', event } );
 
 		}
 
-		onError( error ) {
+		onError( event ) {
 
 			console.error( 'Geometry: failed retrieving asset' );
-			this.dispatchEvent( { type: 'error', error } );
+			this.dispatchEvent( { type: 'error', event } );
 
 		}
 
@@ -53996,11 +53996,11 @@
 
 		init( data ) {
 
-			const type = data.type;
+			this.type = data.type;
 			const color = data.color;
 			const intensity = data.intensity;
 
-			switch ( type ) {
+			switch ( this.type ) {
 
 				case 'ambient':
 					this.ref = new AmbientLight( color, intensity );
@@ -54021,7 +54021,7 @@
 					this.ref.position.set( 0, 0, 0 );
 					break;
 				default:
-					console.error( 'Light: invalid light type ' + type );
+					console.error( 'Light: invalid light type ' + this.type );
 
 			}
 
@@ -54046,7 +54046,7 @@
 
 	Light$1.config = {
 		schema: {
-			type: { type: 'select', default: 'directional', select: [ 'ambient', 'directional', 'hemisphere', 'point', 'spot' ] },
+			type: { type: 'select', default: 'ambient', select: [ 'ambient', 'directional', 'hemisphere', 'point', 'spot' ] },
 			color: { type: 'color', if: { type: [ 'ambient', 'directional', 'point', 'spot' ] } },
 			intensity: { default: 1 },
 			skyColor: { type: 'color', if: { type: [ 'hemisphere' ] } },
@@ -54190,20 +54190,20 @@
 			if ( this.mesh !== undefined )
 				this.mesh.material = material;
 
-			this.dispatchEvent( { type: 'load' } );
+			this.dispatchEvent( { type: 'load', material } );
 
 		}
 
 		onProgress( event ) {
 
-			this.dispatchEvent( { type: 'progress', progressEvent: event } );
+			this.dispatchEvent( { type: 'progress', event } );
 
 		}
 
-		onError( error ) {
+		onError( event ) {
 
 			console.error( 'Material: failed retrieving asset' );
-			this.dispatchEvent( { type: 'error', error } );
+			this.dispatchEvent( { type: 'error', event } );
 
 		}
 
@@ -54216,11 +54216,11 @@
 			color: { type: 'color', if: { type: [ 'basic', 'lambert', 'matcap', 'phong', 'standard', 'physical', 'toon' ] } },
 			roughness: { default: 1.0, if: { type: [ 'standard', 'physical' ] } },
 			metalness: { default: 0, if: { type: [ 'standard', 'physical' ] } },
-			emissive: { type: 'color', default: '#000000', if: { type: [ 'lambert', 'phong', 'standard', 'physical', 'toon' ] } },
+			emissive: { type: 'color', default: 0x000000, if: { type: [ 'lambert', 'phong', 'standard', 'physical', 'toon' ] } },
 			emissiveIntensity: { default: 1, if: { type: [ 'lambert', 'phong', 'standard', 'physical', 'toon' ] } },
 			clearcoat: { default: 0.0, if: { type: [ 'physical' ] } },
 			clearcoatRoughness: { default: 0.0, if: { type: [ 'physical' ] } },
-			specular: { type: 'color', default: '#111111', if: { type: [ 'phong' ] } },
+			specular: { type: 'color', default: 0x111111, if: { type: [ 'phong' ] } },
 			shininess: { default: 30, if: { type: [ 'phong' ] } },
 			vertexColors: { default: false, if: { type: notAsset } },
 			vertexTangents: { default: false, if: { type: [ 'standard', 'physical' ] } },
@@ -54358,28 +54358,28 @@
 
 		}
 
-		onLoad( key, result ) {
+		onLoad( key, asset ) {
 
-			this.app.assets.add( key, result );
+			this.app.assets.add( key, asset );
 
-			this.ref = result;
+			this.ref = asset;
 
 			if ( this._enabled ) this.onEnable();
 
-			this.dispatchEvent( { type: 'load' } );
+			this.dispatchEvent( { type: 'load', asset } );
 
 		}
 
 		onProgress( event ) {
 
-			this.dispatchEvent( { type: 'progress', progressEvent: event } );
+			this.dispatchEvent( { type: 'progress', event } );
 
 		}
 
-		onError( error ) {
+		onError( event ) {
 
 			console.error( 'Model: failed retrieving asset' );
-			this.dispatchEvent( { type: 'error', error } );
+			this.dispatchEvent( { type: 'error', event } );
 
 		}
 
