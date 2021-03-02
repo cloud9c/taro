@@ -128,14 +128,14 @@ class Geometry {
 
 	onProgress( event ) {
 
-		this.dispatchEvent( { type: 'progress', progressEvent: event } );
+		this.dispatchEvent( { type: 'progress', event } );
 
 	}
 
-	onError( error ) {
+	onError( event ) {
 
 		console.error( 'Geometry: failed retrieving asset' );
-		this.dispatchEvent( { type: 'error', error } );
+		this.dispatchEvent( { type: 'error', event } );
 
 	}
 

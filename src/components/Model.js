@@ -97,14 +97,14 @@ class Model {
 
 	onProgress( event ) {
 
-		this.dispatchEvent( { type: 'progress', progressEvent: event } );
+		this.dispatchEvent( { type: 'progress', event } );
 
 	}
 
-	onError( error ) {
+	onError( event ) {
 
 		console.error( 'Model: failed retrieving asset' );
-		this.dispatchEvent( { type: 'error', error } );
+		this.dispatchEvent( { type: 'error', event } );
 
 	}
 
