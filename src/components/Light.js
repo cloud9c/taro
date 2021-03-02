@@ -30,7 +30,7 @@ class Light {
 				this.ref.position.set( 0, 0, 0 );
 				break;
 			default:
-				console.error( 'Light: invalid light type ' + type );
+				console.error( 'Light: invalid light type ' + this.type );
 
 		}
 
