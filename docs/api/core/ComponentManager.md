@@ -62,7 +62,7 @@ Additional values used for Taro Editor:<br>
 |---------------|-----------------------------------------------------------------------------------|---------------|
 | asset         | For URLs pointing to assets.                                                      | ''            |
 | boolean       | True or false                                                                     | false         |
-| color         | Converted from a string to a [Color](https://threejs.org/docs/#api/en/math/Color) | #ffffff       |
+| color         | Converted from a string to a [Color](https://threejs.org/docs/#api/en/math/Color) | 0xffffff      |
 | entity        | Finds a entity with a matching uuid                                               | ''            |
 | int           | A whole number (enforced in Taro Editor)                                          | 0             |
 | number        | A float number                                                                    | 0             |
@@ -86,7 +86,7 @@ The schema will set a default value if not provided, given the property type:
 schema: {
 	health: {type: 'number'},  // default: 0
 	name: {type: "string"},  // default: ''
-	hairColor: {type: 'color'}  // default: '#ffffff'
+	hairColor: {type: 'color'}  // default: 0xffffff
 }
 ```
 
