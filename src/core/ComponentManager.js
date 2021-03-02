@@ -110,7 +110,7 @@ export const ComponentManager = {
 					prop.default = '';
 					break;
 				case 'color':
-					prop.default = '#ffffff';
+					prop.default = 0xffffff;
 					break;
 				case 'vector2':
 					prop.default = [ 0, 0 ];
