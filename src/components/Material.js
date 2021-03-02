@@ -131,7 +131,7 @@ class Material {
 		if ( this.mesh !== undefined )
 			this.mesh.material = material;
 
-		this.dispatchEvent( { type: 'load' } );
+		this.dispatchEvent( { type: 'load', material } );
 
 	}
 
