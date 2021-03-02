@@ -83,15 +83,15 @@ class Model {
 
 	}
 
-	onLoad( key, result ) {
+	onLoad( key, asset ) {
 
-		this.app.assets.add( key, result );
+		this.app.assets.add( key, asset );
 
-		this.ref = result;
+		this.ref = asset;
 
 		if ( this._enabled ) this.onEnable();
 
-		this.dispatchEvent( { type: 'load' } );
+		this.dispatchEvent( { type: 'load', asset } );
 
 	}
 
