@@ -55,7 +55,7 @@ class Light {
 
 Light.config = {
 	schema: {
-		type: { type: 'select', default: 'directional', select: [ 'ambient', 'directional', 'hemisphere', 'point', 'spot' ] },
+		type: { type: 'select', default: 'ambient', select: [ 'ambient', 'directional', 'hemisphere', 'point', 'spot' ] },
 		color: { type: 'color', if: { type: [ 'ambient', 'directional', 'point', 'spot' ] } },
 		intensity: { default: 1 },
 		skyColor: { type: 'color', if: { type: [ 'hemisphere' ] } },
