@@ -984,7 +984,7 @@ export function SidebarInspector( editor ) {
 							break;
 						case 'background-equirect':
 							textureEquirect = new WebGLCubeRenderTarget( image.height );
-							textureEquirect.fromEquirectangularTexture( renderer, texture );
+							textureEquirect.fromEquirectangularTexture( editor.app.renderer, texture );
 							onEquirectOption();
 							break;
 						case 'environment-texture':
@@ -1009,7 +1009,7 @@ export function SidebarInspector( editor ) {
 
 		function onFileDown( event ) {
 
-			event.target.querySelector( 'input' ).click();
+			event.target.click();
 
 		}
 
@@ -1029,8 +1029,8 @@ export function SidebarInspector( editor ) {
 
 		}
 
-		const dropboxes = document.querySelectorAll( '#scene .file-wrapper' );
-		const hiddenInputs = document.querySelectorAll( '#scene .hidden-input' );
+		const dropboxes = document.querySelectorAll( '#scene-default .file-wrapper' );
+		const hiddenInputs = document.querySelectorAll( '#scene-default .hidden-input' );
 
 		for ( let i = 0, len = dropboxes.length; i < len; i ++ ) {
 
