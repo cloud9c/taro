@@ -40,6 +40,8 @@ export function SidebarInspector( editor ) {
 
 	function addHelpers( entity ) {
 
+		if ( entity.enabled === false ) return;
+
 		const components = entity.componentData;
 		const editorComponent = entity.components;
 		for ( let i = 0, len = components.length; i < len; i ++ ) {
@@ -703,7 +705,7 @@ export function SidebarInspector( editor ) {
 
 		if ( temp !== undefined ) {
 
-			if ( reorder || box.setFromObject( entity ).isEmpty() === false )
+			if ( reorder || box.setFromObject( entity ).isEmpty() === false || entity.enabled === false )
 				icons.splice( icons.indexOf( temp ), 1 );
 			else
 				entity.add( temp );
@@ -1258,10 +1260,9 @@ export function SidebarInspector( editor ) {
 
 			entity.enabled = this.checked;
 
-			if ( this.checked )
-				addHelpers( entity );
-			else
-				removeHelpers( entity );
+			updateIcon( currentEntity );
+			removeHelpers();
+			addHelpers( currentEntity );
 
 			editor.render();
 
