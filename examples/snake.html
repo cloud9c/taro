@@ -37,7 +37,7 @@
 			entity.position.set(0, 100, 0);
 
 			entity = new TARO.Entity();
-			entity.addComponent('light');
+			entity.addComponent('light', {type: 'directional'});
 			entity.position.set(-100, 175, 100);
 
 			// floor
