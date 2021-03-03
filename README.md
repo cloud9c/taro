@@ -1,4 +1,4 @@
-# Taro
+# [Taro](https://www.echou.xyz/taro/) [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/Cloud9c/taro/blob/master/LICENSE)
 
 A lightweight 3D game engine for the web. Built with [three.js](https://github.com/mrdoob/three.js/) and [cannon-es](https://github.com/pmndrs/cannon-es).
 
@@ -6,7 +6,7 @@ A lightweight 3D game engine for the web. Built with [three.js](https://github.c
 [Documentation](https://www.echou.xyz/taro/docs/#/) &mdash;
 [Examples](https://www.echou.xyz/taro/examples/)
 
-## Quick Startup
+## Usage
 
 ```html
 <!DOCTYPE html>
