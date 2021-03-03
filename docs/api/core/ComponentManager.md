@@ -78,7 +78,7 @@ The schema will try to infer a property type given only a default value:
 schema: {
 	health: {default: 10},  // type: "number"
 	name: {default: "foo"},  // type: "string"
-	hairColor: {default: '#000000'}  // type: "color"
+	hairColor: {default: 0x000000}  // type: "color"
 }
 ```
 The schema will set a default value if not provided, given the property type:
