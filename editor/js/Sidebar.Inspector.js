@@ -1007,9 +1007,9 @@ export function SidebarInspector( editor ) {
 
 		}
 
-		function onFileDown( event ) {
+		function onFileDown() {
 
-			event.target.click();
+			this.querySelector( 'input' ).click();
 
 		}
 
@@ -1024,8 +1024,7 @@ export function SidebarInspector( editor ) {
 
 			event.stopPropagation();
 			event.preventDefault();
-
-			processFile( event.dataTransfer.files, event.target );
+			processFile( event.dataTransfer.files, this );
 
 		}
 
