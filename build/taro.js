@@ -54258,7 +54258,7 @@
 			gradientMap: { type: 'asset', if: { type: [ 'toon' ] } },
 
 			side: { type: 'select', default: 'FrontSide', select: sides, if: { type: notAsset } },
-			flatShading: { default: false, if: { type: notAsset } },
+			flatShading: { default: false, if: { type: [ 'phong', 'standard', 'physical', 'normal', 'matcap' ] } },
 			blending: { type: 'select', default: 'NormalBlending', select: blendingModes, if: { type: notAsset } },
 			opacity: { default: 1.0, min: 0.0, max: 1.0, if: { type: notAsset } },
 			transparent: { default: false, if: { type: notAsset } },
