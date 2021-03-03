@@ -257,7 +257,8 @@ export function SidebarScene( editor ) {
 			// Delete
 			case 'Delete':
 			case 'Backspace':
-				this.onDelete();
+				if ( document.activeElement === document.body )
+					this.onDelete();
 
 		}
 
