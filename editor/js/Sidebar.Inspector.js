@@ -1257,6 +1257,12 @@ export function SidebarInspector( editor ) {
 		enabled.addEventListener( 'change', function () {
 
 			entity.enabled = this.checked;
+
+			if ( this.checked )
+				addHelpers( entity );
+			else
+				removeHelpers( entity );
+
 			editor.render();
 
 		} );
