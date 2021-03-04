@@ -12,7 +12,7 @@ class Material {
 
 	init( data ) {
 
-		const type = data.type;
+		const this.type = data.type;
 		const parameters = {};
 
 		const assetManager = this.app.assets;
@@ -47,7 +47,7 @@ class Material {
 		if ( parameters.depthPacking !== undefined )
 			parameters.depthPacking = depthPacking.indexOf( parameters.depthPacking ) + 3200;
 
-		switch ( type ) {
+		switch ( this.type ) {
 
 			case 'basic':
 				this.ref = new MeshBasicMaterial( parameters );
@@ -82,7 +82,7 @@ class Material {
 					materialLoader.load( parameters.asset, ( m ) => this.onLoad( parameters.asset, m ), ( p ) => this.onProgress( p ), ( e ) => this.onError( e ) );
 				break;
 			default:
-				console.error( 'Material: invalid material type ' + type );
+				console.error( 'Material: invalid material type ' + this.type );
 
 		}
 
