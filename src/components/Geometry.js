@@ -43,6 +43,9 @@ class Geometry {
 			case 'dodecahedron':
 				this.ref = new DodecahedronGeometry( data.radius, data.detail );
 				break;
+			case 'empty':
+				this.ref = new BufferGeometry();
+				break;
 			case 'icosahedron':
 				this.ref = new IcosahedronGeometry( data.radius, data.detail );
 				break;
@@ -74,6 +77,7 @@ class Geometry {
 				break;
 			default:
 				console.error( 'Geometry: invalid geometry type ' + this.type );
+				this.ref = undefined;
 
 		}
 
@@ -143,7 +147,7 @@ class Geometry {
 
 Geometry.config = {
 	schema: {
-		type: { type: 'select', default: 'box', select: [ 'box', 'circle', 'cone', 'cylinder', 'dodecahedron', 'icosahedron', 'octahedron', 'plane', 'ring', 'sphere', 'tetrahedron', 'torus', 'torusKnot', 'asset' ] },
+		type: { type: 'select', default: 'box', select: [ 'box', 'circle', 'cone', 'cylinder', 'dodecahedron', 'empty', 'icosahedron', 'octahedron', 'plane', 'ring', 'sphere', 'tetrahedron', 'torus', 'torusKnot', 'asset' ] },
 
 		depth: { default: 1, min: 0, if: { type: [ 'box' ] } },
 		height: { default: 1, min: 0, if: { type: [ 'box', 'cone', 'cylinder', 'plane' ] } },
