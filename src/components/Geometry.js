@@ -24,9 +24,9 @@ class Geometry {
 
 	init( data ) {
 
-		const type = data.type;
+		this.type = data.type;
 
-		switch ( type ) {
+		switch ( this.type ) {
 
 			case 'box':
 				this.ref = new BoxGeometry( data.width, data.height, data.depth, data.widthSegments, data.heightSegments, data.depthSegments );
@@ -73,7 +73,7 @@ class Geometry {
 					geometryLoader.load( data.asset, ( g ) => this.onLoad( data.asset, g ), ( p ) => this.onProgress( p ), () => this.onError() );
 				break;
 			default:
-				console.error( 'Geometry: invalid geometry type ' + type );
+				console.error( 'Geometry: invalid geometry type ' + this.type );
 
 		}
 
