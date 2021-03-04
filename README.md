@@ -7,6 +7,8 @@ A lightweight 3D game engine for the web. Built with [three.js](https://github.c
 [Documentation](https://www.echou.xyz/taro/docs/#/) &mdash;
 [Examples](https://www.echou.xyz/taro/examples/)
 
+![](https://video.twimg.com/tweet_video/EvmqcB1XUAICw8D.mp4)
+
 ## Usage
 
 ```html
