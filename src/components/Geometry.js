@@ -28,6 +28,11 @@ class Geometry {
 
 		switch ( this.type ) {
 
+			case 'asset':
+				this.ref = this.app.assets.get( parameters.asset );
+				if ( this.ref === undefined )
+					geometryLoader.load( data.asset, ( g ) => this.onLoad( data.asset, g ), ( p ) => this.onProgress( p ), () => this.onError() );
+				break;
 			case 'box':
 				this.ref = new BoxGeometry( data.width, data.height, data.depth, data.widthSegments, data.heightSegments, data.depthSegments );
 				break;
@@ -69,11 +74,6 @@ class Geometry {
 				break;
 			case 'torusKnot':
 				this.ref = new TorusKnotGeometry( data.radius, data.tube, data.tubularSegments, data.radialSegments, data.p, data.q );
-				break;
-			case 'asset':
-				this.ref = this.app.assets.get( parameters.asset );
-				if ( this.ref === undefined )
-					geometryLoader.load( data.asset, ( g ) => this.onLoad( data.asset, g ), ( p ) => this.onProgress( p ), () => this.onError() );
 				break;
 			default:
 				console.error( 'Geometry: invalid geometry type ' + this.type );
