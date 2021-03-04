@@ -147,7 +147,7 @@ class Geometry {
 
 Geometry.config = {
 	schema: {
-		type: { type: 'select', default: 'box', select: [ 'box', 'circle', 'cone', 'cylinder', 'dodecahedron', 'empty', 'icosahedron', 'octahedron', 'plane', 'ring', 'sphere', 'tetrahedron', 'torus', 'torusKnot', 'asset' ] },
+		type: { type: 'select', default: 'box', select: [ 'asset', 'box', 'circle', 'cone', 'cylinder', 'dodecahedron', 'empty', 'icosahedron', 'octahedron', 'plane', 'ring', 'sphere', 'tetrahedron', 'torus', 'torusKnot'] },
 
 		depth: { default: 1, min: 0, if: { type: [ 'box' ] } },
 		height: { default: 1, min: 0, if: { type: [ 'box', 'cone', 'cylinder', 'plane' ] } },
