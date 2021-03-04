@@ -61,6 +61,11 @@ class Material {
 
 		switch ( this.type ) {
 
+			case 'asset':
+				this.ref = this.app.assets.get( parameters.asset );
+				if ( this.ref === undefined )
+					materialLoader.load( parameters.asset, ( m ) => this.onLoad( parameters.asset, m ), ( p ) => this.onProgress( p ), ( e ) => this.onError( e ) );
+				break;
 			case 'basic':
 				this.ref = new MeshBasicMaterial( parameters );
 				break;
@@ -90,11 +95,6 @@ class Material {
 				break;
 			case 'toon':
 				this.ref = new MeshToonMaterial( parameters );
-				break;
-			case 'asset':
-				this.ref = this.app.assets.get( parameters.asset );
-				if ( this.ref === undefined )
-					materialLoader.load( parameters.asset, ( m ) => this.onLoad( parameters.asset, m ), ( p ) => this.onProgress( p ), ( e ) => this.onError( e ) );
 				break;
 			default:
 				console.error( 'Material: invalid material type ' + this.type );
