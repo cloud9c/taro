@@ -30,7 +30,9 @@ class Constraint {
 
 		}
 
-		switch ( data.type ) {
+		this.type = data.type;
+		
+		switch ( this.type ) {
 
 			case 'distance':
 				this.ref = new DistanceConstraint( bodyA, bodyB, data.distance, data.maxForce );
@@ -64,7 +66,7 @@ class Constraint {
 				} );
 				break;
 			default:
-				console.error( 'Constraint: invalid constraint type ' + data.type );
+				console.error( 'Constraint: invalid constraint type ' + this.type );
 
 		}
 
