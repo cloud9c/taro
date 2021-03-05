@@ -14,7 +14,7 @@ class Rigidbody {
 		this.ref = new Body( data );
 		this.cachedScale = this.entity.getWorldScale( new Vector3() );
 
-		data.type = indexedTypes[ data.type ];
+		this.type = data.type = indexedTypes[ data.type ];
 
 		if ( data.material.length > 0 ) {
 
