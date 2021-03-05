@@ -53816,10 +53816,15 @@ class Geometry {
 
 	init( data ) {
 
-		const type = data.type;
+		this.type = data.type;
 
-		switch ( type ) {
+		switch ( this.type ) {
 
+			case 'asset':
+				this.ref = this.app.assets.get( parameters.asset );
+				if ( this.ref === undefined )
+					geometryLoader.load( data.asset, ( g ) => this.onLoad( data.asset, g ), ( p ) => this.onProgress( p ), () => this.onError() );
+				break;
 			case 'box':
 				this.ref = new BoxGeometry( data.width, data.height, data.depth, data.widthSegments, data.heightSegments, data.depthSegments );
 				break;
@@ -53834,6 +53839,9 @@ class Geometry {
 				break;
 			case 'dodecahedron':
 				this.ref = new DodecahedronGeometry( data.radius, data.detail );
+				break;
+			case 'empty':
+				this.ref = new BufferGeometry();
 				break;
 			case 'icosahedron':
 				this.ref = new IcosahedronGeometry( data.radius, data.detail );
@@ -53859,13 +53867,9 @@ class Geometry {
 			case 'torusKnot':
 				this.ref = new TorusKnotGeometry( data.radius, data.tube, data.tubularSegments, data.radialSegments, data.p, data.q );
 				break;
-			case 'asset':
-				this.ref = this.app.assets.get( parameters.asset );
-				if ( this.ref === undefined )
-					geometryLoader.load( data.asset, ( g ) => this.onLoad( data.asset, g ), ( p ) => this.onProgress( p ), () => this.onError() );
-				break;
 			default:
-				console.error( 'Geometry: invalid geometry type ' + type );
+				console.error( 'Geometry: invalid geometry type ' + this.type );
+				this.ref = undefined;
 
 		}
 
@@ -53935,7 +53939,7 @@ class Geometry {
 
 Geometry.config = {
 	schema: {
-		type: { type: 'select', default: 'box', select: [ 'box', 'circle', 'cone', 'cylinder', 'dodecahedron', 'icosahedron', 'octahedron', 'plane', 'ring', 'sphere', 'tetrahedron', 'torus', 'torusKnot', 'asset' ] },
+		type: { type: 'select', default: 'box', select: [ 'asset', 'box', 'circle', 'cone', 'cylinder', 'dodecahedron', 'empty', 'icosahedron', 'octahedron', 'plane', 'ring', 'sphere', 'tetrahedron', 'torus', 'torusKnot'] },
 
 		depth: { default: 1, min: 0, if: { type: [ 'box' ] } },
 		height: { default: 1, min: 0, if: { type: [ 'box', 'cone', 'cylinder', 'plane' ] } },
@@ -54056,7 +54060,7 @@ ComponentManager.registerComponent( 'light', Light$1 );
 
 const materialLoader = new MaterialLoader();
 const textureLoader = new TextureLoader();
-const notAsset = [ 'basic', 'depth', 'lambert', 'matcap', 'normal', 'phong', 'physical', 'standard', 'toon' ];
+const builtIn = [ 'basic', 'depth', 'lambert', 'matcap', 'normal', 'phong', 'physical', 'standard', 'toon' ];
 const blendingModes = [ 'NoBlending', 'NormalBlending', 'AdditiveBlending', 'SubstractiveBlending', 'MultiplyBlending', 'CustomBlending' ];
 const sides = [ 'FrontSide', 'BackSide', 'DoubleSide' ];
 const depthPacking = [ 'BasicDepthPacking', 'RGBADepthPacking' ];
@@ -54065,7 +54069,7 @@ class Material$2 {
 
 	init( data ) {
 
-		const type = data.type;
+		this.type = data.type;
 		const parameters = {};
 
 		const assetManager = this.app.assets;
@@ -54083,7 +54087,7 @@ class Material$2 {
 
 				}
 
-			} else {
+			} else if (name !== 'type') {
 
 				parameters[ name ] = data[ name ];
 
@@ -54091,17 +54095,20 @@ class Material$2 {
 
 		}
 
-		delete parameters.type;
-
-		if ( parameters.blending !== undefined )
+		if ( typeof parameters.blending === 'string' )
 			parameters.blending = blendingModes.indexOf( parameters.blending );
-		if ( parameters.side !== undefined )
+		if ( typeof parameters.side === 'string' )
 			parameters.side = sides.indexOf( parameters.side );
-		if ( parameters.depthPacking !== undefined )
+		if ( typeof parameters.depthPacking === 'string' )
 			parameters.depthPacking = depthPacking.indexOf( parameters.depthPacking ) + 3200;
 
-		switch ( type ) {
+		switch ( this.type ) {
 
+			case 'asset':
+				this.ref = this.app.assets.get( parameters.asset );
+				if ( this.ref === undefined )
+					materialLoader.load( parameters.asset, ( m ) => this.onLoad( parameters.asset, m ), ( p ) => this.onProgress( p ), ( e ) => this.onError( e ) );
+				break;
 			case 'basic':
 				this.ref = new MeshBasicMaterial( parameters );
 				break;
@@ -54123,19 +54130,17 @@ class Material$2 {
 			case 'physical':
 				this.ref = new MeshPhysicalMaterial( parameters );
 				break;
+			case 'shader':
+				this.ref = new ShaderMaterial( parameters );
+				break;
 			case 'standard':
 				this.ref = new MeshStandardMaterial( parameters );
 				break;
 			case 'toon':
 				this.ref = new MeshToonMaterial( parameters );
 				break;
-			case 'asset':
-				this.ref = this.app.assets.get( parameters.asset );
-				if ( this.ref === undefined )
-					materialLoader.load( parameters.asset, ( m ) => this.onLoad( parameters.asset, m ), ( p ) => this.onProgress( p ), ( e ) => this.onError( e ) );
-				break;
 			default:
-				console.error( 'Material: invalid material type ' + type );
+				console.error( 'Material: invalid material type ' + this.type );
 
 		}
 
@@ -54205,7 +54210,7 @@ class Material$2 {
 
 Material$2.config = {
 	schema: {
-		type: { type: 'select', default: 'basic', select: [ 'basic', 'depth', 'lambert', 'matcap', 'normal', 'phong', 'physical', 'standard', 'toon', 'asset' ] },
+		type: { type: 'select', default: 'basic', select: [ 'asset', 'basic', 'depth', 'lambert', 'matcap', 'normal', 'phong', 'physical', 'shader', 'standard', 'toon'] },
 
 		color: { type: 'color', if: { type: [ 'basic', 'lambert', 'matcap', 'phong', 'standard', 'physical', 'toon' ] } },
 		roughness: { default: 1.0, if: { type: [ 'standard', 'physical' ] } },
@@ -54216,7 +54221,7 @@ Material$2.config = {
 		clearcoatRoughness: { default: 0.0, if: { type: [ 'physical' ] } },
 		specular: { type: 'color', default: 0x111111, if: { type: [ 'phong' ] } },
 		shininess: { default: 30, if: { type: [ 'phong' ] } },
-		vertexColors: { default: false, if: { type: notAsset } },
+		vertexColors: { default: false, if: { type: builtIn } },
 		vertexTangents: { default: false, if: { type: [ 'standard', 'physical' ] } },
 
 		depthPacking: { type: 'select', default: 'BasicDepthPacking', select: depthPacking, if: { type: [ 'depth' ] } },
@@ -54251,14 +54256,14 @@ Material$2.config = {
 		emissiveMap: { type: 'asset', if: { type: [ 'lambert', 'phong', 'standard', 'physical', 'toon' ] } },
 		gradientMap: { type: 'asset', if: { type: [ 'toon' ] } },
 
-		side: { type: 'select', default: 'FrontSide', select: sides, if: { type: notAsset } },
+		side: { type: 'select', default: 'FrontSide', select: sides, if: { type: builtIn } },
 		flatShading: { default: false, if: { type: [ 'phong', 'standard', 'physical', 'normal', 'matcap' ] } },
-		blending: { type: 'select', default: 'NormalBlending', select: blendingModes, if: { type: notAsset } },
-		opacity: { default: 1.0, min: 0.0, max: 1.0, if: { type: notAsset } },
-		transparent: { default: false, if: { type: notAsset } },
-		alphaTest: { default: 0, min: 0, max: 1, if: { type: notAsset } },
-		depthTest: { default: true, if: { type: notAsset } },
-		depthWrite: { default: true, if: { type: notAsset } },
+		blending: { type: 'select', default: 'NormalBlending', select: blendingModes, if: { type: builtIn } },
+		opacity: { default: 1.0, min: 0.0, max: 1.0, if: { type: builtIn } },
+		transparent: { default: false, if: { type: builtIn } },
+		alphaTest: { default: 0, min: 0, max: 1, if: { type: builtIn } },
+		depthTest: { default: true, if: { type: builtIn } },
+		depthWrite: { default: true, if: { type: builtIn } },
 		wireframe: { default: false, if: { type: [ 'basic', 'depth', 'lambert', 'normal', 'phong', 'standard', 'physical', 'toon' ] } },
 
 		asset: { type: 'asset', if: { type: [ 'asset' ] } },
@@ -54294,10 +54299,10 @@ class Model {
 			switch ( extension ) {
 
 				case 'drc':
-					this.promise = dracoLoader.load( data.asset, ( m ) => this.onDracoLoad( data.asset, m ), ( p ) => this.onProgress( p ), ( e ) => this.onError( e ) );
+					dracoLoader.load( data.asset, ( m ) => this.onDracoLoad( data.asset, m ), ( p ) => this.onProgress( p ), ( e ) => this.onError( e ) );
 				case 'glb':
 				case 'gltf':
-					this.promise = gltfLoader.load( data.asset, ( m ) => this.onGLTFLoad( data.asset, m ), ( p ) => this.onProgress( p ), ( e ) => this.onError( e ) );
+					gltfLoader.load( data.asset, ( m ) => this.onGLTFLoad( data.asset, m ), ( p ) => this.onProgress( p ), ( e ) => this.onError( e ) );
 					break;
 				case 'js':
 				case 'json':
@@ -54305,7 +54310,7 @@ class Model {
 				case '3mat':
 				case '3obj':
 				case '3scn':
-					this.promise = objectLoader.load( data.asset, ( m ) => this.onLoad( data.asset, m ), ( p ) => this.onProgress( p ), () => this.onError() );
+					objectLoader.load( data.asset, ( m ) => this.onLoad( data.asset, m ), ( p ) => this.onProgress( p ), () => this.onError() );
 					break;
 
 				default:
@@ -64166,7 +64171,9 @@ class Constraint$1 {
 
 		}
 
-		switch ( data.type ) {
+		this.type = data.type;
+		
+		switch ( this.type ) {
 
 			case 'distance':
 				this.ref = new DistanceConstraint( bodyA, bodyB, data.distance, data.maxForce );
@@ -64200,7 +64207,7 @@ class Constraint$1 {
 				} );
 				break;
 			default:
-				console.error( 'Constraint: invalid constraint type ' + data.type );
+				console.error( 'Constraint: invalid constraint type ' + this.type );
 
 		}
 
@@ -64262,7 +64269,7 @@ class Rigidbody {
 		this.ref = new Body( data );
 		this.cachedScale = this.entity.getWorldScale( new Vector3() );
 
-		data.type = indexedTypes[ data.type ];
+		this.type = data.type = indexedTypes[ data.type ];
 
 		if ( data.material.length > 0 ) {
 
