@@ -1,7 +1,7 @@
 [Component](api/core/Component) ›
 
 # Geometry
-A representation of mesh, line, or point geometry. Includes vertex positions, face indices, normals, colors, UVs, and custom attributes within buffers, reducing the cost of passing all this data to the GPU. This is a wrapper class around three.js's [BufferGeometry](https://threejs.org/docs/#api/en/core/BufferGeometry) classes.
+A representation of mesh, line, or point geometry. Includes vertex positions, face indices, normals, colors, UVs, and custom attributes within buffers, reducing the cost of passing all this data to the GPU. This is a wrapper class around three.js [BufferGeometry](https://threejs.org/docs/#api/en/core/BufferGeometry) classes.
 
 ## Code Example
 
@@ -30,7 +30,7 @@ Fires when an asset is loaded. Property `event` is provided (XMLHttpRequest prog
 
 | Property | Description                                                 | Default Value |
 |----------|-------------------------------------------------------------|---------------|
-| type     | 13 built-in geometries and 1 asset type (see below).        | "box"         |
+| type     | 14 built-in geometries and 1 asset type (see below).        | "box"         |
 
 ### asset
 
@@ -89,6 +89,9 @@ Fires when an asset is loaded. Property `event` is provided (XMLHttpRequest prog
 |----------|------------------------------------------------------------------------------------------|---------------|
 | radius   | Radius of the dodecahedron.                                                              | 1             |
 | detail   | Setting this to a value greater than 0 adds vertices making it no longer a dodecahedron. | 0             |
+
+### empty
+Creates an empty BufferGeometry; no additional parameters.
 
 ### icosahedron
 
@@ -172,11 +175,14 @@ See the base [Component](api/core/Component) class for common properties.
 Class representing triangular polygon mesh based objects. Added to an entity if both the Geometry and Material components are enabled.
 
 ### .<a>ref</a> : <span class="param">[BufferGeometry](https://threejs.org/docs/#api/en/core/BufferGeometry)</span>
-Reference to the three.js [BufferGeometry](https://threejs.org/docs/#api/en/core/BufferGeometry) or derived classes.
+Reference to the three.js [BufferGeometry](https://threejs.org/docs/#api/en/core/BufferGeometry) classes.
+
+### .<a>type</a> : <span class="param">String</span>
+The geometry type as determined by the data parameters. Modifying this property does not change the geometry type.
 
 ## Methods
 
 See the base [Component](api/core/Component) class for common methods.
 
 ## Source
-[src/core/Geometry.js](https://github.com/Cloud9c/taro/blob/master/src/components/Geometry.js)
+[src/components/Geometry.js](https://github.com/Cloud9c/taro/blob/master/src/components/Geometry.js)

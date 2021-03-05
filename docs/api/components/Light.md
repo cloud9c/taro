@@ -1,13 +1,13 @@
 [Component](api/core/Component) ›
 
 # Light
-This is a wrapper class around three.js's [Light](https://threejs.org/docs/#api/en/lights/Light) classes.
+This is a wrapper class around three.js [Light](https://threejs.org/docs/#api/en/lights/Light) classes.
 
-- **Ambient light** globally illuminates all objects in the scene equally.
-- **Directional light** gets emitted in a specific direction.
-- **Hemisphere light** is a light source positioned directly above the scene, with color fading from the sky color to the ground color.
-- **Point light** gets emitted from a single point in all directions.
-- **Spot light** gets emitted from a single point in one direction, along a cone that increases in size the further from the light it gets.
+- **Ambient** light globally illuminates all objects in the scene equally.
+- **Directional** light gets emitted in a specific direction.
+- **Hemisphere** light is a light source positioned directly above the scene, with color fading from the sky color to the ground color.
+- **Point** light gets emitted from a single point in all directions.
+- **Spot** light gets emitted from a single point in one direction, along a cone that increases in size the further from the light it gets.
 
 ## Code Example
 
@@ -26,7 +26,7 @@ entity.addComponent('light', {
 |-----------|----------------------------------------------------------|---------------|
 | color     | Hexadecimal color of the light (not used by hemisphere). | 0xffffff      |
 | intensity | Numeric value of the light's strength/intensity.         | 1             |
-| type      | One of 5 light types.                                    | 'ambient'     |
+| type      | One of five light types.                                 | "ambient"     |
 
 ### hemisphere
 
@@ -55,8 +55,8 @@ entity.addComponent('light', {
 
 See the base [Component](api/core/Component) class for common properties.
 
-### .<a>ref</a> : <span class="param">Object</span>
-Reference to three.js [Light](https://threejs.org/docs/#api/en/lights/Light)'s derived classes.
+### .<a>ref</a> : <span class="param">[Light](https://threejs.org/docs/#api/en/lights/Light)</span>
+Reference to three.js [Light](https://threejs.org/docs/#api/en/lights/Light) classes.
 
 ### .<a>type</a> : <span class="param">String</span>
 The light type as determined by the data parameters. Modifying this property does not change the light type.
@@ -66,4 +66,4 @@ The light type as determined by the data parameters. Modifying this property doe
 See the base [Component](api/core/Component) class for common methods.
 
 ## Source
-[src/core/Light.js](https://github.com/Cloud9c/taro/blob/master/src/components/Light.js)
+[src/components/Light.js](https://github.com/Cloud9c/taro/blob/master/src/components/Light.js)

@@ -1,7 +1,7 @@
 [Component](api/core/Component) ›
 
 # Camera
-A Camera is a device through which the player views the world. This is a wrapper class around three.js's [PerspectiveCamera](https://threejs.org/docs/#api/en/cameras/PerspectiveCamera) and [OrthographicCamera](https://threejs.org/docs/#api/en/cameras/OrthographicCamera).
+A Camera is a device through which the player views the world. This is a wrapper class around three.js [PerspectiveCamera](https://threejs.org/docs/#api/en/cameras/PerspectiveCamera) and [OrthographicCamera](https://threejs.org/docs/#api/en/cameras/OrthographicCamera).
 
 Perspective projection is designed to mimic the way the human eye sees. It is the most common projection mode used for rendering a 3D scene.
 
@@ -26,7 +26,7 @@ entity.addComponent('camera', {
 | type     | Either perspective or orthographic.            | "perspective" |
 | near     | Height (in meters) of the sides on the Y axis. | 0.1           |
 | far      | Depth (in meters) of the sides on the Z axis.  | 2000          |
-| viewport | Number of segmented faces on the z-axis        | [0, 0, 1, 1]  |
+| viewport | Number of segmented faces on the z-axis.       | [0, 0, 1, 1]  |
 
 ### perspective
 
@@ -52,7 +52,7 @@ See the base [Component](api/core/Component) class for common properties.
 ### .<a>autoAspect</a> : <span class="param">Float</span>
 Automatically calculate aspect ratio from the canvas's width / height.
 
-### .<a>ref</a> : <span class="param">Object</span>
+### .<a>ref</a> : <span class="param">[Camera](https://threejs.org/docs/#api/en/cameras/Camera)</span>
 Reference to the three.js [PerspectiveCamera](https://threejs.org/docs/index.html#api/en/cameras/PerspectiveCamera) or [OrthographicCamera](https://threejs.org/docs/index.html#api/en/cameras/OrthographicCamera).
 
 ### .<a>type</a> : <span class="param">String</span>
@@ -69,4 +69,4 @@ See the base [Component](api/core/Component) class for common methods.
 Updates the camera projection matrix. Must be called after any change of parameters (including .viewport).
 
 ## Source
-[src/core/Camera.js](https://github.com/Cloud9c/taro/blob/master/src/components/Camera.js)
+[src/components/Camera.js](https://github.com/Cloud9c/taro/blob/master/src/components/Camera.js)

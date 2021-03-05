@@ -60,14 +60,14 @@ Additional values used for Taro Editor:<br>
 ### Property Type
 | Property Type | Description                                                                       | Default Value |
 |---------------|-----------------------------------------------------------------------------------|---------------|
-| asset         | For URLs pointing to assets.                                                      | ''            |
+| asset         | For URLs pointing to assets.                                                      | ""            |
 | boolean       | True or false                                                                     | false         |
 | color         | Converted from a string to a [Color](https://threejs.org/docs/#api/en/math/Color) | 0xffffff      |
-| entity        | Finds a entity with a matching uuid                                               | ''            |
+| entity        | Finds a entity with a matching uuid                                               | ""            |
 | int           | A whole number (enforced in Taro Editor)                                          | 0             |
 | number        | A float number                                                                    | 0             |
 | select        | Default value from a list                                                         | null          |
-| string        | Text                                                                              | ''            |
+| string        | Text                                                                              | ""            |
 | vector2       | Array to [Vector2](https://threejs.org/docs/#api/en/math/Vector2)                 | [0, 0]        |
 | vector3       | Array to [Vector3](https://threejs.org/docs/#api/en/math/Vector3)                 | [0, 0, 0]     |
 | vector4       | Array to [Vector4](https://threejs.org/docs/#api/en/math/Vector4)                 | [0, 0, 0, 0]  |
