@@ -26,7 +26,7 @@ class Material {
 
 	init( data ) {
 
-		const this.type = data.type;
+		this.type = data.type;
 		const parameters = {};
 
 		const assetManager = this.app.assets;
