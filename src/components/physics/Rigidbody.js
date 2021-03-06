@@ -20,7 +20,7 @@ class Rigidbody {
 
 			this.ref.material = this.app.assets.get( data.material );
 			if ( this.ref.material === undefined )
-				fileLoader.load( data.material, ( json ) => this.onMaterialLoad( data.material, json ) );
+				fileLoader.load( data.material, ( json ) => this.onMaterialLoad( data.material, json ), ( p ) => this.onProgress( p ), ( e ) => this.onError( e ) );
 
 		}
 
@@ -39,6 +39,21 @@ class Rigidbody {
 		const material = new Material( json );
 		this.ref.material = material;
 		this.app.assets.add( key, material );
+
+		this.dispatchEvent( { type: 'load', material } );
+
+	}
+
+	onProgress( event ) {
+
+		this.dispatchEvent( { type: 'progress', event } );
+
+	}
+
+	onError( event ) {
+
+		console.error( 'Rigidbody: failed retrieving asset' );
+		this.dispatchEvent( { type: 'error', event } );
 
 	}
 

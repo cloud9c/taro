@@ -13,14 +13,38 @@ class Audio {
 
 		}
 
-		if ( typeof data.source !== 'string' ) {
+		if ( typeof data.asset === 'object' ) {
 
+			this.ref.setBuffer( data.asset );
 
+		} else if ( data.asset.length > 0 ) {
 
-		} else if ( data.source.length > 0 ) {
-
+			audioLoader.load( data.asset, ( b ) => this.onLoad( data.asset, b ), ( p ) => this.onProgress( p ), ( e ) => this.onError( e ) );
 
 		}
+
+	}
+
+	onLoad( key, buffer ) {
+
+		this.app.assets.add( key, buffer );
+
+		this.ref.setBuffer( buffer );
+
+		this.dispatchEvent( { type: 'load', buffer } );
+
+	}
+
+	onProgress( event ) {
+
+		this.dispatchEvent( { type: 'progress', event } );
+
+	}
+
+	onError( event ) {
+
+		console.error( 'Audio: failed retrieving asset' );
+		this.dispatchEvent( { type: 'error', event } );
 
 	}
 
@@ -40,7 +64,8 @@ class Audio {
 
 Audio.config = {
 	schema: {
-
+		asset: { type: 'asset' },
+		positional
 	},
 	multiple: true,
 };
