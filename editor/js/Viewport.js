@@ -180,7 +180,6 @@ export function Viewport( editor ) {
 	const app = editor.app;
 
 	const scene = this.scene = new Scene();
-	const sceneHelper = new Scene();
 	app.setScene( scene );
 
 	this.addEntity = ( name, json ) => {
@@ -309,10 +308,6 @@ export function Viewport( editor ) {
 
 		renderer.render( scene, camera );
 
-		renderer.autoClear = false;
-		renderer.render( sceneHelper, camera );
-		renderer.autoClear = true;
-
 		app.input.reset();
 
 	};
@@ -375,7 +370,7 @@ export function Viewport( editor ) {
 
 	} );
 
-	sceneHelper.add( control );
+	scene.add( control );
 
 	const attach = this.attach = ( entity ) => {
 
