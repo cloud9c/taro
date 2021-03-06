@@ -65072,7 +65072,7 @@
 
 				for ( let i = 0, len = audioArray.length; i < len; i ++ ) {
 
-					if ( audioArray[ i ].ref.source === null ) break;
+					if ( audioArray[ i ].ref.source === null ) continue;
 
 					audioArray[ i ].ref.hasPlaybackControl = true;
 					audioArray[ i ].ref.stop();
