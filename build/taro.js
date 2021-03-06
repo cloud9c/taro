@@ -65066,7 +65066,8 @@
 
 			this.renderer.dispose();
 			this.input.dispose();
-			this.audioListener.context.close();
+			this.audioListener.context.suspend();
+			this.audioListener.context.resume();
 
 		}
 
