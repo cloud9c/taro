@@ -19,6 +19,17 @@ entity.addComponent('rigidbody', {
 });
 ```
 
+## Events
+
+### error
+Fires when an asset failed to load. Property `event` is provided (XMLHttpRequest error event).
+
+### load
+Fires when an asset failed to load. Property `material` is provided (loaded material).
+
+### progress
+Fires when an asset is loaded. Property `event` is provided (XMLHttpRequest progress event).
+
 ## Data Parameters
 
 | Property             | Description                                                          | Default Value |
