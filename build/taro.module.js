@@ -53620,11 +53620,9 @@ const ComponentManager = {
 		// sorting array to place non-if attributes last
 		array.sort( ( a, b ) => {
 
-			if ( a.if === undefined )
-				return - 1;
-			else if ( b.if === undefined )
+			if ( b.if === undefined && a.if !== undefined )
 				return 1;
-			return 0;
+			return - 1;
 
 		} );
 
