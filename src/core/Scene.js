@@ -9,7 +9,7 @@ export class Scene extends ThreeScene {
 
 		this.app = null;
 		this.components = { rigidbody: [], camera: [] };
-		
+
 		this.audioListener = new AudioListener();
 
 		if ( name !== undefined )
@@ -38,7 +38,9 @@ export class Scene extends ThreeScene {
 
 				if ( this.components[ type ] === undefined )
 					this.components[ type ] = [];
-				this.components[ type ].push( component );
+
+				if ( this.components[ type ].indexOf( component ) === - 1 )
+					this.components[ type ].push( component );
 
 			}
 
@@ -55,8 +57,10 @@ export class Scene extends ThreeScene {
 
 				const type = component.componentType;
 				const container = this.components[ type ];
+				const index = container.indexOf( component );
 
-				container.splice( container.indexOf( component ), 1 );
+				if ( index > - 1 )
+					container.splice( index, 1 );
 
 			}
 

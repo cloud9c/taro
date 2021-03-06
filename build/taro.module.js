@@ -65189,7 +65189,7 @@ class Scene$1 extends Scene {
 
 		this.app = null;
 		this.components = { rigidbody: [], camera: [] };
-		
+
 		this.audioListener = new AudioListener();
 
 		if ( name !== undefined )
@@ -65218,7 +65218,9 @@ class Scene$1 extends Scene {
 
 				if ( this.components[ type ] === undefined )
 					this.components[ type ] = [];
-				this.components[ type ].push( component );
+
+				if ( this.components[ type ].indexOf( component ) === - 1 )
+					this.components[ type ].push( component );
 
 			}
 
@@ -65235,8 +65237,10 @@ class Scene$1 extends Scene {
 
 				const type = component.componentType;
 				const container = this.components[ type ];
+				const index = container.indexOf( component );
 
-				container.splice( container.indexOf( component ), 1 );
+				if ( index > - 1 )
+					container.splice( index, 1 );
 
 			}
 
