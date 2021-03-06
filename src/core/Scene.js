@@ -1,4 +1,4 @@
-import { Scene as ThreeScene } from '../lib/three.module.js';
+import { Scene as ThreeScene, AudioListener } from '../lib/three.module.js';
 import { App } from './App.js';
 
 export class Scene extends ThreeScene {
