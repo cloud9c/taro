@@ -44,7 +44,7 @@ class Material {
 
 				}
 
-			} else if (name !== 'type') {
+			} else if ( name !== 'type' ) {
 
 				parameters[ name ] = data[ name ];
 
@@ -62,7 +62,8 @@ class Material {
 		switch ( this.type ) {
 
 			case 'asset':
-				this.ref = this.app.assets.get( parameters.asset );
+
+				this.ref = typeof parameters.asset === 'object' ? parameters.asset : this.app.assets.get( parameters.asset );
 				if ( this.ref === undefined )
 					materialLoader.load( parameters.asset, ( m ) => this.onLoad( parameters.asset, m ), ( p ) => this.onProgress( p ), ( e ) => this.onError( e ) );
 				break;
@@ -167,7 +168,7 @@ class Material {
 
 Material.config = {
 	schema: {
-		type: { type: 'select', default: 'basic', select: [ 'asset', 'basic', 'depth', 'lambert', 'matcap', 'normal', 'phong', 'physical', 'shader', 'standard', 'toon'] },
+		type: { type: 'select', default: 'basic', select: [ 'asset', 'basic', 'depth', 'lambert', 'matcap', 'normal', 'phong', 'physical', 'shader', 'standard', 'toon' ] },
 
 		color: { type: 'color', if: { type: [ 'basic', 'lambert', 'matcap', 'phong', 'standard', 'physical', 'toon' ] } },
 		roughness: { default: 1.0, if: { type: [ 'standard', 'physical' ] } },

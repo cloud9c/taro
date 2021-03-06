@@ -16,7 +16,7 @@ class Model {
 
 	init( data ) {
 
-		this.ref = this.app.assets.get( data.asset );
+		this.ref = typeof data.asset === 'object' ? data.asset : this.app.assets.get( data.asset );
 
 		if ( this.ref === undefined ) {
 

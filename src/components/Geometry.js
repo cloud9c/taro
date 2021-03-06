@@ -29,7 +29,7 @@ class Geometry {
 		switch ( this.type ) {
 
 			case 'asset':
-				this.ref = this.app.assets.get( parameters.asset );
+				this.ref = typeof data.asset === 'object' ? data.asset : this.app.assets.get( data.asset );
 				if ( this.ref === undefined )
 					geometryLoader.load( data.asset, ( g ) => this.onLoad( data.asset, g ), ( p ) => this.onProgress( p ), () => this.onError() );
 				break;
@@ -147,7 +147,7 @@ class Geometry {
 
 Geometry.config = {
 	schema: {
-		type: { type: 'select', default: 'box', select: [ 'asset', 'box', 'circle', 'cone', 'cylinder', 'dodecahedron', 'empty', 'icosahedron', 'octahedron', 'plane', 'ring', 'sphere', 'tetrahedron', 'torus', 'torusKnot'] },
+		type: { type: 'select', default: 'box', select: [ 'asset', 'box', 'circle', 'cone', 'cylinder', 'dodecahedron', 'empty', 'icosahedron', 'octahedron', 'plane', 'ring', 'sphere', 'tetrahedron', 'torus', 'torusKnot' ] },
 
 		depth: { default: 1, min: 0, if: { type: [ 'box' ] } },
 		height: { default: 1, min: 0, if: { type: [ 'box', 'cone', 'cylinder', 'plane' ] } },
