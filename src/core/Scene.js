@@ -27,11 +27,14 @@ export class Scene extends ThreeScene {
 
 	}
 
-	_addComponents( components ) {
+	_addComponents( components, queue ) {
 
 		for ( let i = 0, len = components.length; i < len; i ++ ) {
 
 			const component = components[ i ];
+
+			if ( queue.indexOf( component ) !== - 1 ) continue;
+
 			if ( component._enabled ) {
 
 				const type = component.componentType;
@@ -39,8 +42,7 @@ export class Scene extends ThreeScene {
 				if ( this.components[ type ] === undefined )
 					this.components[ type ] = [];
 
-				if ( this.components[ type ].indexOf( component ) === - 1 )
-					this.components[ type ].push( component );
+				this.components[ type ].push( component );
 
 			}
 
@@ -48,19 +50,20 @@ export class Scene extends ThreeScene {
 
 	}
 
-	_removeComponents( components ) {
+	_removeComponents( components, queue ) {
 
 		for ( let i = 0, len = components.length; i < len; i ++ ) {
 
 			const component = components[ i ];
+
+			if ( queue.indexOf( component ) !== - 1 ) continue;
+
 			if ( component._enabled ) {
 
 				const type = component.componentType;
 				const container = this.components[ type ];
-				const index = container.indexOf( component );
 
-				if ( index > - 1 )
-					container.splice( index, 1 );
+				container.splice( container.indexOf( component ), 1 );
 
 			}
 
@@ -78,7 +81,7 @@ export class Scene extends ThreeScene {
 
 			}
 
-			this._addComponents( object.components );
+			this._addComponents( object.components, object.queue );
 
 			object.scene = this;
 			object.dispatchEvent( { type: 'sceneadd' } );
@@ -98,7 +101,7 @@ export class Scene extends ThreeScene {
 
 		if ( object.isEntity !== undefined ) {
 
-			this._removeComponents( object.components );
+			this._removeComponents( object.components, object.queue );
 
 			object.scene = null;
 			object.dispatchEvent( { type: 'sceneremove' } );
