@@ -8,7 +8,9 @@ class Audio {
 
 	init( data ) {
 
-		if ( data.positional === true ) {
+		this.positional = data.positional;
+		
+		if ( this.positional === true ) {
 
 			this.ref = new PositionalAudio( this.app.audioListener );
 
