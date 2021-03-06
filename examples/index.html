@@ -38,8 +38,9 @@
 						window.addEventListener("pointerdown", () => {
 							this.entity.app.renderer.domElement.requestPointerLock();
 						});
-						this.ball.addEventListener("collide", function (c) {
+						this.ball.addEventListener("collide", (c) => {
 							console.log(c);
+							this.ball.getComponent('audio').ref.play();
 						});
 					}
 					update() {
@@ -111,7 +112,7 @@
 			entity.position.set(0, 100, 0);
 
 			entity = new TARO.Entity("light");
-			const dirLight = entity.addComponent("light").ref;
+			const dirLight = entity.addComponent("light", {type: 'directional'}).ref;
 
 			dirLight.color.setHSL(0.1, 1, 0.95);
 
@@ -161,6 +162,9 @@
 				type: 'sphere',
 				radius: 1,
 			});
+			entity.addComponent("audio", {
+				asset: 'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/sounds/ping_pong.mp3'
+			});
 
 			// blocks
 			const position = new TARO.Vector3(-2, 1, -5);
@@ -194,6 +198,7 @@
 			entity = new TARO.Entity("camera");
 			entity.addComponent("camera");
 			entity.addComponent("cameraController");
+			entity.addComponent("audioListener");
 			entity.position.set(0, 5, 10);
 
 			app.start();

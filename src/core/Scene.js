@@ -1,7 +1,7 @@
-import { Scene as TS } from '../lib/three.module.js';
+import { Scene as ThreeScene } from '../lib/three.module.js';
 import { App } from './App.js';
 
-export class Scene extends TS {
+export class Scene extends ThreeScene {
 
 	constructor( name, app ) {
 

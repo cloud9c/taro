@@ -1,13 +1,13 @@
 import { ComponentManager } from '../core/ComponentManager.js';
+import { AudioListener as ThreeAudioListener } from '../lib/three.module.js';
 
-class Renderable {
+export class AudioListener {
 
 	init( data ) {
 
-		if ( data.isObject3D === undefined )
-			data = new Object3D();
+		AudioListener.AudioListenerInstance.setMasterVolume( data.masterVolume );
+		AudioListener.AudioListenerInstance.timeDelta = data.timeDelta;
 
-		this.ref = data;
 		this.addEventListener( 'enable', this.onEnable );
 		this.addEventListener( 'disable', this.onDisable );
 
@@ -15,20 +15,26 @@ class Renderable {
 
 	onEnable() {
 
-		this.entity.add( this.ref );
+		this.entity.add( AudioListener.AudioListenerInstance );
 
 	}
 
 	onDisable() {
 
-		this.entity.remove( this.ref );
+		this.entity.remove( AudioListener.AudioListenerInstance );
 
 	}
 
 }
 
-Renderable.config = {
+AudioListener.config = {
+	schema: {
+		masterVolume: { type: 'number', default: 1 },
+		timeDelta: { type: 'number' }
+	},
 	multiple: true,
 };
 
-ComponentManager.registerComponent( 'renderable', Renderable );
+AudioListener.AudioListenerInstance = new ThreeAudioListener();
+
+ComponentManager.registerComponent( 'audioListener', AudioListener );

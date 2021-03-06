@@ -3,6 +3,8 @@ export { GLTFLoader } from './lib/GLTFLoader.js';
 export { DRACOLoader } from './lib/DRACOLoader.js';
 
 // components
+import './components/Audio.js';
+import './components/AudioListener.js';
 import './components/Camera.js';
 import './components/Geometry.js';
 import './components/Light.js';
