@@ -322,6 +322,10 @@ export function Navbar( editor ) {
 			// dispose old app
 			app.stop();
 			app.dispose();
+
+			if ( app.components[ 'audioListener' ] !== undefined && app.components[ 'audioListener' ][ 0 ] !== undefined )
+				app.components[ 'audioListener' ][ 0 ].AudioListenerInstance.context.close();
+
 			app = undefined;
 
 			canvas.style.position = '';
