@@ -79,8 +79,17 @@ export class App {
 
 		this.renderer.dispose();
 		this.input.dispose();
-		this.audioListener.context.suspend();
-		this.audioListener.context.resume();
+
+		const audioArray = this.components[ 'audio' ];
+		if ( audioArray !== undefined ) {
+
+			for ( let i = 0, len = audioArray.length; i < len; i ++ ) {
+
+				audioArray[ i ].ref.disconnect();
+
+			}
+
+		}
 
 	}
 
