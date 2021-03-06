@@ -53720,8 +53720,10 @@ class AudioListener$1 {
 
 	init( data ) {
 
-		this.app.audioListener.setMasterVolume( data.masterVolume );
-		this.app.audioListener.timeDelta = data.timeDelta;
+		this.ref = this.scene.audioListener;
+		
+		this.ref.setMasterVolume( data.masterVolume );
+		this.ref.timeDelta = data.timeDelta;
 
 		this.addEventListener( 'enable', this.onEnable );
 		this.addEventListener( 'disable', this.onDisable );
@@ -53730,13 +53732,13 @@ class AudioListener$1 {
 
 	onEnable() {
 
-		this.entity.add( this.app.audioListener );
+		this.entity.add( this.ref );
 
 	}
 
 	onDisable() {
 
-		this.entity.remove( this.app.audioListener );
+		this.entity.remove( this.ref );
 
 	}
 
@@ -53757,9 +53759,11 @@ class Audio$1 {
 
 	init( data ) {
 
-		if ( data.positional === true ) {
+		this.positional = data.positional;
+		
+		if ( this.positional === true ) {
 
-			this.ref = new PositionalAudio( this.app.audioListener );
+			this.ref = new PositionalAudio( this.scene.audioListener );
 
 			this.ref.setDistanceModel( data.distanceModel );
 			this.ref.setMaxDistance( data.maxDistance );
@@ -53768,7 +53772,7 @@ class Audio$1 {
 
 		} else {
 
-			this.ref = new Audio( this.app.audioListener );
+			this.ref = new Audio( this.scene.audioListener );
 
 		}
 
@@ -65000,8 +65004,6 @@ class App {
 		this.physics = new Physics( parameters );
 		this.input = new Input( this.domElement );
 
-		this.audioListener = new AudioListener();
-
 		this.scenes = [];
 		this.currentScene = null;
 
@@ -65187,6 +65189,8 @@ class Scene$1 extends Scene {
 
 		this.app = null;
 		this.components = { rigidbody: [], camera: [] };
+		
+		this.audioListener = new AudioListener();
 
 		if ( name !== undefined )
 			this.name = name;
