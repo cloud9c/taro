@@ -5,8 +5,8 @@ export class AudioListener {
 
 	init( data ) {
 
-		AudioListener.AudioListenerInstance.setMasterVolume( data.masterVolume );
-		AudioListener.AudioListenerInstance.timeDelta = data.timeDelta;
+		this.AudioListenerInstance.setMasterVolume( data.masterVolume );
+		this.AudioListenerInstance.timeDelta = data.timeDelta;
 
 		this.addEventListener( 'enable', this.onEnable );
 		this.addEventListener( 'disable', this.onDisable );
@@ -15,13 +15,13 @@ export class AudioListener {
 
 	onEnable() {
 
-		this.entity.add( AudioListener.AudioListenerInstance );
+		this.entity.add( AudioListener.prototype.AudioListenerInstance );
 
 	}
 
 	onDisable() {
 
-		this.entity.remove( AudioListener.AudioListenerInstance );
+		this.entity.remove( AudioListener.prototype.AudioListenerInstance );
 
 	}
 
@@ -35,6 +35,6 @@ AudioListener.config = {
 	multiple: true,
 };
 
-AudioListener.AudioListenerInstance = new ThreeAudioListener();
+AudioListener.prototype.AudioListenerInstance = new ThreeAudioListener();
 
 ComponentManager.registerComponent( 'audioListener', AudioListener );

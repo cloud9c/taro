@@ -2,7 +2,7 @@ import { ComponentManager } from '../core/ComponentManager.js';
 import { Audio as ThreeAudio, PositionalAudio, AudioLoader } from '../lib/three.module.js';
 import { AudioListener } from './AudioListener.js';
 
-const AudioListenerInstance = AudioListener.AudioListenerInstance;
+const AudioListenerInstance = AudioListener.prototype.AudioListenerInstance;
 const audioLoader = new AudioLoader();
 
 class Audio {
