@@ -65060,7 +65060,7 @@ class App {
 
 		this.renderer.dispose();
 		this.input.dispose();
-		this.audioListener.ref.context.close();
+		this.audioListener.context.close();
 
 	}
 
