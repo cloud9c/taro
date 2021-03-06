@@ -323,6 +323,8 @@ export function Navbar( editor ) {
 			app.stop();
 			app.dispose();
 
+			console.log( app.audioListener );
+
 			app = undefined;
 
 			canvas.style.position = '';

@@ -38,6 +38,7 @@ function Editor() {
 
 	entity = this.viewport.addEntity( 'Camera' );
 	this.inspector.addComponent( entity, 'camera' );
+	this.inspector.addComponent( entity, 'audioListener' );
 	entity.position.set( 0, 0, 5 );
 
 	entity = this.viewport.addEntity( 'Torus Knot' );
