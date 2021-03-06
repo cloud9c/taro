@@ -3,7 +3,6 @@ import { Renderer } from './Renderer.js';
 import { AssetManager } from './AssetManager.js';
 import { Time } from './Time.js';
 import { Input } from './Input.js';
-import { AudioListener } from '../lib/three.module.js';
 
 export class App {
 
@@ -18,8 +17,6 @@ export class App {
 		this.time = new Time( parameters );
 		this.physics = new Physics( parameters );
 		this.input = new Input( this.domElement );
-
-		this.audioListener = new AudioListener();
 
 		this.scenes = [];
 		this.currentScene = null;
