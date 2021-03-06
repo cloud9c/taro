@@ -4,8 +4,10 @@ export class AudioListener {
 
 	init( data ) {
 
-		this.app.audioListener.setMasterVolume( data.masterVolume );
-		this.app.audioListener.timeDelta = data.timeDelta;
+		this.ref = this.scene.audioListener;
+		
+		this.ref.setMasterVolume( data.masterVolume );
+		this.ref.timeDelta = data.timeDelta;
 
 		this.addEventListener( 'enable', this.onEnable );
 		this.addEventListener( 'disable', this.onDisable );
@@ -14,13 +16,13 @@ export class AudioListener {
 
 	onEnable() {
 
-		this.entity.add( this.app.audioListener );
+		this.entity.add( this.ref );
 
 	}
 
 	onDisable() {
 
-		this.entity.remove( this.app.audioListener );
+		this.entity.remove( this.ref );
 
 	}
 
