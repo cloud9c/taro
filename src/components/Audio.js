@@ -12,7 +12,7 @@ class Audio {
 		
 		if ( this.positional === true ) {
 
-			this.ref = new PositionalAudio( this.app.audioListener );
+			this.ref = new PositionalAudio( this.scene.audioListener );
 
 			this.ref.setDistanceModel( data.distanceModel );
 			this.ref.setMaxDistance( data.maxDistance );
@@ -21,7 +21,7 @@ class Audio {
 
 		} else {
 
-			this.ref = new ThreeAudio( this.app.audioListener );
+			this.ref = new ThreeAudio( this.scene.audioListener );
 
 		}
 
