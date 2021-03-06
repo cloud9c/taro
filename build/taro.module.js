@@ -53720,8 +53720,8 @@ class AudioListener$1 {
 
 	init( data ) {
 
-		this.AudioListenerInstance.setMasterVolume( data.masterVolume );
-		this.AudioListenerInstance.timeDelta = data.timeDelta;
+		this.app.audioListener.setMasterVolume( data.masterVolume );
+		this.app.audioListener.timeDelta = data.timeDelta;
 
 		this.addEventListener( 'enable', this.onEnable );
 		this.addEventListener( 'disable', this.onDisable );
@@ -53730,13 +53730,13 @@ class AudioListener$1 {
 
 	onEnable() {
 
-		this.entity.add( AudioListener$1.prototype.AudioListenerInstance );
+		this.entity.add( this.app.audioListener );
 
 	}
 
 	onDisable() {
 
-		this.entity.remove( AudioListener$1.prototype.AudioListenerInstance );
+		this.entity.remove( this.app.audioListener );
 
 	}
 
@@ -53746,15 +53746,11 @@ AudioListener$1.config = {
 	schema: {
 		masterVolume: { type: 'number', default: 1 },
 		timeDelta: { type: 'number' }
-	},
-	multiple: true,
+	}
 };
-
-AudioListener$1.prototype.AudioListenerInstance = new AudioListener();
 
 ComponentManager.registerComponent( 'audioListener', AudioListener$1 );
 
-const AudioListenerInstance = AudioListener$1.prototype.AudioListenerInstance;
 const audioLoader = new AudioLoader();
 
 class Audio$1 {
@@ -53763,7 +53759,7 @@ class Audio$1 {
 
 		if ( data.positional === true ) {
 
-			this.ref = new PositionalAudio( AudioListenerInstance );
+			this.ref = new PositionalAudio( this.app.audioListener );
 
 			this.ref.setDistanceModel( data.distanceModel );
 			this.ref.setMaxDistance( data.maxDistance );
@@ -53772,7 +53768,7 @@ class Audio$1 {
 
 		} else {
 
-			this.ref = new Audio( AudioListenerInstance );
+			this.ref = new Audio( this.app.audioListener );
 
 		}
 
@@ -65004,6 +65000,8 @@ class App {
 		this.physics = new Physics( parameters );
 		this.input = new Input( this.domElement );
 
+		this.audioListener = new AudioListener();
+
 		this.scenes = [];
 		this.currentScene = null;
 
@@ -65062,6 +65060,7 @@ class App {
 
 		this.renderer.dispose();
 		this.input.dispose();
+		this.audioListener.close();
 
 	}
 
@@ -65078,13 +65077,13 @@ class App {
 			return this;
 
 		}
-		
+
 		if ( scene.app !== null ) {
-			
+
 			scene.app.removeScene( scene );
-			
+
 		}
-		
+
 		scene.app = this;
 		this.scenes.push( scene );
 		scene.dispatchEvent( { type: 'appadd' } );

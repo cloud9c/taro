@@ -2,7 +2,6 @@ import { ComponentManager } from '../core/ComponentManager.js';
 import { Audio as ThreeAudio, PositionalAudio, AudioLoader } from '../lib/three.module.js';
 import { AudioListener } from './AudioListener.js';
 
-const AudioListenerInstance = AudioListener.prototype.AudioListenerInstance;
 const audioLoader = new AudioLoader();
 
 class Audio {
@@ -11,7 +10,7 @@ class Audio {
 
 		if ( data.positional === true ) {
 
-			this.ref = new PositionalAudio( AudioListenerInstance );
+			this.ref = new PositionalAudio( this.app.audioListener );
 
 			this.ref.setDistanceModel( data.distanceModel );
 			this.ref.setMaxDistance( data.maxDistance );
@@ -20,7 +19,7 @@ class Audio {
 
 		} else {
 
-			this.ref = new ThreeAudio( AudioListenerInstance );
+			this.ref = new ThreeAudio( this.app.audioListener );
 
 		}
 

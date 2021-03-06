@@ -3,6 +3,7 @@ import { Renderer } from './Renderer.js';
 import { AssetManager } from './AssetManager.js';
 import { Time } from './Time.js';
 import { Input } from './Input.js';
+import { AudioListener } from '../lib/three.module.js';
 
 export class App {
 
@@ -17,6 +18,8 @@ export class App {
 		this.time = new Time( parameters );
 		this.physics = new Physics( parameters );
 		this.input = new Input( this.domElement );
+
+		this.audioListener = new AudioListener();
 
 		this.scenes = [];
 		this.currentScene = null;
@@ -76,6 +79,7 @@ export class App {
 
 		this.renderer.dispose();
 		this.input.dispose();
+		this.audioListener.close();
 
 	}
 
@@ -92,13 +96,13 @@ export class App {
 			return this;
 
 		}
-		
+
 		if ( scene.app !== null ) {
-			
+
 			scene.app.removeScene( scene );
-			
+
 		}
-		
+
 		scene.app = this;
 		this.scenes.push( scene );
 		scene.dispatchEvent( { type: 'appadd' } );
