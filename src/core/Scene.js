@@ -33,7 +33,20 @@ export class Scene extends ThreeScene {
 
 			const component = components[ i ];
 
-			if ( queue.indexOf( component ) !== - 1 ) continue;
+			let inQueue = false;
+
+			for ( let j = 0, lenj = queue.length; j < lenj; j ++ ) {
+
+				if ( queue[ j ].component === component ) {
+
+					inQueue = true;
+					break;
+
+				}
+
+			}
+
+			if ( inQueue ) continue;
 
 			if ( component._enabled ) {
 
@@ -56,7 +69,20 @@ export class Scene extends ThreeScene {
 
 			const component = components[ i ];
 
-			if ( queue.indexOf( component ) !== - 1 ) continue;
+			let inQueue = false;
+
+			for ( let j = 0, lenj = queue.length; j < lenj; j ++ ) {
+
+				if ( queue[ j ].component === component ) {
+
+					inQueue = true;
+					break;
+
+				}
+
+			}
+
+			if ( inQueue ) continue;
 
 			if ( component._enabled ) {
 
