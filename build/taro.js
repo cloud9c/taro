@@ -53726,8 +53726,8 @@
 
 		init( data ) {
 
-			AudioListener$1.AudioListenerInstance.setMasterVolume( data.masterVolume );
-			AudioListener$1.AudioListenerInstance.timeDelta = data.timeDelta;
+			this.AudioListenerInstance.setMasterVolume( data.masterVolume );
+			this.AudioListenerInstance.timeDelta = data.timeDelta;
 
 			this.addEventListener( 'enable', this.onEnable );
 			this.addEventListener( 'disable', this.onDisable );
@@ -53736,13 +53736,13 @@
 
 		onEnable() {
 
-			this.entity.add( AudioListener$1.AudioListenerInstance );
+			this.entity.add( AudioListener$1.prototype.AudioListenerInstance );
 
 		}
 
 		onDisable() {
 
-			this.entity.remove( AudioListener$1.AudioListenerInstance );
+			this.entity.remove( AudioListener$1.prototype.AudioListenerInstance );
 
 		}
 
@@ -53756,11 +53756,11 @@
 		multiple: true,
 	};
 
-	AudioListener$1.AudioListenerInstance = new AudioListener();
+	AudioListener$1.prototype.AudioListenerInstance = new AudioListener();
 
 	ComponentManager.registerComponent( 'audioListener', AudioListener$1 );
 
-	const AudioListenerInstance = AudioListener$1.AudioListenerInstance;
+	const AudioListenerInstance = AudioListener$1.prototype.AudioListenerInstance;
 	const audioLoader = new AudioLoader();
 
 	class Audio$1 {
