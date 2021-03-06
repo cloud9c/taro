@@ -65072,11 +65072,10 @@
 
 				for ( let i = 0, len = audioArray.length; i < len; i ++ ) {
 
-					if ( audioArray[ i ].ref.source === null ) continue;
-
 					audioArray[ i ].ref.hasPlaybackControl = true;
-					audioArray[ i ].ref.stop();
 					audioArray[ i ].ref.setLoop( false );
+					if ( audioArray[ i ].ref.source !== null )
+						audioArray[ i ].ref.stop();
 					audioArray[ i ].ref.hasPlaybackControl = false;
 
 				}
