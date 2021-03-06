@@ -9,6 +9,8 @@ export class Scene extends ThreeScene {
 
 		this.app = null;
 		this.components = { rigidbody: [], camera: [] };
+		
+		this.audioListener = new AudioListener();
 
 		if ( name !== undefined )
 			this.name = name;
