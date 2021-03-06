@@ -57,9 +57,9 @@ All built-in materials (all types except **asset** and **shader**) have the foll
 
 ### asset
 
-| Property   | Description                                                                                                   | Default Value |
-|------------|---------------------------------------------------------------------------------------------------------------|---------------|
-| asset      | The path or url to a three.js [JSON Material](https://github.com/mrdoob/three.js/wiki/JSON-Material-format-4) | ""            |
+| Property   | Description                                                                                                                   | Default Value |
+|------------|-------------------------------------------------------------------------------------------------------------------------------|---------------|
+| asset      | The url to a [JSON Material](https://github.com/mrdoob/three.js/wiki/JSON-Material-format-4) or a three.js material instance. | ""            |
 
 ### basic
 

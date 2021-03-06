@@ -34,9 +34,9 @@ Fires when an asset is loaded. Property `event` is provided (XMLHttpRequest prog
 
 ### asset
 
-| Property   | Description                                                                                                   | Default Value |
-|------------|---------------------------------------------------------------------------------------------------------------|---------------|
-| asset      | The path or url to a three.js [JSON Geometry](https://github.com/mrdoob/three.js/wiki/JSON-Geometry-format-4) | ""            |
+| Property   | Description                                                                                                                   | Default Value |
+|------------|-------------------------------------------------------------------------------------------------------------------------------|---------------|
+| asset      | The url to a [JSON Geometry](https://github.com/mrdoob/three.js/wiki/JSON-Geometry-format-4) or a three.js geometry instance. | ""            |
 
 ### box
 

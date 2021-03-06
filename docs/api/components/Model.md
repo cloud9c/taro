@@ -14,9 +14,9 @@ entity.addComponent('model', {
 
 ## Data Parameters
 
-| Property | Description                                          | Default Value |
-|----------|------------------------------------------------------|---------------|
-| asset    | Model file with gLTF, draco, or three.js extensions. | ""            |
+| Property | Description                                                     | Default Value |
+|----------|-----------------------------------------------------------------|---------------|
+| asset    | Model url or instance with gLTF, draco, or three.js extensions. | ""            |
 
 ## Properties
 
