@@ -90,11 +90,9 @@ export class TaroExporter {
 					const dependenciesA = ComponentManager.components[ a.type ].config.dependencies;
 					const dependenciesB = ComponentManager.components[ b.type ].config.dependencies;
 
-					if ( dependenciesA === undefined )
+					if ( dependenciesA === undefined && dependenciesB !== undefined )
 						return 1;
-					else if ( dependenciesB === undefined )
-						return - 1;
-					return 0;
+					return - 1;
 
 				} );
 
