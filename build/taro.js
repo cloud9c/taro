@@ -65072,7 +65072,8 @@
 
 				for ( let i = 0, len = audioArray.length; i < len; i ++ ) {
 
-					audioArray[ i ].ref.disconnect();
+					audioArray[ i ].ref.hasPlaybackControl = true;
+					audioArray[ i ].ref.stop();
 
 				}
 
