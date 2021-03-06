@@ -13,6 +13,9 @@ Scenes allow you to set up what and where is to be rendered by taro.js. This is 
 
 See the base [Scene](https://threejs.org/docs/#api/en/scenes/Scene) class for common properties.
 
+### .<a>ref</a> : <span class="param">[AudioListener](https://threejs.org/docs/#api/en/audio/AudioListener)</span>
+Reference to the [AudioListener](https://threejs.org/docs/#api/en/audio/AudioListener).
+
 ### .<a>app</a> : <span class="param">[App](api/core/App)</span>
 The app the scene is attached to.
 

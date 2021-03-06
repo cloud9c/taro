@@ -28,9 +28,9 @@ Fires when an asset is loaded. Property `event` is provided (XMLHttpRequest prog
 
 ## Data Parameters
 
-| Property | Description                                                 | Default Value |
-|----------|-------------------------------------------------------------|---------------|
-| type     | 14 built-in geometries and 1 asset type (see below).        | "box"         |
+| Property | Description                                          | Default Value |
+|----------|------------------------------------------------------|---------------|
+| type     | 14 built-in geometries and 1 asset type (see below). | "box"         |
 
 ### asset
 

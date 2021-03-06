@@ -28,6 +28,8 @@ API References
 <br>
 
 -   Standard Components
+-   [Audio](api/components/Audio.md)
+-   [AudioListener](api/components/AudioListener.md)
 -   [Camera](api/components/Camera.md)
 -   [Geometry](api/components/Geometry.md)
 -   [Light](api/components/Light.md)
