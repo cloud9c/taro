@@ -53716,6 +53716,156 @@ const ComponentManager = {
 // schema is an object of objects
 // ex: schema: {{type: "number", default: 1}}
 
+class AudioListener$1 {
+
+	init( data ) {
+
+		AudioListener$1.AudioListenerInstance.setMasterVolume( data.masterVolume );
+		AudioListener$1.AudioListenerInstance.timeDelta = data.timeDelta;
+
+		this.addEventListener( 'enable', this.onEnable );
+		this.addEventListener( 'disable', this.onDisable );
+
+	}
+
+	onEnable() {
+
+		this.entity.add( AudioListener$1.AudioListenerInstance );
+
+	}
+
+	onDisable() {
+
+		this.entity.remove( AudioListener$1.AudioListenerInstance );
+
+	}
+
+}
+
+AudioListener$1.config = {
+	schema: {
+		masterVolume: { type: 'number', default: 1 },
+		timeDelta: { type: 'number' }
+	},
+	multiple: true,
+};
+
+AudioListener$1.AudioListenerInstance = new AudioListener();
+
+ComponentManager.registerComponent( 'audioListener', AudioListener$1 );
+
+const AudioListenerInstance = AudioListener$1.AudioListenerInstance;
+const audioLoader = new AudioLoader();
+
+class Audio$1 {
+
+	init( data ) {
+
+		if ( data.positional === true ) {
+
+			this.ref = new PositionalAudio( AudioListenerInstance );
+
+			this.ref.setDistanceModel( data.distanceModel );
+			this.ref.setMaxDistance( data.maxDistance );
+			this.ref.setRefDistance( data.refDistance );
+			this.ref.setRolloffFactor( data.rolloffFactor );
+
+		} else {
+
+			this.ref = new Audio( AudioListenerInstance );
+
+		}
+
+		this.ref.autoplay = data.autoplay;
+		this.ref.detune = data.detune;
+		this.ref.duration = data.duration !== 0 ? data.duration : undefined;
+		this.ref.offset = data.offset;
+		this.ref.setPlaybackRate( data.playbackRate );
+		this.ref.setVolume( data.volume );
+
+		if ( data.loop === true ) {
+
+			this.ref.setLoop( data.loop );
+			this.ref.setLoopStart( data.loopStart );
+			this.ref.setLoopEnd( data.loopEnd );
+
+		}
+
+		if ( typeof data.asset === 'object' ) {
+
+			this.ref.setBuffer( data.asset );
+
+		} else if ( data.asset.length > 0 ) {
+
+			audioLoader.load( data.asset, ( b ) => this.onLoad( data.asset, b ), ( p ) => this.onProgress( p ), ( e ) => this.onError( e ) );
+
+		}
+
+	}
+
+	onLoad( key, buffer ) {
+
+		this.app.assets.add( key, buffer );
+		this.ref.setBuffer( buffer );
+
+		this.dispatchEvent( { type: 'load', buffer } );
+
+	}
+
+	onProgress( event ) {
+
+		this.dispatchEvent( { type: 'progress', event } );
+
+	}
+
+	onError( event ) {
+
+		console.error( 'Audio: failed retrieving asset' );
+		this.dispatchEvent( { type: 'error', event } );
+
+	}
+
+	onEnable() {
+
+		this.entity.add( this.ref );
+
+	}
+
+	onDisable() {
+
+		this.entity.remove( this.ref );
+
+	}
+
+}
+
+Audio$1.config = {
+	schema: {
+		positional: { type: 'boolean' },
+		asset: { type: 'asset' },
+
+		autoplay: { type: 'boolean' },
+		detune: { type: 'number' },
+		duration: { type: 'number' },
+		loop: { type: 'boolean' },
+		loopEnd: { type: 'number', if: { loop: [ true ] } },
+		loopStart: { type: 'number', if: { loop: [ true ] } },
+		offset: { type: 'number' },
+		playbackRate: { type: 'number', default: 1 },
+		volume: { type: 'number', default: 1 },
+
+		distanceModel: { type: 'select', default: 'inverse', select: [ 'linear', 'inverse', 'exponential' ], if: { positional: [ true ] } },
+		maxDistance: { type: 'number', default: 10000, if: { positional: [ true ] } },
+		refDistance: { type: 'number', default: 1, if: { positional: [ true ] } },
+		rolloffFactor: { type: 'number', default: 1, if: { positional: [ true ] } },
+
+
+	},
+	multiple: true,
+};
+
+ComponentManager.registerComponent( 'audio', Audio$1 );
+
 class Camera$1 {
 
 	init( data ) {
@@ -53821,9 +53971,9 @@ class Geometry {
 		switch ( this.type ) {
 
 			case 'asset':
-				this.ref = this.app.assets.get( parameters.asset );
+				this.ref = typeof data.asset === 'object' ? data.asset : this.app.assets.get( data.asset );
 				if ( this.ref === undefined )
-					geometryLoader.load( data.asset, ( g ) => this.onLoad( data.asset, g ), ( p ) => this.onProgress( p ), () => this.onError() );
+					geometryLoader.load( data.asset, ( g ) => this.onLoad( data.asset, g ), ( p ) => this.onProgress( p ), ( e ) => this.onError( e ) );
 				break;
 			case 'box':
 				this.ref = new BoxGeometry( data.width, data.height, data.depth, data.widthSegments, data.heightSegments, data.depthSegments );
@@ -53939,7 +54089,7 @@ class Geometry {
 
 Geometry.config = {
 	schema: {
-		type: { type: 'select', default: 'box', select: [ 'asset', 'box', 'circle', 'cone', 'cylinder', 'dodecahedron', 'empty', 'icosahedron', 'octahedron', 'plane', 'ring', 'sphere', 'tetrahedron', 'torus', 'torusKnot'] },
+		type: { type: 'select', default: 'box', select: [ 'asset', 'box', 'circle', 'cone', 'cylinder', 'dodecahedron', 'empty', 'icosahedron', 'octahedron', 'plane', 'ring', 'sphere', 'tetrahedron', 'torus', 'torusKnot' ] },
 
 		depth: { default: 1, min: 0, if: { type: [ 'box' ] } },
 		height: { default: 1, min: 0, if: { type: [ 'box', 'cone', 'cylinder', 'plane' ] } },
@@ -54087,7 +54237,7 @@ class Material$2 {
 
 				}
 
-			} else if (name !== 'type') {
+			} else if ( name !== 'type' ) {
 
 				parameters[ name ] = data[ name ];
 
@@ -54105,7 +54255,8 @@ class Material$2 {
 		switch ( this.type ) {
 
 			case 'asset':
-				this.ref = this.app.assets.get( parameters.asset );
+
+				this.ref = typeof parameters.asset === 'object' ? parameters.asset : this.app.assets.get( parameters.asset );
 				if ( this.ref === undefined )
 					materialLoader.load( parameters.asset, ( m ) => this.onLoad( parameters.asset, m ), ( p ) => this.onProgress( p ), ( e ) => this.onError( e ) );
 				break;
@@ -54210,7 +54361,7 @@ class Material$2 {
 
 Material$2.config = {
 	schema: {
-		type: { type: 'select', default: 'basic', select: [ 'asset', 'basic', 'depth', 'lambert', 'matcap', 'normal', 'phong', 'physical', 'shader', 'standard', 'toon'] },
+		type: { type: 'select', default: 'basic', select: [ 'asset', 'basic', 'depth', 'lambert', 'matcap', 'normal', 'phong', 'physical', 'shader', 'standard', 'toon' ] },
 
 		color: { type: 'color', if: { type: [ 'basic', 'lambert', 'matcap', 'phong', 'standard', 'physical', 'toon' ] } },
 		roughness: { default: 1.0, if: { type: [ 'standard', 'physical' ] } },
@@ -54290,7 +54441,7 @@ class Model {
 
 	init( data ) {
 
-		this.ref = this.app.assets.get( data.asset );
+		this.ref = typeof data.asset === 'object' ? data.asset : this.app.assets.get( data.asset );
 
 		if ( this.ref === undefined ) {
 
@@ -64027,7 +64178,7 @@ class Shape$2 {
 
 			this.ref.material = this.app.assets.get( data.material );
 			if ( this.ref.material === undefined )
-				fileLoader.load( data.material, ( json ) => this.onMaterialLoad( data.material, json ) );
+				fileLoader.load( data.material, ( json ) => this.onMaterialLoad( data.material, json ), ( p ) => this.onProgress( p ), ( e ) => this.onError( e ) );
 
 		}
 
@@ -64079,6 +64230,21 @@ class Shape$2 {
 		const material = new Material( json );
 		this.ref.material = material;
 		this.app.assets.add( key, material );
+
+		this.dispatchEvent( { type: 'load', material } );
+
+	}
+
+	onProgress( event ) {
+
+		this.dispatchEvent( { type: 'progress', event } );
+
+	}
+
+	onError( event ) {
+
+		console.error( 'Shape: failed retrieving asset' );
+		this.dispatchEvent( { type: 'error', event } );
 
 	}
 
@@ -64275,7 +64441,7 @@ class Rigidbody {
 
 			this.ref.material = this.app.assets.get( data.material );
 			if ( this.ref.material === undefined )
-				fileLoader$1.load( data.material, ( json ) => this.onMaterialLoad( data.material, json ) );
+				fileLoader$1.load( data.material, ( json ) => this.onMaterialLoad( data.material, json ), ( p ) => this.onProgress( p ), ( e ) => this.onError( e ) );
 
 		}
 
@@ -64294,6 +64460,21 @@ class Rigidbody {
 		const material = new Material$3( json );
 		this.ref.material = material;
 		this.app.assets.add( key, material );
+
+		this.dispatchEvent( { type: 'load', material } );
+
+	}
+
+	onProgress( event ) {
+
+		this.dispatchEvent( { type: 'progress', event } );
+
+	}
+
+	onError( event ) {
+
+		console.error( 'Rigidbody: failed retrieving asset' );
+		this.dispatchEvent( { type: 'error', event } );
 
 	}
 
