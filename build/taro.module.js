@@ -65070,6 +65070,7 @@ class App {
 
 				audioArray[ i ].ref.hasPlaybackControl = true;
 				audioArray[ i ].ref.stop();
+				audioArray[ i ].ref.setLoop( false );
 
 			}
 
