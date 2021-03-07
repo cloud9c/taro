@@ -94,15 +94,15 @@ export class Input extends EventDispatcher {
 		};
 
 		window.addEventListener( 'blur', this.onBlur );
-		document.addEventListener( 'fullscreenchange', this.onBlur );
 
-		this.domElement.addEventListener( 'pointermove', this.onPointerMove );
 		this.domElement.addEventListener( 'pointerdown', this.onPointerDown );
-		this.domElement.addEventListener( 'pointerup', this.onPointerUp );
 		this.domElement.addEventListener( 'wheel', this.onWheel );
 
-		document.addEventListener( 'keydown', this.onKeyDown );
-		document.addEventListener( 'keyup', this.onKeyUp );
+		this.domElement.ownerDocument.addEventListener( 'pointermove', this.onPointerMove );
+		this.domElement.ownerDocument.addEventListener( 'pointerup', this.onPointerUp );
+
+		this.domElement.addEventListener( 'keydown', this.onKeyDown );
+		this.domElement.addEventListener( 'keyup', this.onKeyUp );
 
 	}
 
