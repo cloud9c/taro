@@ -346,8 +346,6 @@ export function Navbar( editor ) {
 				app = newApp;
 				app.start();
 
-				console.log( app.currentScene.children[ 1 ].components );
-
 			} );
 
 		}

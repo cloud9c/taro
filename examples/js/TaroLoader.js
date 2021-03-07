@@ -123,13 +123,8 @@ export class TaroLoader extends Loader {
 
 			}
 
-			let i = this.queue.length;
-			while ( i -- ) {
-
-				scene.add( this.queue[ i ] );
-				this.queue.splice( i, 1 );
-
-			}
+			scene.add( ...this.queue );
+			this.queue = [];
 
 		}
 
