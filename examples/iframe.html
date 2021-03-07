@@ -34,7 +34,7 @@
 	</head>
 	<body>
 		<div id='top'>
-			Youtube Playlist ID: <input id='input' type='text' autocomplete="off">
+			Youtube Video ID: <input id='input' type='text' autocomplete="off">
 		</div>
 		<div id="container"></div>
 		<canvas id='canvas'></canvas>
@@ -98,26 +98,21 @@
 				update() {
 
 					if (this.input.getKey('KeyW')) {
-						vertex.set(0, 0, 1).applyQuaternion( this.camera.quaternion ).multiplyScalar( -0.1 );
-						vertex.y = 0;
-						this.entity.position.add( vertex );
+						this.entity.translateZ(-0.1);
 					}
 					if (this.input.getKey('KeyS')) {
-						vertex.set(0, 0, 1).applyQuaternion( this.camera.quaternion ).multiplyScalar( 0.1 );
-						vertex.y = 0;
-						this.entity.position.add( vertex );
+						this.entity.translateZ(0.1);
 					}
 					if (this.input.getKey('KeyA')) {
-						vertex.set(1, 0, 0).applyQuaternion( this.camera.quaternion ).multiplyScalar( -0.1 );
-						vertex.y = 0;
-						this.entity.position.add( vertex );
+						this.entity.translateX(-0.1);
 					}
 					if (this.input.getKey('KeyD')) {
-						vertex.set(1, 0, 0).applyQuaternion( this.camera.quaternion ).multiplyScalar( 0.1 );
-						vertex.y = 0;
-						this.entity.position.add( vertex );
+						this.entity.translateX(0.1);
 					}
 
+					this.entity.position.y = 5;
+
+					// css3d renderer
 					renderer.render( scene, this.camera );
 				}
 			});
@@ -151,8 +146,6 @@
 
 			// floor
 			entity = new TARO.Entity('floor');
-			entity.addComponent('rigidbody', {type: 'static'});
-			entity.addComponent('shape', {type: 'plane'});
 			entity.addComponent('geometry', {type: 'plane', width: 200, height: 200});
 			const material = entity.addComponent('material', {type: 'basic', map: './textures/tile.jpg'}).ref;
 
@@ -170,7 +163,7 @@
 			entity.translateZ(-15);
 
 			// screen
-			entity = new Element( 'https://www.youtube.com/embed/' + '4PDpVNKZgKg' + '?rel=0', 0, 0, -15, 0 );
+			entity = new Element( 'https://www.youtube.com/embed/' + 'dNJdJIwCF_Y' + '?rel=0', 0, 0, -15, 0 );
 			entity.scale.set(0.0097, 0.0097, 0.0097);
 			entity.translateY(4.4);
 			scene.add(entity);
@@ -184,12 +177,10 @@
 			// player
 			const player = new TARO.Entity('player');
 			const camera = player.addComponent('camera').ref;
-			const rigidbody = player.addComponent('rigidbody').ref;
-			player.addComponent('shape', {type: 'box', halfExtents: new TARO.Vector3(1, 5, 1)});
 			player.addComponent('playerController');
 			player.position.set(0, 5, 0);
 
-			const controls = new PointerLockControls( camera, document.body );
+			const controls = new PointerLockControls( player, document.body );
 
 			app.renderer.domElement.addEventListener( 'click', function () {
 
