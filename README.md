@@ -8,7 +8,7 @@ A lightweight 3D game engine for the web. Built with [three.js](https://github.c
 
 You can find the Taro documentation [on the website](https://www.echou.xyz/taro/docs/#/).
 
-## Examples
+## Usage
 
 There are several examples [on the website](https://www.echou.xyz/taro/examples/#Cube). Here is an example to get started:
 ```javascript
