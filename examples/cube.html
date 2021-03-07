@@ -29,10 +29,10 @@
 
 			TARO.registerComponent(
 				'cameraController',
-				class CameraController {
+				class {
 					init() {
 						this.direction = new TARO.Vector3();
-						this.input = this.entity.scene.app.input;
+						this.input = this.app.input;
 						this.entity.rotation.order = 'YXZ';
 						this.ball = this.entity.scene.getEntityByName('ball');
 

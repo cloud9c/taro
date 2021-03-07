@@ -19,7 +19,7 @@
 		</style>
 	</head>
 	<body>
-		<canvas id='c'></canvas>
+		<canvas id='canvas'></canvas>
 		<script type='module'>
 			import * as TARO from '../build/taro.module.js';
 			import { OrbitControls } from './js/OrbitControls.js'
@@ -41,7 +41,7 @@
 			entity.position.set(0, 100, 0);
 
 			entity = new TARO.Entity();
-			entity.addComponent('light');
+			entity.addComponent('light', {type: 'directional'});
 			entity.position.set(-100, 175, 100);
 
 			// skybox
@@ -63,7 +63,7 @@
 			controls.maxPolarAngle = Math.PI * 0.5;
 
 			// components
-			TARO.registerComponent('droneControls', class DroneControls {
+			TARO.registerComponent('droneControls', class {
 
 				init() {
 					this.rigidbody = this.entity.getComponent('rigidbody').ref;
@@ -98,47 +98,47 @@
 
 					const input = this.app.input;
 
-					if (input.getKey('KeyW')) {
+					if (input.getKeyDown('KeyW')) {
 						this.vector.set(0, 1, 0)
 						this.rigidbody.applyForce( this.vector )
 					}
 
-					if (input.getKey('KeyS')) {
+					if (input.getKeyDown('KeyS')) {
 						this.vector.set(0, -1, 0)
 						this.rigidbody.applyForce( this.vector )
 					}
 
-					if (input.getKey('KeyA')) {
+					if (input.getKeyDown('KeyA')) {
 						this.vector.set(0.001, 0, 0)
 						this.vector2.set(0, 0, -100)
 						this.rigidbody.applyLocalForce( this.vector, this.vector2 )
 					}
 
-					if (input.getKey('KeyD')) {
+					if (input.getKeyDown('KeyD')) {
 						this.vector.set(0.001, 0, 0)
 						this.vector2.set(0, 0, 100)
 						this.rigidbody.applyLocalForce( this.vector, this.vector2 )
 					}
 
-					if (input.getKey('KeyI')) {
+					if (input.getKeyDown('KeyI')) {
 						this.vector.set(0, -0.0001, 0)
 						this.vector2.set(0, 0, 100)
 						this.rigidbody.applyLocalForce( this.vector, this.vector2 )
 					}
 
-					if (input.getKey('KeyK')) {
+					if (input.getKeyDown('KeyK')) {
 						this.vector.set(0, 0.0001, 0)
 						this.vector2.set(0, 0, 100)
 						this.rigidbody.applyLocalForce( this.vector, this.vector2 )
 					}
 
-					if (input.getKey('KeyJ')) {
+					if (input.getKeyDown('KeyJ')) {
 						this.vector.set(0, 0.0001, 0)
 						this.vector2.set(100, 0, 0)
 						this.rigidbody.applyLocalForce( this.vector, this.vector2 )
 					}
 
-					if (input.getKey('KeyL')) {
+					if (input.getKeyDown('KeyL')) {
 						this.vector.set(0, -0.0001, 0)
 						this.vector2.set(100, 0, 0)
 						this.rigidbody.applyLocalForce( this.vector, this.vector2 )
