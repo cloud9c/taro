@@ -1,5 +1,4 @@
 # [Taro](https://www.echou.xyz/taro/)
-[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/Cloud9c/taro/blob/master/LICENSE)
 
 A lightweight 3D game engine for the web. Built with [three.js](https://github.com/mrdoob/three.js/) and [cannon-es](https://github.com/pmndrs/cannon-es).
 
@@ -60,3 +59,6 @@ A lightweight 3D game engine for the web. Built with [three.js](https://github.c
   </body>
 </html>
 ```
+
+## License
+[MIT License](https://github.com/Cloud9c/taro/blob/master/LICENSE)
