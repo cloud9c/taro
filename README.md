@@ -8,57 +8,52 @@ A lightweight 3D game engine for the web. Built with [three.js](https://github.c
 
 ![Example GIF](README.gif)
 
-## Usage
+## Documentation
 
-```html
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <title>My first taro.js app</title>
-    <style>
-      body { margin: 0; }
-    </style>
-  </head>
-  <body>
-    <script src="js/taro.js"></script>
-    <script>
-      var app = new TARO.App();
-      document.body.appendChild( app.domElement );
+You can find the Taro documentation [on the website](https://www.echou.xyz/taro/docs/#/).
 
-      var scene = new TARO.Scene();
-      app.setScene(scene);
+## Examples
 
-      class CubeController {
-        init() {
-          // fires when the component is attached to an entity
-          this.rotation = this.entity.rotation;
-        }
+There are several examples [on the website](https://www.echou.xyz/taro/examples/#Cube). Here is an example to get started:
+```javascript
+var app = new TARO.App();
+document.body.appendChild( app.domElement );
 
-        update() {
-          // fires once per frame
-          this.rotation.x += 0.01;
-          this.rotation.y += 0.01;
-        }
-      }
+var scene = new TARO.Scene();
+app.setScene(scene);
 
-      TARO.registerComponent('cubeController', CubeController);
+class CubeController {
+  init() {
+    // fires when the component is attached to an entity
+    this.rotation = this.entity.rotation;
+  }
 
-      var cube = new TARO.Entity('cube');
-      cube.addComponent('material', { color: 0x00ff00 });
-      cube.addComponent('geometry', { type: 'box' });
-      cube.addComponent('cubeController');
+  update() {
+    // fires once per frame
+    this.rotation.x += 0.01;
+    this.rotation.y += 0.01;
+  }
+}
 
-      var camera = new TARO.Entity('camera');
-      camera.position.z = 5;
-      camera.addComponent('camera');
+TARO.registerComponent('cubeController', CubeController);
 
-      app.start();
-      // beep boop hey look it works
-    </script>
-  </body>
-</html>
+var cube = new TARO.Entity('cube');
+cube.addComponent('material', { color: 0x00ff00 });
+cube.addComponent('geometry', { type: 'box' });
+cube.addComponent('cubeController');
+
+var camera = new TARO.Entity('camera');
+camera.position.z = 5;
+camera.addComponent('camera');
+
+app.start();
 ```
+
+This example will display a spinning cube on the canvas.
+
+## Editor
+
+In addition to the engine, there is a visual editor [on the website](https://www.echou.xyz/taro/editor/) to get a taste of Taro.
 
 ## License
 [MIT License](https://github.com/Cloud9c/taro/blob/master/LICENSE)
