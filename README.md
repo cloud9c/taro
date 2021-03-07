@@ -1,8 +1,12 @@
 # [Taro](https://www.echou.xyz/taro/)
 
+![Example GIF](README.gif)
+
 A lightweight 3D game engine for the web. Built with [three.js](https://github.com/mrdoob/three.js/) and [cannon-es](https://github.com/pmndrs/cannon-es).
 
-![Example GIF](README.gif)
+**Declarative:** React makes it painless to create interactive UIs. Design simple views for each state in your application, and React will efficiently update and render just the right components when your data changes. Declarative views make your code more predictable, simpler to understand, and easier to debug.
+**🔌 Entity Component System:** Provide better flexibility when defining entities by mixing with reusable componets.
+**⚡ Performance**: Taro is a thin framework on top of three.js and cannon-es.
 
 ## Documentation
 
@@ -49,8 +53,8 @@ This example will display a spinning cube on the canvas.
 
 ## Builds
 
-- <https://www.echou.xyz/taro/build/taro.module.js> (ESM)
-- <https://www.echou.xyz/taro/build/taro.js> (UMD)
+* <https://www.echou.xyz/taro/build/taro.module.js> (ESM)
+* <https://www.echou.xyz/taro/build/taro.js> (UMD)
 
 ## Editor
 
