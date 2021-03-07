@@ -47,6 +47,11 @@ app.start();
 
 This example will display a spinning cube on the canvas.
 
+## Builds
+
+- <https://www.echou.xyz/taro/build/taro.module.js> (ESM)
+- <https://www.echou.xyz/taro/build/taro.js> (UMD)
+
 ## Editor
 
 In addition to the engine, there is a [visual editor](https://www.echou.xyz/taro/editor/) available to get a taste of Taro.
