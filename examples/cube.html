@@ -27,76 +27,74 @@
 
 			const app = new TARO.App({canvas: document.getElementById('canvas')});
 
-			TARO.registerComponent(
-				'cameraController',
-				class {
-					init() {
-						this.direction = new TARO.Vector3();
-						this.input = this.app.input;
-						this.entity.rotation.order = 'YXZ';
-						this.ball = this.entity.scene.getEntityByName('ball');
+			TARO.registerComponent('cameraController', class {
+				init() {
+					this.direction = new TARO.Vector3();
+					this.input = this.app.input;
+					this.entity.rotation.order = 'YXZ';
+					this.ball = this.entity.scene.getEntityByName('ball');
 
-						window.addEventListener('pointerdown', () => {
-							this.app.renderer.domElement.requestPointerLock();
-						});
-						this.ball.addEventListener('collide', (c) => {
-							console.log(c);
-							this.ball.getComponent('audio').ref.play();
-						});
-					}
-					update() {
-						const ball = this.ball;
-
-						if (this.input.getKeyDown('ArrowUp')) {
-							ball.getComponent('rigidbody').ref.applyForce(
-								new TARO.Vector3(0, 0, -200)
-							);
-						}
-						if (this.input.getKeyDown('ArrowDown')) {
-							ball.getComponent('rigidbody').ref.applyForce(
-								new TARO.Vector3(0, 0, 200)
-							);
-						}
-						if (this.input.getKeyDown('ArrowLeft')) {
-							ball.getComponent('rigidbody').ref.applyForce(
-								new TARO.Vector3(-200, 0, 0)
-							);
-						}
-						if (this.input.getKeyDown('ArrowRight')) {
-							ball.getComponent('rigidbody').ref.applyForce(
-								new TARO.Vector3(200, 0, 0)
-							);
-						}
-
-						if (this.input.getKey('KeyG')) {
-							ball.scale.set(0.1, 0.1, 0.1);
-						}
-
-						if (this.input.getKey('KeyW')) {
-							this.entity.translateZ(-0.1);
-						}
-						if (this.input.getKey('KeyS')) {
-							this.entity.translateZ(0.1);
-						}
-						if (this.input.getKey('KeyA')) {
-							this.entity.translateX(-0.1);
-						}
-						if (this.input.getKey('KeyD')) {
-							this.entity.translateX(0.1);
-						}
-						if (this.input.getKey('Space')) {
-							this.entity.translateY(0.1);
-						}
-						if (this.input.getKey('ShiftLeft')) {
-							this.entity.translateY(-0.1);
-						}
-						this.entity.rotation.x -=
-							this.input.pointerDelta.y * 0.001;
-						this.entity.rotation.y -=
-							this.input.pointerDelta.x * 0.001;
-					}
+					window.addEventListener('pointerdown', () => {
+						this.app.renderer.domElement.requestPointerLock();
+					});
+					this.ball.addEventListener('collide', (c) => {
+						console.log(c);
+						this.ball.getComponent('audio').ref.play();
+					});
 				}
-			);
+				
+				update() {
+					const ball = this.ball;
+
+					if (this.input.getKeyDown('ArrowUp')) {
+						ball.getComponent('rigidbody').ref.applyForce(
+							new TARO.Vector3(0, 0, -200)
+						);
+					}
+					if (this.input.getKeyDown('ArrowDown')) {
+						ball.getComponent('rigidbody').ref.applyForce(
+							new TARO.Vector3(0, 0, 200)
+						);
+					}
+					if (this.input.getKeyDown('ArrowLeft')) {
+						ball.getComponent('rigidbody').ref.applyForce(
+							new TARO.Vector3(-200, 0, 0)
+						);
+					}
+					if (this.input.getKeyDown('ArrowRight')) {
+						ball.getComponent('rigidbody').ref.applyForce(
+							new TARO.Vector3(200, 0, 0)
+						);
+					}
+
+					if (this.input.getKey('KeyG')) {
+						ball.scale.set(0.1, 0.1, 0.1);
+					}
+
+					if (this.input.getKey('KeyW')) {
+						this.entity.translateZ(-0.1);
+					}
+					if (this.input.getKey('KeyS')) {
+						this.entity.translateZ(0.1);
+					}
+					if (this.input.getKey('KeyA')) {
+						this.entity.translateX(-0.1);
+					}
+					if (this.input.getKey('KeyD')) {
+						this.entity.translateX(0.1);
+					}
+					if (this.input.getKey('Space')) {
+						this.entity.translateY(0.1);
+					}
+					if (this.input.getKey('ShiftLeft')) {
+						this.entity.translateY(-0.1);
+					}
+					this.entity.rotation.x -=
+						this.input.pointerDelta.y * 0.001;
+					this.entity.rotation.y -=
+						this.input.pointerDelta.x * 0.001;
+				}
+			});
 
 			const scene = new TARO.Scene('scene');
 			scene.background = new TARO.Color('skyblue');

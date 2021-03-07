@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang='en'>
+	<head>
+		<meta charset='UTF-8' />
+		<meta name='viewport' content='width=device-width,initial-scale=1' />
+		<title>Audio</title>
+		<link rel="shortcut icon" href="../files/favicon.ico" />
+		<style>
+			html,
+			body {
+				margin: 0;
+				height: 100%;
+			}
+
+			#canvas {
+				width: 100%;
+				height: 100%;
+			}
+
+			#container {
+				position: absolute;
+				pointer-events: none;
+			}
+
+			#top {
+				position: absolute;
+				left: 16px;
+				top: 16px;
+				font-family: Monospace;
+				user-select: none;
+			}
+		
+		</style>
+	</head>
+	<body>
+		<div id='top'>
+			Youtube Playlist ID: <input id='input' type='text' autocomplete="off">
+		</div>
+		<div id="container"></div>
+		<canvas id='canvas'></canvas>
+		<script type='module'>
+			import * as TARO from '../build/taro.module.js';
+			import { PointerLockControls } from './js/PointerLockControls.js';
+			import { CSS3DRenderer, CSS3DObject } from './js/CSS3DRenderer.js';
+
+			function Element( id, x, y, z, ry ) {
+
+				const div = document.createElement( 'div' );
+				div.style.width = '1280px';
+				div.style.height = '720px';
+				div.style.backgroundColor = '#000';
+
+				const iframe = document.createElement( 'iframe' );
+				iframe.style.width = '1280px';
+				iframe.style.height = '720px';
+				iframe.style.border = '0px';
+				iframe.src = id;
+				div.appendChild( iframe );
+
+				const object = new CSS3DObject( div );
+				object.position.set( x, y, z );
+				object.rotation.y = ry;
+				object.iframe = iframe;
+
+				return object;
+
+			};
+
+			let entity, mesh;
+
+			const vertex = new TARO.Vector3();
+			const color = new TARO.Color();
+
+			const app = new TARO.App({canvas: document.getElementById('canvas'), antialias: true });
+
+			// css3d
+			const renderer = new CSS3DRenderer();
+			renderer.setSize( window.innerWidth, window.innerHeight );
+			document.getElementById( 'container' ).appendChild( renderer.domElement );
+
+			window.addEventListener( 'resize', () => {
+				renderer.setSize( window.innerWidth, window.innerHeight );
+			} );
+
+			// scene
+			const scene = new TARO.Scene();
+			app.setScene(scene);
+			scene.background = new TARO.Color( 0xffffff );
+			scene.fog = new TARO.Fog( 0xffffff, 0, 750 );
+
+			// component
+			TARO.registerComponent('playerController', class {
+				init() {
+					this.input = this.app.input;
+					this.camera = this.entity.getComponent('camera').ref;
+				}
+				
+				update() {
+
+					if (this.input.getKey('KeyW')) {
+						vertex.set(0, 0, 1).applyQuaternion( this.camera.quaternion ).multiplyScalar( -0.1 );
+						vertex.y = 0;
+						this.entity.position.add( vertex );
+					}
+					if (this.input.getKey('KeyS')) {
+						vertex.set(0, 0, 1).applyQuaternion( this.camera.quaternion ).multiplyScalar( 0.1 );
+						vertex.y = 0;
+						this.entity.position.add( vertex );
+					}
+					if (this.input.getKey('KeyA')) {
+						vertex.set(1, 0, 0).applyQuaternion( this.camera.quaternion ).multiplyScalar( -0.1 );
+						vertex.y = 0;
+						this.entity.position.add( vertex );
+					}
+					if (this.input.getKey('KeyD')) {
+						vertex.set(1, 0, 0).applyQuaternion( this.camera.quaternion ).multiplyScalar( 0.1 );
+						vertex.y = 0;
+						this.entity.position.add( vertex );
+					}
+
+					renderer.render( scene, this.camera );
+				}
+			});
+
+			// lighting
+			entity = new TARO.Entity();
+			entity.addComponent('light', {type: 'hemisphere', intensity: 0.75, skyColor: 0xeeeeff, groundColor: 0x777788});
+			entity.position.set( 0.5, 1, 0.75 );
+
+			entity = new TARO.Entity('light');
+			const dirLight = entity.addComponent('light', {type: 'directional'}).ref;
+
+			dirLight.color.setHSL(0.1, 1, 0.95);
+
+			dirLight.castShadow = true;
+
+			dirLight.shadow.mapSize.width = 2048;
+			dirLight.shadow.mapSize.height = 2048;
+
+			const d = 50;
+
+			dirLight.shadow.camera.left = -d;
+			dirLight.shadow.camera.right = d;
+			dirLight.shadow.camera.top = d;
+			dirLight.shadow.camera.bottom = -d;
+
+			dirLight.shadow.camera.far = 3500;
+			dirLight.shadow.bias = -0.0001;
+
+			entity.position.set(-100, 175, 100);
+
+			// floor
+			entity = new TARO.Entity('floor');
+			entity.addComponent('rigidbody', {type: 'static'});
+			entity.addComponent('shape', {type: 'plane'});
+			entity.addComponent('geometry', {type: 'plane', width: 200, height: 200});
+			const material = entity.addComponent('material', {type: 'basic', map: './textures/tile.jpg'}).ref;
+
+			material.map.wrapS = TARO.RepeatWrapping;
+			material.map.wrapT = TARO.RepeatWrapping;
+			material.map.anisotropy = 4;
+			material.map.repeat.set( 20, 20 );
+
+			entity.rotateX(-Math.PI/2);
+
+			// tv
+			entity = new TARO.Entity();
+			entity.addComponent('model', {asset: './models/tv.json'});
+			entity.scale.set(0.1, 0.1, 0.1);
+			entity.translateZ(-15);
+
+			// screen
+			entity = new Element( 'https://www.youtube.com/embed/' + '4PDpVNKZgKg' + '?rel=0', 0, 0, -15, 0 );
+			entity.scale.set(0.0097, 0.0097, 0.0097);
+			entity.translateY(4.4);
+			scene.add(entity);
+
+			const iframe = entity.iframe;
+
+			document.getElementById('input').addEventListener('change', function () {
+				iframe.src = 'https://www.youtube.com/embed/' + this.value + '?rel=0';
+			})
+
+			// player
+			const player = new TARO.Entity('player');
+			const camera = player.addComponent('camera').ref;
+			const rigidbody = player.addComponent('rigidbody').ref;
+			player.addComponent('shape', {type: 'box', halfExtents: new TARO.Vector3(1, 5, 1)});
+			player.addComponent('playerController');
+			player.position.set(0, 5, 0);
+
+			const controls = new PointerLockControls( camera, document.body );
+
+			app.renderer.domElement.addEventListener( 'click', function () {
+
+				controls.lock();
+
+			} );
+
+			// start the app
+			app.start();
+		</script>
+	</body>
+</html>

@@ -86,18 +86,21 @@
 		<iframe id="viewer" name="viewer" allowfullscreen="" allowvr="" onmousewheel=""></iframe>
 	</div>
 	<script>
-		let examples = [ {name: "Probability", url: "probability.html"},
-						{name: "Snake", url: "snake.html"},
-						{name: "Drone", url: "drone.html"},
-						{name: "Cube", url: "cube.html"}];
+		const viewer = document.getElementById("viewer");
+		const examples = [
+			{name: "Cube", url: "cube.html"},
+			{name: "Drone", url: "drone.html"},
+			{name: "iFrame", url: "iframe.html"},
+			{name: "Probability", url: "probability.html"},
+			{name: "Snake", url: "snake.html"}];
 
-		let hash = window.location.hash;
+		const hash = window.location.hash;
 		let selectedIndex = -1;
 		if (hash) {
 			selectedIndex = examples.findIndex(example => "#" + encodeURI(example.name) == hash);
 		}
 
-		let container = document.getElementsByClassName("content")[0];
+		const container = document.getElementsByClassName("content")[0];
 
 		let selectedLine = null;
 
@@ -114,6 +117,8 @@
 				if (event.button !== 0 || event.ctrlKey || event.altKey || event.metaKey) return;
 				window.location.hash = encodeURI(example.name);
 
+				viewer.focus();
+
 				if (selectedLine)
 					selectedLine.classList.remove("selected");
 				let line = event.currentTarget.parentNode;
@@ -127,8 +132,8 @@
 
 			if (selectedIndex === i) {
 				exampleLine.classList.add("selected");
-				let viewer = document.getElementById("viewer");
 				viewer.src = example.url;
+				viewer.focus();
 
 				selectedLine = exampleLine;
 			}

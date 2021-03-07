@@ -72,6 +72,7 @@
 
 					const parts = this.entity.getComponent('renderable').ref.children;
 					this.fans = [parts[30], parts[31], parts[32], parts[33]];
+
 				}
 
 				update( delta ) {
@@ -98,47 +99,48 @@
 
 					const input = this.app.input;
 
-					if (input.getKeyDown('KeyW')) {
+					if (input.getKey('KeyW')) {
+						console.log('here')
 						this.vector.set(0, 1, 0)
 						this.rigidbody.applyForce( this.vector )
 					}
 
-					if (input.getKeyDown('KeyS')) {
+					if (input.getKey('KeyS')) {
 						this.vector.set(0, -1, 0)
 						this.rigidbody.applyForce( this.vector )
 					}
 
-					if (input.getKeyDown('KeyA')) {
+					if (input.getKey('KeyA')) {
 						this.vector.set(0.001, 0, 0)
 						this.vector2.set(0, 0, -100)
 						this.rigidbody.applyLocalForce( this.vector, this.vector2 )
 					}
 
-					if (input.getKeyDown('KeyD')) {
+					if (input.getKey('KeyD')) {
 						this.vector.set(0.001, 0, 0)
 						this.vector2.set(0, 0, 100)
 						this.rigidbody.applyLocalForce( this.vector, this.vector2 )
 					}
 
-					if (input.getKeyDown('KeyI')) {
+					if (input.getKey('KeyI')) {
 						this.vector.set(0, -0.0001, 0)
 						this.vector2.set(0, 0, 100)
 						this.rigidbody.applyLocalForce( this.vector, this.vector2 )
 					}
 
-					if (input.getKeyDown('KeyK')) {
+					if (input.getKey('KeyK')) {
 						this.vector.set(0, 0.0001, 0)
 						this.vector2.set(0, 0, 100)
 						this.rigidbody.applyLocalForce( this.vector, this.vector2 )
 					}
 
-					if (input.getKeyDown('KeyJ')) {
+					if (input.getKey('KeyJ')) {
 						this.vector.set(0, 0.0001, 0)
 						this.vector2.set(100, 0, 0)
 						this.rigidbody.applyLocalForce( this.vector, this.vector2 )
 					}
 
-					if (input.getKeyDown('KeyL')) {
+					if (input.getKey('KeyL')) {
 						this.vector.set(0, -0.0001, 0)
 						this.vector2.set(100, 0, 0)
 						this.rigidbody.applyLocalForce( this.vector, this.vector2 )
