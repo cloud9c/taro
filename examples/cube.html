@@ -37,7 +37,7 @@
 						this.ball = this.entity.scene.getEntityByName('ball');
 
 						window.addEventListener('pointerdown', () => {
-							this.entity.app.renderer.domElement.requestPointerLock();
+							this.app.renderer.domElement.requestPointerLock();
 						});
 						this.ball.addEventListener('collide', (c) => {
 							console.log(c);
