@@ -49,7 +49,7 @@ This example will display a spinning cube on the canvas.
 
 ## Editor
 
-In addition to the engine, there is a visual editor [on the website](https://www.echou.xyz/taro/editor/) to get a taste of Taro.
+In addition to the engine, there is a [visual editor](https://www.echou.xyz/taro/editor/) available to get a taste of Taro.
 
 ## License
 [MIT License](https://github.com/Cloud9c/taro/blob/master/LICENSE)
