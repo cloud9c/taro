@@ -53764,7 +53764,7 @@
 		init( data ) {
 
 			this.positional = data.positional;
-			
+
 			if ( this.positional === true ) {
 
 				this.ref = new PositionalAudio( this.scene.audioListener );
@@ -53804,6 +53804,9 @@
 				audioLoader.load( data.asset, ( b ) => this.onLoad( data.asset, b ), ( p ) => this.onProgress( p ), ( e ) => this.onError( e ) );
 
 			}
+
+			this.addEventListener( 'enable', this.onEnable );
+			this.addEventListener( 'disable', this.onDisable );
 
 		}
 
