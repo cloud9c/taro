@@ -9,8 +9,6 @@ A lightweight 3D game engine for the web. Built with [three.js](https://github.c
 
 ![Example GIF](README.gif)
 
-More examples can be found [here](https://www.echou.xyz/taro/examples/).
-
 ## Usage
 
 ```html
