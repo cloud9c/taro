@@ -4,9 +4,11 @@
 
 A lightweight 3D game engine for the web. Built with [three.js](https://github.com/mrdoob/three.js/) and [cannon-es](https://github.com/pmndrs/cannon-es).
 
-**Declarative:** React makes it painless to create interactive UIs. Design simple views for each state in your application, and React will efficiently update and render just the right components when your data changes. Declarative views make your code more predictable, simpler to understand, and easier to debug.
-**🔌 Entity Component System:** Provide better flexibility when defining entities by mixing with reusable componets.
-**⚡ Performance**: Taro is a thin framework on top of three.js and cannon-es.
+* **⚛️ Physics:** Full integration with 3D rigid-body physics engine [cannon-es](https://github.com/pmndrs/cannon-es).
+* **🔌 Entity Component System:** Provide better flexibility when defining entities with reusable components.
+* **🔊 Sound:** 3D positional sounds built on the Web Audio API.
+* **📜 Scripts**: Write game behaviors in JavaScript.
+* * **⚡ Performance**: Taro is a thin framework on top of three.js.
 
 ## Documentation
 
