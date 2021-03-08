@@ -4,7 +4,7 @@
 
 A lightweight 3D game engine for the web. Built with [three.js](https://github.com/mrdoob/three.js/) and [cannon-es](https://github.com/pmndrs/cannon-es).
 
-* **⚛️ Physics:** Full integration with 3D rigid-body physics engine [cannon-es](https://github.com/pmndrs/cannon-es).
+* **⚛️ Physics:** Full integration with a 3D rigid-body physics engine.
 * **🔌 Entity Component System:** Write efficent and extendable code.
 * **🔊 Sound:** 3D positional sounds built on the Web Audio API.
 * **📜 Scripts**: Design game behaviors in JavaScript.
