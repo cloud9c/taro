@@ -1,6 +1,6 @@
 # [Taro](https://www.echou.xyz/taro/)
 
-!(GIF)[README.gif]
+![GIF](README.gif)
 
 A lightweight 3D game engine for the web. Built with [three.js](https://github.com/mrdoob/three.js/) and [cannon-es](https://github.com/pmndrs/cannon-es).
 
