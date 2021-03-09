@@ -21,7 +21,6 @@ http://localhost/yourFile.html
 ## Run a local server
 Many programming languages have simple HTTP servers built in. They are not as full featured as production servers such as Apache or NGINX, however they should be sufficient for testing your taro.js application.
 
-
 ### Servez
 [Servez](https://greggman.github.io/servez/) is a simple server with a GUI.
 
