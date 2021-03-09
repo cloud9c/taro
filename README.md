@@ -57,6 +57,7 @@ This example will display a spinning cube on the canvas.
 
 * <https://www.echou.xyz/taro/build/taro.module.js> (ESM)
 * <https://www.echou.xyz/taro/build/taro.js> (UMD)
+* <https://www.echou.xyz/taro/build/taro.min.js> (UMD minified)
 
 ## Editor
 
