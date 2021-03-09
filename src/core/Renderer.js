@@ -9,7 +9,7 @@ export class Renderer extends WebGLRenderer {
 		this.scene = undefined;
 		this.cameras = [];
 
-		this.setPixelRatio( window.devicePixelRatio );
+		this.setPixelRatio( window.devicePixelRatio !== undefined ? window.devicePixelRatio : 1 );
 
 		this.observer = new ResizeObserver( () => this._onResize() );
 		this.observer.observe( this.domElement );
