@@ -117,6 +117,7 @@
 				if (event.button !== 0 || event.ctrlKey || event.altKey || event.metaKey) return;
 				window.location.hash = encodeURI(example.name);
 
+				viewer.src = example.url;
 				viewer.focus();
 
 				if (selectedLine)

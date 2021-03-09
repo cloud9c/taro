@@ -74,12 +74,12 @@
 			const app = new TARO.App({canvas: document.getElementById('canvas') });
 
 			// css3d
-			const renderer = new CSS3DRenderer();
-			renderer.setSize( window.innerWidth, window.innerHeight );
-			document.getElementById( 'container' ).appendChild( renderer.domElement );
+			const rendererCSS = new CSS3DRenderer();
+			rendererCSS.setSize( window.innerWidth, window.innerHeight );
+			document.getElementById( 'container' ).appendChild( rendererCSS.domElement );
 
 			window.addEventListener( 'resize', () => {
-				renderer.setSize( window.innerWidth, window.innerHeight );
+				rendererCSS.setSize( window.innerWidth, window.innerHeight );
 			} );
 
 			// scene
@@ -87,6 +87,8 @@
 			app.setScene(scene);
 			scene.background = new TARO.Color( 0xffffff );
 			scene.fog = new TARO.Fog( 0xffffff, 0, 750 );
+
+			const sceneCSS = new TARO.Scene();
 
 			// component
 			TARO.registerComponent('playerController', class {
@@ -113,7 +115,7 @@
 					this.entity.position.y = 5;
 
 					// css3d renderer
-					renderer.render( scene, this.camera );
+					rendererCSS.render( sceneCSS, this.camera );
 				}
 			});
 
@@ -163,10 +165,10 @@
 			entity.translateZ(-15);
 
 			// screen
-			entity = new Element( 'https://www.youtube.com/embed/' + 'dNJdJIwCF_Y' + '?rel=0', 0, 0, -15, 0 );
-			entity.scale.set(0.0097, 0.0097, 0.0097);
+			entity = new Element( 'https://www.youtube.com/embed/' + 'dNJdJIwCF_Y' + '?rel=0', 0, 0, -14.8, 0 );
 			entity.translateY(4.4);
-			scene.add(entity);
+			entity.scale.set(0.0095, 0.0095, 0.0095);
+			sceneCSS.add(entity);
 
 			const iframe = entity.iframe;
 
