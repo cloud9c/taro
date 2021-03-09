@@ -98,7 +98,7 @@ app.start();
 ## Putting everything together
 Congratulations! You have now completed your first taro.js application. It's simple, you have to start somewhere.
 
-The full code is available below and as an editable [live example](https://jsfiddle.net/0jvyadmx/). Play around with it to get a better understanding of how it works.
+The full code is available below and as an editable [live example](https://jsfiddle.net/batrgk2p/). Play around with it to get a better understanding of how it works.
 ```html
 <!DOCTYPE html>
 <html>
@@ -143,7 +143,6 @@ The full code is available below and as an editable [live example](https://jsfid
       camera.addComponent('camera');
 
       app.start();
-      // beep boop hey look it works
     </script>
   </body>
 </html>
