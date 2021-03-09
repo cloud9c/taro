@@ -12,7 +12,7 @@ The taro.js library can be used without any build system, either by uploading fi
 <script type="module">
 
   // Ex 1: Import the entire taro.js core library from a CDN
-  import * as TARO from 'https://www.echou.xyz/taro/build/taro.module.js';
+  import * as TARO from 'https://www.echou.xyz/taro.js/build/taro.module.js';
   var app = new App();
 
   // Ex 2: Import just the parts you need from static hosting
