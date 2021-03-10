@@ -1,64 +1,62 @@
+<!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="utf-8">
-		<title>My first taro.js app</title>
-		<style>
-			body { margin: 0; }
-			canvas {
-				width: 100%;
-				height: 100%;
-			}
-		</style>
-	</head>
-	<body>
-		<script type="module">
-			import * as TARO from '../build/taro.module.js';
+  <head>
+    <meta charset="utf-8">
+    <title>My first taro.js app</title>
+    <style>
+      body { margin: 0; }
+    </style>
+  </head>
+  <body>
+    <script src="https://www.echou.xyz/taro/build/taro.js"></script>
+    <script>
+		var app = new TARO.App();
+		app.domElement.width = window.innerWidth;
+		app.domElement.height = window.innerHeight;
+		document.body.appendChild( app.domElement );
+		
+		var scene = new TARO.Scene();
+		app.setScene(scene);
+		
+		class CubeController {
+		  init() {
+			// fires when the component is attached to an entity
+			this.rotation = this.entity.rotation;
+		  }
 
-			var app = new TARO.App();
-			document.body.appendChild( app.domElement );
+		  update() {
+			// fires once per frame
+			this.rotation.x += 0.01;
+			this.rotation.y += 0.01;
+		  }
+		}
+		
+		TARO.registerComponent('cubeController', CubeController);
+		
+		var cube = new TARO.Entity('cube');
+		cube.addComponent('material', { type: 'standard', color: 0x00ff00 });
+		cube.addComponent('geometry', { type: 'box' });
+		cube.addComponent('cubeController');
+		
+		var plane = new TARO.Entity('plane');
+		plane.addComponent('material', { type: 'standard', color: 0x0000ff });
+		plane.addComponent('geometry', { type: 'plane', width: 10, height: 10, depth: 10 });
+		plane.position.z = -5;
 
-			var scene = new TARO.Scene();
-			app.setScene(scene);
-
-			class CubeController {
-			  init() {
-				// fires when the component is attached to an entity
-				this.rotation = this.entity.rotation;
-			  }
-
-			  update() {
-				// fires once per frame
-				this.rotation.x += 0.01;
-				this.rotation.y += 0.01;
-			  }
-			}
-
-			TARO.registerComponent('cubeController', CubeController);
-
-			var cube = new TARO.Entity('cube');
-			cube.addComponent('material', { type: 'standard', color: 0x00ff00 });
-			cube.addComponent('geometry', { type: 'box' });
-			cube.addComponent('cubeController');
-
-			var plane = new TARO.Entity('plane');
-			plane.addComponent('material', { type: 'standard', color: 0x0000ff });
-			plane.addComponent('geometry', { type: 'plane', width: 10, height: 10, depth: 10 });
-			plane.position.z = -5;
-
-			var camera = new TARO.Entity('camera');
-			camera.position.z = 5;
-			camera.addComponent('camera');
-
-			var light = new TARO.Entity();
-			light.addComponent('light', {
-				type: 'point',
-				color: 0xffffff,
-				intensity: 0.7
-			});
-
-			light.position.z = 5;
-
-			app.start();
-		</script>
-	</body>
+		var camera = new TARO.Entity('camera');
+		camera.position.z = 5;
+		camera.addComponent('camera');
+		
+		var light = new TARO.Entity();
+		light.addComponent('light', {
+			type: 'point',
+			color: 0xffffff,
+			intensity: 0.7
+		});
+		
+		light.position.z = 5;
+		
+		app.start();
+    </script>
+  </body>
 </html>
