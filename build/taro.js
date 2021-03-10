@@ -1,3 +1,8 @@
+/**
+ * @license
+ * Copyright 2020-2021 Taro.js Authors
+ * SPDX-License-Identifier: MIT
+ */
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
 	typeof define === 'function' && define.amd ? define(['exports'], factory) :

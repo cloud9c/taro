@@ -1,3 +1,8 @@
+/**
+ * @license
+ * Copyright 2020-2021 Taro.js Authors
+ * SPDX-License-Identifier: MIT
+ */
 // threejs.org/license
 const REVISION = '126';
 const MOUSE = { LEFT: 0, MIDDLE: 1, RIGHT: 2, ROTATE: 0, DOLLY: 1, PAN: 2 };
