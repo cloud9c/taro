@@ -64691,7 +64691,7 @@ class Renderer extends WebGLRenderer {
 		this.scene = undefined;
 		this.cameras = [];
 
-		this.setPixelRatio( window.devicePixelRatio );
+		this.pixelRatio = parameters.pixelRatio !== undefined ? parameters.pixelRatio : window.devicePixelRatio !== undefined ? window.devicePixelRatio : 1;
 
 		this.observer = new ResizeObserver( () => this._onResize() );
 		this.observer.observe( this.domElement );
@@ -64708,7 +64708,7 @@ class Renderer extends WebGLRenderer {
 	_onResize() {
 
 		const canvas = this.domElement;
-		this.setSize( canvas.clientWidth, canvas.clientHeight, false );
+		this.setSize( canvas.clientWidth * this.pixelRatio, canvas.clientHeight * this.pixelRatio, false );
 
 		const cameras = this.cameras;
 
