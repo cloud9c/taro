@@ -10,16 +10,6 @@
   <body>
     <script src="https://www.echou.xyz/taro/build/taro.js"></script>
     <script>
-
-		window.addEventListener("error", function (e) {
-			alert("Error occurred: " + e.error.message);
-			const p = document.createElement("P");
-			p.textContent = e.error.message;
-			document.body.appendChild(p);
-			console.log('here')
-			return false;
-		})
-
 		var app = new TARO.App();
 		app.domElement.width = window.innerWidth;
 		app.domElement.height = window.innerHeight;
