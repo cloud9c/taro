@@ -7,7 +7,9 @@ Interface into the Renderer system used by App.
 ## Constructor
 
 ### Renderer( parameters : <span class="param">Object</span> )
-**parameters** — Object with properties defining the system's behaviour. See [WebGLRenderer](https://threejs.org/docs/#api/en/renderers/WebGLRenderer) for a list of all renderer parameters.
+**parameters** — Object with properties defining the system's behaviour. See [WebGLRenderer](https://threejs.org/docs/#api/en/renderers/WebGLRenderer) for a list of all renderer parameters. The following are additional parameters:
+
+**pixelRatio** — This can be used to override the window.devicePixelRatio used in the renderer.
 
 ## Properties
 
