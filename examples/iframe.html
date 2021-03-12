@@ -33,9 +33,9 @@
 		</style>
 	</head>
 	<body>
-		<div id='top'>
+<!-- 		<div id='top'>
 			Youtube Video ID: <input id='input' type='text' autocomplete="off">
-		</div>
+		</div> -->
 		<div id="container"></div>
 		<canvas id='canvas'></canvas>
 		<script type='module'>
@@ -165,16 +165,16 @@
 			entity.translateZ(-15);
 
 			// screen
-			entity = new Element( 'https://www.youtube.com/embed/' + 'dNJdJIwCF_Y' + '?rel=0', 0, 0, -14.8, 0 );
+			entity = new Element( 'https://www.youtube.com/embed/' + 'CAYDRIbXFAc' + '?rel=0', 0, 0, -14.8, 0 );
 			entity.translateY(4.4);
 			entity.scale.set(0.0095, 0.0095, 0.0095);
 			sceneCSS.add(entity);
 
 			const iframe = entity.iframe;
 
-			document.getElementById('input').addEventListener('change', function () {
-				iframe.src = 'https://www.youtube.com/embed/' + this.value + '?rel=0';
-			})
+			// document.getElementById('input').addEventListener('change', function () {
+			// 	iframe.src = 'https://www.youtube.com/embed/' + this.value + '?rel=0';
+			// })
 
 			// player
 			const player = new TARO.Entity('player');
