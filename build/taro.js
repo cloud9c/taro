@@ -49899,8 +49899,10 @@
 			this.scene = undefined;
 			this.cameras = [];
 			this.pixelRatio = parameters.pixelRatio !== undefined ? parameters.pixelRatio : window.devicePixelRatio !== undefined ? window.devicePixelRatio : 1;
-			this.observer = new ResizeObserver(() => this._onResize());
-			this.observer.observe(this.domElement);
+
+			this._updateCanvas();
+
+			window.addEventListener('resize', () => this._updateCanvas());
 		}
 
 		_updateScene(scene) {
@@ -49908,7 +49910,7 @@
 			this.scene = scene;
 		}
 
-		_onResize() {
+		_updateCanvas() {
 			const canvas = this.domElement;
 			this.setSize(canvas.clientWidth * this.pixelRatio, canvas.clientHeight * this.pixelRatio, false);
 			const cameras = this.cameras;
@@ -49932,7 +49934,6 @@
 
 		dispose() {
 			super.dispose();
-			this.observer.disconnect();
 		}
 
 	}
