@@ -344,6 +344,7 @@ export function Navbar( editor ) {
 				playMenu.firstElementChild.textContent = 'Stop';
 
 				app = newApp;
+				renderer._updateCanvas();
 				app.start();
 
 			} );
