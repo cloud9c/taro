@@ -64698,8 +64698,8 @@ class Renderer extends WebGLRenderer {
 
 		this.pixelRatio = parameters.pixelRatio !== undefined ? parameters.pixelRatio : window.devicePixelRatio !== undefined ? window.devicePixelRatio : 1;
 
-		this.observer = new ResizeObserver( () => this._onResize() );
-		this.observer.observe( this.domElement );
+		this._updateCanvas();
+		window.addEventListener( 'resize', () => this._updateCanvas() );
 
 	}
 
@@ -64710,7 +64710,7 @@ class Renderer extends WebGLRenderer {
 
 	}
 
-	_onResize() {
+	_updateCanvas() {
 
 		const canvas = this.domElement;
 		this.setSize( canvas.clientWidth * this.pixelRatio, canvas.clientHeight * this.pixelRatio, false );
@@ -64745,7 +64745,6 @@ class Renderer extends WebGLRenderer {
 	dispose() {
 
 		super.dispose();
-		this.observer.disconnect();
 
 	}
 
