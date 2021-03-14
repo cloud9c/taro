@@ -53505,7 +53505,7 @@ const ComponentManager = {
 
 				if ( value !== this._enabled ) {
 
-					if ( value && ! this.entity._enabled )
+					if ( value && ! this.entity.enabled )
 						return console.warn( "Component: Can't enable if the entity is disabled" );
 
 					this._enabled = value;
@@ -54038,7 +54038,7 @@ class Geometry {
 
 		const material = this.entity.getComponent( 'material' );
 
-		if ( material !== undefined && material._enabled ) {
+		if ( material !== undefined && material._nabled ) {
 
 			const g = this.ref !== undefined ? this.ref : this.DefaultGeometry;
 			const m = material.ref !== undefined ? material.ref : material.DefaultMaterial;
@@ -54056,7 +54056,7 @@ class Geometry {
 
 		const material = this.entity.getComponent( 'material' );
 
-		if ( material !== undefined && material._enabled ) {
+		if ( material !== undefined && material.enabled ) {
 
 			this.entity.remove( this.mesh );
 			delete this.mesh;
@@ -54310,7 +54310,7 @@ class Material$2 {
 
 		const geometry = this.entity.getComponent( 'geometry' );
 
-		if ( geometry !== undefined && geometry._enabled ) {
+		if ( geometry !== undefined && geometry.enabled ) {
 
 			const g = geometry.ref !== undefined ? geometry.ref : geometry.DefaultGeometry;
 			const m = this.ref !== undefined ? this.ref : this.DefaultMaterial;
@@ -54328,7 +54328,7 @@ class Material$2 {
 
 		const geometry = this.entity.getComponent( 'geometry' );
 
-		if ( geometry !== undefined && geometry._enabled ) {
+		if ( geometry !== undefined && geometry.enabled ) {
 
 			this.entity.remove( this.mesh );
 			delete this.mesh;
@@ -54520,7 +54520,7 @@ class Model {
 
 		this.ref = asset;
 
-		if ( this._enabled ) this.onEnable();
+		if ( this.enabled ) this.onEnable();
 
 		this.dispatchEvent( { type: 'load', asset } );
 
@@ -54662,6 +54662,7 @@ class Mat3 {
     target.x = e[0];
     target.y = e[4];
     target.z = e[8];
+    return target;
   }
   /**
    * Matrix-Vector multiplication
@@ -54702,22 +54703,36 @@ class Mat3 {
 
 
   mmult(matrix, target = new Mat3()) {
-    const {
-      elements
-    } = matrix;
-
-    for (let i = 0; i < 3; i++) {
-      for (let j = 0; j < 3; j++) {
-        let sum = 0.0;
-
-        for (let k = 0; k < 3; k++) {
-          sum += elements[i + k * 3] * this.elements[k + j * 3];
-        }
-
-        target.elements[i + j * 3] = sum;
-      }
-    }
-
+    const A = this.elements;
+    const B = matrix.elements;
+    const T = target.elements;
+    const a11 = A[0],
+          a12 = A[1],
+          a13 = A[2],
+          a21 = A[3],
+          a22 = A[4],
+          a23 = A[5],
+          a31 = A[6],
+          a32 = A[7],
+          a33 = A[8];
+    const b11 = B[0],
+          b12 = B[1],
+          b13 = B[2],
+          b21 = B[3],
+          b22 = B[4],
+          b23 = B[5],
+          b31 = B[6],
+          b32 = B[7],
+          b33 = B[8];
+    T[0] = a11 * b11 + a12 * b21 + a13 * b31;
+    T[1] = a11 * b12 + a12 * b22 + a13 * b32;
+    T[2] = a11 * b13 + a12 * b23 + a13 * b33;
+    T[3] = a21 * b11 + a22 * b21 + a23 * b31;
+    T[4] = a21 * b12 + a22 * b22 + a23 * b32;
+    T[5] = a21 * b13 + a22 * b23 + a23 * b33;
+    T[6] = a31 * b11 + a32 * b21 + a33 * b31;
+    T[7] = a31 * b12 + a32 * b22 + a33 * b32;
+    T[8] = a31 * b13 + a32 * b23 + a33 * b33;
     return target;
   }
   /**
@@ -54890,13 +54905,9 @@ class Mat3 {
 
     const nc = 6; // num cols
 
-    const eqns = [];
+    const eqns = reverse_eqns;
     let i;
     let j;
-
-    for (i = 0; i < nr * nc; i++) {
-      eqns.push(0);
-    }
 
     for (i = 0; i < 3; i++) {
       for (j = 0; j < 3; j++) {
@@ -55048,19 +55059,27 @@ class Mat3 {
 
 
   transpose(target = new Mat3()) {
-    const Mt = target.elements;
     const M = this.elements;
+    const T = target.elements;
+    let tmp; //Set diagonals
 
-    for (let i = 0; i !== 3; i++) {
-      for (let j = 0; j !== 3; j++) {
-        Mt[3 * i + j] = M[3 * j + i];
-      }
-    }
-
+    T[0] = M[0];
+    T[4] = M[4];
+    T[8] = M[8];
+    tmp = M[1];
+    T[1] = M[3];
+    T[3] = tmp;
+    tmp = M[2];
+    T[2] = M[6];
+    T[6] = tmp;
+    tmp = M[5];
+    T[5] = M[7];
+    T[7] = tmp;
     return target;
   }
 
 }
+const reverse_eqns = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
 /**
  * 3-dimensional vector
@@ -57783,6 +57802,12 @@ class Body extends EventTarget {
   // World space bounding box of the body and its shapes.
   // Indicates if the AABB needs to be updated before use.
   // Total bounding radius of the Body including its shapes, relative to body.position.
+
+  /**
+   * When true the body behaves like a trigger. It does not collide
+   * with other bodies but collision events are still triggered.
+   * @default false
+   */
   constructor(options = {}) {
     super();
     this.id = Body.idCounter++;
@@ -57878,6 +57903,7 @@ class Body extends EventTarget {
     this.aabbNeedsUpdate = true;
     this.boundingRadius = 0;
     this.wlambda = new Vec3();
+    this.isTrigger = Boolean(options.isTrigger);
 
     if (options.shape) {
       this.addShape(options.shape);
@@ -58042,6 +58068,31 @@ class Body extends EventTarget {
     return this;
   }
   /**
+   * Remove a shape from the body.
+   * @method removeShape
+   * @param {Shape} shape
+   * @return {Body} The body object, for chainability.
+   */
+
+
+  removeShape(shape) {
+    const index = this.shapes.indexOf(shape);
+
+    if (index === -1) {
+      console.warn('Shape does not belong to the body');
+      return this;
+    }
+
+    this.shapes.splice(index, 1);
+    this.shapeOffsets.splice(index, 1);
+    this.shapeOrientations.splice(index, 1);
+    this.updateMassProperties();
+    this.updateBoundingRadius();
+    this.aabbNeedsUpdate = true;
+    shape.body = null;
+    return this;
+  }
+  /**
    * Update the bounding radius of the body. Should be done if any of the shapes are changed.
    * @method updateBoundingRadius
    */
@@ -58068,12 +58119,11 @@ class Body extends EventTarget {
   }
   /**
    * Updates the .aabb
-   * @method computeAABB
-   * @todo rename to updateAABB()
+   * @method updateAABB
    */
 
 
-  computeAABB() {
+  updateAABB() {
     const shapes = this.shapes;
     const shapeOffsets = this.shapeOffsets;
     const shapeOrientations = this.shapeOrientations;
@@ -58082,7 +58132,7 @@ class Body extends EventTarget {
     const orientation = tmpQuat$1;
     const bodyQuat = this.quaternion;
     const aabb = this.aabb;
-    const shapeAABB = computeAABB_shapeAABB;
+    const shapeAABB = updateAABB_shapeAABB;
 
     for (let i = 0; i !== N; i++) {
       const shape = shapes[i]; // Get shape world position
@@ -58169,6 +58219,25 @@ class Body extends EventTarget {
     this.applyForce(worldForce, relativePointWorld);
   }
   /**
+   * Apply torque to the body.
+   * @method applyTorque
+   * @param  {Vec3} torque The amount of torque to add.
+   */
+
+
+  applyTorque(torque) {
+    if (this.type !== Body.DYNAMIC) {
+      return;
+    }
+
+    if (this.sleepState === Body.SLEEPING) {
+      this.wakeUp();
+    } // Add rotational force
+
+
+    this.torque.vadd(torque, this.torque);
+  }
+  /**
    * Apply impulse to a point of the body. This could for example be a point on the Body surface.
    * An impulse is a force added to a body during a short period of time (impulse = force * time).
    * Impulses will be added to Body.velocity and Body.angularVelocity.
@@ -58240,7 +58309,7 @@ class Body extends EventTarget {
     const I = this.inertia;
     const fixed = this.fixedRotation; // Approximate with AABB box
 
-    this.computeAABB();
+    this.updateAABB();
     halfExtents.set((this.aabb.upperBound.x - this.aabb.lowerBound.x) / 2, (this.aabb.upperBound.y - this.aabb.lowerBound.y) / 2, (this.aabb.upperBound.z - this.aabb.lowerBound.z) / 2);
     Box.calculateInertia(halfExtents, this.mass, I);
     this.invInertia.set(I.x > 0 && !fixed ? 1.0 / I.x : 0, I.y > 0 && !fixed ? 1.0 / I.y : 0, I.z > 0 && !fixed ? 1.0 / I.z : 0);
@@ -58390,7 +58459,7 @@ Body.sleepEvent = {
 };
 const tmpVec = new Vec3();
 const tmpQuat$1 = new Quaternion$1();
-const computeAABB_shapeAABB = new AABB();
+const updateAABB_shapeAABB = new AABB();
 const uiw_m1 = new Mat3();
 const uiw_m2 = new Mat3();
 const Body_applyForce_rotForce = new Vec3();
@@ -58502,11 +58571,11 @@ class Broadphase {
 
   doBoundingBoxBroadphase(bodyA, bodyB, pairs1, pairs2) {
     if (bodyA.aabbNeedsUpdate) {
-      bodyA.computeAABB();
+      bodyA.updateAABB();
     }
 
     if (bodyB.aabbNeedsUpdate) {
-      bodyB.computeAABB();
+      bodyB.updateAABB();
     } // Check AABB / AABB
 
 
@@ -58657,7 +58726,7 @@ class NaiveBroadphase extends Broadphase {
       const b = world.bodies[i];
 
       if (b.aabbNeedsUpdate) {
-        b.computeAABB();
+        b.updateAABB();
       } // Ugly hack until Body gets aabb
 
 
@@ -61216,7 +61285,7 @@ class Solver {
 
 
   addEquation(eq) {
-    if (eq.enabled) {
+    if (eq.enabled && !eq.bi.isTrigger && !eq.bj.isTrigger) {
       this.equations.push(eq);
     }
   }
@@ -63790,34 +63859,34 @@ class World extends EventTarget {
 
       solver.addEquation(c); // // Add friction constraint equation
       // if(mu > 0){
-      // 	// Create 2 tangent equations
-      // 	const mug = mu * gnorm;
-      // 	const reducedMass = (bi.invMass + bj.invMass);
-      // 	if(reducedMass > 0){
-      // 		reducedMass = 1/reducedMass;
-      // 	}
-      // 	const pool = frictionEquationPool;
-      // 	const c1 = pool.length ? pool.pop() : new FrictionEquation(bi,bj,mug*reducedMass);
-      // 	const c2 = pool.length ? pool.pop() : new FrictionEquation(bi,bj,mug*reducedMass);
-      // 	this.frictionEquations.push(c1, c2);
-      // 	c1.bi = c2.bi = bi;
-      // 	c1.bj = c2.bj = bj;
-      // 	c1.minForce = c2.minForce = -mug*reducedMass;
-      // 	c1.maxForce = c2.maxForce = mug*reducedMass;
-      // 	// Copy over the relative vectors
-      // 	c1.ri.copy(c.ri);
-      // 	c1.rj.copy(c.rj);
-      // 	c2.ri.copy(c.ri);
-      // 	c2.rj.copy(c.rj);
-      // 	// Construct tangents
-      // 	c.ni.tangents(c1.t, c2.t);
+      //  // Create 2 tangent equations
+      //  const mug = mu * gnorm;
+      //  const reducedMass = (bi.invMass + bj.invMass);
+      //  if(reducedMass > 0){
+      //    reducedMass = 1/reducedMass;
+      //  }
+      //  const pool = frictionEquationPool;
+      //  const c1 = pool.length ? pool.pop() : new FrictionEquation(bi,bj,mug*reducedMass);
+      //  const c2 = pool.length ? pool.pop() : new FrictionEquation(bi,bj,mug*reducedMass);
+      //  this.frictionEquations.push(c1, c2);
+      //  c1.bi = c2.bi = bi;
+      //  c1.bj = c2.bj = bj;
+      //  c1.minForce = c2.minForce = -mug*reducedMass;
+      //  c1.maxForce = c2.maxForce = mug*reducedMass;
+      //  // Copy over the relative vectors
+      //  c1.ri.copy(c.ri);
+      //  c1.rj.copy(c.rj);
+      //  c2.ri.copy(c.ri);
+      //  c2.rj.copy(c.rj);
+      //  // Construct tangents
+      //  c.ni.tangents(c1.t, c2.t);
       //           // Set spook params
       //           c1.setSpookParams(cm.frictionEquationStiffness, cm.frictionEquationRelaxation, dt);
       //           c2.setSpookParams(cm.frictionEquationStiffness, cm.frictionEquationRelaxation, dt);
       //           c1.enabled = c2.enabled = c.enabled;
-      // 	// Add equations to solver
-      // 	solver.addEquation(c1);
-      // 	solver.addEquation(c2);
+      //  // Add equations to solver
+      //  solver.addEquation(c1);
+      //  solver.addEquation(c2);
       // }
 
       if (bi.allowSleep && bi.type === Body.DYNAMIC && bi.sleepState === Body.SLEEPING && bj.sleepState === Body.AWAKE && bj.type !== Body.STATIC) {
@@ -63944,10 +64013,9 @@ class World extends EventTarget {
 
     if (doProfiling) {
       profile.integrate = performance$1.now() - profilingStart;
-    } // Update world time
+    } // Update step number
 
 
-    this.time += dt;
     this.stepnumber += 1;
     this.dispatchEvent(World_step_postStepEvent); // Invoke post-step callbacks
 
@@ -64264,18 +64332,7 @@ class Shape$2 {
 
 	onDisable() {
 
-		const body = this.body.ref;
-		const index = body.shapes.indexOf( this.ref );
-
-		body.shapes.splice( index, 1 );
-		body.shapeOffsets.splice( index, 1 );
-		body.shapeOrientations.splice( index, 1 );
-		body.updateMassProperties();
-		body.updateBoundingRadius();
-
-		body.aabbNeedsUpdate = true;
-
-		this.ref.body = null;
+		this.body.ref.removeShape( this.ref );
 
 	}
 
@@ -65232,7 +65289,7 @@ class Scene$1 extends Scene {
 
 			if ( inQueue ) continue;
 
-			if ( component._enabled ) {
+			if ( component.enabled ) {
 
 				const type = component.componentType;
 
@@ -65268,7 +65325,7 @@ class Scene$1 extends Scene {
 
 			if ( inQueue ) continue;
 
-			if ( component._enabled ) {
+			if ( component.enabled ) {
 
 				const type = component.componentType;
 				const container = this.components[ type ];
@@ -65423,7 +65480,7 @@ class Entity extends Group {
 		super();
 
 		this.scene = null;
-		
+
 		this.castShadow = true;
 		this.receiveShadow = true;
 
@@ -65477,7 +65534,7 @@ class Entity extends Group {
 		if ( component.init !== undefined )
 			component.init( data );
 
-		if ( this._enabled === true ) component.dispatchEvent( { type: 'enable' } );
+		if ( this.enabled ) component.dispatchEvent( { type: 'enable' } );
 
 	}
 
@@ -65581,8 +65638,8 @@ class Entity extends Group {
 
 		if ( value != this._enabled ) {
 
-			if ( value && this.parent.isScene === undefined && ! this.parent._enabled )
-				return console.warn( "TARO.Entity: Can't enable if an ancestor is disabled" );
+			if ( value && this.parent.isScene === undefined && ! this.parent.enabled )
+				return console.warn( "Entity: Can't enable if an ancestor is disabled" );
 			this._enabled = value;
 
 			const components = this.components;
