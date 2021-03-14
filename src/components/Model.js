@@ -89,7 +89,7 @@ class Model {
 
 		this.ref = asset;
 
-		if ( this._enabled ) this.onEnable();
+		if ( this.enabled ) this.onEnable();
 
 		this.dispatchEvent( { type: 'load', asset } );
 

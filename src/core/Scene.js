@@ -48,7 +48,7 @@ export class Scene extends ThreeScene {
 
 			if ( inQueue ) continue;
 
-			if ( component._enabled ) {
+			if ( component.enabled ) {
 
 				const type = component.componentType;
 
@@ -84,7 +84,7 @@ export class Scene extends ThreeScene {
 
 			if ( inQueue ) continue;
 
-			if ( component._enabled ) {
+			if ( component.enabled ) {
 
 				const type = component.componentType;
 				const container = this.components[ type ];

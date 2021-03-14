@@ -10,7 +10,7 @@ export class Entity extends Group {
 		super();
 
 		this.scene = null;
-		
+
 		this.castShadow = true;
 		this.receiveShadow = true;
 
@@ -64,7 +64,7 @@ export class Entity extends Group {
 		if ( component.init !== undefined )
 			component.init( data );
 
-		if ( this._enabled === true ) component.dispatchEvent( { type: 'enable' } );
+		if ( this.enabled ) component.dispatchEvent( { type: 'enable' } );
 
 	}
 
@@ -168,8 +168,8 @@ export class Entity extends Group {
 
 		if ( value != this._enabled ) {
 
-			if ( value && this.parent.isScene === undefined && ! this.parent._enabled )
-				return console.warn( "TARO.Entity: Can't enable if an ancestor is disabled" );
+			if ( value && this.parent.isScene === undefined && ! this.parent.enabled )
+				return console.warn( "Entity: Can't enable if an ancestor is disabled" );
 			this._enabled = value;
 
 			const components = this.components;

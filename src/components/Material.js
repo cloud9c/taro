@@ -111,7 +111,7 @@ class Material {
 
 		const geometry = this.entity.getComponent( 'geometry' );
 
-		if ( geometry !== undefined && geometry._enabled ) {
+		if ( geometry !== undefined && geometry.enabled ) {
 
 			const g = geometry.ref !== undefined ? geometry.ref : geometry.DefaultGeometry;
 			const m = this.ref !== undefined ? this.ref : this.DefaultMaterial;
@@ -129,7 +129,7 @@ class Material {
 
 		const geometry = this.entity.getComponent( 'geometry' );
 
-		if ( geometry !== undefined && geometry._enabled ) {
+		if ( geometry !== undefined && geometry.enabled ) {
 
 			this.entity.remove( this.mesh );
 			delete this.mesh;
