@@ -145,18 +145,7 @@ class Shape {
 
 	onDisable() {
 
-		const body = this.body.ref;
-		const index = body.shapes.indexOf( this.ref );
-
-		body.shapes.splice( index, 1 );
-		body.shapeOffsets.splice( index, 1 );
-		body.shapeOrientations.splice( index, 1 );
-		body.updateMassProperties();
-		body.updateBoundingRadius();
-
-		body.aabbNeedsUpdate = true;
-
-		this.ref.body = null;
+		this.body.ref.removeShape( this.ref );
 
 	}
 
