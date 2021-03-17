@@ -9,6 +9,7 @@ Interface into the Physics system used by App.
 ### Physics( parameters : <span class="param">Object</span> )
 **parameters** — Object with properties defining the system's behaviour. In all cases, it will assume defaults when parameters are missing. The following are valid parameters:
 
+**allowSleep** — Whether or not to implement sleeping optimization. Default is **true**.<br>
 **epsilon** — The difference between one and the smallest value greater than one that can be represented as a Number. Used for keeping [Body](https://raw.githack.com/pmndrs/cannon-es/typedoc2/docs/classes/body.html) and [Entity](api/core/Entity) in sync. Default is **0.001**.<br>
 **gravity** — The gravity applied to all rigidbodies in the scene. Default is **(0, - 9.80665, 0)**.
 

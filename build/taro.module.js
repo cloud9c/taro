@@ -64591,6 +64591,8 @@ class Physics extends World {
 
 	constructor( parameters ) {
 
+		if ( parameters.allowSleep === undefined ) parameters.allowSleep = true;
+
 		super( parameters );
 		this.epsilon = parameters.epsilon !== undefined ? parameters.epsilon : 0.001;
 		this.gravity = parameters.gravity !== undefined ? parameters.gravity : new Vector3( 0, - 9.80665, 0 );
@@ -64685,11 +64687,7 @@ class Physics extends World {
 
 		}
 
-		const beforeSteps = this.stepnumber;
-
 		this.step( fixedTimestep, deltaTime );
-
-		const steps = this.stepnumber - beforeSteps;
 
 		if ( this.hasActiveBodies ) {
 
@@ -64723,8 +64721,6 @@ class Physics extends World {
 			}
 
 		}
-
-		return steps;
 
 	}
 
@@ -65070,6 +65066,19 @@ class App {
 
 		App.currentApp = this;
 
+		this.physics.addEventListener( 'preStep', () => {
+
+			for ( const type in this.components ) {
+
+				const container = this.components[ type ];
+				if ( container[ 0 ] !== undefined && container[ 0 ].fixedUpdate !== undefined )
+					for ( let j = 0, lenj = container.length; j < lenj; j ++ )
+						container[ j ].fixedUpdate();
+
+			}
+
+		} );
+
 	}
 
 	start() {
@@ -65088,21 +65097,7 @@ class App {
 
 		const deltaTime = this.time.update( timestamp / 1000 );
 
-		let steps = this.physics.update( this.time.scaledFixedTimestep, deltaTime );
-
-		// fixed update (0 - multiple times per frame)
-		while ( steps -- ) {
-
-			for ( const type in this.components ) {
-
-				const container = this.components[ type ];
-				if ( container[ 0 ] !== undefined && container[ 0 ].fixedUpdate !== undefined )
-					for ( let j = 0, lenj = container.length; j < lenj; j ++ )
-						container[ j ].fixedUpdate();
-
-			}
-
-		}
+		this.physics.update( this.time.scaledFixedTimestep, deltaTime );
 
 		// update (once per frame)
 		for ( const type in this.components ) {
