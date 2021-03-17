@@ -11,6 +11,8 @@ export class Physics extends World {
 
 	constructor( parameters ) {
 
+		if ( parameters.allowSleep === undefined ) parameters.allowSleep = true;
+
 		super( parameters );
 		this.epsilon = parameters.epsilon !== undefined ? parameters.epsilon : 0.001;
 		this.gravity = parameters.gravity !== undefined ? parameters.gravity : new Vector3( 0, - 9.80665, 0 );
@@ -105,11 +107,7 @@ export class Physics extends World {
 
 		}
 
-		const beforeSteps = this.stepnumber;
-
 		this.step( fixedTimestep, deltaTime );
-
-		const steps = this.stepnumber - beforeSteps;
 
 		if ( this.hasActiveBodies ) {
 
@@ -143,8 +141,6 @@ export class Physics extends World {
 			}
 
 		}
-
-		return steps;
 
 	}
 
