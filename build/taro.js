@@ -49956,10 +49956,12 @@
 			this.scene = undefined;
 			this.cameras = [];
 			this.pixelRatio = parameters.pixelRatio !== undefined ? parameters.pixelRatio : window.devicePixelRatio !== undefined ? window.devicePixelRatio : 1;
+			this.autoResize = parameters.autoResize;
 
-			this._updateCanvas();
-
-			window.addEventListener('resize', () => this._updateCanvas());
+			if (ResizeObserver !== undefined) {
+				this.observer = new ResizeObserver(() => this.resize());
+				this.observer.observe(this.domElement);
+			}
 		}
 
 		_updateScene(scene) {
@@ -49967,7 +49969,8 @@
 			this.scene = scene;
 		}
 
-		_updateCanvas() {
+		resize() {
+			if (this.autoResize === false) return;
 			const canvas = this.domElement;
 			this.setSize(canvas.clientWidth * this.pixelRatio, canvas.clientHeight * this.pixelRatio, false);
 			const cameras = this.cameras;
