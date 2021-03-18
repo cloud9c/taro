@@ -90,7 +90,7 @@ class Geometry {
 
 		const material = this.entity.getComponent( 'material' );
 
-		if ( material !== undefined && material._nabled ) {
+		if ( material !== undefined && material.enabled ) {
 
 			const g = this.ref !== undefined ? this.ref : this.DefaultGeometry;
 			const m = material.ref !== undefined ? material.ref : material.DefaultMaterial;
