@@ -24,6 +24,7 @@ Fires when an asset failed to load. Property `material` is provided (loaded mate
 ### progress
 Fires when an asset is loaded. Property `event` is provided (XMLHttpRequest progress event).
 
+
 ## Data Parameters
 
 | Property             | Description                                                          | Default Value |

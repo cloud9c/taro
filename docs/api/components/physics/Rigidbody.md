@@ -30,6 +30,20 @@ Fires when an asset failed to load. Property `material` is provided (loaded mate
 ### progress
 Fires when an asset is loaded. Property `event` is provided (XMLHttpRequest progress event).
 
+## .ref Events
+
+### collide
+Fires when the body collides with another body. Properties `body` and `contact` are provided (cannon-es ContactEquation).
+
+### sleep
+Fires after the body has fallen asleep.
+
+### sleepy
+Fires after the body has gone in to the sleepy state.
+
+### wakeup
+Fires after the sleeping body has woken up.
+
 ## Data Parameters
 
 | Property             | Description                                                          | Default Value |

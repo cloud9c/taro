@@ -13,6 +13,32 @@ Interface into the Physics system used by App.
 **epsilon** — The difference between one and the smallest value greater than one that can be represented as a Number. Used for keeping [Body](https://raw.githack.com/pmndrs/cannon-es/typedoc2/docs/classes/body.html) and [Entity](api/core/Entity) in sync. Default is **0.001**.<br>
 **gravity** — The gravity applied to all rigidbodies in the scene. Default is **(0, - 9.80665, 0)**.
 
+## Events
+
+## addBody
+Fires when a rigidbody is added to the world. Property `body` is provided.
+
+### beginContact
+Fires when two rigidbodies begin to contact. Properties `bodyA` and `bodyB` are provided.
+
+### beginShapeContactEvent
+Fires when two shapes begin to contact. Properties `bodyA`, `bodyB`, `shapeA`, and `shapeB` are provided.
+
+### endContactEvent
+Fires when two rigidbodies end contact. Properties `bodyA` and `bodyB` are provided.
+
+### endShapeContactEvent
+Fires when two shapes end contact. Properties `bodyA`, `bodyB`, `shapeA`, and `shapeB` are provided.
+
+## postStep
+Fires after the physics step.
+
+## preStep
+Fires before the physics step.
+
+## removeBody
+Fires when a rigidbody is removed from the world. Property `body` is provided.
+
 ## Properties
 
 See the base [World](https://raw.githack.com/pmndrs/cannon-es/typedoc2/docs/classes/world.html) class for common properties.
