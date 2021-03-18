@@ -64750,6 +64750,7 @@ class Renderer extends WebGLRenderer {
 		this.cameras = [];
 
 		this.pixelRatio = parameters.pixelRatio !== undefined ? parameters.pixelRatio : window.devicePixelRatio !== undefined ? window.devicePixelRatio : 1;
+		this.canvasAutoUpdate = parameters.canvasAutoUpdate;
 
 		this._updateCanvas();
 		window.addEventListener( 'resize', () => this._updateCanvas() );
@@ -64764,6 +64765,8 @@ class Renderer extends WebGLRenderer {
 	}
 
 	_updateCanvas() {
+
+		if ( this.canvasAutoUpdate === false ) return;
 
 		const canvas = this.domElement;
 		this.setSize( canvas.clientWidth * this.pixelRatio, canvas.clientHeight * this.pixelRatio, false );
