@@ -81,6 +81,11 @@
 			/* mobile */
 			@media all and ( max-width: 640px ) {
 
+				body {
+					overflow-x: hidden;
+					touch-action: none;
+				}
+
 				#flex-container {
 					display: flex;
 					flex-direction: column;
@@ -111,17 +116,14 @@
 					line-height: 24px;
 				}
 
-				body {
+				#content {
+					padding: 0;
 					overflow-x: hidden;
 				}
 
-				#content {
-					padding: 0;
-				}
-
 				#header {
-				    display: flex;
-				    border-bottom: 1px solid var(--border-color);
+					display: flex;
+					border-bottom: 1px solid var(--border-color);
 				}
 
 				.button {
@@ -146,19 +148,20 @@
 
 				#close-button {
 					-webkit-mask-image: url(../files/close.svg);
-					mask-image: url(../files/close.svg);					
+					mask-image: url(../files/close.svg);
 				}
 
 				#links {
-				    margin-right: -380px;
+					margin-right: -380px;
 					position: absolute;
 					top: 0;
 					right: 0;
 					background: white;
 					height: 100%;
 					width: calc(100vw - 60px);
-    				max-width: 360px;
-    				transition: .25s transform;
+					max-width: 360px;
+					transition: .25s transform;
+					box-shadow: 0 0 8px rgb(0 0 0 / 10%);
 				}
 
 				#links span {
