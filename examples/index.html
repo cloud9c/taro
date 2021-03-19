@@ -37,7 +37,7 @@
 				color: var(--theme-color);
 			}
 
-			.sidebar {
+			#sidebar {
 				position: fixed;
 				left: 0px;
 				width: 300px;
@@ -46,11 +46,11 @@
 				z-index: 100;
 			}
 
-			.content {
-				padding: 20px;
+			#content {
+				padding: 16px;
 			}
 
-			.sidebar span {
+			#sidebar span {
 				display: block;
 				margin-bottom: 10px;
 			}
@@ -72,76 +72,210 @@
 			.selected {
 				text-decoration: underline;
 			}
+
+			h1 {
+				text-align: center;
+				color: var(--theme-color);
+			}
+
+			/* mobile */
+			@media all and ( max-width: 640px ) {
+
+				#flex-container {
+					display: flex;
+					flex-direction: column;
+					height: 100%;
+				}
+
+				#viewer, iframe {
+					position: initial;
+					width: 100%;
+				}
+
+				#viewer {
+					margin-left: 0;
+				}
+
+				#sidebar {
+					position: initial;
+					width: 100%;
+					height: initial;
+				}
+
+				h1 {
+					text-align: initial;
+					font-size: 20px;
+					font-weight: 500;
+					margin: 12px 0;
+					padding-left: 16px;
+					line-height: 24px;
+				}
+
+				body {
+					overflow-x: hidden;
+				}
+
+				#content {
+					padding: 0;
+				}
+
+				#header {
+				    display: flex;
+				    border-bottom: 1px solid var(--border-color);
+				}
+
+				.button {
+					width: 48px;
+					height: 48px;
+					margin-right: 4px;
+					margin-left: 4px;
+					cursor: pointer;
+					background-color: var(--text-color);
+					background-size: 24px;
+					-webkit-mask-position: 50% 50%;
+					-webkit-mask-repeat: no-repeat;
+					mask-position: 50% 50%;
+					mask-repeat: no-repeat;
+					margin-left: auto;
+				}
+
+				#expand-button {
+					-webkit-mask-image: url(../files/menu.svg);
+					mask-image: url(../files/menu.svg);
+				}
+
+				#close-button {
+					-webkit-mask-image: url(../files/close.svg);
+					mask-image: url(../files/close.svg);					
+				}
+
+				#links {
+				    margin-right: -380px;
+					position: absolute;
+					top: 0;
+					right: 0;
+					background: white;
+					height: 100%;
+					width: calc(100vw - 60px);
+    				max-width: 360px;
+    				transition: .25s transform;
+				}
+
+				#links span {
+					padding: 0 16px;
+				}
+
+				.open #links {
+					transform: translate3d(-380px, 0 ,0);
+				}
+
+				#background {
+					position: absolute;
+					left: 0;
+					right: 0;
+					top: 0;
+					bottom: 0;
+					background-color: rgba(0, 0, 0, 0);
+					display: none;
+					transition: .2s background-color;
+				}
+
+				.open #background {
+					display: initial;
+					background-color: rgba(0, 0, 0, 0.4);
+				}
+
+				#close-wrapper {
+					margin-bottom: 16px;
+					border-bottom: 1px solid var(--border-color);
+				}
+
+			}
 		</style>
 	</head>
 	<body>
-		<div class="flex-container">
-		<div class="sidebar">
-			<div class="content">
-				<div style="text-align: center">
-					<h1><a href="../index.html">Taro</a></h1>
+		<div id="flex-container">
+			<div id="sidebar">
+				<div id="content">
+					<div id='header'>
+						<h1><a href="../index.html">Taro</a></h1>
+						<div id='expand-button' class='button'></div>
+					</div>
+					<div id='background'></div>
+					<div id="links">
+						<div id='close-wrapper'>
+							<div id='close-button' class='button'></div>
+						</div>
+					</div>
 				</div>
 			</div>
+			<iframe id="viewer" name="viewer" allowfullscreen="" allowvr="" onmousewheel=""></iframe>
 		</div>
-		<iframe id="viewer" name="viewer" allowfullscreen="" allowvr="" onmousewheel=""></iframe>
-	</div>
-	<script>
-		const viewer = document.getElementById("viewer");
-		const examples = [
-			{name: "Cube", url: "cube.html"},
-			{name: "Drone", url: "drone.html"},
-			{name: "iFrame", url: "iframe.html"},
-			{name: "Probability", url: "probability.html"},
-			{name: "Snake", url: "snake.html"}];
+		<script>
+			const viewer = document.getElementById("viewer");
+			const examples = [
+				{name: "Cube", url: "cube.html"},
+				{name: "Drone", url: "drone.html"},
+				{name: "iFrame", url: "iframe.html"},
+				{name: "Probability", url: "probability.html"},
+				{name: "Snake", url: "snake.html"}
+			];
 
-		const hash = window.location.hash;
-		let selectedIndex = -1;
-		if (hash) {
-			selectedIndex = examples.findIndex(example => "#" + encodeURI(example.name) == hash);
-		}
+			const hash = window.location.hash;
+			let selectedIndex = -1;
+			if (hash)
+				selectedIndex = examples.findIndex(example => "#" + encodeURI(example.name) == hash);
 
-		const container = document.getElementsByClassName("content")[0];
+			const container = document.getElementById("links");
 
-		let selectedLine = null;
+			let selectedLine = null;
 
-		//make example list with this template
-		//<span><a href="demo/index.html" target="viewer">Name</a> <a href="source link" target="_blank">(source)</a></span>
-		for (let i = 0; i < examples.length; i++) {
-			const example = examples[i];
+			//make example list with this template
+			//<span><a href="demo/index.html" target="viewer">Name</a> <a href="source link" target="_blank">(source)</a></span>
+			for (let i = 0; i < examples.length; i++) {
+				const example = examples[i];
 
-			let demoLink = document.createElement("a");
-			demoLink.href = example.url;
-			demoLink.target = "viewer";
-			demoLink.innerHTML = example.name;
-			demoLink.addEventListener('click', function(event) {
-				if (event.button !== 0 || event.ctrlKey || event.altKey || event.metaKey) return;
-				window.location.hash = encodeURI(example.name);
+				let demoLink = document.createElement("a");
+				demoLink.href = example.url;
+				demoLink.target = "viewer";
+				demoLink.innerHTML = example.name;
+				demoLink.addEventListener('click', function(event) {
+					if (event.button !== 0 || event.ctrlKey || event.altKey || event.metaKey) return;
+					window.location.hash = encodeURI(example.name);
 
-				viewer.src = example.url;
-				viewer.focus();
+					viewer.src = example.url;
+					viewer.focus();
 
-				if (selectedLine)
-					selectedLine.classList.remove("selected");
-				let line = event.currentTarget.parentNode;
-				line.classList.add("selected");
-				selectedLine = line;
-			});
+					if (selectedLine)
+						selectedLine.classList.remove("selected");
+					let line = event.currentTarget.parentNode;
+					line.classList.add("selected");
+					selectedLine = line;
+				});
 
-			let exampleLine = document.createElement("span");
-			exampleLine.classList.add('example');
-			exampleLine.appendChild(demoLink);
+				let exampleLine = document.createElement("span");
+				exampleLine.classList.add('example');
+				exampleLine.appendChild(demoLink);
 
-			if (selectedIndex === i) {
-				exampleLine.classList.add("selected");
-				viewer.src = example.url;
-				viewer.focus();
+				if (selectedIndex === i) {
+					exampleLine.classList.add("selected");
+					viewer.src = example.url;
+					viewer.focus();
 
-				selectedLine = exampleLine;
+					selectedLine = exampleLine;
+				}
+
+				container.appendChild(exampleLine);
 			}
 
-			container.appendChild(exampleLine);
-		}
-	</script>
+			function toggleExpand() {
+				document.body.classList.toggle('open');
+			}
+
+			document.getElementById('background').addEventListener('pointerdown', toggleExpand);
+			document.getElementById('expand-button').addEventListener('pointerdown', toggleExpand);
+			document.getElementById('close-button').addEventListener('pointerdown', toggleExpand);
+		</script>
 
 	</body>
 </html>
