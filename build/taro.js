@@ -38125,7 +38125,7 @@
 						this._enabled = value;
 						const container = this.entity.scene.components[this.componentType];
 
-						if (value === true) {
+						if (value) {
 							container.push(this);
 							this.dispatchEvent({
 								type: 'enable'
@@ -39554,7 +39554,7 @@
 					case '3mat':
 					case '3obj':
 					case '3scn':
-						objectLoader.load(data.asset, m => this.onLoad(data.asset, m), p => this.onProgress(p), () => this.onError());
+						objectLoader.load(data.asset, m => this.onLoad(data.asset, m), p => this.onProgress(p), e => this.onError(e));
 						break;
 
 					default:
@@ -49695,10 +49695,6 @@
 				if (this.ref.material === undefined) fileLoader$1.load(data.material, json => this.onMaterialLoad(data.material, json), p => this.onProgress(p), e => this.onError(e));
 			}
 
-			this.ref.addEventListener('collide', event => this.entity.dispatchEvent(event));
-			this.ref.addEventListener('wakeup', event => this.entity.dispatchEvent(event));
-			this.ref.addEventListener('sleepy', event => this.entity.dispatchEvent(event));
-			this.ref.addEventListener('sleep', event => this.entity.dispatchEvent(event));
 			this.addEventListener('enable', this.onEnable);
 			this.addEventListener('disable', this.onDisable);
 		}
@@ -49928,7 +49924,7 @@
 						const quaternion = entity.quaternion;
 						quaternion.copy(body.interpolatedQuaternion);
 
-						if (entity.parent.isEntity === true) {
+						if (entity.parent.isEntity) {
 							entity.parent.updateWorldMatrix(true, false);
 							position.applyMatrix4(_m1$3.copy(entity.parent.matrixWorld).invert());
 							quaternion.premultiply(entity.parent.getWorldQuaternion(_q1$2).invert());
