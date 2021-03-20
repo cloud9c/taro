@@ -50571,7 +50571,7 @@
 
 		get enabled() {
 			const parent = this.parent;
-			if (parent.isEntity && !parent.enabled) return false;
+			if (parent !== null && parent.isEntity && !parent.enabled) return false;
 			return this._enabled;
 		}
 

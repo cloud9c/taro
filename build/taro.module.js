@@ -65632,7 +65632,7 @@ class Entity extends Group {
 
 		const parent = this.parent;
 
-		if ( parent.isEntity && ! parent.enabled )
+		if ( parent !== null && parent.isEntity && ! parent.enabled )
 			return false;
 
 		return this._enabled;
