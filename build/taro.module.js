@@ -65646,15 +65646,45 @@ class Entity extends Group {
 			if ( value && parent.isEntity && ! parent.enabled )
 				return console.warn( "Entity: Can't enable if an ancestor is disabled" );
 
-			this._enabled = value;
-
 			this.traverseEntities( entity => {
 
-				entity.enabled = entity._enabled;
-
 				const components = entity.components;
-				for ( let i = 0, len = components.length; i < len; i ++ )
-					components[ i ].enabled = components[ i ]._enabled;
+
+				if (value) {
+					const temp = [];
+					for ( let i = 0, len = components.length; i < len; i ++ ) {
+						if (components[ i ]._enabled) {
+							components[ i ]._enabled = false;
+							temp.push(components[ i ]);
+						}
+					}
+
+					entity._enabled = true;
+
+					for ( let i = 0, len = temp.length; i < len; i ++) {
+						components[ i ]._enabled = true;
+						const container = entity.scene.components[ temp[ i ].componentType ];
+						container.push( temp[ i ] );
+						temp[ i ].dispatchEvent( { type: 'enable' } );
+					}
+				} else {
+					const temp = [];
+					for ( let i = 0, len = components.length; i < len; i ++ ) {
+						if (components[ i ]._enabled) {
+							temp.push(components[ i ]);
+							components[ i ]._enabled = false;
+							const container = entity.scene.components[ components[ i ].componentType ];
+							container.splice( container.indexOf( components[ i ] ), 1 );
+							components[ i ].dispatchEvent( { type: 'disable' } );
+						}
+					}
+
+					entity._enabled = false;
+
+					for ( let i = 0, len = temp.length; i < len; i ++) {
+						temp[i]._enabled = true;
+					}
+				}
 
 			} );
 
