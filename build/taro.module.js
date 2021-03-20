@@ -53512,7 +53512,7 @@ const ComponentManager = {
 
 					const container = this.entity.scene.components[ this.componentType ];
 
-					if ( value === true ) {
+					if ( value ) {
 
 						container.push( this );
 						this.dispatchEvent( { type: 'enable' } );
@@ -53800,7 +53800,7 @@ class Audio$1 {
 
 		} else if ( data.asset.length > 0 ) {
 
-			audioLoader.load( data.asset, ( b ) => this.onLoad( data.asset, b ), ( p ) => this.onProgress( p ), ( e ) => this.onError( e ) );
+			audioLoader.load( data.asset, b => this.onLoad( data.asset, b ), p => this.onProgress( p ), e => this.onError( e ) );
 
 		}
 
@@ -53979,7 +53979,7 @@ class Geometry {
 			case 'asset':
 				this.ref = typeof data.asset === 'object' ? data.asset : this.app.assets.get( data.asset );
 				if ( this.ref === undefined )
-					geometryLoader.load( data.asset, ( g ) => this.onLoad( data.asset, g ), ( p ) => this.onProgress( p ), ( e ) => this.onError( e ) );
+					geometryLoader.load( data.asset, g => this.onLoad( data.asset, g ), p => this.onProgress( p ), e => this.onError( e ) );
 				break;
 			case 'box':
 				this.ref = new BoxGeometry( data.width, data.height, data.depth, data.widthSegments, data.heightSegments, data.depthSegments );
@@ -54264,7 +54264,7 @@ class Material$2 {
 
 				this.ref = typeof parameters.asset === 'object' ? parameters.asset : this.app.assets.get( parameters.asset );
 				if ( this.ref === undefined )
-					materialLoader.load( parameters.asset, ( m ) => this.onLoad( parameters.asset, m ), ( p ) => this.onProgress( p ), ( e ) => this.onError( e ) );
+					materialLoader.load( parameters.asset, m => this.onLoad( parameters.asset, m ), p => this.onProgress( p ), e => this.onError( e ) );
 				break;
 			case 'basic':
 				this.ref = new MeshBasicMaterial( parameters );
@@ -54456,10 +54456,10 @@ class Model {
 			switch ( extension ) {
 
 				case 'drc':
-					dracoLoader.load( data.asset, ( m ) => this.onDracoLoad( data.asset, m ), ( p ) => this.onProgress( p ), ( e ) => this.onError( e ) );
+					dracoLoader.load( data.asset, m => this.onDracoLoad( data.asset, m ), p => this.onProgress( p ), e => this.onError( e ) );
 				case 'glb':
 				case 'gltf':
-					gltfLoader.load( data.asset, ( m ) => this.onGLTFLoad( data.asset, m ), ( p ) => this.onProgress( p ), ( e ) => this.onError( e ) );
+					gltfLoader.load( data.asset, m => this.onGLTFLoad( data.asset, m ), p => this.onProgress( p ), e => this.onError( e ) );
 					break;
 				case 'js':
 				case 'json':
@@ -54467,7 +54467,7 @@ class Model {
 				case '3mat':
 				case '3obj':
 				case '3scn':
-					objectLoader.load( data.asset, ( m ) => this.onLoad( data.asset, m ), ( p ) => this.onProgress( p ), () => this.onError() );
+					objectLoader.load( data.asset, m => this.onLoad( data.asset, m ), p => this.onProgress( p ), e => this.onError( e ) );
 					break;
 
 				default:
@@ -64504,14 +64504,9 @@ class Rigidbody {
 
 			this.ref.material = this.app.assets.get( data.material );
 			if ( this.ref.material === undefined )
-				fileLoader$1.load( data.material, ( json ) => this.onMaterialLoad( data.material, json ), ( p ) => this.onProgress( p ), ( e ) => this.onError( e ) );
+				fileLoader$1.load( data.material, json => this.onMaterialLoad( data.material, json ), p => this.onProgress( p ), e => this.onError( e ) );
 
 		}
-
-		this.ref.addEventListener( 'collide', event => this.entity.dispatchEvent( event ) );
-		this.ref.addEventListener( 'wakeup', event => this.entity.dispatchEvent( event ) );
-		this.ref.addEventListener( 'sleepy', event => this.entity.dispatchEvent( event ) );
-		this.ref.addEventListener( 'sleep', event => this.entity.dispatchEvent( event ) );
 
 		this.addEventListener( 'enable', this.onEnable );
 		this.addEventListener( 'disable', this.onDisable );
@@ -64706,7 +64701,7 @@ class Physics extends World {
 					const quaternion = entity.quaternion;
 					quaternion.copy( body.interpolatedQuaternion );
 
-					if ( entity.parent.isEntity === true ) {
+					if ( entity.parent.isEntity ) {
 
 						entity.parent.updateWorldMatrix( true, false );
 
@@ -64905,7 +64900,7 @@ class Input extends EventDispatcher {
 
 		};
 
-		this.onPointerMove = ( e ) => {
+		this.onPointerMove = e => {
 
 			this.pointerDelta.set( e.movementX, e.movementY );
 			this.pointerPosition.set( e.clientX, e.clientY );
@@ -64917,7 +64912,7 @@ class Input extends EventDispatcher {
 
 		};
 
-		this.onPointerDown = ( e ) => {
+		this.onPointerDown = e => {
 
 			const button = e.button;
 
@@ -64928,7 +64923,7 @@ class Input extends EventDispatcher {
 
 		};
 
-		this.onPointerUp = ( e ) => {
+		this.onPointerUp = e => {
 
 			const button = e.button;
 
@@ -64939,7 +64934,7 @@ class Input extends EventDispatcher {
 
 		};
 
-		this.onWheel = ( e ) => {
+		this.onWheel = e => {
 
 			this.wheelDelta.set( e.deltaX, e.deltaY );
 
@@ -64950,7 +64945,7 @@ class Input extends EventDispatcher {
 
 		};
 
-		this.onKeyDown = ( e ) => {
+		this.onKeyDown = e => {
 
 			const code = e.code;
 
@@ -64961,7 +64956,7 @@ class Input extends EventDispatcher {
 
 		};
 
-		this.onKeyUp = ( e ) => {
+		this.onKeyUp = e => {
 
 			const code = e.code;
 
@@ -65090,7 +65085,7 @@ class App {
 
 	start() {
 
-		this.renderer.setAnimationLoop( ( t ) => this.update( t ) );
+		this.renderer.setAnimationLoop( t => this.update( t ) );
 
 	}
 

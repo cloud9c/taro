@@ -126,7 +126,7 @@ export class Physics extends World {
 					const quaternion = entity.quaternion;
 					quaternion.copy( body.interpolatedQuaternion );
 
-					if ( entity.parent.isEntity === true ) {
+					if ( entity.parent.isEntity ) {
 
 						entity.parent.updateWorldMatrix( true, false );
 

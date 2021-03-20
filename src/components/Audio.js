@@ -46,7 +46,7 @@ class Audio {
 
 		} else if ( data.asset.length > 0 ) {
 
-			audioLoader.load( data.asset, ( b ) => this.onLoad( data.asset, b ), ( p ) => this.onProgress( p ), ( e ) => this.onError( e ) );
+			audioLoader.load( data.asset, b => this.onLoad( data.asset, b ), p => this.onProgress( p ), e => this.onError( e ) );
 
 		}
 

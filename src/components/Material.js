@@ -65,7 +65,7 @@ class Material {
 
 				this.ref = typeof parameters.asset === 'object' ? parameters.asset : this.app.assets.get( parameters.asset );
 				if ( this.ref === undefined )
-					materialLoader.load( parameters.asset, ( m ) => this.onLoad( parameters.asset, m ), ( p ) => this.onProgress( p ), ( e ) => this.onError( e ) );
+					materialLoader.load( parameters.asset, m => this.onLoad( parameters.asset, m ), p => this.onProgress( p ), e => this.onError( e ) );
 				break;
 			case 'basic':
 				this.ref = new MeshBasicMaterial( parameters );

@@ -38,7 +38,7 @@
 						window.addEventListener("pointerdown", () => {
 							this.entity.app.renderer.domElement.requestPointerLock();
 						});
-						this.ball.addEventListener("collide", (c) => {
+						this.ball.getComponent('rigidbody').ref.addEventListener("collide", (c) => {
 							console.log(c);
 							this.ball.getComponent('audio').ref.play();
 						});

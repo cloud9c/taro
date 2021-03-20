@@ -25,10 +25,10 @@ class Model {
 			switch ( extension ) {
 
 				case 'drc':
-					dracoLoader.load( data.asset, ( m ) => this.onDracoLoad( data.asset, m ), ( p ) => this.onProgress( p ), ( e ) => this.onError( e ) );
+					dracoLoader.load( data.asset, m => this.onDracoLoad( data.asset, m ), p => this.onProgress( p ), e => this.onError( e ) );
 				case 'glb':
 				case 'gltf':
-					gltfLoader.load( data.asset, ( m ) => this.onGLTFLoad( data.asset, m ), ( p ) => this.onProgress( p ), ( e ) => this.onError( e ) );
+					gltfLoader.load( data.asset, m => this.onGLTFLoad( data.asset, m ), p => this.onProgress( p ), e => this.onError( e ) );
 					break;
 				case 'js':
 				case 'json':
@@ -36,7 +36,7 @@ class Model {
 				case '3mat':
 				case '3obj':
 				case '3scn':
-					objectLoader.load( data.asset, ( m ) => this.onLoad( data.asset, m ), ( p ) => this.onProgress( p ), () => this.onError() );
+					objectLoader.load( data.asset, m => this.onLoad( data.asset, m ), p => this.onProgress( p ), e => this.onError( e ) );
 					break;
 
 				default:

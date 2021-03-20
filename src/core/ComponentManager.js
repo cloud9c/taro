@@ -61,7 +61,7 @@ export const ComponentManager = {
 
 					const container = this.entity.scene.components[ this.componentType ];
 
-					if ( value === true ) {
+					if ( value ) {
 
 						container.push( this );
 						this.dispatchEvent( { type: 'enable' } );

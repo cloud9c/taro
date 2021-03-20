@@ -40,7 +40,7 @@ export class App {
 
 	start() {
 
-		this.renderer.setAnimationLoop( ( t ) => this.update( t ) );
+		this.renderer.setAnimationLoop( t => this.update( t ) );
 
 	}
 

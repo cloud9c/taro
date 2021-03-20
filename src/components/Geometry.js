@@ -31,7 +31,7 @@ class Geometry {
 			case 'asset':
 				this.ref = typeof data.asset === 'object' ? data.asset : this.app.assets.get( data.asset );
 				if ( this.ref === undefined )
-					geometryLoader.load( data.asset, ( g ) => this.onLoad( data.asset, g ), ( p ) => this.onProgress( p ), ( e ) => this.onError( e ) );
+					geometryLoader.load( data.asset, g => this.onLoad( data.asset, g ), p => this.onProgress( p ), e => this.onError( e ) );
 				break;
 			case 'box':
 				this.ref = new BoxGeometry( data.width, data.height, data.depth, data.widthSegments, data.heightSegments, data.depthSegments );

@@ -26,7 +26,7 @@ export class Input extends EventDispatcher {
 
 		};
 
-		this.onPointerMove = ( e ) => {
+		this.onPointerMove = e => {
 
 			this.pointerDelta.set( e.movementX, e.movementY );
 			this.pointerPosition.set( e.clientX, e.clientY );
@@ -38,7 +38,7 @@ export class Input extends EventDispatcher {
 
 		};
 
-		this.onPointerDown = ( e ) => {
+		this.onPointerDown = e => {
 
 			const button = e.button;
 
@@ -49,7 +49,7 @@ export class Input extends EventDispatcher {
 
 		};
 
-		this.onPointerUp = ( e ) => {
+		this.onPointerUp = e => {
 
 			const button = e.button;
 
@@ -60,7 +60,7 @@ export class Input extends EventDispatcher {
 
 		};
 
-		this.onWheel = ( e ) => {
+		this.onWheel = e => {
 
 			this.wheelDelta.set( e.deltaX, e.deltaY );
 
@@ -71,7 +71,7 @@ export class Input extends EventDispatcher {
 
 		};
 
-		this.onKeyDown = ( e ) => {
+		this.onKeyDown = e => {
 
 			const code = e.code;
 
@@ -82,7 +82,7 @@ export class Input extends EventDispatcher {
 
 		};
 
-		this.onKeyUp = ( e ) => {
+		this.onKeyUp = e => {
 
 			const code = e.code;
 

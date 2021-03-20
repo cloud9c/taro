@@ -20,14 +20,9 @@ class Rigidbody {
 
 			this.ref.material = this.app.assets.get( data.material );
 			if ( this.ref.material === undefined )
-				fileLoader.load( data.material, ( json ) => this.onMaterialLoad( data.material, json ), ( p ) => this.onProgress( p ), ( e ) => this.onError( e ) );
+				fileLoader.load( data.material, json => this.onMaterialLoad( data.material, json ), p => this.onProgress( p ), e => this.onError( e ) );
 
 		}
-
-		this.ref.addEventListener( 'collide', event => this.entity.dispatchEvent( event ) );
-		this.ref.addEventListener( 'wakeup', event => this.entity.dispatchEvent( event ) );
-		this.ref.addEventListener( 'sleepy', event => this.entity.dispatchEvent( event ) );
-		this.ref.addEventListener( 'sleep', event => this.entity.dispatchEvent( event ) );
 
 		this.addEventListener( 'enable', this.onEnable );
 		this.addEventListener( 'disable', this.onDisable );
