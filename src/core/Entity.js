@@ -131,7 +131,6 @@ export class Entity extends Group {
 		const index = this.components.indexOf( component );
 
 		if ( index === - 1 ) return this;
-		if ( component.enabled === true ) component.enabled = false;
 		if ( component.enabled ) component.enabled = false;
 
 		this.components.splice( index, 1 );
