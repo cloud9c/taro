@@ -132,6 +132,7 @@ export class Entity extends Group {
 
 		if ( index === - 1 ) return this;
 		if ( component.enabled === true ) component.enabled = false;
+		if ( component.enabled ) component.enabled = false;
 
 		this.components.splice( index, 1 );
 		this.dispatchEvent( { type: 'remove' } );
@@ -160,25 +161,33 @@ export class Entity extends Group {
 
 	get enabled() {
 
+		const parent = this.parent;
+
+		if ( parent.isEntity && ! parent.enabled )
+			return false;
+
 		return this._enabled;
 
 	}
 
 	set enabled( value ) {
 
-		if ( value != this._enabled ) {
+		if ( value != this.enabled ) {
 
-			if ( value && this.parent.isScene === undefined && ! this.parent.enabled )
+			if ( value && parent.isEntity && ! parent.enabled )
 				return console.warn( "Entity: Can't enable if an ancestor is disabled" );
+
 			this._enabled = value;
 
-			const components = this.components;
-			for ( let i = 0, len = components.length; i < len; i ++ )
-				components[ i ].enabled = value;
+			this.traverseEntities( entity => {
 
-			const children = this.getEntities();
-			for ( let i = 0, len = children.length; i < len; i ++ )
-				children[ i ].enabled = value;
+				entity.enabled = entity._enabled;
+
+				const components = entity.components;
+				for ( let i = 0, len = components.length; i < len; i ++ )
+					components[ i ].enabled = components[ i ]._enabled;
+
+			} );
 
 			this.dispatchEvent( { type: value ? 'enable' : 'disable' } );
 
@@ -190,7 +199,7 @@ export class Entity extends Group {
 
 		this.traverse( child => {
 
-			if ( child.isEntity !== undefined )
+			if ( child.isEntity )
 				callback( child );
 
 		} );

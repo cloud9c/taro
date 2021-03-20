@@ -47,12 +47,15 @@ export const ComponentManager = {
 		enabled: {
 			get() {
 
+				if ( ! this.entity.enabled )
+					return false;
+
 				return this._enabled;
 
 			},
 			set( value ) {
 
-				if ( value !== this._enabled ) {
+				if ( value !== this.enabled ) {
 
 					if ( value && ! this.entity.enabled )
 						return console.warn( "Component: Can't enable if the entity is disabled" );

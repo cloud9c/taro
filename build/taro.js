@@ -38116,11 +38116,12 @@
 			},
 			enabled: {
 				get() {
+					if (!this.entity.enabled) return false;
 					return this._enabled;
 				},
 
 				set(value) {
-					if (value !== this._enabled) {
+					if (value !== this.enabled) {
 						if (value && !this.entity.enabled) return console.warn("Component: Can't enable if the entity is disabled");
 						this._enabled = value;
 						const container = this.entity.scene.components[this.componentType];
@@ -50548,7 +50549,7 @@
 		removeComponent(component) {
 			const index = this.components.indexOf(component);
 			if (index === -1) return this;
-			if (component.enabled === true) component.enabled = false;
+			if (component.enabled) component.enabled = false;
 			this.components.splice(index, 1);
 			this.dispatchEvent({
 				type: 'remove'
@@ -50569,21 +50570,21 @@
 		}
 
 		get enabled() {
+			const parent = this.parent;
+			if (parent.isEntity && !parent.enabled) return false;
 			return this._enabled;
 		}
 
 		set enabled(value) {
-			if (value != this._enabled) {
-				if (value && this.parent.isScene === undefined && !this.parent.enabled) return console.warn("Entity: Can't enable if an ancestor is disabled");
+			if (value != this.enabled) {
+				if (value && parent.isEntity && !parent.enabled) return console.warn("Entity: Can't enable if an ancestor is disabled");
 				this._enabled = value;
-				const components = this.components;
+				this.traverseEntities(entity => {
+					entity.enabled = entity._enabled;
+					const components = entity.components;
 
-				for (let i = 0, len = components.length; i < len; i++) components[i].enabled = value;
-
-				const children = this.getEntities();
-
-				for (let i = 0, len = children.length; i < len; i++) children[i].enabled = value;
-
+					for (let i = 0, len = components.length; i < len; i++) components[i].enabled = components[i]._enabled;
+				});
 				this.dispatchEvent({
 					type: value ? 'enable' : 'disable'
 				});
@@ -50592,7 +50593,7 @@
 
 		traverseEntities(callback) {
 			this.traverse(child => {
-				if (child.isEntity !== undefined) callback(child);
+				if (child.isEntity) callback(child);
 			});
 		}
 
