@@ -14,6 +14,7 @@ import './components/Renderable.js';
 
 // physics components
 import './components/physics/Shape.js';
+import './components/physics/Spring.js';
 import './components/physics/Constraint.js';
 import './components/physics/Rigidbody.js';
 

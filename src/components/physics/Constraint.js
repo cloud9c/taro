@@ -1,6 +1,5 @@
 import { ComponentManager } from '../../core/ComponentManager.js';
 import { Body, Vec3, DistanceConstraint, PointToPointConstraint, ConeTwistConstraint, LockConstraint, HingeConstraint } from '../../lib/cannon-es.js';
-import { MathUtils } from '../../lib/three.module.js';
 
 const DEFAULT_CONNECTED_BODY = new Body();
 
@@ -14,15 +13,9 @@ class Constraint {
 		if ( data.connectedBody !== null ) {
 
 			bodyB = data.connectedBody.getComponent( 'rigidbody' );
-			if ( bodyB === undefined ) {
-
-				bodyB = data.connectedBody.addComponent( 'rigidbody' ).ref;
-
-			} else {
-
-				bodyB = bodyB.ref;
-
-			}
+			if ( bodyB === undefined )
+				bodyB = data.connectedBody.addComponent( 'rigidbody' );
+			bodyB = bodyB.ref;
 
 		} else {
 
@@ -31,11 +24,11 @@ class Constraint {
 		}
 
 		this.type = data.type;
-		
+
 		switch ( this.type ) {
 
 			case 'distance':
-				this.ref = new DistanceConstraint( bodyA, bodyB, data.distance, data.maxForce );
+				this.ref = new DistanceConstraint( bodyA, bodyB, data.autoDistance === true ? undefined : data.distance, data.maxForce );
 				break;
 			case 'point':
 				this.ref = new PointToPointConstraint( bodyA, data.pivot, bodyB, data.connectedPivot, data.maxForce );
@@ -96,7 +89,8 @@ Constraint.config = {
 		type: { type: 'select', default: 'distance', select: [ 'distance', 'point', 'coneTwist', 'lock', 'hinge' ] },
 		connectedBody: { type: 'entity' },
 
-		distance: { default: 1, if: { type: [ 'distance' ] } },
+		autoDistance: { default: true },
+		distance: { default: 1, if: { type: [ 'distance' ], autoDistance: [ false ] } },
 
 		pivot: { type: 'vector3', if: { type: [ 'point', 'coneTwist', 'hinge' ] } },
 		connectedPivot: { type: 'vector3', if: { type: [ 'point', 'coneTwist', 'hinge' ] } },
@@ -113,5 +107,4 @@ Constraint.config = {
 	dependencies: [ 'rigidbody' ]
 };
 
-// TODO: Research how to implement Trimesh type
 ComponentManager.registerComponent( 'constraint', Constraint );
