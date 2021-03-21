@@ -47,9 +47,10 @@ entityB.addComponent('constraint', {
 
 ### distance
 
-| Property | Description               | Default Value |
-|----------|---------------------------|---------------|
-| distance | The constrained distance. | 1             |
+| Property     | Description                                                              | Default Value |
+|--------------|--------------------------------------------------------------------------|---------------|
+| autoDistance | Set the constrained distance as the current distance between the bodies. | true          |
+| distance     | The constrained distance. autoDistance must be false.                    | 1             |
 
 ### hinge
 

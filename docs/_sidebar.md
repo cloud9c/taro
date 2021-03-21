@@ -43,3 +43,4 @@ API References
 -   [Constraint](api/components/physics/Constraint.md)
 -   [Rigidbody](api/components/physics/Rigidbody.md)
 -   [Shape](api/components/physics/Shape.md)
+-   [Spring](api/components/physics/Spring.md)
