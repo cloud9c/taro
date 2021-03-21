@@ -60420,6 +60420,161 @@ class Material$3 {
 
 }
 Material$3.idCounter = 0;
+
+/**
+ * A spring, connecting two bodies.
+ *
+ * @class Spring
+ * @constructor
+ * @param {Body} bodyA
+ * @param {Body} bodyB
+ * @param {Object} [options]
+ * @param {number} [options.restLength]   A number > 0. Default: 1
+ * @param {number} [options.stiffness]    A number >= 0. Default: 100
+ * @param {number} [options.damping]      A number >= 0. Default: 1
+ * @param {Vec3}  [options.worldAnchorA] Where to hook the spring to body A, in world coordinates.
+ * @param {Vec3}  [options.worldAnchorB]
+ * @param {Vec3}  [options.localAnchorA] Where to hook the spring to body A, in local body coordinates.
+ * @param {Vec3}  [options.localAnchorB]
+ */
+class Spring {
+  // Rest length of the spring.
+  // Stiffness of the spring.
+  // Damping of the spring.
+  // First connected body.
+  // Second connected body.
+  // Anchor for bodyA in local bodyA coordinates.
+  // Anchor for bodyB in local bodyB coordinates.
+  constructor(bodyA, bodyB, options = {}) {
+    this.restLength = typeof options.restLength === 'number' ? options.restLength : 1;
+    this.stiffness = options.stiffness || 100;
+    this.damping = options.damping || 1;
+    this.bodyA = bodyA;
+    this.bodyB = bodyB;
+    this.localAnchorA = new Vec3();
+    this.localAnchorB = new Vec3();
+
+    if (options.localAnchorA) {
+      this.localAnchorA.copy(options.localAnchorA);
+    }
+
+    if (options.localAnchorB) {
+      this.localAnchorB.copy(options.localAnchorB);
+    }
+
+    if (options.worldAnchorA) {
+      this.setWorldAnchorA(options.worldAnchorA);
+    }
+
+    if (options.worldAnchorB) {
+      this.setWorldAnchorB(options.worldAnchorB);
+    }
+  }
+  /**
+   * Set the anchor point on body A, using world coordinates.
+   * @method setWorldAnchorA
+   * @param {Vec3} worldAnchorA
+   */
+
+
+  setWorldAnchorA(worldAnchorA) {
+    this.bodyA.pointToLocalFrame(worldAnchorA, this.localAnchorA);
+  }
+  /**
+   * Set the anchor point on body B, using world coordinates.
+   * @method setWorldAnchorB
+   * @param {Vec3} worldAnchorB
+   */
+
+
+  setWorldAnchorB(worldAnchorB) {
+    this.bodyB.pointToLocalFrame(worldAnchorB, this.localAnchorB);
+  }
+  /**
+   * Get the anchor point on body A, in world coordinates.
+   * @method getWorldAnchorA
+   * @param {Vec3} result The vector to store the result in.
+   */
+
+
+  getWorldAnchorA(result) {
+    this.bodyA.pointToWorldFrame(this.localAnchorA, result);
+  }
+  /**
+   * Get the anchor point on body B, in world coordinates.
+   * @method getWorldAnchorB
+   * @param {Vec3} result The vector to store the result in.
+   */
+
+
+  getWorldAnchorB(result) {
+    this.bodyB.pointToWorldFrame(this.localAnchorB, result);
+  }
+  /**
+   * Apply the spring force to the connected bodies.
+   * @method applyForce
+   */
+
+
+  applyForce() {
+    const k = this.stiffness;
+    const d = this.damping;
+    const l = this.restLength;
+    const bodyA = this.bodyA;
+    const bodyB = this.bodyB;
+    const r = applyForce_r;
+    const r_unit = applyForce_r_unit;
+    const u = applyForce_u;
+    const f = applyForce_f;
+    const tmp = applyForce_tmp;
+    const worldAnchorA = applyForce_worldAnchorA;
+    const worldAnchorB = applyForce_worldAnchorB;
+    const ri = applyForce_ri;
+    const rj = applyForce_rj;
+    const ri_x_f = applyForce_ri_x_f;
+    const rj_x_f = applyForce_rj_x_f; // Get world anchors
+
+    this.getWorldAnchorA(worldAnchorA);
+    this.getWorldAnchorB(worldAnchorB); // Get offset points
+
+    worldAnchorA.vsub(bodyA.position, ri);
+    worldAnchorB.vsub(bodyB.position, rj); // Compute distance vector between world anchor points
+
+    worldAnchorB.vsub(worldAnchorA, r);
+    const rlen = r.length();
+    r_unit.copy(r);
+    r_unit.normalize(); // Compute relative velocity of the anchor points, u
+
+    bodyB.velocity.vsub(bodyA.velocity, u); // Add rotational velocity
+
+    bodyB.angularVelocity.cross(rj, tmp);
+    u.vadd(tmp, u);
+    bodyA.angularVelocity.cross(ri, tmp);
+    u.vsub(tmp, u); // F = - k * ( x - L ) - D * ( u )
+
+    r_unit.scale(-k * (rlen - l) - d * u.dot(r_unit), f); // Add forces to bodies
+
+    bodyA.force.vsub(f, bodyA.force);
+    bodyB.force.vadd(f, bodyB.force); // Angular force
+
+    ri.cross(f, ri_x_f);
+    rj.cross(f, rj_x_f);
+    bodyA.torque.vsub(ri_x_f, bodyA.torque);
+    bodyB.torque.vadd(rj_x_f, bodyB.torque);
+  }
+
+}
+const applyForce_r = new Vec3();
+const applyForce_r_unit = new Vec3();
+const applyForce_u = new Vec3();
+const applyForce_f = new Vec3();
+const applyForce_worldAnchorA = new Vec3();
+const applyForce_worldAnchorB = new Vec3();
+const applyForce_ri = new Vec3();
+const applyForce_rj = new Vec3();
+const applyForce_ri_x_f = new Vec3();
+const applyForce_rj_x_f = new Vec3();
+const applyForce_tmp = new Vec3();
 const tmpRay = new Ray$1();
 
 /**
@@ -64377,6 +64532,70 @@ ComponentManager.registerComponent( 'shape', Shape$2 );
 
 const DEFAULT_CONNECTED_BODY = new Body();
 
+class Spring$1 {
+
+	init( data ) {
+
+		const bodyA = this.entity.getComponent( 'rigidbody' ).ref;
+		let bodyB;
+
+		if ( data.connectedBody !== null ) {
+
+			bodyB = data.connectedBody.getComponent( 'rigidbody' );
+			if ( bodyB === undefined )
+				bodyB = data.connectedBody.addComponent( 'rigidbody' );
+			bodyB = bodyB.ref;
+
+		} else {
+
+			bodyB = DEFAULT_CONNECTED_BODY;
+
+		}
+
+		this.ref = new Spring( bodyA, bodyB, {
+			restLength: data.restLength,
+			stiffness: data.stiffness,
+			damping: data.damping,
+			localAnchorA: data.anchor,
+			localAnchorB: data.connectedAnchor,
+		} );
+
+		this.addEventListener( 'enable', this.onEnable );
+		this.addEventListener( 'disable', this.onDisable );
+
+	}
+
+	onEnable() {
+
+		this.app.physics.springs.push( this.ref );
+
+	}
+
+	onDisable() {
+
+		const springs = this.app.physics.springs;
+		springs.splice( springs.indexOf( this.ref ), 1 );
+
+	}
+
+}
+
+Spring$1.config = {
+	schema: {
+		connectedBody: { type: 'entity' },
+		restLength: { default: 1, min: 0 },
+		stiffness: { default: 100, min: 0 },
+		damping: { default: 1, min: 0 },
+		anchor: { type: 'vector3' },
+		connectedAnchor: { type: 'vector3' },
+	},
+	dependencies: [ 'rigidbody' ]
+};
+
+ComponentManager.registerComponent( 'spring', Spring$1 );
+
+const DEFAULT_CONNECTED_BODY$1 = new Body();
+
 class Constraint$1 {
 
 	init( data ) {
@@ -64387,28 +64606,22 @@ class Constraint$1 {
 		if ( data.connectedBody !== null ) {
 
 			bodyB = data.connectedBody.getComponent( 'rigidbody' );
-			if ( bodyB === undefined ) {
-
-				bodyB = data.connectedBody.addComponent( 'rigidbody' ).ref;
-
-			} else {
-
-				bodyB = bodyB.ref;
-
-			}
+			if ( bodyB === undefined )
+				bodyB = data.connectedBody.addComponent( 'rigidbody' );
+			bodyB = bodyB.ref;
 
 		} else {
 
-			bodyB = DEFAULT_CONNECTED_BODY;
+			bodyB = DEFAULT_CONNECTED_BODY$1;
 
 		}
 
 		this.type = data.type;
-		
+
 		switch ( this.type ) {
 
 			case 'distance':
-				this.ref = new DistanceConstraint( bodyA, bodyB, data.distance, data.maxForce );
+				this.ref = new DistanceConstraint( bodyA, bodyB, data.autoDistance === true ? undefined : data.distance, data.maxForce );
 				break;
 			case 'point':
 				this.ref = new PointToPointConstraint( bodyA, data.pivot, bodyB, data.connectedPivot, data.maxForce );
@@ -64469,7 +64682,8 @@ Constraint$1.config = {
 		type: { type: 'select', default: 'distance', select: [ 'distance', 'point', 'coneTwist', 'lock', 'hinge' ] },
 		connectedBody: { type: 'entity' },
 
-		distance: { default: 1, if: { type: [ 'distance' ] } },
+		autoDistance: { default: true },
+		distance: { default: 1, if: { type: [ 'distance' ], autoDistance: [ false ] } },
 
 		pivot: { type: 'vector3', if: { type: [ 'point', 'coneTwist', 'hinge' ] } },
 		connectedPivot: { type: 'vector3', if: { type: [ 'point', 'coneTwist', 'hinge' ] } },
@@ -64486,7 +64700,6 @@ Constraint$1.config = {
 	dependencies: [ 'rigidbody' ]
 };
 
-// TODO: Research how to implement Trimesh type
 ComponentManager.registerComponent( 'constraint', Constraint$1 );
 
 const types = [ 'dynamic', 'static', 'kinematic' ];
@@ -64595,6 +64808,14 @@ class Physics extends World {
 		this.epsilon = parameters.epsilon !== undefined ? parameters.epsilon : 0.001;
 		this.gravity = parameters.gravity !== undefined ? parameters.gravity : new Vector3( 0, - 9.80665, 0 );
 		this.rigidbodies = [];
+		this.springs = [];
+
+		this.addEventListener( 'postStep', () => {
+
+			for ( let i = 0, len = this.springs.length; i < len; i ++ )
+				this.springs[ i ].applyForce();
+
+		} );
 
 	}
 
