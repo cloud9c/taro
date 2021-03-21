@@ -17,6 +17,14 @@ export class Physics extends World {
 		this.epsilon = parameters.epsilon !== undefined ? parameters.epsilon : 0.001;
 		this.gravity = parameters.gravity !== undefined ? parameters.gravity : new Vector3( 0, - 9.80665, 0 );
 		this.rigidbodies = [];
+		this.springs = [];
+
+		this.addEventListener( 'postStep', () => {
+
+			for ( let i = 0, len = this.springs.length; i < len; i ++ )
+				this.springs[ i ].applyForce();
+
+		} );
 
 	}
 
