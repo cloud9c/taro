@@ -50174,6 +50174,7 @@
 	class Renderer extends WebGLRenderer {
 		constructor(parameters) {
 			super(parameters);
+			this.outputEncoding = sRGBEncoding;
 			this.scene = undefined;
 			this.cameras = [];
 			this.pixelRatio = parameters.pixelRatio !== undefined ? parameters.pixelRatio : window.devicePixelRatio !== undefined ? window.devicePixelRatio : 1;

@@ -1,10 +1,12 @@
-import { WebGLRenderer } from '../lib/three.module.js';
+import { WebGLRenderer, sRGBEncoding } from '../lib/three.module.js';
 
 export class Renderer extends WebGLRenderer {
 
 	constructor( parameters ) {
 
 		super( parameters );
+
+		this.outputEncoding = sRGBEncoding;
 
 		this.scene = undefined;
 		this.cameras = [];
