@@ -6,8 +6,6 @@ export class Renderer extends WebGLRenderer {
 
 		super( parameters );
 
-		this.outputEncoding = sRGBEncoding;
-
 		this.scene = undefined;
 		this.cameras = [];
 
