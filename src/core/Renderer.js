@@ -1,4 +1,4 @@
-import { WebGLRenderer, sRGBEncoding } from '../lib/three.module.js';
+import { WebGLRenderer } from '../lib/three.module.js';
 
 export class Renderer extends WebGLRenderer {
 
