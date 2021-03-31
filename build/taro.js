@@ -7957,17 +7957,17 @@
 		clone: function () {
 			/*
 			 // Handle primitives
-				 const parameters = this.parameters;
-				 if ( parameters !== undefined ) {
-				 const values = [];
-				 for ( const key in parameters ) {
-				 values.push( parameters[ key ] );
-				 }
-				 const geometry = Object.create( this.constructor.prototype );
+					 const parameters = this.parameters;
+					 if ( parameters !== undefined ) {
+					 const values = [];
+					 for ( const key in parameters ) {
+					 values.push( parameters[ key ] );
+					 }
+					 const geometry = Object.create( this.constructor.prototype );
 			 this.constructor.apply( geometry, values );
 			 return geometry;
-				 }
-				 return new this.constructor().copy( this );
+					 }
+					 return new this.constructor().copy( this );
 			 */
 			return new BufferGeometry().copy(this);
 		},
@@ -32128,15 +32128,15 @@
 			// TODO: delete this comment?
 			const distanceGeometry = new THREE.IcosahedronBufferGeometry( 1, 2 );
 			const distanceMaterial = new THREE.MeshBasicMaterial( { color: hexColor, fog: false, wireframe: true, opacity: 0.1, transparent: true } );
-			this.lightSphere = new THREE.Mesh( bulbGeometry, bulbMaterial );
+				this.lightSphere = new THREE.Mesh( bulbGeometry, bulbMaterial );
 			this.lightDistance = new THREE.Mesh( distanceGeometry, distanceMaterial );
-			const d = light.distance;
-			if ( d === 0.0 ) {
-				this.lightDistance.visible = false;
-			} else {
-				this.lightDistance.scale.set( d, d, d );
-			}
-			this.add( this.lightDistance );
+				const d = light.distance;
+				if ( d === 0.0 ) {
+					this.lightDistance.visible = false;
+				} else {
+					this.lightDistance.scale.set( d, d, d );
+				}
+				this.add( this.lightDistance );
 			*/
 		}
 
@@ -32153,12 +32153,12 @@
 			}
 			/*
 			const d = this.light.distance;
-				if ( d === 0.0 ) {
-					this.lightDistance.visible = false;
-				} else {
-					this.lightDistance.visible = true;
+					if ( d === 0.0 ) {
+						this.lightDistance.visible = false;
+					} else {
+						this.lightDistance.visible = true;
 				this.lightDistance.scale.set( d, d, d );
-				}
+					}
 			*/
 
 		}
@@ -32552,7 +32552,7 @@
 			1/___0/|
 			| 6__|_7
 			2/___3/
-				0: max.x, max.y, max.z
+					0: max.x, max.y, max.z
 			1: min.x, max.y, max.z
 			2: min.x, min.y, max.z
 			3: max.x, min.y, max.z
@@ -50369,7 +50369,6 @@
 	class Renderer extends WebGLRenderer {
 		constructor(parameters) {
 			super(parameters);
-			this.outputEncoding = sRGBEncoding;
 			this.scene = undefined;
 			this.cameras = [];
 			this.pixelRatio = parameters.pixelRatio !== undefined ? parameters.pixelRatio : window.devicePixelRatio !== undefined ? window.devicePixelRatio : 1;
