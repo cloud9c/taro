@@ -1,0 +1,14 @@
+{
+  "name": "Taro Editor",
+  "short_name": "Taro",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "icons": [
+    {
+      "src": "./img/icon.png",
+      "type": "image/png",
+      "sizes": "144x144"
+    }
+  ]
+}

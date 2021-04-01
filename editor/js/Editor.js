@@ -58,3 +58,15 @@ function Editor() {
 }
 
 const editor = new Editor();
+
+if ( 'serviceWorker' in navigator ) {
+
+	try {
+
+		navigator.serviceWorker.register( 'sw.js' );
+
+	} catch ( error ) {
+
+	}
+
+}
