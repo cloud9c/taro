@@ -5,6 +5,10 @@ const assets = [
 
 	'../files/favicon.ico',
 	'../files/main.css',
+	'../files/IBMPlexMono-Regular.woff2',
+	'../files/IBMPlexMono-Medium.woff2',
+	'../files/IBMPlexSans-Regular.woff2',
+	'../files/IBMPlexSans-Medium.woff2',
 
 	'../build/taro.module.js',
 
@@ -45,7 +49,6 @@ const assets = [
 	'./js/Sidebar.Inspector.js',
 	'./js/Sidebar.js',
 	'./js/Sidebar.Scene.js',
-	'./js/Storage.js',
 	'./js/Toolbar.js',
 	'./js/Viewport.js',
 	'./js/lib/fflate.module.min.js',

@@ -6,4 +6,6 @@ export function SidebarAssets( editor ) {
 	const render = editor.render;
 	const scene = viewport.scene;
 
+	
+
 }
