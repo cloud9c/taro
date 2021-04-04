@@ -72,7 +72,7 @@ export function Viewport( editor ) {
 			const currentObject = scene.getEntityById( parseInt( currentDrag.dataset.id ) );
 			const thisObject = scene.getEntityById( parseInt( this.dataset.id ) );
 
-			if ( currentDrag.dataset.parent !== undefined ) {
+			if ( currentDrag.dataset.parent !== undefined && (currentObject.parent !== thisObject || this.classList.contains( 'drag-above' ))) {
 
 				const id = currentDrag.dataset.parent;
 				delete currentDrag.dataset.parent;
@@ -89,29 +89,35 @@ export function Viewport( editor ) {
 
 			if ( this.classList.contains( 'drag-above' ) || this.classList.contains( 'drag-below' ) ) {
 
-				if ( currentDrag.style.paddingLeft !== '' || currentDrag.style.paddingLeft !== '24px' )
-					currentDrag.style.paddingLeft = parseFloat( currentDrag.style.paddingLeft ) - 16 + 'px';
-
 				if ( this.classList.contains( 'drag-above' ) )
 					this.before( currentDrag );
 				else
 					this.after( currentDrag );
 
-				if ( this.classList.contains( 'parent' ) && this.classList.contains( 'drag-below' ) ) {
+				if (currentObject.parent !== thisObject || this.classList.contains( 'drag-above' )) {
 
-					currentDrag.style.paddingLeft = parseFloat( window.getComputedStyle( this ).getPropertyValue( 'padding-left' ) ) + 16 + 'px';
-					currentDrag.dataset.parent = this.dataset.id;
-					thisObject.add( currentObject );
+					if ( currentDrag.style.paddingLeft !== '') {
+						const value = parseFloat( currentDrag.style.paddingLeft ) - 16;
+						if (value > 24)
+							currentDrag.style.paddingLeft = value + 'px';
+						else
+							currentDrag.style.removeProperty('padding-left');
+					}
 
-				} else if ( this.dataset.parent !== undefined ) {
+					if ( this.classList.contains( 'parent' ) && this.classList.contains( 'drag-below' )) {
+						currentDrag.style.paddingLeft = parseFloat( window.getComputedStyle( this ).getPropertyValue( 'padding-left' ) ) + 16 + 'px';
+						currentDrag.dataset.parent = this.dataset.id;
+						thisObject.add( currentObject );
 
-					const parent = document.querySelector( '#scene [data-id="' + this.dataset.parent + '"]' );
-					currentDrag.dataset.parent = parent.dataset.id;
-					currentDrag.style.paddingLeft = parseFloat( window.getComputedStyle( parent ).getPropertyValue( 'padding-left' ) ) + 16 + 'px';
+					} else if ( this.dataset.parent !== undefined ) {
+						const parent = document.querySelector( '#scene [data-id="' + this.dataset.parent + '"]' );
+						currentDrag.dataset.parent = parent.dataset.id;
+						currentDrag.style.paddingLeft = parseFloat( window.getComputedStyle( parent ).getPropertyValue( 'padding-left' ) ) + 16 + 'px';
 
+					}
+
+					thisObject.parent.add( currentObject );
 				}
-
-				thisObject.parent.add( currentObject );
 
 			} else {
 

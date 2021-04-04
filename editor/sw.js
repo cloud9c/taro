@@ -90,6 +90,8 @@ async function cacheFirst( request ) {
 
 	}
 
+	console.log( cachedResponse );
+
 	return cachedResponse;
 
 }
