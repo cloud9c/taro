@@ -14,6 +14,8 @@ function addFileElement( path ) {
 	div.dataset.id = path;
 	div.textContent = path.substring( path.lastIndexOf( '/' ) + 1 );
 
+	document.getElementById( 'assets' ).appendChild( div );
+
 }
 
 export function SidebarAssets( editor ) {
@@ -39,6 +41,8 @@ export function SidebarAssets( editor ) {
 	fileInput.addEventListener( 'change', function () {
 
 		for ( let i = 0, len = this.files.length; i < len; i ++ ) {
+
+			const file = this.files[ i ];
 
 			set( file.name, file );
 			addFileElement( file.name );

@@ -1,3 +1,5 @@
+import { get } from './js/lib/idb-keyval.module.min.js';
+
 const cacheName = 'taro-editor';
 
 const assets = [
@@ -51,8 +53,10 @@ const assets = [
 	'./js/Sidebar.Scene.js',
 	'./js/Toolbar.js',
 	'./js/Viewport.js',
-	'./js/lib/fflate.module.min.js',
+
 	'./js/lib/app/index.html',
+	'./js/lib/fflate.module.min.js',
+	'./js/lib/idb-keyval.module.min.js',
 
 ];
 
@@ -74,6 +78,7 @@ self.addEventListener( 'install', async function () {
 
 self.addEventListener( 'fetch', async function ( event ) {
 
+	console.log( 'here' );
 	const request = event.request;
 	event.respondWith( cacheFirst( request ) );
 
@@ -85,12 +90,27 @@ async function cacheFirst( request ) {
 
 	if ( cachedResponse === undefined ) {
 
+		console.log( request.url );
+
+		get( request.url ).then( response => {
+
+			if ( response !== undefined ) {
+
+				return new Response( response );
+
+			} else {
+
+				console.warn( '[SW] Not cached:', request.url );
+				return fetch( request );
+
+			}
+
+		} );
+
 		console.warn( '[SW] Not cached:', request.url );
 		return fetch( request );
 
 	}
-
-	console.log( cachedResponse );
 
 	return cachedResponse;
 

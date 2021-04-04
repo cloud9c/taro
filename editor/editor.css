@@ -416,11 +416,16 @@ input[type="checkbox"]:checked::after {
 	position: relative;
 }
 
-#add-assets {
+#assets span {
 	display: block;
+	height: 24px;
+}
+
+#add-assets {
+	position: absolute;
+	right: 6px;
 	padding: 0;
 	border: none;
-	margin: -6px 6px 0 auto;
 	cursor: pointer;
 	outline: none;
 }

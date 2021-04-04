@@ -60,7 +60,7 @@ if ( 'serviceWorker' in navigator ) {
 
 	try {
 
-		navigator.serviceWorker.register( 'sw.js' );
+		navigator.serviceWorker.register( 'sw.js', { type: 'module', scope: '/editor/js/lib/' } );
 
 	} catch ( error ) {
 
