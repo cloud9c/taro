@@ -1,7 +1,7 @@
 [Component](api/core/Component) ›
 
 # Rigidbody
-Control of an object's position through physics simulation. This is a wrapper class around the cannon-es [Body](https://raw.githack.com/pmndrs/cannon-es/typedoc2/docs/classes/constraint.html) class.
+Control of an object's position through physics simulation. This is a wrapper class around the cannon-es [Body](https://pmndrs.github.io/cannon-es/docs/classes/constraint.html) class.
 
 **Dynamic** bodies are fully simulated. They can be moved manually in code, but normally they move according to forces like gravity or reactionary collision forces.
 
@@ -80,8 +80,8 @@ No additional parameters.
 
 See the base [Component](api/core/Component) class for common properties.
 
-### .<a>ref</a> : <span class="param">[Body](https://raw.githack.com/pmndrs/cannon-es/typedoc2/docs/classes/body.html)</span>
-Reference to the cannon-es [Body](https://raw.githack.com/pmndrs/cannon-es/typedoc2/docs/classes/body.html) classes.
+### .<a>ref</a> : <span class="param">[Body](https://pmndrs.github.io/cannon-es/docs/classes/body.html)</span>
+Reference to the cannon-es [Body](https://pmndrs.github.io/cannon-es/docs/classes/body.html) classes.
 
 ### .<a>type</a> : <span class="param">String</span>
 The rigidbody type as determined by the data parameters. Modifying this property does not change the rigidbody type.

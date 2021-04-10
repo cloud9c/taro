@@ -85,8 +85,8 @@ No additional parameters.
 
 See the base [Component](api/core/Component) class for common properties.
 
-### .<a>ref</a> : <span class="param">[Constraint](https://raw.githack.com/pmndrs/cannon-es/typedoc2/docs/classes/constraint.html)</span>
-Reference to the cannon-es [Constraint](https://raw.githack.com/pmndrs/cannon-es/typedoc2/docs/classes/constraint.html) classes.
+### .<a>ref</a> : <span class="param">[Constraint](https://pmndrs.github.io/cannon-es/docs/classes/constraint.html)</span>
+Reference to the cannon-es [Constraint](https://pmndrs.github.io/cannon-es/docs/classes/constraint.html) classes.
 
 ### .<a>type</a> : <span class="param">String</span>
 The shape type as determined by the data parameters. Modifying this property does not change the shape type.

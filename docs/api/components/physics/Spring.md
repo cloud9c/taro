@@ -1,7 +1,7 @@
 [Component](api/core/Component) ›
 
 # Spring
-A spring connecting two bodies. This is a wrapper class around cannon-es [Spring](https://raw.githack.com/pmndrs/cannon-es/typedoc2/docs/classes/spring.html).
+A spring connecting two bodies. This is a wrapper class around cannon-es [Spring](https://pmndrs.github.io/cannon-es/docs/classes/spring.html).
 
 ## Code Example
 
@@ -32,8 +32,8 @@ entityB.addComponent('spring', {
 
 See the base [Component](api/core/Component) class for common properties.
 
-### .<a>ref</a> : <span class="param">[Spring](https://raw.githack.com/pmndrs/cannon-es/typedoc2/docs/classes/spring.html)</span>
-Reference to the cannon-es [Spring](https://raw.githack.com/pmndrs/cannon-es/typedoc2/docs/classes/spring.html) instance.
+### .<a>ref</a> : <span class="param">[Spring](https://pmndrs.github.io/cannon-es/docs/classes/spring.html)</span>
+Reference to the cannon-es [Spring](https://pmndrs.github.io/cannon-es/docs/classes/spring.html) instance.
 
 ## Methods
 

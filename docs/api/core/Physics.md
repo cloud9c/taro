@@ -1,4 +1,4 @@
-[World](https://raw.githack.com/pmndrs/cannon-es/typedoc2/docs/classes/world.html) ›
+[World](https://pmndrs.github.io/cannon-es/docs/classes/world.html) ›
 
 # Physics
 
@@ -10,7 +10,7 @@ Interface into the Physics system used by App.
 **parameters** — Object with properties defining the system's behaviour. In all cases, it will assume defaults when parameters are missing. The following are valid parameters:
 
 **allowSleep** — Whether or not to implement sleeping optimization. Default is **true**.<br>
-**epsilon** — The difference between one and the smallest value greater than one that can be represented as a Number. Used for keeping [Body](https://raw.githack.com/pmndrs/cannon-es/typedoc2/docs/classes/body.html) and [Entity](api/core/Entity) in sync. Default is **0.001**.<br>
+**epsilon** — The difference between one and the smallest value greater than one that can be represented as a Number. Used for keeping [Body](https://pmndrs.github.io/cannon-es/docs/classes/body.html) and [Entity](api/core/Entity) in sync. Default is **0.001**.<br>
 **gravity** — The gravity applied to all rigidbodies in the scene. Default is **(0, - 9.80665, 0)**.
 
 ## Events
@@ -41,10 +41,10 @@ Fires when a rigidbody is removed from the world. Property `body` is provided.
 
 ## Properties
 
-See the base [World](https://raw.githack.com/pmndrs/cannon-es/typedoc2/docs/classes/world.html) class for common properties.
+See the base [World](https://pmndrs.github.io/cannon-es/docs/classes/world.html) class for common properties.
 
 ### .<a>epsilon</a> : <span class="param">Float</span>
-The difference between one and the smallest value greater than one that can be represented as a Number. Used for keeping [Body](https://raw.githack.com/pmndrs/cannon-es/typedoc2/docs/classes/body.html) and [Entity](api/core/Entity) in sync. Default is **0.001**.
+The difference between one and the smallest value greater than one that can be represented as a Number. Used for keeping [Body](https://pmndrs.github.io/cannon-es/docs/classes/body.html) and [Entity](api/core/Entity) in sync. Default is **0.001**.
 
 ### .<a>gravity</a> : <span class="param">[Vector3](https://threejs.org/docs/#api/en/math/Vector3)</span>
 The gravity applied to all rigidbodies in the scene. Default is **(0, - 9.80665, 0)**.
@@ -54,7 +54,7 @@ Array with all Rigidbody components.
 
 ## Methods
 
-See the base [World](https://raw.githack.com/pmndrs/cannon-es/typedoc2/docs/classes/world.html) class for common properties.
+See the base [World](https://pmndrs.github.io/cannon-es/docs/classes/world.html) class for common properties.
 
 ## Source
 [src/core/Physics.js](https://github.com/Cloud9c/taro/blob/master/src/core/Physics.js)

@@ -19,7 +19,7 @@ A basic introduction of three.js can go a long way, especially if you decide to 
 
 ## Cannon-es
 
-taro.js integrates [cannon-es](https://pmndrs.github.io/cannon-es/) for physics-related components (Rigidbody, Shape, Constraint). Unlike three.js, their API is not exposed in Taro. However, being well-versed in [their documentation](https://raw.githack.com/pmndrs/cannon-es/typedoc2/docs/index.html) is still neccessary to manipulate physics components.
+taro.js integrates [cannon-es](https://pmndrs.github.io/cannon-es/) for physics-related components (Rigidbody, Shape, Constraint). Unlike three.js, their API is not exposed in Taro. However, being well-versed in [their documentation](https://pmndrs.github.io/cannon-es/docs/) is still neccessary to manipulate physics components.
 
 ```javascript
 
