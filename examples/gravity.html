@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang='en'>
+	<head>
+		<meta charset='UTF-8' />
+		<meta name='viewport' content='width=device-width,initial-scale=1' />
+		<title>Gravity</title>
+		<link rel="shortcut icon" href="../files/favicon.ico" />
+		<style>
+			html,
+			body {
+				margin: 0;
+				height: 100%;
+			}
+
+			#canvas {
+				width: 100%;
+				height: 100%;
+			}
+		</style>
+	</head>
+	<body>
+		<canvas id='canvas'></canvas>
+		<script type='module'>
+			import * as TARO from '../build/taro.module.js';
+			import { OrbitControls } from './js/OrbitControls.js';
+
+			// app setup
+			let entity, geo, mat, mesh;
+
+			const app = new TARO.App({
+				canvas: document.getElementById('canvas'),
+				antialias: true
+			});
+			const scene = new TARO.Scene();
+			app.setScene(scene);
+			scene.background = new TARO.Color( 0xe0e0e0 );
+
+			// camera
+			entity = new TARO.Entity('camera');
+			const camera = entity.addComponent('camera').ref;
+			camera.position.set(0.5, 0.5, 0.5);
+			const controls = new OrbitControls( camera, app.renderer.domElement );
+			controls.maxPolarAngle = Math.PI * 0.5;
+      
+      // planet
+      entity = new TARO.Entity('planet');
+      entity.addComponent('rigidbody');
+      entity.addComponent('geometry, {type: 'sphere'});
+      entity.addComponent('material);
+                          
+      // moon
+      entity = new TARO.Entity('moon');
+      entity.addComponent('rigidbody');
+      entity.addComponent('geometry, {type: 'sphere'});
+      entity.addComponent('material);
+      entity.position.set(0, 0, 5);
+
+			// start the app
+			app.start();
+
+		</script>
+	</body>
+</html>
