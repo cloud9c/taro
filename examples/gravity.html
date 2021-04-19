@@ -64,17 +64,17 @@
       
 		        // planet
 		        entity = new TARO.Entity('planet');
-		        entity.addComponent('rigidbody');
+		        entity.addComponent('rigidbody', {mass: 0});
 		        entity.addComponent('geometry', {type: 'sphere'});
 		        entity.addComponent('material', {color: 'red'});
 					    
 		        // moon
 		        entity = new TARO.Entity('moon');
-		        entity.addComponent('rigidbody');
+		        entity.addComponent('rigidbody', {mass: 5, velocity: new TARO.Vector3(0, 8, 0), linearDamping: 0.0});
 			entity.addComponent('orbit');
 		        entity.addComponent('geometry', {type: 'sphere'});
 		        entity.addComponent('material', {color: 'blue'});
-		        entity.position.set(0, 0, 5);
+		        entity.position.set(-5, 0, 0);
 			entity.scale.set(0.2, 0.2, 0.2);
 			
 			
