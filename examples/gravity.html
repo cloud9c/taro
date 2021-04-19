@@ -42,18 +42,18 @@
 			const controls = new OrbitControls( camera, app.renderer.domElement );
 			controls.maxPolarAngle = Math.PI * 0.5;
       
-      // planet
-      entity = new TARO.Entity('planet');
-      entity.addComponent('rigidbody');
-      entity.addComponent('geometry, {type: 'sphere'});
-      entity.addComponent('material);
-                          
-      // moon
-      entity = new TARO.Entity('moon');
-      entity.addComponent('rigidbody');
-      entity.addComponent('geometry, {type: 'sphere'});
-      entity.addComponent('material);
-      entity.position.set(0, 0, 5);
+		        // planet
+		        entity = new TARO.Entity('planet');
+		        entity.addComponent('rigidbody');
+		        entity.addComponent('geometry', {type: 'sphere'});
+		        entity.addComponent('material');
+					    
+		        // moon
+		        entity = new TARO.Entity('moon');
+		        entity.addComponent('rigidbody');
+		        entity.addComponent('geometry', {type: 'sphere'});
+		        entity.addComponent('material');
+		        entity.position.set(0, 0, 5);
 
 			// start the app
 			app.start();
