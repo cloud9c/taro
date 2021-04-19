@@ -34,11 +34,12 @@
 			const scene = new TARO.Scene();
 			app.setScene(scene);
 			scene.background = new TARO.Color( 0xe0e0e0 );
+			app.physics.gravity.y = 0;
 
 			// camera
 			entity = new TARO.Entity('camera');
 			const camera = entity.addComponent('camera').ref;
-			camera.position.set(0.5, 0.5, 0.5);
+			camera.position.set(5, 5, 5);
 			const controls = new OrbitControls( camera, app.renderer.domElement );
 			controls.maxPolarAngle = Math.PI * 0.5;
       
