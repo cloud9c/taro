@@ -1,5 +1,6 @@
 {
-	"name":"taro",
+	"name":"@cloud9c/taro",
+	"version":"0.0.1",
 	"scripts":{
 		"build":"rollup -c rollup.config.js"
 	}
