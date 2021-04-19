@@ -45,12 +45,12 @@
 				}
 				
 				fixedUpdate() {
-					moon.position.negate(moon_to_planet);
+					this.moon.position.negate(this.moon_to_planet);
 
 					const distance = this.moon_to_planet.length();
 
 					this.moon_to_planet.normalize();
-					this.moon_to_planet.scale(1500 / Math.pow(distance, 2), moon.force);
+					this.moon_to_planet.scale(1500 / Math.pow(distance, 2), this.moon.force);
 				}
 
 			});
@@ -71,6 +71,7 @@
 		        // moon
 		        entity = new TARO.Entity('moon');
 		        entity.addComponent('rigidbody');
+			entity.addComponent('orbit');
 		        entity.addComponent('geometry', {type: 'sphere'});
 		        entity.addComponent('material', {color: 'blue'});
 		        entity.position.set(0, 0, 5);
