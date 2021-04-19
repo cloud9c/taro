@@ -4,7 +4,6 @@
 		<meta charset='UTF-8' />
 		<meta name='viewport' content='width=device-width,initial-scale=1' />
 		<title>Gravity</title>
-		<link rel="shortcut icon" href="../files/favicon.ico" />
 		<style>
 			html,
 			body {
@@ -40,7 +39,7 @@
 			
 				init() {
 					// from cannon-es/callbacks.html
-					this.moon_to_planet = new CANNON.Vec3();
+					this.moon_to_planet = new TARO.Vector3();
 					this.moon = this.entity.getComponent('rigidbody').ref;
 				}
 				
@@ -50,7 +49,7 @@
 					const distance = this.moon_to_planet.length();
 
 					this.moon_to_planet.normalize();
-					this.moon_to_planet.scale(1500 / Math.pow(distance, 2), this.moon.force);
+					this.moon.force.copy(this.moon_to_planet).scale(1500 / Math.pow(distance, 2), this.moon.force);
 				}
 
 			});
@@ -74,10 +73,8 @@
 			entity.addComponent('orbit');
 		        entity.addComponent('geometry', {type: 'sphere'});
 		        entity.addComponent('material', {color: 'blue'});
-		        entity.position.set(-5, 0, 0);
+		        entity.position.set(-4, 0, 0);
 			entity.scale.set(0.2, 0.2, 0.2);
-			
-			
 
 			// start the app
 			app.start();
