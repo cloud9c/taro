@@ -36,6 +36,25 @@
 			scene.background = new TARO.Color( 0xe0e0e0 );
 			app.physics.gravity.y = 0;
 
+			TARO.registerComponent('orbit', class {
+			
+				init() {
+					// from cannon-es/callbacks.html
+					this.moon_to_planet = new CANNON.Vec3();
+					this.moon = this.entity.getComponent('rigidbody').ref;
+				}
+				
+				fixedUpdate() {
+					moon.position.negate(moon_to_planet);
+
+					const distance = this.moon_to_planet.length();
+
+					this.moon_to_planet.normalize();
+					this.moon_to_planet.scale(1500 / Math.pow(distance, 2), moon.force);
+				}
+
+			});
+			
 			// camera
 			entity = new TARO.Entity('camera');
 			const camera = entity.addComponent('camera').ref;
@@ -47,14 +66,17 @@
 		        entity = new TARO.Entity('planet');
 		        entity.addComponent('rigidbody');
 		        entity.addComponent('geometry', {type: 'sphere'});
-		        entity.addComponent('material');
+		        entity.addComponent('material', {color: 'red'});
 					    
 		        // moon
 		        entity = new TARO.Entity('moon');
 		        entity.addComponent('rigidbody');
 		        entity.addComponent('geometry', {type: 'sphere'});
-		        entity.addComponent('material');
+		        entity.addComponent('material', {color: 'blue'});
 		        entity.position.set(0, 0, 5);
+			entity.scale.set(0.2, 0.2, 0.2);
+			
+			
 
 			// start the app
 			app.start();
