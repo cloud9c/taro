@@ -22,6 +22,7 @@
 		<script type='module'>
 			import * as TARO from '../build/taro.module.js';
 			import { OrbitControls } from './js/OrbitControls.js';
+			import { GUI } from './js/dat.gui.module.js';
 
 			// app setup
 			let entity, geo, mat, mesh;
@@ -39,17 +40,14 @@
 			
 				init() {
 					// from cannon-es/callbacks.html
-					this.moon_to_planet = new TARO.Vector3();
-					this.moon = this.entity.getComponent('rigidbody').ref;
+					this.force = new TARO.Vector3();
+					this.moonForce = this.entity.getComponent('rigidbody').ref.force;
+					this.moonPosition = this.entity.position;
 				}
 				
 				fixedUpdate() {
-					this.moon.position.negate(this.moon_to_planet);
-
-					const distance = this.moon_to_planet.length();
-
-					this.moon_to_planet.normalize();
-					this.moon.force.copy(this.moon_to_planet).scale(1500 / Math.pow(distance, 2), this.moon.force);
+					this.force.copy(this.moonPosition).normalize().multiplyScalar(9e11*6.674e-11/this.moonPosition.lengthSq()).negate();
+					this.moonForce.copy(this.force);
 				}
 
 			});
@@ -60,21 +58,30 @@
 			camera.position.set(5, 5, 5);
 			const controls = new OrbitControls( camera, app.renderer.domElement );
 			controls.maxPolarAngle = Math.PI * 0.5;
-      
-		        // planet
-		        entity = new TARO.Entity('planet');
-		        entity.addComponent('rigidbody', {mass: 0});
-		        entity.addComponent('geometry', {type: 'sphere'});
-		        entity.addComponent('material', {color: 'red'});
-					    
-		        // moon
-		        entity = new TARO.Entity('moon');
-		        entity.addComponent('rigidbody', {mass: 5, velocity: new TARO.Vector3(0, 8, 0), linearDamping: 0.0});
+
+			// planet
+			entity = new TARO.Entity('planet');
+			entity.addComponent('rigidbody', {type: 'static'});
+			entity.addComponent('shape', {type: 'sphere'});
+			entity.addComponent('geometry', {type: 'sphere'});
+			entity.addComponent('material', {color: 'red'});
+
+			// moon
+			entity = new TARO.Entity('moon');
+			entity.addComponent('rigidbody', {mass: 1, velocity: new TARO.Vector3(0, 4, 0), linearDamping: 0.0});
+			entity.addComponent('shape', {type: 'sphere'});
 			entity.addComponent('orbit');
-		        entity.addComponent('geometry', {type: 'sphere'});
-		        entity.addComponent('material', {color: 'blue'});
-		        entity.position.set(-4, 0, 0);
+			entity.addComponent('geometry', {type: 'sphere'});
+			entity.addComponent('material', {color: 'blue'});
+			entity.position.set(3, 0, 0);
 			entity.scale.set(0.2, 0.2, 0.2);
+
+			const gui = new GUI();
+			gui.add({distance: 3}, 'distance', 1.2, 10).listen().onChange( ( distance ) => {
+
+				entity.position.normalize().multiplyScalar(distance);
+
+			} );
 
 			// start the app
 			app.start();
