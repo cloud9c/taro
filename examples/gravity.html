@@ -33,7 +33,6 @@
 			});
 			const scene = new TARO.Scene();
 			app.setScene(scene);
-			scene.background = new TARO.Color( 0xe0e0e0 );
 			app.physics.gravity.y = 0;
 
 			TARO.registerComponent('orbit', class {
@@ -64,7 +63,11 @@
 			entity.addComponent('rigidbody', {type: 'static'});
 			entity.addComponent('shape', {type: 'sphere'});
 			entity.addComponent('geometry', {type: 'sphere'});
-			entity.addComponent('material', {color: 'red'});
+			entity.addComponent('material', {
+        type: 'standard',
+        map: 'https://raw.githubusercontent.com/MattLoftus/threejs-space-simulations/master/images/earth_texture_2.jpg'
+      });
+      entity.addComponent('light');
 
 			// moon
 			entity = new TARO.Entity('moon');
@@ -72,7 +75,10 @@
 			entity.addComponent('shape', {type: 'sphere'});
 			entity.addComponent('orbit');
 			entity.addComponent('geometry', {type: 'sphere'});
-			entity.addComponent('material', {color: 'blue'});
+			entity.addComponent('material', {
+        type: 'standard',
+        map: 'https://raw.githubusercontent.com/MattLoftus/threejs-space-simulations/master/images/moon_texture.jpg'
+      });
 			entity.position.set(3, 0, 0);
 			entity.scale.set(0.2, 0.2, 0.2);
 
