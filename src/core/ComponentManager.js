@@ -1,5 +1,12 @@
 import { EventDispatcher, Vector4, Vector3, Vector2, Color } from '../lib/three.module.js';
 
+const EventDispatcherPrototype = {
+	addEventListener: EventDispatcher.prototype.addEventListener,
+	hasEventListener: EventDispatcher.prototype.hasEventListener,
+	removeEventListener: EventDispatcher.prototype.removeEventListener,
+	dispatchEvent: EventDispatcher.prototype.dispatchEvent
+};
+
 export function registerComponent( type, definition ) {
 
 	if ( ComponentManager.components.type !== undefined ) return console.error( 'component ' + type + ' already exists' );
@@ -33,7 +40,7 @@ export function registerComponent( type, definition ) {
 
 	ComponentManager.properties.componentType.value = type;
 	Object.defineProperties( definition.prototype, ComponentManager.properties );
-	Object.assign( definition.prototype, EventDispatcher.prototype );
+	Object.assign( definition.prototype, EventDispatcherPrototype );
 
 	ComponentManager.components[ type ] = definition;
 

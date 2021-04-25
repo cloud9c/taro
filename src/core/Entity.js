@@ -180,40 +180,56 @@ export class Entity extends Group {
 
 				const components = entity.components;
 
-				if (value) {
+				if ( value ) {
+
 					const temp = [];
 					for ( let i = 0, len = components.length; i < len; i ++ ) {
-						if (components[ i ]._enabled) {
+
+						if ( components[ i ]._enabled ) {
+
 							components[ i ]._enabled = false;
-							temp.push(components[ i ]);
+							temp.push( components[ i ] );
+
 						}
+
 					}
 
 					entity._enabled = true;
 
-					for ( let i = 0, len = temp.length; i < len; i ++) {
+					for ( let i = 0, len = temp.length; i < len; i ++ ) {
+
 						components[ i ]._enabled = true;
 						const container = entity.scene.components[ temp[ i ].componentType ];
 						container.push( temp[ i ] );
 						temp[ i ].dispatchEvent( { type: 'enable' } );
+
 					}
+
 				} else {
+
 					const temp = [];
 					for ( let i = 0, len = components.length; i < len; i ++ ) {
-						if (components[ i ]._enabled) {
-							temp.push(components[ i ]);
+
+						if ( components[ i ]._enabled ) {
+
+							temp.push( components[ i ] );
 							components[ i ]._enabled = false;
 							const container = entity.scene.components[ components[ i ].componentType ];
 							container.splice( container.indexOf( components[ i ] ), 1 );
 							components[ i ].dispatchEvent( { type: 'disable' } );
+
 						}
+
 					}
 
 					entity._enabled = false;
 
-					for ( let i = 0, len = temp.length; i < len; i ++) {
-						temp[i]._enabled = true;
+					for ( let i = 0, len = temp.length; i < len; i ++ ) {
+
+						temp[ i ]._enabled = true;
+
 					}
+
 				}
 
 			} );
