@@ -38638,6 +38638,12 @@
 		}
 	}
 
+	const EventDispatcherPrototype = {
+		addEventListener: EventDispatcher.prototype.addEventListener,
+		hasEventListener: EventDispatcher.prototype.hasEventListener,
+		removeEventListener: EventDispatcher.prototype.removeEventListener,
+		dispatchEvent: EventDispatcher.prototype.dispatchEvent
+	};
 	function registerComponent(type, definition) {
 		if (ComponentManager.components.type !== undefined) return console.error('component ' + type + ' already exists'); // add config static variable if the definition doesn't have it
 
@@ -38658,7 +38664,7 @@
 
 		ComponentManager.properties.componentType.value = type;
 		Object.defineProperties(definition.prototype, ComponentManager.properties);
-		Object.assign(definition.prototype, EventDispatcher.prototype);
+		Object.assign(definition.prototype, EventDispatcherPrototype);
 		ComponentManager.components[type] = definition;
 	}
 	const ComponentManager = {
