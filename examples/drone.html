@@ -48,12 +48,11 @@
 			const loader = new TARO.TextureLoader();
 
 			// load a resource
-			loader.load('textures/terrain.jpg', ( texture ) => {
-					const textureEquirect = new TARO.WebGLCubeRenderTarget( texture.image.height );
-					textureEquirect.fromEquirectangularTexture( app.renderer, texture );
-					scene.background = textureEquirect;
-				}
-			);
+			const texture = loader.load('textures/terrain.jpg', ( texture ) => {
+				const textureEquirect = new TARO.WebGLCubeRenderTarget( texture.image.height );
+				textureEquirect.fromEquirectangularTexture( app.renderer, texture );
+				scene.background = textureEquirect.texture;
+			});
 
 			// camera
 			entity = new TARO.Entity('camera');
