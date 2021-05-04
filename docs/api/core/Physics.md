@@ -12,7 +12,7 @@ Interface into the Physics system used by App.
 **allowSleep** — Whether or not to implement sleeping optimization. Default is **true**.<br>
 **epsilon** — The difference between one and the smallest value greater than one that can be represented as a Number. Used for keeping [Body](https://pmndrs.github.io/cannon-es/docs/classes/body.html) and [Entity](api/core/Entity) in sync. Default is **0.001**.<br>
 **gravity** — The gravity applied to all rigidbodies in the scene. Default is **(0, - 9.80665, 0)**.<br>
-**maxSubSteps** — The max substeps allowed during physics stepping. Default is **10**.
+**maxSubSteps** — The maximum number of sub-steps allowed per physics step. Default is **10**.
 
 ## Events
 
