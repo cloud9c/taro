@@ -65480,6 +65480,7 @@ class Physics extends World {
 		super( parameters );
 		this.epsilon = parameters.epsilon !== undefined ? parameters.epsilon : 0.001;
 		this.gravity = parameters.gravity !== undefined ? parameters.gravity : new Vector3( 0, - 9.80665, 0 );
+		this.maxSubSteps = parameters.maxSubSteps !== undefined ? parameters.maxSubSteps : 10;
 		this.rigidbodies = [];
 		this.springs = [];
 
@@ -65579,7 +65580,7 @@ class Physics extends World {
 
 		}
 
-		this.step( fixedTimestep, deltaTime );
+		this.step( fixedTimestep, deltaTime, this.maxSubSteps );
 
 		if ( this.hasActiveBodies ) {
 

@@ -51087,6 +51087,7 @@
 			super(parameters);
 			this.epsilon = parameters.epsilon !== undefined ? parameters.epsilon : 0.001;
 			this.gravity = parameters.gravity !== undefined ? parameters.gravity : new Vector3(0, -9.80665, 0);
+			this.maxSubSteps = parameters.maxSubSteps !== undefined ? parameters.maxSubSteps : 10;
 			this.rigidbodies = [];
 			this.springs = [];
 			this.addEventListener('postStep', () => {
@@ -51155,7 +51156,7 @@
 				}
 			}
 
-			this.step(fixedTimestep, deltaTime);
+			this.step(fixedTimestep, deltaTime, this.maxSubSteps);
 
 			if (this.hasActiveBodies) {
 				for (let i = 0, len = rigidbodies.length; i < len; i++) {
