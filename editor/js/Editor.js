@@ -56,14 +56,14 @@ function Editor() {
 
 const editor = new Editor();
 
-if ( 'serviceWorker' in navigator ) {
+// if ( 'serviceWorker' in navigator ) {
 
-	try {
+// 	try {
 
-		navigator.serviceWorker.register( 'sw.js', { type: 'module', scope: '/editor/js/lib/' } );
+// 		navigator.serviceWorker.register( 'sw.js', { type: 'module' } );
 
-	} catch ( error ) {
+// 	} catch ( error ) {
 
-	}
+// 	}
 
-}
+// }

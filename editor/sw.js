@@ -1,4 +1,4 @@
-import { get } from './js/lib/idb-keyval.module.min.js';
+importScripts( './js/lib/idb-keyval.min.js' );
 
 const cacheName = 'taro-editor';
 
@@ -78,7 +78,6 @@ self.addEventListener( 'install', async function () {
 
 self.addEventListener( 'fetch', async function ( event ) {
 
-	console.log( 'here' );
 	const request = event.request;
 	event.respondWith( cacheFirst( request ) );
 
@@ -92,16 +91,11 @@ async function cacheFirst( request ) {
 
 		console.log( request.url );
 
-		get( request.url ).then( response => {
+		idbKeyval.get( request.url ).then( response => {
 
 			if ( response !== undefined ) {
 
 				return new Response( response );
-
-			} else {
-
-				console.warn( '[SW] Not cached:', request.url );
-				return fetch( request );
 
 			}
 
