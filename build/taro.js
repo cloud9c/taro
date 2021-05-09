@@ -52364,6 +52364,7 @@
 	exports.UnsignedShort565Type = UnsignedShort565Type;
 	exports.UnsignedShortType = UnsignedShortType;
 	exports.VSMShadowMap = VSMShadowMap;
+	exports.Vec3 = Vec3;
 	exports.Vector2 = Vector2;
 	exports.Vector3 = Vector3;
 	exports.Vector4 = Vector4;

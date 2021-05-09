@@ -24,3 +24,6 @@ export { Scene } from './core/Scene.js';
 export { Renderer } from './core/Renderer.js';
 export { App } from './core/App.js';
 export { ComponentManager, registerComponent } from './core/ComponentManager.js';
+
+// CANNON
+export { Vec3 } from './lib/cannon-es.js';
