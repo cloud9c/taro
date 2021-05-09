@@ -194,7 +194,7 @@ export function SidebarScene( editor ) {
 
 		} );
 
-		// element.addEventListener( 'focusout', endRename );
+		element.addEventListener( 'focusout', endRename );
 
 	};
 

@@ -176,16 +176,16 @@ export function Navbar( editor ) {
 			editOptions[ 5 ].dataset.disabled = true;
 
 		// Rename
-		// if ( viewport.currentEntity === undefined )
-		// 	editOptions[ 6 ].dataset.disabled = true;
-
-		// Clone
 		if ( viewport.currentEntity === undefined )
 			editOptions[ 6 ].dataset.disabled = true;
 
-		// Delete
+		// Clone
 		if ( viewport.currentEntity === undefined )
 			editOptions[ 7 ].dataset.disabled = true;
+
+		// Delete
+		if ( viewport.currentEntity === undefined )
+			editOptions[ 8 ].dataset.disabled = true;
 
 	} );
 
@@ -222,21 +222,21 @@ export function Navbar( editor ) {
 	} );
 
 	// Rename
-	// editOptions[ 6 ].addEventListener( 'pointerdown', () => {
+	editOptions[ 6 ].addEventListener( 'pointerdown', () => {
 
-	// 	sidebarScene.onRename();
+		sidebarScene.onRename();
 
-	// } );
+	} );
 
 	// Clone
-	editOptions[ 6 ].addEventListener( 'pointerdown', () => {
+	editOptions[ 7 ].addEventListener( 'pointerdown', () => {
 
 		sidebarScene.onClone();
 
 	} );
 
 	// Delete
-	editOptions[ 7 ].addEventListener( 'pointerdown', () => {
+	editOptions[ 8 ].addEventListener( 'pointerdown', () => {
 
 		sidebarScene.onDelete();
 

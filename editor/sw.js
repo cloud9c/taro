@@ -1,6 +1,7 @@
 importScripts( './js/lib/idb-keyval.min.js' );
 
 const cacheName = 'taro-editor';
+const baseURL = self.location.href.replace( 'sw.js', '' );
 
 const assets = [
 	'./',
@@ -89,20 +90,18 @@ async function cacheFirst( request ) {
 
 	if ( cachedResponse === undefined ) {
 
-		console.log( request.url );
+		const idbResponse = await idbKeyval.get( request.url.replace( baseURL, '' ) );
 
-		idbKeyval.get( request.url ).then( response => {
+		if ( idbResponse !== undefined ) {
 
-			if ( response !== undefined ) {
+			return new Response( idbResponse );
 
-				return new Response( response );
+		} else {
 
-			}
+			console.warn( '[SW] Not cached:', request.url );
+			return fetch( request );
 
-		} );
-
-		console.warn( '[SW] Not cached:', request.url );
-		return fetch( request );
+		}
 
 	}
 
