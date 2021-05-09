@@ -61,13 +61,21 @@
 			const controls = new OrbitControls( camera, app.renderer.domElement );
 			controls.maxPolarAngle = Math.PI * 0.5;
 
+			// drone constants
+			const mass = 1.380;
+			const gravity = 9.80665;
+			const defaultRotorForce = mass*gravity/4;
+
 			// components
 			TARO.registerComponent('droneControls', class {
 
 				init() {
 					this.rigidbody = this.entity.getComponent('rigidbody').ref;
+					this.fl = new TARO.Vector3();
+					this.fr = new TARO.Vector3();
+					this.bl = new TARO.Vector3();
+					this.br = new TARO.Vector3();
 					this.vector = new TARO.Vector3();
-					this.vector2 = new TARO.Vector3();
 
 					const parts = this.entity.getComponent('renderable').ref.children;
 					this.fans = [parts[30], parts[31], parts[32], parts[33]];
@@ -87,63 +95,62 @@
 
 				fixedUpdate() {
 
-					this.vector.set(0, -this.rigidbody.velocity.y, 0);
-					this.vector.y += 9.80665
-					this.vector.multiplyScalar(1.380);
-					this.vector.applyQuaternion(this.entity.quaternion);
-
-					this.rigidbody.applyForce(this.vector);
-
-					this.rigidbody.force.copy(this.vector.copy(this.rigidbody.force).clampLength(-35, 35))
-
 					const input = this.app.input;
 
+					this.fl.set(0, defaultRotorForce, 0);
+					this.fr.set(0, defaultRotorForce, 0);
+					this.bl.set(0, defaultRotorForce, 0);
+					this.br.set(0, defaultRotorForce, 0);
+
+					console.log(this.fl)
+
+					// throttle up
 					if (input.getKey('KeyW')) {
-						console.log('here')
-						this.vector.set(0, 1, 0)
-						this.rigidbody.applyForce( this.vector )
+						this.fl.y += 0.25;
+						this.fr.y += 0.25;
+						this.bl.y += 0.25;
+						this.br.y += 0.25;
 					}
 
+					// throttle down
 					if (input.getKey('KeyS')) {
-						this.vector.set(0, -1, 0)
-						this.rigidbody.applyForce( this.vector )
+
 					}
 
+					// yaw left
 					if (input.getKey('KeyA')) {
-						this.vector.set(0.001, 0, 0)
-						this.vector2.set(0, 0, -100)
-						this.rigidbody.applyLocalForce( this.vector, this.vector2 )
+
 					}
 
+					// yaw right
 					if (input.getKey('KeyD')) {
-						this.vector.set(0.001, 0, 0)
-						this.vector2.set(0, 0, 100)
-						this.rigidbody.applyLocalForce( this.vector, this.vector2 )
+
 					}
 
+					// pitch up
 					if (input.getKey('KeyI')) {
-						this.vector.set(0, -0.0001, 0)
-						this.vector2.set(0, 0, 100)
-						this.rigidbody.applyLocalForce( this.vector, this.vector2 )
+
 					}
 
+					// pitch down
 					if (input.getKey('KeyK')) {
-						this.vector.set(0, 0.0001, 0)
-						this.vector2.set(0, 0, 100)
-						this.rigidbody.applyLocalForce( this.vector, this.vector2 )
+
 					}
 
+					// roll left
 					if (input.getKey('KeyJ')) {
-						this.vector.set(0, 0.0001, 0)
-						this.vector2.set(100, 0, 0)
-						this.rigidbody.applyLocalForce( this.vector, this.vector2 )
+
 					}
 
+					// roll right
 					if (input.getKey('KeyL')) {
-						this.vector.set(0, -0.0001, 0)
-						this.vector2.set(100, 0, 0)
-						this.rigidbody.applyLocalForce( this.vector, this.vector2 )
+
 					}
+
+					this.rigidbody.applyForce( this.fl, this.vector.set(0.08483705296, 0, 0.12714576065) );
+					this.rigidbody.applyForce( this.fr, this.vector.set(-0.08483705296, 0, 0.12714576065) );
+					this.rigidbody.applyForce( this.bl, this.vector.set(0.08483705296, 0, -0.12714576065) );
+					this.rigidbody.applyForce( this.br, this.vector.set(-0.08483705296, 0, -0.12714576065) );
 
 				}
 
@@ -175,13 +182,13 @@
 			objectLoader.load( "models/drone.json", ( obj ) => {
 
 					// drone
-					obj.scale.set(0.00271157519, 0.00271157519, 0.00271157519);
+					obj.scale.multiplyScalar(0.00271157519);
 
 					const drone = new TARO.Entity('drone');
 					drone.addComponent('renderable', obj);
 					drone.addComponent('rigidbody', {
 						type: 'dynamic',
-						mass: 1.380
+						mass: mass
 					})
 					drone.addComponent('shape', {
 						type: 'box',
