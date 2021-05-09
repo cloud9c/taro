@@ -222,7 +222,7 @@ export function Navbar( editor ) {
 	} );
 
 	// Rename
-	editOptions[ 6 ].addEventListener( 'pointerdown', () => {
+	editOptions[ 6 ].addEventListener( 'pointerup', () => {
 
 		sidebarScene.onRename();
 

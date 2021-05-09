@@ -154,6 +154,17 @@ export function SidebarScene( editor ) {
 
 	};
 
+	function renameKeyDown( event ) {
+
+		if ( event.code === 'Enter' ) {
+
+			endRename( event );
+			return false;
+
+		}
+
+	}
+
 	function endRename( event ) {
 
 		const element = document.querySelector( '#scene div[data-id="' + viewport.currentEntity.id + '"' );
@@ -164,6 +175,9 @@ export function SidebarScene( editor ) {
 		viewport.currentEntity.name = element.textContent;
 
 		document.getElementById( 'entity-name' ).value = element.textContent;
+
+		element.removeEventListener( 'keydown', renameKeyDown );
+		element.removeEventListener( 'focusout', endRename );
 
 	}
 
@@ -183,17 +197,7 @@ export function SidebarScene( editor ) {
 		selection.removeAllRanges();
 		selection.addRange( range );
 
-		element.addEventListener( 'keydown', ( event ) => {
-
-			if ( event.code === 'Enter' ) {
-
-				endRename( event );
-				return false;
-
-			}
-
-		} );
-
+		element.addEventListener( 'keydown', renameKeyDown );
 		element.addEventListener( 'focusout', endRename );
 
 	};
@@ -247,6 +251,11 @@ export function SidebarScene( editor ) {
 
 				}
 
+				break;
+
+			// Rename
+			case 'F2':
+				this.onRename();
 				break;
 
 			// Clone
