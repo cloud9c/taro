@@ -179,6 +179,8 @@
 					this.vector.x *= -1;
 					this.rigidbody.applyForce( this.br, this.vector );
 
+					console.log(this.rigidbody.force)
+
 					// drag force
 					const speed = this.rigidbody.velocity.length();
 					this.drag.copy(this.rigidbody.velocity).normalize()
