@@ -65,17 +65,20 @@
 			const mass = 1.380;
 			const gravity = 9.80665;
 			const defaultRotorForce = mass*gravity/4;
+			const dragCoefficient = 6;
+			const angularDragCoefficient = 0.01;
 
 			// components
 			TARO.registerComponent('droneControls', class {
 
 				init() {
 					this.rigidbody = this.entity.getComponent('rigidbody').ref;
-					this.fl = new TARO.Vector3();
-					this.fr = new TARO.Vector3();
-					this.bl = new TARO.Vector3();
-					this.br = new TARO.Vector3();
-					this.vector = new TARO.Vector3();
+					this.fl = new TARO.Vec3();
+					this.fr = new TARO.Vec3();
+					this.bl = new TARO.Vec3();
+					this.br = new TARO.Vec3();
+					this.drag = new TARO.Vec3();
+					this.vector = new TARO.Vec3();
 
 					const parts = this.entity.getComponent('renderable').ref.children;
 					this.fans = [parts[30], parts[31], parts[32], parts[33]];
@@ -102,55 +105,93 @@
 					this.bl.set(0, defaultRotorForce, 0);
 					this.br.set(0, defaultRotorForce, 0);
 
-					console.log(this.fl)
-
 					// throttle up
 					if (input.getKey('KeyW')) {
-						this.fl.y += 0.25;
-						this.fr.y += 0.25;
-						this.bl.y += 0.25;
-						this.br.y += 0.25;
+						this.fl.y *= 1.1;
+						this.fr.y *= 1.1;
+						this.bl.y *= 1.1;
+						this.br.y *= 1.1;
 					}
 
 					// throttle down
 					if (input.getKey('KeyS')) {
-
+						this.fl.y /= 1.1;
+						this.fr.y /= 1.1;
+						this.bl.y /= 1.1;
+						this.br.y /= 1.1;
 					}
 
 					// yaw left
 					if (input.getKey('KeyA')) {
-
+						this.rigidbody.applyTorque(this.vector.set(0, 0.1, 0));
 					}
 
 					// yaw right
 					if (input.getKey('KeyD')) {
-
+						this.rigidbody.applyTorque(this.vector.set(0, -0.1, 0));
 					}
 
 					// pitch up
 					if (input.getKey('KeyI')) {
-
+						this.fl.y /= 1.1;
+						this.fr.y /= 1.1;
+						this.bl.y *= 1.1;
+						this.br.y *= 1.1;	
 					}
 
 					// pitch down
 					if (input.getKey('KeyK')) {
-
+						this.fl.y *= 1.1;
+						this.fr.y *= 1.1;
+						this.bl.y /= 1.1;
+						this.br.y /= 1.1;
 					}
 
 					// roll left
 					if (input.getKey('KeyJ')) {
-
+						this.fl.y /= 1.1;
+						this.fr.y *= 1.1;
+						this.bl.y /= 1.1;
+						this.br.y *= 1.1;
 					}
 
 					// roll right
 					if (input.getKey('KeyL')) {
-
+						this.fl.y *= 1.1;
+						this.fr.y /= 1.1;
+						this.bl.y *= 1.1;
+						this.br.y /= 1.1;
 					}
 
-					this.rigidbody.applyForce( this.fl, this.vector.set(0.08483705296, 0, 0.12714576065) );
-					this.rigidbody.applyForce( this.fr, this.vector.set(-0.08483705296, 0, 0.12714576065) );
-					this.rigidbody.applyForce( this.bl, this.vector.set(0.08483705296, 0, -0.12714576065) );
-					this.rigidbody.applyForce( this.br, this.vector.set(-0.08483705296, 0, -0.12714576065) );
+					this.vector.set(0.08483705296, 0, 0.12714576065);
+					this.rigidbody.quaternion.vmult(this.vector, this.vector);
+					this.rigidbody.quaternion.vmult(this.fl, this.fl);
+					this.rigidbody.quaternion.vmult(this.fr, this.fr);
+					this.rigidbody.quaternion.vmult(this.bl, this.bl);
+					this.rigidbody.quaternion.vmult(this.br, this.br);
+
+					this.rigidbody.applyForce( this.fl, this.vector );
+					this.vector.x *= -1;
+					this.rigidbody.applyForce( this.fr, this.vector );
+					this.vector.x *= -1;
+					this.vector.z *= -1;
+					this.rigidbody.applyForce( this.bl, this.vector );
+					this.vector.x *= -1;
+					this.rigidbody.applyForce( this.br, this.vector );
+
+					// drag force
+					const speed = this.rigidbody.velocity.length();
+					this.drag.copy(this.rigidbody.velocity).normalize()
+					this.drag.scale(-1, this.drag);
+					this.drag.scale(dragCoefficient * Math.pow(speed, 2), this.drag);
+					this.rigidbody.applyForce( this.drag );
+
+					// torque drag force
+					const angularSpeed = this.rigidbody.angularVelocity.length();
+					this.drag.copy(this.rigidbody.angularVelocity).normalize()
+					this.drag.scale(-1, this.drag);
+					this.drag.scale(angularDragCoefficient * Math.pow(angularSpeed, 2), this.drag);
+					this.rigidbody.applyTorque( this.drag );
 
 				}
 
