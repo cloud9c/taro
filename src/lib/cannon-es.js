@@ -2069,6 +2069,10 @@ const tmpQuat$1 = new Quaternion();
  *
  * @todo Move the clipping functions to ContactGenerator?
  * @todo Automatically merge coplanar polygons in constructor.
+ * @example
+ *     const convexShape = new CANNON.ConvexPolyhedron({ vertices, faces })
+ *     const convexBody = new CANNON.Body({ mass: 1, shape: convexShape })
+ *     world.addBody(convexBody)
  */
 class ConvexPolyhedron extends Shape {
   /** vertices */
@@ -2915,6 +2919,12 @@ const project_localOrigin = new Vec3();
 
 /**
  * A 3d box shape.
+ * @example
+ *     const size = 1
+ *     const halfExtents = new CANNON.Vec3(size, size, size)
+ *     const boxShape = new CANNON.Box(halfExtents)
+ *     const boxBody = new CANNON.Body({ mass: 1, shape: boxShape })
+ *     world.addBody(boxBody)
  */
 class Box extends Shape {
   /**
@@ -3154,11 +3164,11 @@ const BODY_SLEEP_STATES = {
 /**
  * Base class for all body types.
  * @example
- *     const body = new Body({
+ *     const shape = new CANNON.Sphere(1)
+ *     const body = new CANNON.Body({
  *       mass: 1,
+ *       shape,
  *     })
- *     const shape = new Sphere(1)
- *     body.addShape(shape)
  *     world.addBody(body)
  */
 class Body extends EventTarget {
@@ -4443,17 +4453,17 @@ class GridBroadphase extends Broadphase {
           }
         }
       }
-    } //  for (let zi = 0, zoff=0; zi < nz; zi++, zoff+= zstep) {
-    //    console.log("layer "+zi);
-    //    for (let yi = 0, yoff=0; yi < ny; yi++, yoff += ystep) {
-    //      const row = '';
-    //      for (let xi = 0, xoff=0; xi < nx; xi++, xoff += xstep) {
-    //        const idx = xoff + yoff + zoff;
-    //        row += ' ' + binLengths[idx];
-    //      }
-    //      console.log(row);
-    //    }
-    //  }
+    } //	for (let zi = 0, zoff=0; zi < nz; zi++, zoff+= zstep) {
+    //		console.log("layer "+zi);
+    //		for (let yi = 0, yoff=0; yi < ny; yi++, yoff += ystep) {
+    //			const row = '';
+    //			for (let xi = 0, xoff=0; xi < nx; xi++, xoff += xstep) {
+    //				const idx = xoff + yoff + zoff;
+    //				row += ' ' + binLengths[idx];
+    //			}
+    //			console.log(row);
+    //		}
+    //	}
 
 
     this.makePairsUnique(pairs1, pairs2);
@@ -7855,6 +7865,11 @@ function resolveSingleBilateral(body1, pos1, body2, pos2, normal) {
 
 /**
  * Spherical shape
+ * @example
+ *     const radius = 1
+ *     const sphereShape = new CANNON.Sphere(radius)
+ *     const sphereBody = new CANNON.Body({ mass: 1, shape: sphereShape })
+ *     world.addBody(sphereBody)
  */
 class Sphere extends Shape {
   /**
@@ -8331,6 +8346,14 @@ const SPHSystem_update_u = new Vec3();
 
 /**
  * Cylinder class.
+ * @example
+ *     const radiusTop = 0.5
+ *     const radiusBottom = 0.5
+ *     const height = 2
+ *     const numSegments = 12
+ *     const cylinderShape = new CANNON.Cylinder(radiusTop, radiusBottom, height, numSegments)
+ *     const cylinderBody = new CANNON.Body({ mass: 1, shape: cylinderShape })
+ *     world.addBody(cylinderBody)
  */
 
 class Cylinder extends ConvexPolyhedron {
@@ -8425,6 +8448,10 @@ class Cylinder extends ConvexPolyhedron {
 
 /**
  * Particle shape.
+ * @example
+ *     const particleShape = new CANNON.Particle()
+ *     const particleBody = new CANNON.Body({ mass: 1, shape: particleShape })
+ *     world.addBody(particleBody)
  */
 class Particle extends Shape {
   constructor() {
@@ -8460,6 +8487,11 @@ class Particle extends Shape {
 
 /**
  * A plane, facing in the Z direction. The plane has its surface at z=0 and everything below z=0 is assumed to be solid plane. To make the plane face in some other direction than z, you must put it inside a Body and rotate that body. See the demos.
+ * @example
+ *     const planeShape = new CANNON.Plane()
+ *     const planeBody = new CANNON.Body({ mass: 0, shape:  planeShape })
+ *     planeBody.quaternion.setFromEuler(-Math.PI / 2, 0, 0) // make it face up
+ *     world.addBody(planeBody)
  */
 class Plane extends Shape {
   /** worldNormal */
@@ -8541,17 +8573,16 @@ const tempNormal = new Vec3();
  * @example
  *     // Generate some height data (y-values).
  *     const data = []
- *     for(let i = 0; i < 1000; i++){
+ *     for (let i = 0; i < 1000; i++) {
  *         const y = 0.5 * Math.cos(0.2 * i)
  *         data.push(y)
  *     }
  *
  *     // Create the heightfield shape
- *     const heightfieldShape = new Heightfield(data, {
+ *     const heightfieldShape = new CANNON.Heightfield(data, {
  *         elementSize: 1 // Distance between the data points in X and Y directions
  *     })
- *     const heightfieldBody = new Body()
- *     heightfieldBody.addShape(heightfieldShape)
+ *     const heightfieldBody = new CANNON.Body({ shape: heightfieldShape })
  *     world.addBody(heightfieldBody)
  */
 class Heightfield extends Shape {
@@ -8568,7 +8599,7 @@ class Heightfield extends Shape {
    */
 
   /**
-   * World spacing between the data points in X direction.
+   * World spacing between the data points in X and Y direction.
    * @todo elementSizeX and Y
    * @default 1
    */
@@ -9338,7 +9369,7 @@ const tmpAABB = new AABB();
  *     const indices = [
  *         0, 1, 2  // triangle 0
  *     ]
- *     const trimeshShape = new Trimesh(vertices, indices)
+ *     const trimeshShape = new CANNON.Trimesh(vertices, indices)
  */
 class Trimesh extends Shape {
   /**
@@ -12730,34 +12761,34 @@ class World extends EventTarget {
 
       solver.addEquation(c); // // Add friction constraint equation
       // if(mu > 0){
-      //  // Create 2 tangent equations
-      //  const mug = mu * gnorm;
-      //  const reducedMass = (bi.invMass + bj.invMass);
-      //  if(reducedMass > 0){
-      //    reducedMass = 1/reducedMass;
-      //  }
-      //  const pool = frictionEquationPool;
-      //  const c1 = pool.length ? pool.pop() : new FrictionEquation(bi,bj,mug*reducedMass);
-      //  const c2 = pool.length ? pool.pop() : new FrictionEquation(bi,bj,mug*reducedMass);
-      //  this.frictionEquations.push(c1, c2);
-      //  c1.bi = c2.bi = bi;
-      //  c1.bj = c2.bj = bj;
-      //  c1.minForce = c2.minForce = -mug*reducedMass;
-      //  c1.maxForce = c2.maxForce = mug*reducedMass;
-      //  // Copy over the relative vectors
-      //  c1.ri.copy(c.ri);
-      //  c1.rj.copy(c.rj);
-      //  c2.ri.copy(c.ri);
-      //  c2.rj.copy(c.rj);
-      //  // Construct tangents
-      //  c.ni.tangents(c1.t, c2.t);
+      // 	// Create 2 tangent equations
+      // 	const mug = mu * gnorm;
+      // 	const reducedMass = (bi.invMass + bj.invMass);
+      // 	if(reducedMass > 0){
+      // 		reducedMass = 1/reducedMass;
+      // 	}
+      // 	const pool = frictionEquationPool;
+      // 	const c1 = pool.length ? pool.pop() : new FrictionEquation(bi,bj,mug*reducedMass);
+      // 	const c2 = pool.length ? pool.pop() : new FrictionEquation(bi,bj,mug*reducedMass);
+      // 	this.frictionEquations.push(c1, c2);
+      // 	c1.bi = c2.bi = bi;
+      // 	c1.bj = c2.bj = bj;
+      // 	c1.minForce = c2.minForce = -mug*reducedMass;
+      // 	c1.maxForce = c2.maxForce = mug*reducedMass;
+      // 	// Copy over the relative vectors
+      // 	c1.ri.copy(c.ri);
+      // 	c1.rj.copy(c.rj);
+      // 	c2.ri.copy(c.ri);
+      // 	c2.rj.copy(c.rj);
+      // 	// Construct tangents
+      // 	c.ni.tangents(c1.t, c2.t);
       //           // Set spook params
       //           c1.setSpookParams(cm.frictionEquationStiffness, cm.frictionEquationRelaxation, dt);
       //           c2.setSpookParams(cm.frictionEquationStiffness, cm.frictionEquationRelaxation, dt);
       //           c1.enabled = c2.enabled = c.enabled;
-      //  // Add equations to solver
-      //  solver.addEquation(c1);
-      //  solver.addEquation(c2);
+      // 	// Add equations to solver
+      // 	solver.addEquation(c1);
+      // 	solver.addEquation(c2);
       // }
 
       if (bi.allowSleep && bi.type === Body.DYNAMIC && bi.sleepState === Body.SLEEPING && bj.sleepState === Body.AWAKE && bj.type !== Body.STATIC) {
