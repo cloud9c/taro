@@ -54977,7 +54977,6 @@ Material$2.config = {
 		vertexTangents: { default: false, if: { type: [ 'standard', 'physical' ] } },
 
 		depthPacking: { type: 'select', default: 'BasicDepthPacking', select: depthPacking, if: { type: [ 'depth' ] } },
-		skinning: { default: false, if: { type: [ 'basic', 'depth', 'lambert', 'matcap', 'normal', 'phong', 'standard', 'physical', 'toon' ] } },
 
 		map: { type: 'asset', if: { type: [ 'basic', 'depth', 'lambert', 'matcap', 'phong', 'standard', 'physical', 'toon' ] } },
 		matcap: { type: 'asset', if: { type: [ 'matcap' ] } },
