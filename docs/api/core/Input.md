@@ -12,7 +12,7 @@ Creates a new Input object.
 ## Events
 
 ### pointermove
-Fires when the pointer moves. Property `position` is provided.
+Fires when the pointer moves. Properties `delta` and `position` are provided.
 
 ### pointerdown
 Fires when a pointer button is pressed down. Property `button` is provided.
