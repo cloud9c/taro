@@ -21,12 +21,12 @@ entity.addComponent('camera', {
 
 ## Data Parameters
 
-| Property | Description                                    | Default Value |
-|----------|------------------------------------------------|---------------|
-| type     | Either perspective or orthographic.            | "perspective" |
-| near     | Height (in meters) of the sides on the Y axis. | 0.1           |
-| far      | Depth (in meters) of the sides on the Z axis.  | 2000          |
-| viewport | Number of segmented faces on the z-axis.       | [0, 0, 1, 1]  |
+| Property | Description                                                           | Default Value |
+|----------|-----------------------------------------------------------------------|---------------|
+| type     | Either perspective or orthographic.                                   | "perspective" |
+| near     | Height (in meters) of the sides on the Y axis.                        | 0.1           |
+| far      | Depth (in meters) of the sides on the Z axis.                         | 2000          |
+| viewport | Where on the screen is the camera rendered in normalized coordinates. | [0, 0, 1, 1]  |
 
 ### perspective
 
