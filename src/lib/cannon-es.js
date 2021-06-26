@@ -7297,6 +7297,8 @@ class RaycastVehicle {
   /** The constraints. */
 
   /** Optional pre-step callback. */
+
+  /** Number of wheels on the ground. */
   constructor(options) {
     this.chassisBody = void 0;
     this.wheelInfos = void 0;
@@ -7308,6 +7310,7 @@ class RaycastVehicle {
     this.constraints = void 0;
     this.preStepCallback = void 0;
     this.currentVehicleSpeedKmHour = void 0;
+    this.numWheelsOnGround = void 0;
     this.chassisBody = options.chassisBody;
     this.wheelInfos = [];
     this.sliding = false;
@@ -7320,6 +7323,7 @@ class RaycastVehicle {
     this.preStepCallback = () => {};
 
     this.currentVehicleSpeedKmHour = 0;
+    this.numWheelsOnGround = 0;
   }
   /**
    * Add a wheel. For information about the options, see `WheelInfo`.
@@ -7639,10 +7643,15 @@ class RaycastVehicle {
     const chassisBody = this.chassisBody;
     const forwardWS = updateFriction_forwardWS;
     const axle = updateFriction_axle;
+    this.numWheelsOnGround = 0;
 
     for (let i = 0; i < numWheels; i++) {
       const wheel = wheelInfos[i];
-      wheel.raycastResult.body;
+      const groundObject = wheel.raycastResult.body;
+
+      if (groundObject) {
+        this.numWheelsOnGround++;
+      }
 
       wheel.sideImpulse = 0;
       wheel.forwardImpulse = 0;
