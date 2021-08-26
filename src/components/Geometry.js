@@ -154,9 +154,9 @@ Geometry.config = {
 		width: { default: 1, min: 0, if: { type: [ 'box', 'plane' ] } },
 		heightSegments: [ { default: 1, min: 1, max: 20, type: 'int', if: { type: [ 'box', 'plane' ] } },
 						 { default: 18, min: 1, type: 'int', if: { type: [ 'cone', 'cylinder' ] } },
-						 { default: 18, min: 2, type: 'int', if: { type: [ 'sphere' ] } } ],
+						 { default: 16, min: 2, type: 'int', if: { type: [ 'sphere' ] } } ],
 		widthSegments: [ { default: 1, min: 1, max: 20, type: 'int', if: { type: [ 'box', 'plane' ] } },
-						 { default: 36, min: 3, type: 'int', if: { type: [ 'sphere' ] } } ],
+						 { default: 32, min: 3, type: 'int', if: { type: [ 'sphere' ] } } ],
 		depthSegments: { default: 1, min: 1, max: 20, type: 'int', if: { type: [ 'box' ] } },
 
 		radius: { default: 1, min: 0, if: { type: [ 'circle', 'cone', 'dodecahedron', 'icosahedron', 'octahedron', 'sphere', 'tetrahedron', 'torus', 'torusKnot' ] } },

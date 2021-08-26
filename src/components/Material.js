@@ -180,7 +180,6 @@ Material.config = {
 		specular: { type: 'color', default: 0x111111, if: { type: [ 'phong' ] } },
 		shininess: { default: 30, if: { type: [ 'phong' ] } },
 		vertexColors: { default: false, if: { type: builtIn } },
-		vertexTangents: { default: false, if: { type: [ 'standard', 'physical' ] } },
 
 		depthPacking: { type: 'select', default: 'BasicDepthPacking', select: depthPacking, if: { type: [ 'depth' ] } },
 
