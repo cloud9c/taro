@@ -55272,9 +55272,9 @@ Geometry.config = {
 		width: { default: 1, min: 0, if: { type: [ 'box', 'plane' ] } },
 		heightSegments: [ { default: 1, min: 1, max: 20, type: 'int', if: { type: [ 'box', 'plane' ] } },
 						 { default: 18, min: 1, type: 'int', if: { type: [ 'cone', 'cylinder' ] } },
-						 { default: 18, min: 2, type: 'int', if: { type: [ 'sphere' ] } } ],
+						 { default: 16, min: 2, type: 'int', if: { type: [ 'sphere' ] } } ],
 		widthSegments: [ { default: 1, min: 1, max: 20, type: 'int', if: { type: [ 'box', 'plane' ] } },
-						 { default: 36, min: 3, type: 'int', if: { type: [ 'sphere' ] } } ],
+						 { default: 32, min: 3, type: 'int', if: { type: [ 'sphere' ] } } ],
 		depthSegments: { default: 1, min: 1, max: 20, type: 'int', if: { type: [ 'box' ] } },
 
 		radius: { default: 1, min: 0, if: { type: [ 'circle', 'cone', 'dodecahedron', 'icosahedron', 'octahedron', 'sphere', 'tetrahedron', 'torus', 'torusKnot' ] } },
@@ -55549,7 +55549,6 @@ Material$2.config = {
 		specular: { type: 'color', default: 0x111111, if: { type: [ 'phong' ] } },
 		shininess: { default: 30, if: { type: [ 'phong' ] } },
 		vertexColors: { default: false, if: { type: builtIn } },
-		vertexTangents: { default: false, if: { type: [ 'standard', 'physical' ] } },
 
 		depthPacking: { type: 'select', default: 'BasicDepthPacking', select: depthPacking, if: { type: [ 'depth' ] } },
 
