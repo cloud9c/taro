@@ -75,17 +75,25 @@ ${ code }`;
 }
 
 const babelrc = {
-	presets: [
-		[
-			'@babel/preset-env',
-			{
-				modules: false,
-				targets: '>1%',
-				loose: true,
-				bugfixes: true,
-			}
-		]
-	]
+  presets: [
+    [
+      "@babel/preset-env",
+      {
+        "modules": false,
+        "targets": ">1%",
+        "loose": true,
+        "bugfixes": true
+      }
+    ]
+  ],
+  plugins: [
+    [
+      "@babel/plugin-proposal-class-properties",
+      {
+        "loose": true
+      }
+    ]
+  ]
 };
 
 
