@@ -4453,17 +4453,17 @@ class GridBroadphase extends Broadphase {
           }
         }
       }
-    } //	for (let zi = 0, zoff=0; zi < nz; zi++, zoff+= zstep) {
-    //		console.log("layer "+zi);
-    //		for (let yi = 0, yoff=0; yi < ny; yi++, yoff += ystep) {
-    //			const row = '';
-    //			for (let xi = 0, xoff=0; xi < nx; xi++, xoff += xstep) {
-    //				const idx = xoff + yoff + zoff;
-    //				row += ' ' + binLengths[idx];
-    //			}
-    //			console.log(row);
-    //		}
-    //	}
+    } //  for (let zi = 0, zoff=0; zi < nz; zi++, zoff+= zstep) {
+    //    console.log("layer "+zi);
+    //    for (let yi = 0, yoff=0; yi < ny; yi++, yoff += ystep) {
+    //      const row = '';
+    //      for (let xi = 0, xoff=0; xi < nx; xi++, xoff += xstep) {
+    //        const idx = xoff + yoff + zoff;
+    //        row += ' ' + binLengths[idx];
+    //      }
+    //      console.log(row);
+    //    }
+    //  }
 
 
     this.makePairsUnique(pairs1, pairs2);
@@ -12770,34 +12770,34 @@ class World extends EventTarget {
 
       solver.addEquation(c); // // Add friction constraint equation
       // if(mu > 0){
-      // 	// Create 2 tangent equations
-      // 	const mug = mu * gnorm;
-      // 	const reducedMass = (bi.invMass + bj.invMass);
-      // 	if(reducedMass > 0){
-      // 		reducedMass = 1/reducedMass;
-      // 	}
-      // 	const pool = frictionEquationPool;
-      // 	const c1 = pool.length ? pool.pop() : new FrictionEquation(bi,bj,mug*reducedMass);
-      // 	const c2 = pool.length ? pool.pop() : new FrictionEquation(bi,bj,mug*reducedMass);
-      // 	this.frictionEquations.push(c1, c2);
-      // 	c1.bi = c2.bi = bi;
-      // 	c1.bj = c2.bj = bj;
-      // 	c1.minForce = c2.minForce = -mug*reducedMass;
-      // 	c1.maxForce = c2.maxForce = mug*reducedMass;
-      // 	// Copy over the relative vectors
-      // 	c1.ri.copy(c.ri);
-      // 	c1.rj.copy(c.rj);
-      // 	c2.ri.copy(c.ri);
-      // 	c2.rj.copy(c.rj);
-      // 	// Construct tangents
-      // 	c.ni.tangents(c1.t, c2.t);
+      //  // Create 2 tangent equations
+      //  const mug = mu * gnorm;
+      //  const reducedMass = (bi.invMass + bj.invMass);
+      //  if(reducedMass > 0){
+      //    reducedMass = 1/reducedMass;
+      //  }
+      //  const pool = frictionEquationPool;
+      //  const c1 = pool.length ? pool.pop() : new FrictionEquation(bi,bj,mug*reducedMass);
+      //  const c2 = pool.length ? pool.pop() : new FrictionEquation(bi,bj,mug*reducedMass);
+      //  this.frictionEquations.push(c1, c2);
+      //  c1.bi = c2.bi = bi;
+      //  c1.bj = c2.bj = bj;
+      //  c1.minForce = c2.minForce = -mug*reducedMass;
+      //  c1.maxForce = c2.maxForce = mug*reducedMass;
+      //  // Copy over the relative vectors
+      //  c1.ri.copy(c.ri);
+      //  c1.rj.copy(c.rj);
+      //  c2.ri.copy(c.ri);
+      //  c2.rj.copy(c.rj);
+      //  // Construct tangents
+      //  c.ni.tangents(c1.t, c2.t);
       //           // Set spook params
       //           c1.setSpookParams(cm.frictionEquationStiffness, cm.frictionEquationRelaxation, dt);
       //           c2.setSpookParams(cm.frictionEquationStiffness, cm.frictionEquationRelaxation, dt);
       //           c1.enabled = c2.enabled = c.enabled;
-      // 	// Add equations to solver
-      // 	solver.addEquation(c1);
-      // 	solver.addEquation(c2);
+      //  // Add equations to solver
+      //  solver.addEquation(c1);
+      //  solver.addEquation(c2);
       // }
 
       if (bi.allowSleep && bi.type === Body.DYNAMIC && bi.sleepState === Body.SLEEPING && bj.sleepState === Body.AWAKE && bj.type !== Body.STATIC) {
