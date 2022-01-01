@@ -5,7 +5,7 @@ export class AudioListener {
 	init( data ) {
 
 		this.ref = this.scene.audioListener;
-		
+
 		this.ref.setMasterVolume( data.masterVolume );
 		this.ref.timeDelta = data.timeDelta;
 

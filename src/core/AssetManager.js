@@ -10,13 +10,13 @@ export class AssetManager {
 	add( key, file ) {
 
 		if ( this.enabled === false ) return;
-		
+
 		this.files[ key ] = file;
 
 	}
 
 	get( key ) {
-		
+
 		if ( this.enabled === false ) return;
 
 		return this.files[ key ];

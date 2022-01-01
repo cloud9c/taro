@@ -174,7 +174,7 @@ export class Entity extends Group {
 		if ( value != this.enabled ) {
 
 			if ( value && parent.isEntity && ! parent.enabled )
-				return console.warn( "Entity: Can't enable if an ancestor is disabled" );
+				return console.warn( 'Entity: Can\'t enable if an ancestor is disabled' );
 
 			this.traverseEntities( entity => {
 
