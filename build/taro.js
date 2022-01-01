@@ -7,7 +7,7 @@
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
 	typeof define === 'function' && define.amd ? define(['exports'], factory) :
 	(global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.TARO = {}));
-})(this, (function (exports) { 'use strict';
+}(this, (function (exports) { 'use strict';
 
 	/**
 	 * @license
@@ -2045,7 +2045,7 @@
 
 	WebGLMultisampleRenderTarget.prototype.isWebGLMultisampleRenderTarget = true;
 
-	class Quaternion$1 {
+	class Quaternion {
 		constructor(x = 0, y = 0, z = 0, w = 1) {
 			this._x = x;
 			this._y = y;
@@ -2574,7 +2574,7 @@
 
 	}
 
-	Quaternion$1.prototype.isQuaternion = true;
+	Quaternion.prototype.isQuaternion = true;
 
 	class Vector3 {
 		constructor(x = 0, y = 0, z = 0) {
@@ -3118,7 +3118,7 @@
 
 	const _vector$c = /*@__PURE__*/new Vector3();
 
-	const _quaternion$4 = /*@__PURE__*/new Quaternion$1();
+	const _quaternion$4 = /*@__PURE__*/new Quaternion();
 
 	class Box3 {
 		constructor(min = new Vector3(+Infinity, +Infinity, +Infinity), max = new Vector3(-Infinity, -Infinity, -Infinity)) {
@@ -3679,7 +3679,7 @@
 
 	const _normal$1 = /*@__PURE__*/new Vector3();
 
-	class Ray$1 {
+	class Ray {
 		constructor(origin = new Vector3(), direction = new Vector3(0, 0, -1)) {
 			this.origin = origin;
 			this.direction = direction;
@@ -4772,7 +4772,7 @@
 
 	const _matrix$1 = /*@__PURE__*/new Matrix4();
 
-	const _quaternion$3 = /*@__PURE__*/new Quaternion$1();
+	const _quaternion$3 = /*@__PURE__*/new Quaternion();
 
 	class Euler {
 		constructor(x = 0, y = 0, z = 0, order = Euler.DefaultOrder) {
@@ -5053,7 +5053,7 @@
 
 	const _v1$4 = /*@__PURE__*/new Vector3();
 
-	const _q1$1 = /*@__PURE__*/new Quaternion$1();
+	const _q1 = /*@__PURE__*/new Quaternion();
 
 	const _m1$1 = /*@__PURE__*/new Matrix4();
 
@@ -5063,7 +5063,7 @@
 
 	const _scale$2 = /*@__PURE__*/new Vector3();
 
-	const _quaternion$2 = /*@__PURE__*/new Quaternion$1();
+	const _quaternion$2 = /*@__PURE__*/new Quaternion();
 
 	const _xAxis = /*@__PURE__*/new Vector3(1, 0, 0);
 
@@ -5092,7 +5092,7 @@
 			this.up = Object3D.DefaultUp.clone();
 			const position = new Vector3();
 			const rotation = new Euler();
-			const quaternion = new Quaternion$1();
+			const quaternion = new Quaternion();
 			const scale = new Vector3(1, 1, 1);
 
 			function onRotationChange() {
@@ -5186,9 +5186,9 @@
 		rotateOnAxis(axis, angle) {
 			// rotate object on axis in object space
 			// axis is assumed to be normalized
-			_q1$1.setFromAxisAngle(axis, angle);
+			_q1.setFromAxisAngle(axis, angle);
 
-			this.quaternion.multiply(_q1$1);
+			this.quaternion.multiply(_q1);
 			return this;
 		}
 
@@ -5196,9 +5196,9 @@
 			// rotate object on axis in world space
 			// axis is assumed to be normalized
 			// method assumes no rotated parent
-			_q1$1.setFromAxisAngle(axis, angle);
+			_q1.setFromAxisAngle(axis, angle);
 
-			this.quaternion.premultiply(_q1$1);
+			this.quaternion.premultiply(_q1);
 			return this;
 		}
 
@@ -5267,9 +5267,9 @@
 			if (parent) {
 				_m1$1.extractRotation(parent.matrixWorld);
 
-				_q1$1.setFromRotationMatrix(_m1$1);
+				_q1.setFromRotationMatrix(_m1$1);
 
-				this.quaternion.premultiply(_q1$1.invert());
+				this.quaternion.premultiply(_q1.invert());
 			}
 		}
 
@@ -5953,7 +5953,7 @@
 
 	let materialId = 0;
 
-	class Material$1 extends EventDispatcher {
+	class Material extends EventDispatcher {
 		constructor() {
 			super();
 			Object.defineProperty(this, 'id', {
@@ -6307,7 +6307,7 @@
 
 	}
 
-	Material$1.prototype.isMaterial = true;
+	Material.prototype.isMaterial = true;
 	const _colorKeywords = {
 		'aliceblue': 0xF0F8FF,
 		'antiquewhite': 0xFAEBD7,
@@ -6879,7 +6879,7 @@
 	 * }
 	 */
 
-	class MeshBasicMaterial extends Material$1 {
+	class MeshBasicMaterial extends Material {
 		constructor(parameters) {
 			super();
 			this.type = 'MeshBasicMaterial';
@@ -7297,7 +7297,7 @@
 
 	let _id$1 = 0;
 
-	const _m1$3 = /*@__PURE__*/new Matrix4();
+	const _m1 = /*@__PURE__*/new Matrix4();
 
 	const _obj = /*@__PURE__*/new Object3D();
 
@@ -7416,49 +7416,49 @@
 		}
 
 		applyQuaternion(q) {
-			_m1$3.makeRotationFromQuaternion(q);
+			_m1.makeRotationFromQuaternion(q);
 
-			this.applyMatrix4(_m1$3);
+			this.applyMatrix4(_m1);
 			return this;
 		}
 
 		rotateX(angle) {
 			// rotate geometry around world x-axis
-			_m1$3.makeRotationX(angle);
+			_m1.makeRotationX(angle);
 
-			this.applyMatrix4(_m1$3);
+			this.applyMatrix4(_m1);
 			return this;
 		}
 
 		rotateY(angle) {
 			// rotate geometry around world y-axis
-			_m1$3.makeRotationY(angle);
+			_m1.makeRotationY(angle);
 
-			this.applyMatrix4(_m1$3);
+			this.applyMatrix4(_m1);
 			return this;
 		}
 
 		rotateZ(angle) {
 			// rotate geometry around world z-axis
-			_m1$3.makeRotationZ(angle);
+			_m1.makeRotationZ(angle);
 
-			this.applyMatrix4(_m1$3);
+			this.applyMatrix4(_m1);
 			return this;
 		}
 
 		translate(x, y, z) {
 			// translate geometry
-			_m1$3.makeTranslation(x, y, z);
+			_m1.makeTranslation(x, y, z);
 
-			this.applyMatrix4(_m1$3);
+			this.applyMatrix4(_m1);
 			return this;
 		}
 
 		scale(x, y, z) {
 			// scale geometry
-			_m1$3.makeScale(x, y, z);
+			_m1.makeScale(x, y, z);
 
-			this.applyMatrix4(_m1$3);
+			this.applyMatrix4(_m1);
 			return this;
 		}
 
@@ -8087,7 +8087,7 @@
 
 	const _inverseMatrix$2 = /*@__PURE__*/new Matrix4();
 
-	const _ray$2 = /*@__PURE__*/new Ray$1();
+	const _ray$2 = /*@__PURE__*/new Ray();
 
 	const _sphere$3 = /*@__PURE__*/new Sphere();
 
@@ -8591,7 +8591,7 @@
 	 * }
 	 */
 
-	class ShaderMaterial extends Material$1 {
+	class ShaderMaterial extends Material {
 		constructor(parameters) {
 			super();
 			this.type = 'ShaderMaterial';
@@ -15184,7 +15184,7 @@
 	 */
 
 
-	class MeshDepthMaterial extends Material$1 {
+	class MeshDepthMaterial extends Material {
 		constructor(parameters) {
 			super();
 			this.type = 'MeshDepthMaterial';
@@ -15234,7 +15234,7 @@
 	 * }
 	 */
 
-	class MeshDistanceMaterial extends Material$1 {
+	class MeshDistanceMaterial extends Material {
 		constructor(parameters) {
 			super();
 			this.type = 'MeshDistanceMaterial';
@@ -20383,7 +20383,7 @@
 
 	Fog.prototype.isFog = true;
 
-	class Scene$1 extends Object3D {
+	class Scene extends Object3D {
 		constructor() {
 			super();
 			this.type = 'Scene';
@@ -20419,7 +20419,7 @@
 
 	}
 
-	Scene$1.prototype.isScene = true;
+	Scene.prototype.isScene = true;
 
 	class InterleavedBuffer {
 		constructor(array, stride) {
@@ -20726,7 +20726,7 @@
 	 * }
 	 */
 
-	class SpriteMaterial extends Material$1 {
+	class SpriteMaterial extends Material {
 		constructor(parameters) {
 			super();
 			this.type = 'SpriteMaterial';
@@ -21481,7 +21481,7 @@
 	 * }
 	 */
 
-	class LineBasicMaterial extends Material$1 {
+	class LineBasicMaterial extends Material {
 		constructor(parameters) {
 			super();
 			this.type = 'LineBasicMaterial';
@@ -21511,7 +21511,7 @@
 
 	const _inverseMatrix$1 = /*@__PURE__*/new Matrix4();
 
-	const _ray$1 = /*@__PURE__*/new Ray$1();
+	const _ray$1 = /*@__PURE__*/new Ray();
 
 	const _sphere$1 = /*@__PURE__*/new Sphere();
 
@@ -21751,7 +21751,7 @@
 	 * }
 	 */
 
-	class PointsMaterial extends Material$1 {
+	class PointsMaterial extends Material {
 		constructor(parameters) {
 			super();
 			this.type = 'PointsMaterial';
@@ -21779,7 +21779,7 @@
 
 	const _inverseMatrix = /*@__PURE__*/new Matrix4();
 
-	const _ray = /*@__PURE__*/new Ray$1();
+	const _ray = /*@__PURE__*/new Ray();
 
 	const _sphere = /*@__PURE__*/new Sphere();
 
@@ -23035,7 +23035,7 @@
 	} //
 
 
-	const tmp$2 = new Vector3();
+	const tmp = new Vector3();
 	const px = new CubicPoly(),
 				py = new CubicPoly(),
 				pz = new CubicPoly();
@@ -23071,8 +23071,8 @@
 				p0 = points[(intPoint - 1) % l];
 			} else {
 				// extrapolate first point
-				tmp$2.subVectors(points[0], points[1]).add(points[0]);
-				p0 = tmp$2;
+				tmp.subVectors(points[0], points[1]).add(points[0]);
+				p0 = tmp;
 			}
 
 			const p1 = points[intPoint % l];
@@ -23082,8 +23082,8 @@
 				p3 = points[(intPoint + 2) % l];
 			} else {
 				// extrapolate last point
-				tmp$2.subVectors(points[l - 1], points[l - 2]).add(points[l - 1]);
-				p3 = tmp$2;
+				tmp.subVectors(points[l - 1], points[l - 2]).add(points[l - 1]);
+				p3 = tmp;
 			}
 
 			if (this.curveType === 'centripetal' || this.curveType === 'chordal') {
@@ -23871,7 +23871,7 @@
 
 	}
 
-	class Shape$1 extends Path {
+	class Shape extends Path {
 		constructor(points) {
 			super(points);
 			this.uuid = generateUUID();
@@ -24610,7 +24610,7 @@
 
 
 	class ExtrudeGeometry extends BufferGeometry {
-		constructor(shapes = new Shape$1([new Vector2(0.5, 0.5), new Vector2(-0.5, 0.5), new Vector2(-0.5, -0.5), new Vector2(0.5, -0.5)]), options = {}) {
+		constructor(shapes = new Shape([new Vector2(0.5, 0.5), new Vector2(-0.5, 0.5), new Vector2(-0.5, -0.5), new Vector2(0.5, -0.5)]), options = {}) {
 			super();
 			this.type = 'ExtrudeGeometry';
 			this.parameters = {
@@ -25339,7 +25339,7 @@
 	}
 
 	class ShapeGeometry extends BufferGeometry {
-		constructor(shapes = new Shape$1([new Vector2(0, 0.5), new Vector2(-0.5, -0.5), new Vector2(0.5, -0.5)]), curveSegments = 12) {
+		constructor(shapes = new Shape([new Vector2(0, 0.5), new Vector2(-0.5, -0.5), new Vector2(0.5, -0.5)]), curveSegments = 12) {
 			super();
 			this.type = 'ShapeGeometry';
 			this.parameters = {
@@ -25975,7 +25975,7 @@
 	 * }
 	 */
 
-	class ShadowMaterial extends Material$1 {
+	class ShadowMaterial extends Material {
 		constructor(parameters) {
 			super();
 			this.type = 'ShadowMaterial';
@@ -26041,7 +26041,7 @@
 	 * }
 	 */
 
-	class MeshStandardMaterial extends Material$1 {
+	class MeshStandardMaterial extends Material {
 		constructor(parameters) {
 			super();
 			this.defines = {
@@ -26313,7 +26313,7 @@
 	 * }
 	 */
 
-	class MeshPhongMaterial extends Material$1 {
+	class MeshPhongMaterial extends Material {
 		constructor(parameters) {
 			super();
 			this.type = 'MeshPhongMaterial';
@@ -26425,7 +26425,7 @@
 	 * }
 	 */
 
-	class MeshToonMaterial extends Material$1 {
+	class MeshToonMaterial extends Material {
 		constructor(parameters) {
 			super();
 			this.defines = {
@@ -26511,7 +26511,7 @@
 	 * }
 	 */
 
-	class MeshNormalMaterial extends Material$1 {
+	class MeshNormalMaterial extends Material {
 		constructor(parameters) {
 			super();
 			this.type = 'MeshNormalMaterial';
@@ -26581,7 +26581,7 @@
 	 * }
 	 */
 
-	class MeshLambertMaterial extends Material$1 {
+	class MeshLambertMaterial extends Material {
 		constructor(parameters) {
 			super();
 			this.type = 'MeshLambertMaterial';
@@ -26661,7 +26661,7 @@
 	 * }
 	 */
 
-	class MeshMatcapMaterial extends Material$1 {
+	class MeshMatcapMaterial extends Material {
 		constructor(parameters) {
 			super();
 			this.defines = {
@@ -26762,7 +26762,7 @@
 		MeshMatcapMaterial: MeshMatcapMaterial,
 		LineDashedMaterial: LineDashedMaterial,
 		LineBasicMaterial: LineBasicMaterial,
-		Material: Material$1
+		Material: Material
 	});
 	const AnimationUtils = {
 		// same as Array.prototype.slice, but also works on typed arrays
@@ -26967,7 +26967,7 @@
 
 
 				if (referenceTrackType === 'quaternion') {
-					const referenceQuat = new Quaternion$1().fromArray(referenceValue).normalize().conjugate();
+					const referenceQuat = new Quaternion().fromArray(referenceValue).normalize().conjugate();
 					referenceQuat.toArray(referenceValue);
 				} // Subtract the reference value from all of the track values
 
@@ -26979,7 +26979,7 @@
 
 					if (referenceTrackType === 'quaternion') {
 						// Multiply the conjugate for quaternion track types
-						Quaternion$1.multiplyQuaternionsFlat(targetTrack.values, valueStart, referenceValue, 0, targetTrack.values, valueStart);
+						Quaternion.multiplyQuaternionsFlat(targetTrack.values, valueStart, referenceValue, 0, targetTrack.values, valueStart);
 					} else {
 						const valueEnd = targetValueSize - targetOffset * 2; // Subtract each value for all other numeric track types
 
@@ -27674,7 +27674,7 @@
 			let offset = i1 * stride;
 
 			for (let end = offset + stride; offset !== end; offset += 4) {
-				Quaternion$1.slerpFlat(result, 0, values, offset - stride, values, offset, alpha);
+				Quaternion.slerpFlat(result, 0, values, offset - stride, values, offset, alpha);
 			}
 
 			return result;
@@ -29839,7 +29839,7 @@
 
 			if (json !== undefined) {
 				for (let i = 0, l = json.length; i < l; i++) {
-					const shape = new Shape$1().fromJSON(json[i]);
+					const shape = new Shape().fromJSON(json[i]);
 					shapes[shape.uuid] = shape;
 				}
 			}
@@ -30209,7 +30209,7 @@
 
 			switch (data.type) {
 				case 'Scene':
-					object = new Scene$1();
+					object = new Scene();
 
 					if (data.background !== undefined) {
 						if (Number.isInteger(data.background)) {
@@ -30718,7 +30718,7 @@
 
 	const _position$1 = /*@__PURE__*/new Vector3();
 
-	const _quaternion$1 = /*@__PURE__*/new Quaternion$1();
+	const _quaternion$1 = /*@__PURE__*/new Quaternion();
 
 	const _scale$1 = /*@__PURE__*/new Vector3();
 
@@ -31077,7 +31077,7 @@
 
 	const _position = /*@__PURE__*/new Vector3();
 
-	const _quaternion = /*@__PURE__*/new Quaternion$1();
+	const _quaternion = /*@__PURE__*/new Quaternion();
 
 	const _scale = /*@__PURE__*/new Vector3();
 
@@ -31382,15 +31382,15 @@
 		}
 
 		_slerp(buffer, dstOffset, srcOffset, t) {
-			Quaternion$1.slerpFlat(buffer, dstOffset, buffer, dstOffset, buffer, srcOffset, t);
+			Quaternion.slerpFlat(buffer, dstOffset, buffer, dstOffset, buffer, srcOffset, t);
 		}
 
 		_slerpAdditive(buffer, dstOffset, srcOffset, t, stride) {
 			const workOffset = this._workIndex * stride; // Store result in intermediate buffer offset
 
-			Quaternion$1.multiplyQuaternionsFlat(buffer, workOffset, buffer, dstOffset, buffer, srcOffset); // Slerp to the intermediate result
+			Quaternion.multiplyQuaternionsFlat(buffer, workOffset, buffer, dstOffset, buffer, srcOffset); // Slerp to the intermediate result
 
-			Quaternion$1.slerpFlat(buffer, dstOffset, buffer, dstOffset, buffer, workOffset, t);
+			Quaternion.slerpFlat(buffer, dstOffset, buffer, dstOffset, buffer, workOffset, t);
 		}
 
 		_lerp(buffer, dstOffset, srcOffset, t, stride) {
@@ -33292,7 +33292,7 @@
 
 	class Raycaster {
 		constructor(origin, direction, near = 0, far = Infinity) {
-			this.ray = new Ray$1(origin, direction); // direction is assumed to be normalized (for accurate distance calculations)
+			this.ray = new Ray(origin, direction); // direction is assumed to be normalized (for accurate distance calculations)
 
 			this.near = near;
 			this.far = far;
@@ -33852,15 +33852,15 @@
 			// TODO: delete this comment?
 			const distanceGeometry = new THREE.IcosahedronBufferGeometry( 1, 2 );
 			const distanceMaterial = new THREE.MeshBasicMaterial( { color: hexColor, fog: false, wireframe: true, opacity: 0.1, transparent: true } );
-			this.lightSphere = new THREE.Mesh( bulbGeometry, bulbMaterial );
+				this.lightSphere = new THREE.Mesh( bulbGeometry, bulbMaterial );
 			this.lightDistance = new THREE.Mesh( distanceGeometry, distanceMaterial );
-			const d = light.distance;
-			if ( d === 0.0 ) {
-				this.lightDistance.visible = false;
-			} else {
-				this.lightDistance.scale.set( d, d, d );
-			}
-			this.add( this.lightDistance );
+				const d = light.distance;
+				if ( d === 0.0 ) {
+					this.lightDistance.visible = false;
+				} else {
+					this.lightDistance.scale.set( d, d, d );
+				}
+				this.add( this.lightDistance );
 			*/
 		}
 
@@ -33877,12 +33877,12 @@
 			}
 			/*
 			const d = this.light.distance;
-				if ( d === 0.0 ) {
-					this.lightDistance.visible = false;
-				} else {
-					this.lightDistance.visible = true;
+					if ( d === 0.0 ) {
+						this.lightDistance.visible = false;
+					} else {
+						this.lightDistance.visible = true;
 				this.lightDistance.scale.set( d, d, d );
-				}
+					}
 			*/
 
 		}
@@ -34037,9 +34037,9 @@
 
 	}
 
-	const _v1$8 = /*@__PURE__*/new Vector3();
+	const _v1 = /*@__PURE__*/new Vector3();
 
-	const _v2$4 = /*@__PURE__*/new Vector3();
+	const _v2 = /*@__PURE__*/new Vector3();
 
 	const _v3 = /*@__PURE__*/new Vector3();
 
@@ -34075,13 +34075,13 @@
 		}
 
 		update() {
-			_v1$8.setFromMatrixPosition(this.light.matrixWorld);
+			_v1.setFromMatrixPosition(this.light.matrixWorld);
 
-			_v2$4.setFromMatrixPosition(this.light.target.matrixWorld);
+			_v2.setFromMatrixPosition(this.light.target.matrixWorld);
 
-			_v3.subVectors(_v2$4, _v1$8);
+			_v3.subVectors(_v2, _v1);
 
-			this.lightPlane.lookAt(_v2$4);
+			this.lightPlane.lookAt(_v2);
 
 			if (this.color !== undefined) {
 				this.lightPlane.material.color.set(this.color);
@@ -34091,7 +34091,7 @@
 				this.targetLine.material.color.copy(this.light.color);
 			}
 
-			this.targetLine.lookAt(_v2$4);
+			this.targetLine.lookAt(_v2);
 			this.targetLine.scale.z = _v3.length();
 		}
 
@@ -34281,7 +34281,7 @@
 			1/___0/|
 			| 6__|_7
 			2/___3/
-				0: max.x, max.y, max.z
+					0: max.x, max.y, max.z
 			1: min.x, max.y, max.z
 			2: min.x, min.y, max.z
 			3: max.x, min.y, max.z
@@ -34555,7 +34555,7 @@
 
 				for (let i = 0, l = inSubpaths.length; i < l; i++) {
 					const tmpPath = inSubpaths[i];
-					const tmpShape = new Shape$1();
+					const tmpShape = new Shape();
 					tmpShape.curves = tmpPath.curves;
 					shapes.push(tmpShape);
 				}
@@ -34620,7 +34620,7 @@
 
 			if (subPaths.length === 1) {
 				tmpPath = subPaths[0];
-				tmpShape = new Shape$1();
+				tmpShape = new Shape();
 				tmpShape.curves = tmpPath.curves;
 				shapes.push(tmpShape);
 				return shapes;
@@ -34646,7 +34646,7 @@
 				if (solid) {
 					if (!holesFirst && newShapes[mainIdx]) mainIdx++;
 					newShapes[mainIdx] = {
-						s: new Shape$1(),
+						s: new Shape(),
 						p: tmpPoints
 					};
 					newShapes[mainIdx].s.curves = tmpPath.curves;
@@ -35173,28 +35173,28 @@
 	}; //
 
 
-	Quaternion$1.prototype.multiplyVector3 = function (vector) {
+	Quaternion.prototype.multiplyVector3 = function (vector) {
 		console.warn('THREE.Quaternion: .multiplyVector3() has been removed. Use is now vector.applyQuaternion( quaternion ) instead.');
 		return vector.applyQuaternion(this);
 	};
 
-	Quaternion$1.prototype.inverse = function () {
+	Quaternion.prototype.inverse = function () {
 		console.warn('THREE.Quaternion: .inverse() has been renamed to invert().');
 		return this.invert();
 	}; //
 
 
-	Ray$1.prototype.isIntersectionBox = function (box) {
+	Ray.prototype.isIntersectionBox = function (box) {
 		console.warn('THREE.Ray: .isIntersectionBox() has been renamed to .intersectsBox().');
 		return this.intersectsBox(box);
 	};
 
-	Ray$1.prototype.isIntersectionPlane = function (plane) {
+	Ray.prototype.isIntersectionPlane = function (plane) {
 		console.warn('THREE.Ray: .isIntersectionPlane() has been renamed to .intersectsPlane().');
 		return this.intersectsPlane(plane);
 	};
 
-	Ray$1.prototype.isIntersectionSphere = function (sphere) {
+	Ray.prototype.isIntersectionSphere = function (sphere) {
 		console.warn('THREE.Ray: .isIntersectionSphere() has been renamed to .intersectsSphere().');
 		return this.intersectsSphere(sphere);
 	}; //
@@ -35236,17 +35236,17 @@
 	}; //
 
 
-	Shape$1.prototype.extractAllPoints = function (divisions) {
+	Shape.prototype.extractAllPoints = function (divisions) {
 		console.warn('THREE.Shape: .extractAllPoints() has been removed. Use .extractPoints() instead.');
 		return this.extractPoints(divisions);
 	};
 
-	Shape$1.prototype.extrude = function (options) {
+	Shape.prototype.extrude = function (options) {
 		console.warn('THREE.Shape: .extrude() has been removed. Use ExtrudeGeometry() instead.');
 		return new ExtrudeGeometry(this, options);
 	};
 
-	Shape$1.prototype.makeGeometry = function (options) {
+	Shape.prototype.makeGeometry = function (options) {
 		console.warn('THREE.Shape: .makeGeometry() has been removed. Use ShapeGeometry() instead.');
 		return new ShapeGeometry(this, options);
 	}; //
@@ -35601,7 +35601,7 @@
 	}; //
 
 
-	Scene$1.prototype.dispose = function () {
+	Scene.prototype.dispose = function () {
 		console.error('THREE.Scene: .dispose() has been removed.');
 	}; //
 
@@ -35612,7 +35612,7 @@
 	}; //
 
 
-	Object.defineProperties(Material$1.prototype, {
+	Object.defineProperties(Material.prototype, {
 		wrapAround: {
 			get: function () {
 				console.warn('THREE.Material: .wrapAround has been removed.');
@@ -37336,7 +37336,7 @@
 		return result;
 	};
 
-	const _q = new Quaternion$1();
+	const _q = new Quaternion();
 
 	class GLTFCubicSplineQuaternionInterpolant extends GLTFCubicSplineInterpolant {
 		interpolate_(i1, t0, t, t1) {
@@ -38203,7 +38203,7 @@
 
 				if (!pointsMaterial) {
 					pointsMaterial = new PointsMaterial();
-					Material$1.prototype.copy.call(pointsMaterial, material);
+					Material.prototype.copy.call(pointsMaterial, material);
 					pointsMaterial.color.copy(material.color);
 					pointsMaterial.map = material.map;
 					pointsMaterial.sizeAttenuation = false; // glTF spec says points should be 1px
@@ -38218,7 +38218,7 @@
 
 				if (!lineMaterial) {
 					lineMaterial = new LineBasicMaterial();
-					Material$1.prototype.copy.call(lineMaterial, material);
+					Material.prototype.copy.call(lineMaterial, material);
 					lineMaterial.color.copy(material.color);
 					this.cache.add(cacheKey, lineMaterial);
 				}
@@ -38863,7 +38863,7 @@
 					const reducedAssociations = new Map();
 
 					for (const [key, value] of parser.associations) {
-						if (key instanceof Material$1 || key instanceof Texture) {
+						if (key instanceof Material || key instanceof Texture) {
 							reducedAssociations.set(key, value);
 						}
 					}
@@ -41130,7 +41130,7 @@
 	 */
 
 
-	class Quaternion {
+	class Quaternion$1 {
 		constructor(x = 0, y = 0, z = 0, w = 1) {
 			this.x = void 0;
 			this.y = void 0;
@@ -41240,7 +41240,7 @@
 		 */
 
 
-		mult(quat, target = new Quaternion()) {
+		mult(quat, target = new Quaternion$1()) {
 			const ax = this.x;
 			const ay = this.y;
 			const az = this.z;
@@ -41260,7 +41260,7 @@
 		 */
 
 
-		inverse(target = new Quaternion()) {
+		inverse(target = new Quaternion$1()) {
 			const x = this.x;
 			const y = this.y;
 			const z = this.z;
@@ -41278,7 +41278,7 @@
 		 */
 
 
-		conjugate(target = new Quaternion()) {
+		conjugate(target = new Quaternion$1()) {
 			target.x = -this.x;
 			target.y = -this.y;
 			target.z = -this.z;
@@ -41472,7 +41472,7 @@
 		}
 
 		clone() {
-			return new Quaternion(this.x, this.y, this.z, this.w);
+			return new Quaternion$1(this.x, this.y, this.z, this.w);
 		}
 		/**
 		 * Performs a spherical linear interpolation between two quat
@@ -41484,7 +41484,7 @@
 		 */
 
 
-		slerp(toQuat, t, target = new Quaternion()) {
+		slerp(toQuat, t, target = new Quaternion$1()) {
 			const ax = this.x;
 			const ay = this.y;
 			const az = this.z;
@@ -41535,7 +41535,7 @@
 		 */
 
 
-		integrate(angularVelocity, dt, angularFactor, target = new Quaternion()) {
+		integrate(angularVelocity, dt, angularFactor, target = new Quaternion$1()) {
 			const ax = angularVelocity.x * angularFactor.x,
 						ay = angularVelocity.y * angularFactor.y,
 						az = angularVelocity.z * angularFactor.z,
@@ -41595,7 +41595,7 @@
 	 * Base class for shapes
 	 */
 
-	class Shape {
+	class Shape$1 {
 		/**
 		 * Identifier of the Shape.
 		 */
@@ -41641,7 +41641,7 @@
 			this.collisionFilterMask = void 0;
 			this.material = void 0;
 			this.body = void 0;
-			this.id = Shape.idCounter++;
+			this.id = Shape$1.idCounter++;
 			this.type = options.type || 0;
 			this.boundingSphereRadius = 0;
 			this.collisionResponse = options.collisionResponse ? options.collisionResponse : true;
@@ -41687,8 +41687,8 @@
 
 	}
 
-	Shape.idCounter = 0;
-	Shape.types = SHAPE_TYPES;
+	Shape$1.idCounter = 0;
+	Shape$1.types = SHAPE_TYPES;
 	/**
 	 * Transformation utilities.
 	 */
@@ -41705,7 +41705,7 @@
 			this.position = void 0;
 			this.quaternion = void 0;
 			this.position = new Vec3();
-			this.quaternion = new Quaternion();
+			this.quaternion = new Quaternion$1();
 
 			if (options.position) {
 				this.position.copy(options.position);
@@ -41784,7 +41784,7 @@
 
 	}
 
-	const tmpQuat$1 = new Quaternion();
+	const tmpQuat$1 = new Quaternion$1();
 	/**
 	 * A set of polygons describing a convex shape.
 	 *
@@ -41803,7 +41803,7 @@
 	 *		 world.addBody(convexBody)
 	 */
 
-	class ConvexPolyhedron extends Shape {
+	class ConvexPolyhedron extends Shape$1 {
 		/** vertices */
 
 		/**
@@ -41839,7 +41839,7 @@
 				boundingSphereRadius
 			} = props;
 			super({
-				type: Shape.types.CONVEXPOLYHEDRON
+				type: Shape$1.types.CONVEXPOLYHEDRON
 			});
 			this.vertices = void 0;
 			this.faces = void 0;
@@ -42656,7 +42656,7 @@
 	 *		 world.addBody(boxBody)
 	 */
 
-	class Box extends Shape {
+	class Box extends Shape$1 {
 		/**
 		 * The half extents of the box.
 		 */
@@ -42666,7 +42666,7 @@
 		 */
 		constructor(halfExtents) {
 			super({
-				type: Shape.types.BOX
+				type: Shape$1.types.BOX
 			});
 			this.halfExtents = void 0;
 			this.convexPolyhedronRepresentation = void 0;
@@ -43225,10 +43225,10 @@
 			this.timeLastSleepy = 0;
 			this.wakeUpAfterNarrowphase = false;
 			this.torque = new Vec3();
-			this.quaternion = new Quaternion();
-			this.initQuaternion = new Quaternion();
-			this.previousQuaternion = new Quaternion();
-			this.interpolatedQuaternion = new Quaternion();
+			this.quaternion = new Quaternion$1();
+			this.initQuaternion = new Quaternion$1();
+			this.previousQuaternion = new Quaternion$1();
+			this.interpolatedQuaternion = new Quaternion$1();
 
 			if (options.quaternion) {
 				this.quaternion.copy(options.quaternion);
@@ -43392,7 +43392,7 @@
 
 		addShape(shape, _offset, _orientation) {
 			const offset = new Vec3();
-			const orientation = new Quaternion();
+			const orientation = new Quaternion$1();
 
 			if (_offset) {
 				offset.copy(_offset);
@@ -43740,7 +43740,7 @@
 		type: 'sleep'
 	};
 	const tmpVec = new Vec3();
-	const tmpQuat = new Quaternion();
+	const tmpQuat = new Quaternion$1();
 	const updateAABB_shapeAABB = new AABB();
 	const uiw_m1 = new Mat3();
 	const uiw_m2 = new Mat3();
@@ -43930,8 +43930,6 @@
 	};
 	const Broadphase_makePairsUnique_p1 = [];
 	const Broadphase_makePairsUnique_p2 = [];
-
-	new Vec3();
 	/**
 	 * Naive broadphase implementation, used in lack of better ones.
 	 *
@@ -44122,18 +44120,18 @@
 	 * RayMode
 	 */
 
-	_Shape$types$SPHERE = Shape.types.SPHERE;
-	_Shape$types$PLANE = Shape.types.PLANE;
-	_Shape$types$BOX = Shape.types.BOX;
-	_Shape$types$CYLINDER = Shape.types.CYLINDER;
-	_Shape$types$CONVEXPO = Shape.types.CONVEXPOLYHEDRON;
-	_Shape$types$HEIGHTFI = Shape.types.HEIGHTFIELD;
-	_Shape$types$TRIMESH = Shape.types.TRIMESH;
+	_Shape$types$SPHERE = Shape$1.types.SPHERE;
+	_Shape$types$PLANE = Shape$1.types.PLANE;
+	_Shape$types$BOX = Shape$1.types.BOX;
+	_Shape$types$CYLINDER = Shape$1.types.CYLINDER;
+	_Shape$types$CONVEXPO = Shape$1.types.CONVEXPOLYHEDRON;
+	_Shape$types$HEIGHTFI = Shape$1.types.HEIGHTFIELD;
+	_Shape$types$TRIMESH = Shape$1.types.TRIMESH;
 	/**
 	 * A line in 3D space that intersects bodies and return points.
 	 */
 
-	class Ray {
+	class Ray$1 {
 		/**
 		 * from
 		 */
@@ -44248,7 +44246,7 @@
 			this.skipBackfaces = false;
 			this.collisionFilterMask = -1;
 			this.collisionFilterGroup = -1;
-			this.mode = Ray.ANY;
+			this.mode = Ray$1.ANY;
 			this.result = new RaycastResult();
 			this.hasHit = false;
 
@@ -44261,7 +44259,7 @@
 
 
 		intersectWorld(world, options) {
-			this.mode = options.mode || Ray.ANY;
+			this.mode = options.mode || Ray$1.ANY;
 			this.result = options.result || new RaycastResult();
 			this.skipBackfaces = !!options.skipBackfaces;
 			this.collisionFilterMask = typeof options.collisionFilterMask !== 'undefined' ? options.collisionFilterMask : -1;
@@ -44603,7 +44601,7 @@
 					x.vadd(c, c);
 					const distance = intersectPoint.distanceTo(from);
 
-					if (!(Ray.pointInTriangle(intersectPoint, a, b, c) || Ray.pointInTriangle(intersectPoint, b, a, c)) || distance > fromToDistance) {
+					if (!(Ray$1.pointInTriangle(intersectPoint, a, b, c) || Ray$1.pointInTriangle(intersectPoint, b, a, c)) || distance > fromToDistance) {
 						continue;
 					}
 
@@ -44682,7 +44680,7 @@
 				mesh.getVertex(indices[trianglesIndex * 3 + 2], c);
 				const squaredDistance = intersectPoint.distanceSquared(localFrom);
 
-				if (!(Ray.pointInTriangle(intersectPoint, b, a, c) || Ray.pointInTriangle(intersectPoint, a, b, c)) || squaredDistance > fromToDistanceSquared) {
+				if (!(Ray$1.pointInTriangle(intersectPoint, b, a, c) || Ray$1.pointInTriangle(intersectPoint, a, b, c)) || squaredDistance > fromToDistanceSquared) {
 					continue;
 				} // transform intersectpoint and normal to world
 
@@ -44712,14 +44710,14 @@
 			result.hitFaceIndex = typeof hitFaceIndex !== 'undefined' ? hitFaceIndex : -1;
 
 			switch (this.mode) {
-				case Ray.ALL:
+				case Ray$1.ALL:
 					this.hasHit = true;
 					result.set(from, to, normal, hitPointWorld, shape, body, distance);
 					result.hasHit = true;
 					this.callback(result);
 					break;
 
-				case Ray.CLOSEST:
+				case Ray$1.CLOSEST:
 					// Store if closer than current closest
 					if (distance < result.distance || !result.hasHit) {
 						this.hasHit = true;
@@ -44729,7 +44727,7 @@
 
 					break;
 
-				case Ray.ANY:
+				case Ray$1.ANY:
 					// Report and stop.
 					this.hasHit = true;
 					result.hasHit = true;
@@ -44760,15 +44758,15 @@
 
 	}
 
-	Ray.CLOSEST = RAY_MODES.CLOSEST;
-	Ray.ANY = RAY_MODES.ANY;
-	Ray.ALL = RAY_MODES.ALL;
+	Ray$1.CLOSEST = RAY_MODES.CLOSEST;
+	Ray$1.ANY = RAY_MODES.ANY;
+	Ray$1.ALL = RAY_MODES.ALL;
 	const tmpAABB$1 = new AABB();
 	const tmpArray = [];
 	const v1 = new Vec3();
 	const v2 = new Vec3();
 	const intersectBody_xi = new Vec3();
-	const intersectBody_qi = new Quaternion();
+	const intersectBody_qi = new Quaternion$1();
 	const intersectPoint = new Vec3();
 	const a = new Vec3();
 	const b = new Vec3();
@@ -44777,7 +44775,7 @@
 		faceList: [0]
 	};
 	const worldPillarOffset = new Vec3();
-	const intersectHeightfield_localRay = new Ray();
+	const intersectHeightfield_localRay = new Ray$1();
 	const intersectHeightfield_index = [];
 	const Ray_intersectSphere_intersectionPoint = new Vec3();
 	const Ray_intersectSphere_normal = new Vec3();
@@ -45035,10 +45033,10 @@
 			const invIi = bi.invInertiaWorldSolve;
 			const invIj = bj.invInertiaWorldSolve;
 			let result = invMassi + invMassj;
-			invIi.vmult(GA.rotational, tmp);
-			result += tmp.dot(GA.rotational);
-			invIj.vmult(GB.rotational, tmp);
-			result += tmp.dot(GB.rotational);
+			invIi.vmult(GA.rotational, tmp$2);
+			result += tmp$2.dot(GA.rotational);
+			invIj.vmult(GB.rotational, tmp$2);
+			result += tmp$2.dot(GB.rotational);
 			return result;
 		}
 		/**
@@ -45078,7 +45076,7 @@
 	const iMfj = new Vec3();
 	const invIi_vmult_taui = new Vec3();
 	const invIj_vmult_tauj = new Vec3();
-	const tmp = new Vec3();
+	const tmp$2 = new Vec3();
 	const addToWlambda_temp = new Vec3();
 	/**
 	 * Contact/non-penetration constraint equation
@@ -45185,15 +45183,6 @@
 	const ContactEquation_getImpactVelocityAlongNormal_xi = new Vec3();
 	const ContactEquation_getImpactVelocityAlongNormal_xj = new Vec3();
 	const ContactEquation_getImpactVelocityAlongNormal_relVel = new Vec3();
-
-	new Vec3();
-	new Vec3();
-
-	new Vec3();
-	new Vec3();
-
-	new Vec3();
-	new Vec3();
 	/**
 	 * Constrains the slipping in a contact along a tangent
 	 */
@@ -45322,7 +45311,7 @@
 	 * Defines a physics material.
 	 */
 
-	class Material {
+	class Material$1 {
 		/**
 		 * Material name.
 		 * If options is a string, name will be set to that string.
@@ -45354,91 +45343,20 @@
 			}
 
 			this.name = name;
-			this.id = Material.idCounter++;
+			this.id = Material$1.idCounter++;
 			this.friction = typeof options.friction !== 'undefined' ? options.friction : -1;
 			this.restitution = typeof options.restitution !== 'undefined' ? options.restitution : -1;
 		}
 
 	}
 
-	Material.idCounter = 0;
-
-	new Vec3();
-	new Vec3();
-	new Vec3();
-	new Vec3();
-	new Vec3();
-	new Vec3();
-	new Vec3();
-	new Vec3();
-	new Vec3();
-	new Vec3();
-	new Vec3();
-
-	new Vec3();
-	new Vec3();
-
-	new Vec3();
-	new Vec3();
-	new Vec3();
-	new Ray();
-	new Vec3();
-	new Vec3();
-	[new Vec3(1, 0, 0), new Vec3(0, 1, 0), new Vec3(0, 0, 1)];
-	new Vec3();
-	new Vec3();
-	new Vec3();
-	new Vec3();
-
-	new Vec3();
-	new Vec3();
-	new Vec3();
-	new Vec3();
-
-	new Vec3();
-	new Vec3();
-	new Vec3(); // bilateral constraint between two dynamic objects
-
-	new Vec3();
-	new Vec3();
-
-	new Vec3(); // Temp vectors for calculation
-
-	new Vec3(); // Relative velocity
-
-	new Vec3();
-	new Vec3();
-	new Vec3();
-	new Vec3();
-	new Vec3();
-
-	new Vec3();
-	new Vec3();
-	new Vec3();
-	new Vec3();
-	new Vec3();
-	new Vec3();
-	new Vec3();
-	new Vec3();
-	new Vec3();
-	new Vec3(); // from https://en.wikipedia.org/wiki/Barycentric_coordinate_system
-
-	new Vec3();
-	new AABB();
-
-	new Vec3();
-	new AABB();
-	new Vec3();
-	new Vec3();
-	new Vec3();
-	new Vec3();
-	new Vec3();
-	new Vec3();
-	new Vec3();
-	new AABB();
-	new Vec3();
-	new Transform();
-	new AABB();
+	Material$1.idCounter = 0;
+	new Ray$1();
+	const tmpAABB = new AABB();
+	const unscaledAABB = new AABB();
+	const cli_aabb = new AABB();
+	const calculateWorldAABB_frame = new Transform();
+	const calculateWorldAABB_aabb = new AABB();
 	/**
 	 * Constraint equation solver base class.
 	 */
@@ -45733,31 +45651,31 @@
 
 
 	const COLLISION_TYPES = {
-		sphereSphere: Shape.types.SPHERE,
-		spherePlane: Shape.types.SPHERE | Shape.types.PLANE,
-		boxBox: Shape.types.BOX | Shape.types.BOX,
-		sphereBox: Shape.types.SPHERE | Shape.types.BOX,
-		planeBox: Shape.types.PLANE | Shape.types.BOX,
-		convexConvex: Shape.types.CONVEXPOLYHEDRON,
-		sphereConvex: Shape.types.SPHERE | Shape.types.CONVEXPOLYHEDRON,
-		planeConvex: Shape.types.PLANE | Shape.types.CONVEXPOLYHEDRON,
-		boxConvex: Shape.types.BOX | Shape.types.CONVEXPOLYHEDRON,
-		sphereHeightfield: Shape.types.SPHERE | Shape.types.HEIGHTFIELD,
-		boxHeightfield: Shape.types.BOX | Shape.types.HEIGHTFIELD,
-		convexHeightfield: Shape.types.CONVEXPOLYHEDRON | Shape.types.HEIGHTFIELD,
-		sphereParticle: Shape.types.PARTICLE | Shape.types.SPHERE,
-		planeParticle: Shape.types.PLANE | Shape.types.PARTICLE,
-		boxParticle: Shape.types.BOX | Shape.types.PARTICLE,
-		convexParticle: Shape.types.PARTICLE | Shape.types.CONVEXPOLYHEDRON,
-		cylinderCylinder: Shape.types.CYLINDER,
-		sphereCylinder: Shape.types.SPHERE | Shape.types.CYLINDER,
-		planeCylinder: Shape.types.PLANE | Shape.types.CYLINDER,
-		boxCylinder: Shape.types.BOX | Shape.types.CYLINDER,
-		convexCylinder: Shape.types.CONVEXPOLYHEDRON | Shape.types.CYLINDER,
-		heightfieldCylinder: Shape.types.HEIGHTFIELD | Shape.types.CYLINDER,
-		particleCylinder: Shape.types.PARTICLE | Shape.types.CYLINDER,
-		sphereTrimesh: Shape.types.SPHERE | Shape.types.TRIMESH,
-		planeTrimesh: Shape.types.PLANE | Shape.types.TRIMESH
+		sphereSphere: Shape$1.types.SPHERE,
+		spherePlane: Shape$1.types.SPHERE | Shape$1.types.PLANE,
+		boxBox: Shape$1.types.BOX | Shape$1.types.BOX,
+		sphereBox: Shape$1.types.SPHERE | Shape$1.types.BOX,
+		planeBox: Shape$1.types.PLANE | Shape$1.types.BOX,
+		convexConvex: Shape$1.types.CONVEXPOLYHEDRON,
+		sphereConvex: Shape$1.types.SPHERE | Shape$1.types.CONVEXPOLYHEDRON,
+		planeConvex: Shape$1.types.PLANE | Shape$1.types.CONVEXPOLYHEDRON,
+		boxConvex: Shape$1.types.BOX | Shape$1.types.CONVEXPOLYHEDRON,
+		sphereHeightfield: Shape$1.types.SPHERE | Shape$1.types.HEIGHTFIELD,
+		boxHeightfield: Shape$1.types.BOX | Shape$1.types.HEIGHTFIELD,
+		convexHeightfield: Shape$1.types.CONVEXPOLYHEDRON | Shape$1.types.HEIGHTFIELD,
+		sphereParticle: Shape$1.types.PARTICLE | Shape$1.types.SPHERE,
+		planeParticle: Shape$1.types.PLANE | Shape$1.types.PARTICLE,
+		boxParticle: Shape$1.types.BOX | Shape$1.types.PARTICLE,
+		convexParticle: Shape$1.types.PARTICLE | Shape$1.types.CONVEXPOLYHEDRON,
+		cylinderCylinder: Shape$1.types.CYLINDER,
+		sphereCylinder: Shape$1.types.SPHERE | Shape$1.types.CYLINDER,
+		planeCylinder: Shape$1.types.PLANE | Shape$1.types.CYLINDER,
+		boxCylinder: Shape$1.types.BOX | Shape$1.types.CYLINDER,
+		convexCylinder: Shape$1.types.CONVEXPOLYHEDRON | Shape$1.types.CYLINDER,
+		heightfieldCylinder: Shape$1.types.HEIGHTFIELD | Shape$1.types.CYLINDER,
+		particleCylinder: Shape$1.types.PARTICLE | Shape$1.types.CYLINDER,
+		sphereTrimesh: Shape$1.types.SPHERE | Shape$1.types.TRIMESH,
+		planeTrimesh: Shape$1.types.PLANE | Shape$1.types.TRIMESH
 	};
 	_COLLISION_TYPES$sphe = COLLISION_TYPES.sphereSphere;
 	_COLLISION_TYPES$sphe2 = COLLISION_TYPES.spherePlane;
@@ -47177,7 +47095,7 @@
 
 				dist = tmp.distanceTo(localSpherePos);
 
-				if (Ray.pointInTriangle(tmp, va, vb, vc) && dist < sphereShape.radius) {
+				if (Ray$1.pointInTriangle(tmp, va, vb, vc) && dist < sphereShape.radius) {
 					if (justTest) {
 						return true;
 					}
@@ -47308,8 +47226,8 @@
 	const averageContactPointB = new Vec3();
 	const tmpVec1 = new Vec3();
 	const tmpVec2 = new Vec3();
-	const tmpQuat1 = new Quaternion();
-	const tmpQuat2 = new Quaternion();
+	const tmpQuat1 = new Quaternion$1();
+	const tmpQuat2 = new Quaternion$1();
 	const planeTrimesh_normal = new Vec3();
 	const planeTrimesh_relpos = new Vec3();
 	const planeTrimesh_projected = new Vec3();
@@ -47399,7 +47317,7 @@
 	const particlePlane_projected = new Vec3();
 	const particleSphere_normal = new Vec3(); // WIP
 
-	const cqj = new Quaternion();
+	const cqj = new Quaternion$1();
 	const convexParticle_local = new Vec3();
 	const convexParticle_penetratedFaceNormal = new Vec3();
 	const convexParticle_vertexToParticle = new Vec3();
@@ -47746,7 +47664,7 @@
 			this.materials = [];
 			this.contactmaterials = [];
 			this.contactMaterialTable = new TupleDictionary();
-			this.defaultMaterial = new Material('default');
+			this.defaultMaterial = new Material$1('default');
 			this.defaultContactMaterial = new ContactMaterial(this.defaultMaterial, this.defaultMaterial, {
 				friction: 0.3,
 				restitution: 0.0
@@ -47849,7 +47767,7 @@
 
 
 		raycastAll(from, to, options = {}, callback) {
-			options.mode = Ray.ALL;
+			options.mode = Ray$1.ALL;
 			options.from = from;
 			options.to = to;
 			options.callback = callback;
@@ -47862,7 +47780,7 @@
 
 
 		raycastAny(from, to, options = {}, result) {
-			options.mode = Ray.ANY;
+			options.mode = Ray$1.ANY;
 			options.from = from;
 			options.to = to;
 			options.result = result;
@@ -47875,7 +47793,7 @@
 
 
 		raycastClosest(from, to, options = {}, result) {
-			options.mode = Ray.CLOSEST;
+			options.mode = Ray$1.CLOSEST;
 			options.from = from;
 			options.to = to;
 			options.result = result;
@@ -48465,7 +48383,7 @@
 
 
 	new AABB();
-	const tmpRay = new Ray(); // performance.now() fallback on Date.now()
+	const tmpRay = new Ray$1(); // performance.now() fallback on Date.now()
 
 	const performance$1 = globalThis.performance || {};
 
@@ -48526,13 +48444,13 @@
 		shapeB: null
 	};
 
-	const _v1 = new Vector3();
+	const _v1$8 = new Vector3();
 
-	const _v2 = new Vector3();
+	const _v2$4 = new Vector3();
 
-	const _q1 = new Quaternion$1();
+	const _q1$1 = new Quaternion();
 
-	const _m1 = new Matrix4();
+	const _m1$3 = new Matrix4();
 
 	const SLEEPING = 2;
 	class Physics extends World {
@@ -48575,20 +48493,20 @@
 				const entity = rigidbodies[i].entity;
 				const body = rigidbodies[i].ref;
 				entity.updateWorldMatrix(true, false);
-				entity.matrixWorld.decompose(_v1, _q1, _v2);
+				entity.matrixWorld.decompose(_v1$8, _q1$1, _v2$4);
 				let needsUpdate = false;
 
-				if (this.hasVectorChanged(body.interpolatedPosition, _v1)) {
-					body.position.copy(_v1);
-					body.previousPosition.copy(_v1);
-					body.interpolatedPosition.copy(_v1);
+				if (this.hasVectorChanged(body.interpolatedPosition, _v1$8)) {
+					body.position.copy(_v1$8);
+					body.previousPosition.copy(_v1$8);
+					body.interpolatedPosition.copy(_v1$8);
 					needsUpdate = true;
 				}
 
-				if (this.hasQuaternionChanged(body.interpolatedQuaternion, _q1)) {
-					body.quaternion.copy(_q1);
-					body.previousQuaternion.copy(_q1);
-					body.interpolatedQuaternion.copy(_q1);
+				if (this.hasQuaternionChanged(body.interpolatedQuaternion, _q1$1)) {
+					body.quaternion.copy(_q1$1);
+					body.previousQuaternion.copy(_q1$1);
+					body.interpolatedQuaternion.copy(_q1$1);
 					needsUpdate = true;
 				}
 
@@ -48598,12 +48516,12 @@
 					for (let i = 0, len = constraints.length; i < len; i++) if (constraints[i].bodyA === body || constraints[i].bodyB === body) constraints[i].update();
 				}
 
-				if (this.hasVectorChanged(rigidbodies[i].cachedScale, _v2)) {
-					rigidbodies[i].cachedScale.copy(_v2);
+				if (this.hasVectorChanged(rigidbodies[i].cachedScale, _v2$4)) {
+					rigidbodies[i].cachedScale.copy(_v2$4);
 					const shapes = entity.getComponents('shape');
 
 					for (let i = 0, len = shapes.length; i < len; i++) {
-						shapes[i].updateScale(_v2);
+						shapes[i].updateScale(_v2$4);
 					}
 
 					body.wakeUp();
@@ -48626,8 +48544,8 @@
 
 						if (entity.parent.isEntity) {
 							entity.parent.updateWorldMatrix(true, false);
-							position.applyMatrix4(_m1.copy(entity.parent.matrixWorld).invert());
-							quaternion.premultiply(entity.parent.getWorldQuaternion(_q1).invert());
+							position.applyMatrix4(_m1$3.copy(entity.parent.matrixWorld).invert());
+							quaternion.premultiply(entity.parent.getWorldQuaternion(_q1$1).invert());
 						}
 					}
 				}
@@ -49001,7 +48919,7 @@
 	}
 	App.prototype.isApp = true;
 
-	class Scene extends Scene$1 {
+	class Scene$1 extends Scene {
 		constructor(name, app) {
 			super();
 			this.app = null;
@@ -49591,7 +49509,7 @@
 	exports.LuminanceAlphaFormat = LuminanceAlphaFormat;
 	exports.LuminanceFormat = LuminanceFormat;
 	exports.MOUSE = MOUSE;
-	exports.Material = Material$1;
+	exports.Material = Material;
 	exports.MaterialLoader = MaterialLoader;
 	exports.Math = MathUtils;
 	exports.MathUtils = MathUtils;
@@ -49670,7 +49588,7 @@
 	exports.PropertyMixer = PropertyMixer;
 	exports.QuadraticBezierCurve = QuadraticBezierCurve;
 	exports.QuadraticBezierCurve3 = QuadraticBezierCurve3;
-	exports.Quaternion = Quaternion$1;
+	exports.Quaternion = Quaternion;
 	exports.QuaternionKeyframeTrack = QuaternionKeyframeTrack;
 	exports.QuaternionLinearInterpolant = QuaternionLinearInterpolant;
 	exports.REVISION = REVISION;
@@ -49708,7 +49626,7 @@
 	exports.RGFormat = RGFormat;
 	exports.RGIntegerFormat = RGIntegerFormat;
 	exports.RawShaderMaterial = RawShaderMaterial;
-	exports.Ray = Ray$1;
+	exports.Ray = Ray;
 	exports.Raycaster = Raycaster;
 	exports.RectAreaLight = RectAreaLight;
 	exports.RedFormat = RedFormat;
@@ -49734,13 +49652,13 @@
 	exports.SRGB8_ALPHA8_ASTC_8x5_Format = SRGB8_ALPHA8_ASTC_8x5_Format;
 	exports.SRGB8_ALPHA8_ASTC_8x6_Format = SRGB8_ALPHA8_ASTC_8x6_Format;
 	exports.SRGB8_ALPHA8_ASTC_8x8_Format = SRGB8_ALPHA8_ASTC_8x8_Format;
-	exports.Scene = Scene;
+	exports.Scene = Scene$1;
 	exports.SceneUtils = SceneUtils;
 	exports.ShaderChunk = ShaderChunk;
 	exports.ShaderLib = ShaderLib;
 	exports.ShaderMaterial = ShaderMaterial;
 	exports.ShadowMaterial = ShadowMaterial;
-	exports.Shape = Shape$1;
+	exports.Shape = Shape;
 	exports.ShapeBufferGeometry = ShapeGeometry;
 	exports.ShapeGeometry = ShapeGeometry;
 	exports.ShapePath = ShapePath;
@@ -49839,4 +49757,4 @@
 
 	Object.defineProperty(exports, '__esModule', { value: true });
 
-}));
+})));
