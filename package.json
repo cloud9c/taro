@@ -70,7 +70,7 @@
     "start": "npm run dev",
     "build": "rollup -c utils/build/rollup.config.js",
     "dev": "concurrently --names \"ROLLUP,HTTP\" -c \"bgBlue.bold,bgGreen.bold\" \"rollup -c utils/build/rollup.config.js -w -m inline\" \"servez -p 8080\"",
-    "lint": "eslint src --ext js",
+    "lint": "eslint src --ext js"
   },
   "keywords": [
     "taro",

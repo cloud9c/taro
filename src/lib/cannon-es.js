@@ -10,7 +10,6 @@ class ObjectCollisionMatrix {
    * @todo Remove useless constructor
    */
   constructor() {
-    this.matrix = void 0;
     this.matrix = {};
   }
   /**
@@ -32,7 +31,7 @@ class ObjectCollisionMatrix {
       i = temp;
     }
 
-    return i + "-" + j in this.matrix;
+    return `${i}-${j}` in this.matrix;
   }
   /**
    * set
@@ -54,9 +53,9 @@ class ObjectCollisionMatrix {
     }
 
     if (value) {
-      this.matrix[i + "-" + j] = true;
+      this.matrix[`${i}-${j}`] = true;
     } else {
-      delete this.matrix[i + "-" + j];
+      delete this.matrix[`${i}-${j}`];
     }
   }
   /**
@@ -88,8 +87,11 @@ class Mat3 {
   /**
    * @param elements A vector of length 9, containing all matrix elements.
    */
-  constructor(elements = [0, 0, 0, 0, 0, 0, 0, 0, 0]) {
-    this.elements = void 0;
+  constructor(elements) {
+    if (elements === void 0) {
+      elements = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+    }
+
     this.elements = elements;
   }
   /**
@@ -144,7 +146,11 @@ class Mat3 {
    */
 
 
-  getTrace(target = new Vec3()) {
+  getTrace(target) {
+    if (target === void 0) {
+      target = new Vec3();
+    }
+
     const e = this.elements;
     target.x = e[0];
     target.y = e[4];
@@ -158,7 +164,11 @@ class Mat3 {
    */
 
 
-  vmult(v, target = new Vec3()) {
+  vmult(v, target) {
+    if (target === void 0) {
+      target = new Vec3();
+    }
+
     const e = this.elements;
     const x = v.x;
     const y = v.y;
@@ -184,7 +194,11 @@ class Mat3 {
    */
 
 
-  mmult(matrix, target = new Mat3()) {
+  mmult(matrix, target) {
+    if (target === void 0) {
+      target = new Mat3();
+    }
+
     const A = this.elements;
     const B = matrix.elements;
     const T = target.elements;
@@ -222,7 +236,11 @@ class Mat3 {
    */
 
 
-  scale(vector, target = new Mat3()) {
+  scale(vector, target) {
+    if (target === void 0) {
+      target = new Mat3();
+    }
+
     const e = this.elements;
     const t = target.elements;
 
@@ -243,7 +261,11 @@ class Mat3 {
    */
 
 
-  solve(b, target = new Vec3()) {
+  solve(b, target) {
+    if (target === void 0) {
+      target = new Vec3();
+    }
+
     // Construct equations
     const nr = 3; // num rows
 
@@ -314,7 +336,7 @@ class Mat3 {
     target.x = (eqns[0 * nc + 3] - eqns[0 * nc + 2] * target.z - eqns[0 * nc + 1] * target.y) / eqns[0 * nc + 0];
 
     if (isNaN(target.x) || isNaN(target.y) || isNaN(target.z) || target.x === Infinity || target.y === Infinity || target.z === Infinity) {
-      throw "Could not solve equation! Got x=[" + target.toString() + "], b=[" + b.toString() + "], A=[" + this.toString() + "]";
+      throw `Could not solve equation! Got x=[${target.toString()}], b=[${b.toString()}], A=[${this.toString()}]`;
     }
 
     return target;
@@ -367,7 +389,11 @@ class Mat3 {
    */
 
 
-  reverse(target = new Mat3()) {
+  reverse(target) {
+    if (target === void 0) {
+      target = new Mat3();
+    }
+
     // Construct equations
     const nr = 3; // num rows
 
@@ -473,7 +499,7 @@ class Mat3 {
         p = eqns[nr + j + nc * i];
 
         if (isNaN(p) || p === Infinity) {
-          throw "Could not reverse! A=[" + this.toString() + "]";
+          throw `Could not reverse! A=[${this.toString()}]`;
         }
 
         target.e(i, j, p);
@@ -523,7 +549,11 @@ class Mat3 {
    */
 
 
-  transpose(target = new Mat3()) {
+  transpose(target) {
+    if (target === void 0) {
+      target = new Mat3();
+    }
+
     const M = this.elements;
     const T = target.elements;
     let tmp; //Set diagonals
@@ -554,10 +584,19 @@ const reverse_eqns = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
  */
 
 class Vec3 {
-  constructor(x = 0.0, y = 0.0, z = 0.0) {
-    this.x = void 0;
-    this.y = void 0;
-    this.z = void 0;
+  constructor(x, y, z) {
+    if (x === void 0) {
+      x = 0.0;
+    }
+
+    if (y === void 0) {
+      y = 0.0;
+    }
+
+    if (z === void 0) {
+      z = 0.0;
+    }
+
     this.x = x;
     this.y = y;
     this.z = z;
@@ -568,7 +607,11 @@ class Vec3 {
    */
 
 
-  cross(vector, target = new Vec3()) {
+  cross(vector, target) {
+    if (target === void 0) {
+      target = new Vec3();
+    }
+
     const vx = vector.x;
     const vy = vector.y;
     const vz = vector.z;
@@ -671,7 +714,11 @@ class Vec3 {
    */
 
 
-  unit(target = new Vec3()) {
+  unit(target) {
+    if (target === void 0) {
+      target = new Vec3();
+    }
+
     const x = this.x;
     const y = this.y;
     const z = this.z;
@@ -743,7 +790,11 @@ class Vec3 {
    */
 
 
-  scale(scalar, target = new Vec3()) {
+  scale(scalar, target) {
+    if (target === void 0) {
+      target = new Vec3();
+    }
+
     const x = this.x;
     const y = this.y;
     const z = this.z;
@@ -758,7 +809,11 @@ class Vec3 {
    */
 
 
-  vmul(vector, target = new Vec3()) {
+  vmul(vector, target) {
+    if (target === void 0) {
+      target = new Vec3();
+    }
+
     target.x = vector.x * this.x;
     target.y = vector.y * this.y;
     target.z = vector.z * this.z;
@@ -770,7 +825,11 @@ class Vec3 {
    */
 
 
-  addScaledVector(scalar, vector, target = new Vec3()) {
+  addScaledVector(scalar, vector, target) {
+    if (target === void 0) {
+      target = new Vec3();
+    }
+
     target.x = this.x + scalar * vector.x;
     target.y = this.y + scalar * vector.y;
     target.z = this.z + scalar * vector.z;
@@ -795,7 +854,11 @@ class Vec3 {
    */
 
 
-  negate(target = new Vec3()) {
+  negate(target) {
+    if (target === void 0) {
+      target = new Vec3();
+    }
+
     target.x = -this.x;
     target.y = -this.y;
     target.z = -this.z;
@@ -838,7 +901,7 @@ class Vec3 {
 
 
   toString() {
-    return this.x + "," + this.y + "," + this.z;
+    return `${this.x},${this.y},${this.z}`;
   }
   /**
    * Converts to an array
@@ -878,7 +941,11 @@ class Vec3 {
    */
 
 
-  almostEquals(vector, precision = 1e-6) {
+  almostEquals(vector, precision) {
+    if (precision === void 0) {
+      precision = 1e-6;
+    }
+
     if (Math.abs(this.x - vector.x) > precision || Math.abs(this.y - vector.y) > precision || Math.abs(this.z - vector.z) > precision) {
       return false;
     }
@@ -890,7 +957,11 @@ class Vec3 {
    */
 
 
-  almostZero(precision = 1e-6) {
+  almostZero(precision) {
+    if (precision === void 0) {
+      precision = 1e-6;
+    }
+
     if (Math.abs(this.x) > precision || Math.abs(this.y) > precision || Math.abs(this.z) > precision) {
       return false;
     }
@@ -917,10 +988,6 @@ class Vec3 {
   }
 
 }
-Vec3.ZERO = void 0;
-Vec3.UNIT_X = void 0;
-Vec3.UNIT_Y = void 0;
-Vec3.UNIT_Z = void 0;
 Vec3.ZERO = new Vec3(0, 0, 0);
 Vec3.UNIT_X = new Vec3(1, 0, 0);
 Vec3.UNIT_Y = new Vec3(0, 1, 0);
@@ -940,9 +1007,11 @@ class AABB {
   /**
    * The upper bound of the bounding box
    */
-  constructor(options = {}) {
-    this.lowerBound = void 0;
-    this.upperBound = void 0;
+  constructor(options) {
+    if (options === void 0) {
+      options = {};
+    }
+
     this.lowerBound = new Vec3();
     this.upperBound = new Vec3();
 
@@ -1218,7 +1287,6 @@ class ArrayCollisionMatrix {
    * The matrix storage.
    */
   constructor() {
-    this.matrix = void 0;
     this.matrix = [];
   }
   /**
@@ -1288,10 +1356,6 @@ class ArrayCollisionMatrix {
  * Base class for objects that dispatches events.
  */
 class EventTarget {
-  constructor() {
-    this._listeners = void 0;
-  }
-
   /**
    * Add an event listener
    * @return The self object, for chainability.
@@ -1406,11 +1470,23 @@ class EventTarget {
  */
 
 class Quaternion {
-  constructor(x = 0, y = 0, z = 0, w = 1) {
-    this.x = void 0;
-    this.y = void 0;
-    this.z = void 0;
-    this.w = void 0;
+  constructor(x, y, z, w) {
+    if (x === void 0) {
+      x = 0;
+    }
+
+    if (y === void 0) {
+      y = 0;
+    }
+
+    if (z === void 0) {
+      z = 0;
+    }
+
+    if (w === void 0) {
+      w = 1;
+    }
+
     this.x = x;
     this.y = y;
     this.z = z;
@@ -1435,7 +1511,7 @@ class Quaternion {
 
 
   toString() {
-    return this.x + "," + this.y + "," + this.z + "," + this.w;
+    return `${this.x},${this.y},${this.z},${this.w}`;
   }
   /**
    * Convert to an Array
@@ -1466,7 +1542,11 @@ class Quaternion {
    */
 
 
-  toAxisAngle(targetAxis = new Vec3()) {
+  toAxisAngle(targetAxis) {
+    if (targetAxis === void 0) {
+      targetAxis = new Vec3();
+    }
+
     this.normalize(); // if w>1 acos and sqrt will produce errors, this cant happen if quaternion is normalised
 
     const angle = 2 * Math.acos(this.w);
@@ -1515,7 +1595,11 @@ class Quaternion {
    */
 
 
-  mult(quat, target = new Quaternion()) {
+  mult(quat, target) {
+    if (target === void 0) {
+      target = new Quaternion();
+    }
+
     const ax = this.x;
     const ay = this.y;
     const az = this.z;
@@ -1535,7 +1619,11 @@ class Quaternion {
    */
 
 
-  inverse(target = new Quaternion()) {
+  inverse(target) {
+    if (target === void 0) {
+      target = new Quaternion();
+    }
+
     const x = this.x;
     const y = this.y;
     const z = this.z;
@@ -1553,7 +1641,11 @@ class Quaternion {
    */
 
 
-  conjugate(target = new Quaternion()) {
+  conjugate(target) {
+    if (target === void 0) {
+      target = new Quaternion();
+    }
+
     target.x = -this.x;
     target.y = -this.y;
     target.z = -this.z;
@@ -1611,7 +1703,11 @@ class Quaternion {
    */
 
 
-  vmult(v, target = new Vec3()) {
+  vmult(v, target) {
+    if (target === void 0) {
+      target = new Vec3();
+    }
+
     const x = v.x;
     const y = v.y;
     const z = v.z;
@@ -1648,7 +1744,11 @@ class Quaternion {
    */
 
 
-  toEuler(target, order = 'YZX') {
+  toEuler(target, order) {
+    if (order === void 0) {
+      order = 'YZX';
+    }
+
     let heading;
     let attitude;
     let bank;
@@ -1689,7 +1789,7 @@ class Quaternion {
         break;
 
       default:
-        throw new Error("Euler order " + order + " not supported yet.");
+        throw new Error(`Euler order ${order} not supported yet.`);
     }
 
     target.y = heading;
@@ -1703,7 +1803,11 @@ class Quaternion {
    */
 
 
-  setFromEuler(x, y, z, order = 'XYZ') {
+  setFromEuler(x, y, z, order) {
+    if (order === void 0) {
+      order = 'XYZ';
+    }
+
     const c1 = Math.cos(x / 2);
     const c2 = Math.cos(y / 2);
     const c3 = Math.cos(z / 2);
@@ -1759,7 +1863,11 @@ class Quaternion {
    */
 
 
-  slerp(toQuat, t, target = new Quaternion()) {
+  slerp(toQuat, t, target) {
+    if (target === void 0) {
+      target = new Quaternion();
+    }
+
     const ax = this.x;
     const ay = this.y;
     const az = this.z;
@@ -1810,7 +1918,11 @@ class Quaternion {
    */
 
 
-  integrate(angularVelocity, dt, angularFactor, target = new Quaternion()) {
+  integrate(angularVelocity, dt, angularFactor, target) {
+    if (target === void 0) {
+      target = new Quaternion();
+    }
+
     const ax = angularVelocity.x * angularFactor.x,
           ay = angularVelocity.y * angularFactor.y,
           az = angularVelocity.z * angularFactor.z,
@@ -1905,15 +2017,11 @@ class Shape {
   /**
    * All the Shape types.
    */
-  constructor(options = {}) {
-    this.id = void 0;
-    this.type = void 0;
-    this.boundingSphereRadius = void 0;
-    this.collisionResponse = void 0;
-    this.collisionFilterGroup = void 0;
-    this.collisionFilterMask = void 0;
-    this.material = void 0;
-    this.body = void 0;
+  constructor(options) {
+    if (options === void 0) {
+      options = {};
+    }
+
     this.id = Shape.idCounter++;
     this.type = options.type || 0;
     this.boundingSphereRadius = 0;
@@ -1930,7 +2038,7 @@ class Shape {
 
 
   updateBoundingSphereRadius() {
-    throw "computeBoundingSphereRadius() not implemented for shape type " + this.type;
+    throw `computeBoundingSphereRadius() not implemented for shape type ${this.type}`;
   }
   /**
    * Get the volume of this shape
@@ -1938,7 +2046,7 @@ class Shape {
 
 
   volume() {
-    throw "volume() not implemented for shape type " + this.type;
+    throw `volume() not implemented for shape type ${this.type}`;
   }
   /**
    * Calculates the inertia in the local frame for this shape.
@@ -1947,7 +2055,7 @@ class Shape {
 
 
   calculateLocalInertia(mass, target) {
-    throw "calculateLocalInertia() not implemented for shape type " + this.type;
+    throw `calculateLocalInertia() not implemented for shape type ${this.type}`;
   }
   /**
    * @todo use abstract for these kind of methods
@@ -1955,7 +2063,7 @@ class Shape {
 
 
   calculateWorldAABB(pos, quat, min, max) {
-    throw "calculateWorldAABB() not implemented for shape type " + this.type;
+    throw `calculateWorldAABB() not implemented for shape type ${this.type}`;
   }
 
 }
@@ -1973,9 +2081,11 @@ class Transform {
   /**
    * quaternion
    */
-  constructor(options = {}) {
-    this.position = void 0;
-    this.quaternion = void 0;
+  constructor(options) {
+    if (options === void 0) {
+      options = {};
+    }
+
     this.position = new Vec3();
     this.quaternion = new Quaternion();
 
@@ -2008,7 +2118,11 @@ class Transform {
    */
 
 
-  vectorToWorldFrame(localVector, result = new Vec3()) {
+  vectorToWorldFrame(localVector, result) {
+    if (result === void 0) {
+      result = new Vec3();
+    }
+
     this.quaternion.vmult(localVector, result);
     return result;
   }
@@ -2017,7 +2131,11 @@ class Transform {
    */
 
 
-  static pointToLocalFrame(position, quaternion, worldPoint, result = new Vec3()) {
+  static pointToLocalFrame(position, quaternion, worldPoint, result) {
+    if (result === void 0) {
+      result = new Vec3();
+    }
+
     worldPoint.vsub(position, result);
     quaternion.conjugate(tmpQuat$1);
     tmpQuat$1.vmult(result, result);
@@ -2028,7 +2146,11 @@ class Transform {
    */
 
 
-  static pointToWorldFrame(position, quaternion, localPoint, result = new Vec3()) {
+  static pointToWorldFrame(position, quaternion, localPoint, result) {
+    if (result === void 0) {
+      result = new Vec3();
+    }
+
     quaternion.vmult(localPoint, result);
     result.vadd(position, result);
     return result;
@@ -2038,7 +2160,11 @@ class Transform {
    */
 
 
-  static vectorToWorldFrame(quaternion, localVector, result = new Vec3()) {
+  static vectorToWorldFrame(quaternion, localVector, result) {
+    if (result === void 0) {
+      result = new Vec3();
+    }
+
     quaternion.vmult(localVector, result);
     return result;
   }
@@ -2047,7 +2173,11 @@ class Transform {
    */
 
 
-  static vectorToLocalFrame(position, quaternion, worldVector, result = new Vec3()) {
+  static vectorToLocalFrame(position, quaternion, worldVector, result) {
+    if (result === void 0) {
+      result = new Vec3();
+    }
+
     quaternion.w *= -1;
     quaternion.vmult(worldVector, result);
     quaternion.w *= -1;
@@ -2101,7 +2231,11 @@ class ConvexPolyhedron extends Shape {
    * @param vertices An array of Vec3's
    * @param faces Array of integer arrays, describing which vertices that is included in each face.
    */
-  constructor(props = {}) {
+  constructor(props) {
+    if (props === void 0) {
+      props = {};
+    }
+
     const {
       vertices = [],
       faces = [],
@@ -2112,15 +2246,6 @@ class ConvexPolyhedron extends Shape {
     super({
       type: Shape.types.CONVEXPOLYHEDRON
     });
-    this.vertices = void 0;
-    this.faces = void 0;
-    this.faceNormals = void 0;
-    this.worldVertices = void 0;
-    this.worldVerticesNeedsUpdate = void 0;
-    this.worldFaceNormals = void 0;
-    this.worldFaceNormalsNeedsUpdate = void 0;
-    this.uniqueAxes = void 0;
-    this.uniqueEdges = void 0;
     this.vertices = vertices;
     this.faces = faces;
     this.faceNormals = normals;
@@ -2193,7 +2318,7 @@ class ConvexPolyhedron extends Shape {
       // Check so all vertices exists for this face
       for (let j = 0; j < this.faces[i].length; j++) {
         if (!this.vertices[this.faces[i][j]]) {
-          throw new Error("Vertex " + this.faces[i][j] + " not found!");
+          throw new Error(`Vertex ${this.faces[i][j]} not found!`);
         }
       }
 
@@ -2204,10 +2329,10 @@ class ConvexPolyhedron extends Shape {
       const vertex = this.vertices[this.faces[i][0]];
 
       if (n.dot(vertex) < 0) {
-        console.error(".faceNormals[" + i + "] = Vec3(" + n.toString() + ") looks like it points into the shape? The vertices follow. Make sure they are ordered CCW around the normal, using the right hand rule.");
+        console.error(`.faceNormals[${i}] = Vec3(${n.toString()}) looks like it points into the shape? The vertices follow. Make sure they are ordered CCW around the normal, using the right hand rule.`);
 
         for (let j = 0; j < this.faces[i].length; j++) {
-          console.warn(".vertices[" + this.faces[i][j] + "] = Vec3(" + this.vertices[this.faces[i][j]].toString() + ")");
+          console.warn(`.vertices[${this.faces[i][j]}] = Vec3(${this.vertices[this.faces[i][j]].toString()})`);
         }
       }
     }
@@ -2560,7 +2685,7 @@ class ConvexPolyhedron extends Shape {
       let depth = planeNormalWS.dot(pVtxIn[i]) + planeEqWS; // ???
 
       if (depth <= minDist) {
-        console.log("clamped: depth=" + depth + " to minDist=" + minDist);
+        console.log(`clamped: depth=${depth} to minDist=${minDist}`);
         depth = minDist;
       }
 
@@ -2780,7 +2905,11 @@ class ConvexPolyhedron extends Shape {
    */
 
 
-  getAveragePointLocal(target = new Vec3()) {
+  getAveragePointLocal(target) {
+    if (target === void 0) {
+      target = new Vec3();
+    }
+
     const verts = this.vertices;
 
     for (let i = 0; i < verts.length; i++) {
@@ -2840,6 +2969,7 @@ class ConvexPolyhedron extends Shape {
     const verts = this.vertices;
     const faces = this.faces;
     const normals = this.faceNormals;
+    const positiveResult = null;
     const pointInside = new Vec3();
     this.getAveragePointLocal(pointInside);
 
@@ -2861,7 +2991,7 @@ class ConvexPolyhedron extends Shape {
     } // If we got here, all dot products were of the same sign.
 
 
-    return -1;
+    return positiveResult ? 1 : -1;
   }
   /**
    * Get max and min dot product of a convex hull at position (pos,quat) projected onto an axis.
@@ -2872,6 +3002,7 @@ class ConvexPolyhedron extends Shape {
 
   static project(shape, axis, pos, quat, result) {
     const n = shape.vertices.length;
+    project_worldVertex;
     const localAxis = project_localAxis;
     let max = 0;
     let min = 0;
@@ -2914,6 +3045,7 @@ class ConvexPolyhedron extends Shape {
 }
 const maxminA = [];
 const maxminB = [];
+const project_worldVertex = new Vec3();
 const project_localAxis = new Vec3();
 const project_localOrigin = new Vec3();
 
@@ -2938,8 +3070,6 @@ class Box extends Shape {
     super({
       type: Shape.types.BOX
     });
-    this.halfExtents = void 0;
-    this.convexPolyhedronRepresentation = void 0;
     this.halfExtents = halfExtents;
     this.convexPolyhedronRepresentation = null;
     this.updateConvexPolyhedronRepresentation();
@@ -2977,7 +3107,11 @@ class Box extends Shape {
    */
 
 
-  calculateLocalInertia(mass, target = new Vec3()) {
+  calculateLocalInertia(mass, target) {
+    if (target === void 0) {
+      target = new Vec3();
+    }
+
     Box.calculateInertia(this.halfExtents, mass, target);
     return target;
   }
@@ -3218,238 +3352,15 @@ class Body extends EventTarget {
    * Dispatched after a body has fallen asleep.
    * @event sleep
    */
+  constructor(options) {
+    if (options === void 0) {
+      options = {};
+    }
 
-  /**
-   * Identifier of the body.
-   */
-
-  /**
-   * Position of body in World.bodies. Updated by World and used in ArrayCollisionMatrix.
-   */
-
-  /**
-   * Reference to the world the body is living in.
-   */
-
-  /**
-   * Callback function that is used BEFORE stepping the system. Use it to apply forces, for example. Inside the function, "this" will refer to this Body object. Deprecated - use World events instead.
-   * @deprecated Use World events instead
-   */
-
-  /**
-   * Callback function that is used AFTER stepping the system. Inside the function, "this" will refer to this Body object. Deprecated - use World events instead.
-   * @deprecated Use World events instead
-   */
-
-  /**
-   * The collision group the body belongs to.
-   * @default 1
-   */
-
-  /**
-   * The collision group the body can collide with.
-   * @default -1
-   */
-
-  /**
-   * Whether to produce contact forces when in contact with other bodies. Note that contacts will be generated, but they will be disabled - i.e. "collide" events will be raised, but forces will not be altered.
-   */
-
-  /**
-   * World space position of the body.
-   */
-
-  /**
-   * Interpolated position of the body.
-   */
-
-  /**
-   * Initial position of the body.
-   */
-
-  /**
-   * World space velocity of the body.
-   */
-
-  /**
-   * Initial velocity of the body.
-   */
-
-  /**
-   * Linear force on the body in world space.
-   */
-
-  /**
-   * The mass of the body.
-   * @default 0
-   */
-
-  /**
-   * The physics material of the body. It defines the body interaction with other bodies.
-   */
-
-  /**
-   * How much to damp the body velocity each step. It can go from 0 to 1.
-   * @default 0.01
-   */
-
-  /**
-   * One of: `Body.DYNAMIC`, `Body.STATIC` and `Body.KINEMATIC`.
-   */
-
-  /**
-   * If true, the body will automatically fall to sleep.
-   * @default true
-   */
-
-  /**
-   * Current sleep state.
-   */
-
-  /**
-   * If the speed (the norm of the velocity) is smaller than this value, the body is considered sleepy.
-   * @default 0.1
-   */
-
-  /**
-   * If the body has been sleepy for this sleepTimeLimit seconds, it is considered sleeping.
-   * @default 1
-   */
-
-  /**
-   * World space rotational force on the body, around center of mass.
-   */
-
-  /**
-   * World space orientation of the body.
-   */
-
-  /**
-   * Initial quaternion of the body.
-   */
-
-  /**
-   * Interpolated orientation of the body.
-   */
-
-  /**
-   * Angular velocity of the body, in world space. Think of the angular velocity as a vector, which the body rotates around. The length of this vector determines how fast (in radians per second) the body rotates.
-   */
-
-  /**
-   * Initial angular velocity of the body.
-   */
-
-  /**
-   * List of Shapes that have been added to the body.
-   */
-
-  /**
-   * Position of each Shape in the body, given in local Body space.
-   */
-
-  /**
-   * Orientation of each Shape, given in local Body space.
-   */
-
-  /**
-   * The inertia of the body.
-   */
-
-  /**
-   * Set to true if you don't want the body to rotate. Make sure to run .updateMassProperties() if you change this after the body creation.
-   * @default false
-   */
-
-  /**
-   * How much to damp the body angular velocity each step. It can go from 0 to 1.
-   * @default 0.01
-   */
-
-  /**
-   * Use this property to limit the motion along any world axis. (1,1,1) will allow motion along all axes while (0,0,0) allows none.
-   */
-
-  /**
-   * Use this property to limit the rotational motion along any world axis. (1,1,1) will allow rotation along all axes while (0,0,0) allows none.
-   */
-
-  /**
-   * World space bounding box of the body and its shapes.
-   */
-
-  /**
-   * Indicates if the AABB needs to be updated before use.
-   */
-
-  /**
-   * Total bounding radius of the Body including its shapes, relative to body.position.
-   */
-
-  /**
-   * When true the body behaves like a trigger. It does not collide
-   * with other bodies but collision events are still triggered.
-   * @default false
-   */
-  constructor(options = {}) {
     super();
-    this.id = void 0;
-    this.index = void 0;
-    this.world = void 0;
-    this.preStep = void 0;
-    this.postStep = void 0;
-    this.vlambda = void 0;
-    this.collisionFilterGroup = void 0;
-    this.collisionFilterMask = void 0;
-    this.collisionResponse = void 0;
-    this.position = void 0;
-    this.previousPosition = void 0;
-    this.interpolatedPosition = void 0;
-    this.initPosition = void 0;
-    this.velocity = void 0;
-    this.initVelocity = void 0;
-    this.force = void 0;
-    this.mass = void 0;
-    this.invMass = void 0;
-    this.material = void 0;
-    this.linearDamping = void 0;
-    this.type = void 0;
-    this.allowSleep = void 0;
-    this.sleepState = void 0;
-    this.sleepSpeedLimit = void 0;
-    this.sleepTimeLimit = void 0;
-    this.timeLastSleepy = void 0;
-    this.wakeUpAfterNarrowphase = void 0;
-    this.torque = void 0;
-    this.quaternion = void 0;
-    this.initQuaternion = void 0;
-    this.previousQuaternion = void 0;
-    this.interpolatedQuaternion = void 0;
-    this.angularVelocity = void 0;
-    this.initAngularVelocity = void 0;
-    this.shapes = void 0;
-    this.shapeOffsets = void 0;
-    this.shapeOrientations = void 0;
-    this.inertia = void 0;
-    this.invInertia = void 0;
-    this.invInertiaWorld = void 0;
-    this.invMassSolve = void 0;
-    this.invInertiaSolve = void 0;
-    this.invInertiaWorldSolve = void 0;
-    this.fixedRotation = void 0;
-    this.angularDamping = void 0;
-    this.linearFactor = void 0;
-    this.angularFactor = void 0;
-    this.aabb = void 0;
-    this.aabbNeedsUpdate = void 0;
-    this.boundingRadius = void 0;
-    this.wlambda = void 0;
-    this.isTrigger = void 0;
     this.id = Body.idCounter++;
     this.index = -1;
     this.world = null;
-    this.preStep = null;
-    this.postStep = null;
     this.vlambda = new Vec3();
     this.collisionFilterGroup = typeof options.collisionFilterGroup === 'number' ? options.collisionFilterGroup : 1;
     this.collisionFilterMask = typeof options.collisionFilterMask === 'number' ? options.collisionFilterMask : -1;
@@ -3618,7 +3529,11 @@ class Body extends EventTarget {
    */
 
 
-  pointToLocalFrame(worldPoint, result = new Vec3()) {
+  pointToLocalFrame(worldPoint, result) {
+    if (result === void 0) {
+      result = new Vec3();
+    }
+
     worldPoint.vsub(this.position, result);
     this.quaternion.conjugate().vmult(result, result);
     return result;
@@ -3628,7 +3543,11 @@ class Body extends EventTarget {
    */
 
 
-  vectorToLocalFrame(worldVector, result = new Vec3()) {
+  vectorToLocalFrame(worldVector, result) {
+    if (result === void 0) {
+      result = new Vec3();
+    }
+
     this.quaternion.conjugate().vmult(worldVector, result);
     return result;
   }
@@ -3637,7 +3556,11 @@ class Body extends EventTarget {
    */
 
 
-  pointToWorldFrame(localPoint, result = new Vec3()) {
+  pointToWorldFrame(localPoint, result) {
+    if (result === void 0) {
+      result = new Vec3();
+    }
+
     this.quaternion.vmult(localPoint, result);
     result.vadd(this.position, result);
     return result;
@@ -3647,7 +3570,11 @@ class Body extends EventTarget {
    */
 
 
-  vectorToWorldFrame(localVector, result = new Vec3()) {
+  vectorToWorldFrame(localVector, result) {
+    if (result === void 0) {
+      result = new Vec3();
+    }
+
     this.quaternion.vmult(localVector, result);
     return result;
   }
@@ -3771,6 +3698,7 @@ class Body extends EventTarget {
     if (I.x === I.y && I.y === I.z && !force) ; else {
       const m1 = uiw_m1;
       const m2 = uiw_m2;
+      uiw_m3;
       m1.setRotationFromQuaternion(this.quaternion);
       m1.transpose(m2);
       m1.scale(I, m1);
@@ -3785,7 +3713,11 @@ class Body extends EventTarget {
    */
 
 
-  applyForce(force, relativePoint = new Vec3()) {
+  applyForce(force, relativePoint) {
+    if (relativePoint === void 0) {
+      relativePoint = new Vec3();
+    }
+
     // Needed?
     if (this.type !== Body.DYNAMIC) {
       return;
@@ -3810,7 +3742,11 @@ class Body extends EventTarget {
    */
 
 
-  applyLocalForce(localForce, localPoint = new Vec3()) {
+  applyLocalForce(localForce, localPoint) {
+    if (localPoint === void 0) {
+      localPoint = new Vec3();
+    }
+
     if (this.type !== Body.DYNAMIC) {
       return;
     }
@@ -3849,7 +3785,11 @@ class Body extends EventTarget {
    */
 
 
-  applyImpulse(impulse, relativePoint = new Vec3()) {
+  applyImpulse(impulse, relativePoint) {
+    if (relativePoint === void 0) {
+      relativePoint = new Vec3();
+    }
+
     if (this.type !== Body.DYNAMIC) {
       return;
     }
@@ -3886,7 +3826,11 @@ class Body extends EventTarget {
    */
 
 
-  applyLocalImpulse(localImpulse, localPoint = new Vec3()) {
+  applyLocalImpulse(localImpulse, localPoint) {
+    if (localPoint === void 0) {
+      localPoint = new Vec3();
+    }
+
     if (this.type !== Body.DYNAMIC) {
       return;
     }
@@ -4011,6 +3955,7 @@ const tmpQuat = new Quaternion();
 const updateAABB_shapeAABB = new AABB();
 const uiw_m1 = new Mat3();
 const uiw_m2 = new Mat3();
+const uiw_m3 = new Mat3();
 const Body_applyForce_rotForce = new Vec3();
 const Body_applyLocalForce_worldForce = new Vec3();
 const Body_applyLocalForce_relativePointWorld = new Vec3();
@@ -4037,9 +3982,6 @@ class Broadphase {
    * Set to true if the objects in the world moved.
    */
   constructor() {
-    this.world = void 0;
-    this.useBoundingBoxes = void 0;
-    this.dirty = void 0;
     this.world = null;
     this.useBoundingBoxes = false;
     this.dirty = true;
@@ -4146,7 +4088,7 @@ class Broadphase {
     for (let i = 0; i !== N; i++) {
       const id1 = p1[i].id;
       const id2 = p2[i].id;
-      const key = id1 < id2 ? id1 + "," + id2 : id2 + "," + id1;
+      const key = id1 < id2 ? `${id1},${id2}` : `${id2},${id1}`;
       t[key] = i;
       t.keys.push(key);
     }
@@ -4191,11 +4133,15 @@ class Broadphase {
 } // Temp objects
 
 const Broadphase_collisionPairs_r = new Vec3();
+new Vec3();
+new Quaternion();
+new Vec3();
 const Broadphase_makePairsUnique_temp = {
   keys: []
 };
 const Broadphase_makePairsUnique_p1 = [];
 const Broadphase_makePairsUnique_p2 = [];
+new Vec3();
 
 /**
  * Axis aligned uniform grid broadphase.
@@ -4235,15 +4181,28 @@ class GridBroadphase extends Broadphase {
    * @param ny Number of boxes along y.
    * @param nz Number of boxes along z.
    */
-  constructor(aabbMin = new Vec3(100, 100, 100), aabbMax = new Vec3(-100, -100, -100), nx = 10, ny = 10, nz = 10) {
+  constructor(aabbMin, aabbMax, nx, ny, nz) {
+    if (aabbMin === void 0) {
+      aabbMin = new Vec3(100, 100, 100);
+    }
+
+    if (aabbMax === void 0) {
+      aabbMax = new Vec3(-100, -100, -100);
+    }
+
+    if (nx === void 0) {
+      nx = 10;
+    }
+
+    if (ny === void 0) {
+      ny = 10;
+    }
+
+    if (nz === void 0) {
+      nz = 10;
+    }
+
     super();
-    this.nx = void 0;
-    this.ny = void 0;
-    this.nz = void 0;
-    this.aabbMin = void 0;
-    this.aabbMax = void 0;
-    this.bins = void 0;
-    this.binLengths = void 0;
     this.nx = nx;
     this.ny = ny;
     this.nz = nz;
@@ -4272,7 +4231,7 @@ class GridBroadphase extends Broadphase {
 
 
   collisionPairs(world, pairs1, pairs2) {
-    const N = world.numObjects();
+    const N = world.bodies.length;
     const bodies = world.bodies;
     const max = this.aabbMax;
     const min = this.aabbMin;
@@ -4453,17 +4412,17 @@ class GridBroadphase extends Broadphase {
           }
         }
       }
-    } //  for (let zi = 0, zoff=0; zi < nz; zi++, zoff+= zstep) {
-    //    console.log("layer "+zi);
-    //    for (let yi = 0, yoff=0; yi < ny; yi++, yoff += ystep) {
-    //      const row = '';
-    //      for (let xi = 0, xoff=0; xi < nx; xi++, xoff += xstep) {
-    //        const idx = xoff + yoff + zoff;
-    //        row += ' ' + binLengths[idx];
-    //      }
-    //      console.log(row);
-    //    }
-    //  }
+    } //	for (let zi = 0, zoff=0; zi < nz; zi++, zoff+= zstep) {
+    //		console.log("layer "+zi);
+    //		for (let yi = 0, yoff=0; yi < ny; yi++, yoff += ystep) {
+    //			const row = '';
+    //			for (let xi = 0, xoff=0; xi < nx; xi++, xoff += xstep) {
+    //				const idx = xoff + yoff + zoff;
+    //				row += ' ' + binLengths[idx];
+    //			}
+    //			console.log(row);
+    //		}
+    //	}
 
 
     this.makePairsUnique(pairs1, pairs2);
@@ -4471,6 +4430,7 @@ class GridBroadphase extends Broadphase {
 
 }
 const GridBroadphase_collisionPairs_d = new Vec3();
+new Vec3();
 
 /**
  * Naive broadphase implementation, used in lack of better ones.
@@ -4514,7 +4474,11 @@ class NaiveBroadphase extends Broadphase {
    */
 
 
-  aabbQuery(world, aabb, result = []) {
+  aabbQuery(world, aabb, result) {
+    if (result === void 0) {
+      result = [];
+    }
+
     for (let i = 0; i < world.bodies.length; i++) {
       const b = world.bodies[i];
 
@@ -4577,16 +4541,6 @@ class RaycastResult {
    * If the ray should stop traversing the bodies
    */
   constructor() {
-    this.rayFromWorld = void 0;
-    this.rayToWorld = void 0;
-    this.hitNormalWorld = void 0;
-    this.hitPointWorld = void 0;
-    this.hasHit = void 0;
-    this.shape = void 0;
-    this.body = void 0;
-    this.hitFaceIndex = void 0;
-    this.distance = void 0;
-    this.shouldStop = void 0;
     this.rayFromWorld = new Vec3();
     this.rayToWorld = new Vec3();
     this.hitNormalWorld = new Vec3();
@@ -4764,19 +4718,15 @@ class Ray {
     return this._intersectTrimesh;
   }
 
-  constructor(from = new Vec3(), to = new Vec3()) {
-    this.from = void 0;
-    this.to = void 0;
-    this.direction = void 0;
-    this.precision = void 0;
-    this.checkCollisionResponse = void 0;
-    this.skipBackfaces = void 0;
-    this.collisionFilterMask = void 0;
-    this.collisionFilterGroup = void 0;
-    this.mode = void 0;
-    this.result = void 0;
-    this.hasHit = void 0;
-    this.callback = void 0;
+  constructor(from, to) {
+    if (from === void 0) {
+      from = new Vec3();
+    }
+
+    if (to === void 0) {
+      to = new Vec3();
+    }
+
     this.from = from.clone();
     this.to = to.clone();
     this.direction = new Vec3();
@@ -5077,8 +5027,10 @@ class Ray {
   }
 
   _intersectConvex(shape, quat, position, body, reportedShape, options) {
+    intersectConvex_minDistNormal;
     const normal = intersectConvex_normal;
     const vector = intersectConvex_vector;
+    intersectConvex_minDistIntersect;
     const faceList = options && options.faceList || null; // Checking faces
 
     const faces = shape.faces;
@@ -5309,6 +5261,8 @@ const intersectPoint = new Vec3();
 const a = new Vec3();
 const b = new Vec3();
 const c = new Vec3();
+new Vec3();
+new RaycastResult();
 const intersectConvexOptions = {
   faceList: [0]
 };
@@ -5318,6 +5272,8 @@ const intersectHeightfield_index = [];
 const Ray_intersectSphere_intersectionPoint = new Vec3();
 const Ray_intersectSphere_normal = new Vec3();
 const intersectConvex_normal = new Vec3();
+const intersectConvex_minDistNormal = new Vec3();
+const intersectConvex_minDistIntersect = new Vec3();
 const intersectConvex_vector = new Vec3();
 const intersectTrimesh_normal = new Vec3();
 const intersectTrimesh_localDirection = new Vec3();
@@ -5457,11 +5413,6 @@ class SAPBroadphase extends Broadphase {
 
   constructor(world) {
     super();
-    this.axisList = void 0;
-    this.world = void 0;
-    this.axisIndex = void 0;
-    this._addBodyHandler = void 0;
-    this._removeBodyHandler = void 0;
     this.axisList = [];
     this.world = null;
     this.axisIndex = 0;
@@ -5616,7 +5567,11 @@ class SAPBroadphase extends Broadphase {
    */
 
 
-  aabbQuery(world, aabb, result = []) {
+  aabbQuery(world, aabb, result) {
+    if (result === void 0) {
+      result = [];
+    }
+
     if (this.dirty) {
       this.sortList();
       this.dirty = false;
@@ -5661,7 +5616,11 @@ class Utils {
    * @param defaults An object containing default values.
    * @return The modified options object.
    */
-  static defaults(options = {}, defaults) {
+  static defaults(options, defaults) {
+    if (options === void 0) {
+      options = {};
+    }
+
     for (let key in defaults) {
       if (!(key in options)) {
         options[key] = defaults[key];
@@ -5692,12 +5651,11 @@ class Constraint {
   /**
    * Set to false if you don't want the bodies to collide when they are connected.
    */
-  constructor(bodyA, bodyB, options = {}) {
-    this.equations = void 0;
-    this.bodyA = void 0;
-    this.bodyB = void 0;
-    this.id = void 0;
-    this.collideConnected = void 0;
+  constructor(bodyA, bodyB, options) {
+    if (options === void 0) {
+      options = {};
+    }
+
     options = Utils.defaults(options, {
       collideConnected: true,
       wakeUpBodies: true
@@ -5767,8 +5725,6 @@ class JacobianElement {
    * rotational
    */
   constructor() {
-    this.spatial = void 0;
-    this.rotational = void 0;
     this.spatial = new Vec3();
     this.rotational = new Vec3();
   }
@@ -5820,21 +5776,15 @@ class Equation {
   /**
    * A number, proportional to the force added to the bodies.
    */
-  constructor(bi, bj, minForce = -1e6, maxForce = 1e6) {
-    this.id = void 0;
-    this.minForce = void 0;
-    this.maxForce = void 0;
-    this.bi = void 0;
-    this.bj = void 0;
-    this.si = void 0;
-    this.sj = void 0;
-    this.a = void 0;
-    this.b = void 0;
-    this.eps = void 0;
-    this.jacobianElementA = void 0;
-    this.jacobianElementB = void 0;
-    this.enabled = void 0;
-    this.multiplier = void 0;
+  constructor(bi, bj, minForce, maxForce) {
+    if (minForce === void 0) {
+      minForce = -1e6;
+    }
+
+    if (maxForce === void 0) {
+      maxForce = 1e6;
+    }
+
     this.id = Equation.idCounter++;
     this.minForce = minForce;
     this.maxForce = maxForce;
@@ -6028,12 +5978,12 @@ class ContactEquation extends Equation {
   /**
    * Contact normal, pointing out of body i.
    */
-  constructor(bodyA, bodyB, maxForce = 1e6) {
+  constructor(bodyA, bodyB, maxForce) {
+    if (maxForce === void 0) {
+      maxForce = 1e6;
+    }
+
     super(bodyA, bodyB, 0, maxForce);
-    this.restitution = void 0;
-    this.ri = void 0;
-    this.rj = void 0;
-    this.ni = void 0;
     this.restitution = 0.0;
     this.ri = new Vec3();
     this.rj = new Vec3();
@@ -6144,13 +6094,20 @@ class PointToPointConstraint extends Constraint {
    * @param pivotB The point relative to the center of mass of bodyB which bodyB is constrained to.
    * @param maxForce The maximum force that should be applied to constrain the bodies.
    */
-  constructor(bodyA, pivotA = new Vec3(), bodyB, pivotB = new Vec3(), maxForce = 1e6) {
+  constructor(bodyA, pivotA, bodyB, pivotB, maxForce) {
+    if (pivotA === void 0) {
+      pivotA = new Vec3();
+    }
+
+    if (pivotB === void 0) {
+      pivotB = new Vec3();
+    }
+
+    if (maxForce === void 0) {
+      maxForce = 1e6;
+    }
+
     super(bodyA, bodyB);
-    this.pivotA = void 0;
-    this.pivotB = void 0;
-    this.equationX = void 0;
-    this.equationY = void 0;
-    this.equationZ = void 0;
     this.pivotA = pivotA.clone();
     this.pivotB = pivotB.clone();
     const x = this.equationX = new ContactEquation(bodyA, bodyB);
@@ -6198,12 +6155,13 @@ class ConeEquation extends Equation {
   /**
    * The "cone angle" to keep
    */
-  constructor(bodyA, bodyB, options = {}) {
+  constructor(bodyA, bodyB, options) {
+    if (options === void 0) {
+      options = {};
+    }
+
     const maxForce = typeof options.maxForce !== 'undefined' ? options.maxForce : 1e6;
     super(bodyA, bodyB, -maxForce, maxForce);
-    this.axisA = void 0;
-    this.axisB = void 0;
-    this.angle = void 0;
     this.axisA = options.axisA ? options.axisA.clone() : new Vec3(1, 0, 0);
     this.axisB = options.axisB ? options.axisB.clone() : new Vec3(0, 1, 0);
     this.angle = typeof options.angle !== 'undefined' ? options.angle : 0;
@@ -6255,12 +6213,13 @@ class RotationalEquation extends Equation {
   /**
    * maxAngle
    */
-  constructor(bodyA, bodyB, options = {}) {
+  constructor(bodyA, bodyB, options) {
+    if (options === void 0) {
+      options = {};
+    }
+
     const maxForce = typeof options.maxForce !== 'undefined' ? options.maxForce : 1e6;
     super(bodyA, bodyB, -maxForce, maxForce);
-    this.axisA = void 0;
-    this.axisB = void 0;
-    this.maxAngle = void 0;
     this.axisA = options.axisA ? options.axisA.clone() : new Vec3(1, 0, 0);
     this.axisB = options.axisB ? options.axisB.clone() : new Vec3(0, 1, 0);
     this.maxAngle = Math.PI / 2;
@@ -6314,18 +6273,16 @@ class ConeTwistConstraint extends PointToPointConstraint {
   /**
    * The twist angle of the joint.
    */
-  constructor(bodyA, bodyB, options = {}) {
+  constructor(bodyA, bodyB, options) {
+    if (options === void 0) {
+      options = {};
+    }
+
     const maxForce = typeof options.maxForce !== 'undefined' ? options.maxForce : 1e6; // Set pivot point in between
 
     const pivotA = options.pivotA ? options.pivotA.clone() : new Vec3();
     const pivotB = options.pivotB ? options.pivotB.clone() : new Vec3();
     super(bodyA, pivotA, bodyB, pivotB, maxForce);
-    this.axisA = void 0;
-    this.axisB = void 0;
-    this.angle = void 0;
-    this.twistAngle = void 0;
-    this.coneEquation = void 0;
-    this.twistEquation = void 0;
     this.axisA = options.axisA ? options.axisA.clone() : new Vec3();
     this.axisB = options.axisB ? options.axisB.clone() : new Vec3();
     this.collideConnected = !!options.collideConnected;
@@ -6361,6 +6318,8 @@ class ConeTwistConstraint extends PointToPointConstraint {
   }
 
 }
+new Vec3();
+new Vec3();
 
 /**
  * Constrains two bodies to be at a constant distance from each others center of mass.
@@ -6374,10 +6333,12 @@ class DistanceConstraint extends Constraint {
    * @param distance The distance to keep. If undefined, it will be set to the current distance between bodyA and bodyB.
    * @param maxForce The maximum force that should be applied to constrain the bodies.
    */
-  constructor(bodyA, bodyB, distance, maxForce = 1e6) {
+  constructor(bodyA, bodyB, distance, maxForce) {
+    if (maxForce === void 0) {
+      maxForce = 1e6;
+    }
+
     super(bodyA, bodyB);
-    this.distance = void 0;
-    this.distanceEquation = void 0;
 
     if (typeof distance === 'undefined') {
       distance = bodyA.position.distanceTo(bodyB.position);
@@ -6413,7 +6374,11 @@ class DistanceConstraint extends Constraint {
  * Lock constraint. Will remove all degrees of freedom between the bodies.
  */
 class LockConstraint extends PointToPointConstraint {
-  constructor(bodyA, bodyB, options = {}) {
+  constructor(bodyA, bodyB, options) {
+    if (options === void 0) {
+      options = {};
+    }
+
     const maxForce = typeof options.maxForce !== 'undefined' ? options.maxForce : 1e6; // Set pivot point in between
 
     const pivotA = new Vec3();
@@ -6426,16 +6391,6 @@ class LockConstraint extends PointToPointConstraint {
 
     super(bodyA, pivotA, bodyB, pivotB, maxForce); // Store initial rotation of the bodies as unit vectors in the local body spaces
 
-    this.xA = void 0;
-    this.xB = void 0;
-    this.yA = void 0;
-    this.yB = void 0;
-    this.zA = void 0;
-    this.zB = void 0;
-    this.rotationalEquation1 = void 0;
-    this.rotationalEquation2 = void 0;
-    this.rotationalEquation3 = void 0;
-    this.motorEquation = void 0;
     this.xA = bodyA.vectorToLocalFrame(Vec3.UNIT_X);
     this.xB = bodyB.vectorToLocalFrame(Vec3.UNIT_X);
     this.yA = bodyA.vectorToLocalFrame(Vec3.UNIT_Y);
@@ -6460,6 +6415,8 @@ class LockConstraint extends PointToPointConstraint {
     const r1 = this.rotationalEquation1;
     const r2 = this.rotationalEquation2;
     const r3 = this.rotationalEquation3;
+    LockConstraint_update_tmpVec1;
+    LockConstraint_update_tmpVec2;
     super.update(); // These vector pairs must be orthogonal
 
     bodyA.vectorToWorldFrame(this.xA, r1.axisA);
@@ -6471,6 +6428,8 @@ class LockConstraint extends PointToPointConstraint {
   }
 
 }
+const LockConstraint_update_tmpVec1 = new Vec3();
+const LockConstraint_update_tmpVec2 = new Vec3();
 
 /**
  * Rotational motor constraint. Tries to keep the relative angular velocity of the bodies to a given value.
@@ -6487,11 +6446,12 @@ class RotationalMotorEquation extends Equation {
   /**
    * Motor velocity.
    */
-  constructor(bodyA, bodyB, maxForce = 1e6) {
+  constructor(bodyA, bodyB, maxForce) {
+    if (maxForce === void 0) {
+      maxForce = 1e6;
+    }
+
     super(bodyA, bodyB, -maxForce, maxForce);
-    this.axisA = void 0;
-    this.axisB = void 0;
-    this.targetVelocity = void 0;
     this.axisA = new Vec3();
     this.axisB = new Vec3();
     this.targetVelocity = 0;
@@ -6532,16 +6492,15 @@ class HingeConstraint extends PointToPointConstraint {
   /**
    * Rotation axis, defined locally in bodyB.
    */
-  constructor(bodyA, bodyB, options = {}) {
+  constructor(bodyA, bodyB, options) {
+    if (options === void 0) {
+      options = {};
+    }
+
     const maxForce = typeof options.maxForce !== 'undefined' ? options.maxForce : 1e6;
     const pivotA = options.pivotA ? options.pivotA.clone() : new Vec3();
     const pivotB = options.pivotB ? options.pivotB.clone() : new Vec3();
     super(bodyA, pivotA, bodyB, pivotB, maxForce);
-    this.axisA = void 0;
-    this.axisB = void 0;
-    this.rotationalEquation1 = void 0;
-    this.rotationalEquation2 = void 0;
-    this.motorEquation = void 0;
     const axisA = this.axisA = options.axisA ? options.axisA.clone() : new Vec3(1, 0, 0);
     axisA.normalize();
     const axisB = this.axisB = options.axisB ? options.axisB.clone() : new Vec3(1, 0, 0);
@@ -6632,9 +6591,6 @@ class FrictionEquation extends Equation {
    */
   constructor(bodyA, bodyB, slipForce) {
     super(bodyA, bodyB, -slipForce, slipForce);
-    this.ri = void 0;
-    this.rj = void 0;
-    this.t = void 0;
     this.ri = new Vec3();
     this.rj = new Vec3();
     this.t = new Vec3();
@@ -6714,14 +6670,6 @@ class ContactMaterial {
    * @default 3
    */
   constructor(m1, m2, options) {
-    this.id = void 0;
-    this.materials = void 0;
-    this.friction = void 0;
-    this.restitution = void 0;
-    this.contactEquationStiffness = void 0;
-    this.contactEquationRelaxation = void 0;
-    this.frictionEquationStiffness = void 0;
-    this.frictionEquationRelaxation = void 0;
     options = Utils.defaults(options, {
       friction: 0.3,
       restitution: 0.3,
@@ -6764,11 +6712,11 @@ class Material {
    * Restitution for this material.
    * If non-negative, it will be used instead of the restitution given by ContactMaterials. If there's no matching ContactMaterial, the value from `defaultContactMaterial` in the World will be used.
    */
-  constructor(options = {}) {
-    this.name = void 0;
-    this.id = void 0;
-    this.friction = void 0;
-    this.restitution = void 0;
+  constructor(options) {
+    if (options === void 0) {
+      options = {};
+    }
+
     let name = ''; // Backwards compatibility fix
 
     if (typeof options === 'string') {
@@ -6835,14 +6783,11 @@ class Spring {
    * Where to hook the spring to body B, in local body coordinates.
    * @default new Vec3()
    */
-  constructor(bodyA, bodyB, options = {}) {
-    this.restLength = void 0;
-    this.stiffness = void 0;
-    this.damping = void 0;
-    this.bodyA = void 0;
-    this.bodyB = void 0;
-    this.localAnchorA = void 0;
-    this.localAnchorB = void 0;
+  constructor(bodyA, bodyB, options) {
+    if (options === void 0) {
+      options = {};
+    }
+
     this.restLength = typeof options.restLength === 'number' ? options.restLength : 1;
     this.stiffness = options.stiffness || 100;
     this.damping = options.damping || 1;
@@ -7137,45 +7082,11 @@ class WheelInfo {
   /**
    * isInContact
    */
-  constructor(options = {}) {
-    this.maxSuspensionTravel = void 0;
-    this.customSlidingRotationalSpeed = void 0;
-    this.useCustomSlidingRotationalSpeed = void 0;
-    this.sliding = void 0;
-    this.chassisConnectionPointLocal = void 0;
-    this.chassisConnectionPointWorld = void 0;
-    this.directionLocal = void 0;
-    this.directionWorld = void 0;
-    this.axleLocal = void 0;
-    this.axleWorld = void 0;
-    this.suspensionRestLength = void 0;
-    this.suspensionMaxLength = void 0;
-    this.radius = void 0;
-    this.suspensionStiffness = void 0;
-    this.dampingCompression = void 0;
-    this.dampingRelaxation = void 0;
-    this.frictionSlip = void 0;
-    this.forwardAcceleration = void 0;
-    this.sideAcceleration = void 0;
-    this.steering = void 0;
-    this.rotation = void 0;
-    this.deltaRotation = void 0;
-    this.rollInfluence = void 0;
-    this.maxSuspensionForce = void 0;
-    this.engineForce = void 0;
-    this.brake = void 0;
-    this.isFrontWheel = void 0;
-    this.clippedInvContactDotSuspension = void 0;
-    this.suspensionRelativeVelocity = void 0;
-    this.suspensionForce = void 0;
-    this.slipInfo = void 0;
-    this.skidInfo = void 0;
-    this.suspensionLength = void 0;
-    this.sideImpulse = void 0;
-    this.forwardImpulse = void 0;
-    this.raycastResult = void 0;
-    this.worldTransform = void 0;
-    this.isInContact = void 0;
+  constructor(options) {
+    if (options === void 0) {
+      options = {};
+    }
+
     options = Utils.defaults(options, {
       chassisConnectionPointLocal: new Vec3(),
       chassisConnectionPointWorld: new Vec3(),
@@ -7300,17 +7211,6 @@ class RaycastVehicle {
 
   /** Number of wheels on the ground. */
   constructor(options) {
-    this.chassisBody = void 0;
-    this.wheelInfos = void 0;
-    this.sliding = void 0;
-    this.world = void 0;
-    this.indexRightAxis = void 0;
-    this.indexForwardAxis = void 0;
-    this.indexUpAxis = void 0;
-    this.constraints = void 0;
-    this.preStepCallback = void 0;
-    this.currentVehicleSpeedKmHour = void 0;
-    this.numWheelsOnGround = void 0;
     this.chassisBody = options.chassisBody;
     this.wheelInfos = [];
     this.sliding = false;
@@ -7330,7 +7230,11 @@ class RaycastVehicle {
    */
 
 
-  addWheel(options = {}) {
+  addWheel(options) {
+    if (options === void 0) {
+      options = {};
+    }
+
     const info = new WheelInfo(options);
     const index = this.wheelInfos.length;
     this.wheelInfos.push(info);
@@ -7780,10 +7684,14 @@ class RaycastVehicle {
   }
 
 }
+new Vec3();
+new Vec3();
+new Vec3();
 const tmpVec4 = new Vec3();
 const tmpVec5 = new Vec3();
 const tmpVec6 = new Vec3();
 new Ray();
+new Vec3();
 const castRay_rayvector = new Vec3();
 const castRay_target = new Vec3();
 const directions = [new Vec3(1, 0, 0), new Vec3(0, 1, 0), new Vec3(0, 0, 1)];
@@ -7893,7 +7801,6 @@ class Sphere extends Shape {
     super({
       type: Shape.types.SPHERE
     });
-    this.radius = void 0;
     this.radius = radius !== undefined ? radius : 1.0;
 
     if (this.radius < 0) {
@@ -7905,7 +7812,11 @@ class Sphere extends Shape {
   /** calculateLocalInertia */
 
 
-  calculateLocalInertia(mass, target = new Vec3()) {
+  calculateLocalInertia(mass, target) {
+    if (target === void 0) {
+      target = new Vec3();
+    }
+
     const I = 2.0 * mass * this.radius * this.radius / 5.0;
     target.x = I;
     target.y = I;
@@ -7959,13 +7870,11 @@ class RigidVehicle {
   /**
    * The wheel forces.
    */
-  constructor(options = {}) {
-    this.wheelBodies = void 0;
-    this.coordinateSystem = void 0;
-    this.chassisBody = void 0;
-    this.constraints = void 0;
-    this.wheelAxes = void 0;
-    this.wheelForces = void 0;
+  constructor(options) {
+    if (options === void 0) {
+      options = {};
+    }
+
     this.wheelBodies = [];
     this.coordinateSystem = typeof options.coordinateSystem !== 'undefined' ? options.coordinateSystem.clone() : new Vec3(1, 2, 3);
 
@@ -7988,7 +7897,11 @@ class RigidVehicle {
    */
 
 
-  addWheel(options = {}) {
+  addWheel(options) {
+    if (options === void 0) {
+      options = {};
+    }
+
     let wheelBody;
 
     if (options.body) {
@@ -8171,15 +8084,6 @@ class SPHSystem {
    * @default 0.000001
    */
   constructor() {
-    this.particles = void 0;
-    this.density = void 0;
-    this.smoothingRadius = void 0;
-    this.speedOfSound = void 0;
-    this.viscosity = void 0;
-    this.eps = void 0;
-    this.pressures = void 0;
-    this.densities = void 0;
-    this.neighbors = void 0;
     this.particles = [];
     this.density = 1;
     this.smoothingRadius = 1;
@@ -8380,7 +8284,23 @@ class Cylinder extends ConvexPolyhedron {
    * @param height The height of the Cylinder.
    * @param numSegments The number of segments to build the cylinder out of.
    */
-  constructor(radiusTop = 1, radiusBottom = 1, height = 1, numSegments = 8) {
+  constructor(radiusTop, radiusBottom, height, numSegments) {
+    if (radiusTop === void 0) {
+      radiusTop = 1;
+    }
+
+    if (radiusBottom === void 0) {
+      radiusBottom = 1;
+    }
+
+    if (height === void 0) {
+      height = 1;
+    }
+
+    if (numSegments === void 0) {
+      numSegments = 8;
+    }
+
     if (radiusTop < 0) {
       throw new Error('The cylinder radiusTop cannot be negative.');
     }
@@ -8442,10 +8362,6 @@ class Cylinder extends ConvexPolyhedron {
       faces,
       axes
     });
-    this.radiusTop = void 0;
-    this.radiusBottom = void 0;
-    this.height = void 0;
-    this.numSegments = void 0;
     this.type = Shape.types.CYLINDER;
     this.radiusTop = radiusTop;
     this.radiusBottom = radiusBottom;
@@ -8473,7 +8389,11 @@ class Particle extends Shape {
    */
 
 
-  calculateLocalInertia(mass, target = new Vec3()) {
+  calculateLocalInertia(mass, target) {
+    if (target === void 0) {
+      target = new Vec3();
+    }
+
     target.set(0, 0, 0);
     return target;
   }
@@ -8511,9 +8431,6 @@ class Plane extends Shape {
       type: Shape.types.PLANE
     }); // World oriented normal
 
-    this.worldNormal = void 0;
-    this.worldNormalNeedsUpdate = void 0;
-    this.boundingSphereRadius = void 0;
     this.worldNormal = new Vec3();
     this.worldNormalNeedsUpdate = true;
     this.boundingSphereRadius = Number.MAX_VALUE;
@@ -8528,7 +8445,11 @@ class Plane extends Shape {
     this.worldNormalNeedsUpdate = false;
   }
 
-  calculateLocalInertia(mass, target = new Vec3()) {
+  calculateLocalInertia(mass, target) {
+    if (target === void 0) {
+      target = new Vec3();
+    }
+
     return target;
   }
 
@@ -8620,7 +8541,11 @@ class Heightfield extends Shape {
   /**
    * @param data An array of numbers, or height values, that are spread out along the x axis.
    */
-  constructor(data, options = {}) {
+  constructor(data, options) {
+    if (options === void 0) {
+      options = {};
+    }
+
     options = Utils.defaults(options, {
       maxValue: null,
       minValue: null,
@@ -8629,14 +8554,6 @@ class Heightfield extends Shape {
     super({
       type: Shape.types.HEIGHTFIELD
     });
-    this.data = void 0;
-    this.maxValue = void 0;
-    this.minValue = void 0;
-    this.elementSize = void 0;
-    this.cacheEnabled = void 0;
-    this.pillarConvex = void 0;
-    this.pillarOffset = void 0;
-    this._cachedPillars = void 0;
     this.data = data;
     this.maxValue = options.maxValue;
     this.minValue = options.minValue;
@@ -8741,7 +8658,11 @@ class Heightfield extends Shape {
    */
 
 
-  getRectMinMax(iMinX, iMinY, iMaxX, iMaxY, result = []) {
+  getRectMinMax(iMinX, iMinY, iMaxX, iMaxY, result) {
+    if (result === void 0) {
+      result = [];
+    }
+
     // Get max and min of the data
     const data = this.data; // Set first value
 
@@ -8843,10 +8764,11 @@ class Heightfield extends Shape {
    */
 
 
-  getAabbAtIndex(xi, yi, {
-    lowerBound,
-    upperBound
-  }) {
+  getAabbAtIndex(xi, yi, _ref) {
+    let {
+      lowerBound,
+      upperBound
+    } = _ref;
     const data = this.data;
     const elementSize = this.elementSize;
     lowerBound.set(xi * elementSize, yi * elementSize, data[xi][yi]);
@@ -8886,7 +8808,7 @@ class Heightfield extends Shape {
   }
 
   getCacheConvexTrianglePillarKey(xi, yi, getUpperTriangle) {
-    return xi + "_" + yi + "_" + (getUpperTriangle ? 1 : 0);
+    return `${xi}_${yi}_${getUpperTriangle ? 1 : 0}`;
   }
 
   getCachedConvexTrianglePillar(xi, yi, getUpperTriangle) {
@@ -9052,7 +8974,11 @@ class Heightfield extends Shape {
     this.setCachedConvexTrianglePillar(xi, yi, getUpperTriangle, result, offsetResult);
   }
 
-  calculateLocalInertia(mass, target = new Vec3()) {
+  calculateLocalInertia(mass, target) {
+    if (target === void 0) {
+      target = new Vec3();
+    }
+
     target.set(0, 0, 0);
     return target;
   }
@@ -9153,11 +9079,11 @@ class OctreeNode {
   /** Contained data at the current node level */
 
   /** Children to this node */
-  constructor(options = {}) {
-    this.root = void 0;
-    this.aabb = void 0;
-    this.data = void 0;
-    this.children = void 0;
+  constructor(options) {
+    if (options === void 0) {
+      options = {};
+    }
+
     this.root = options.root || null;
     this.aabb = options.aabb ? options.aabb.clone() : new AABB();
     this.data = [];
@@ -9177,7 +9103,11 @@ class OctreeNode {
    */
 
 
-  insert(aabb, elementData, level = 0) {
+  insert(aabb, elementData, level) {
+    if (level === void 0) {
+      level = 0;
+    }
+
     const nodeData = this.data; // Ignore objects that do not belong in this node
 
     if (!this.aabb.contains(aabb)) {
@@ -9353,12 +9283,15 @@ class Octree extends OctreeNode {
   /**
    * @param aabb The total AABB of the tree
    */
-  constructor(aabb, options = {}) {
+  constructor(aabb, options) {
+    if (options === void 0) {
+      options = {};
+    }
+
     super({
       root: null,
       aabb
     });
-    this.maxDepth = void 0;
     this.maxDepth = typeof options.maxDepth !== 'undefined' ? options.maxDepth : 8;
   }
 
@@ -9412,13 +9345,6 @@ class Trimesh extends Shape {
     super({
       type: Shape.types.TRIMESH
     });
-    this.vertices = void 0;
-    this.indices = void 0;
-    this.normals = void 0;
-    this.aabb = void 0;
-    this.edges = void 0;
-    this.scale = void 0;
-    this.tree = void 0;
     this.vertices = new Float32Array(vertices);
     this.indices = new Int16Array(indices);
     this.normals = new Float32Array(indices.length);
@@ -9547,7 +9473,7 @@ class Trimesh extends Shape {
     const edges = {};
 
     const add = (a, b) => {
-      const key = a < b ? a + "_" + b : b + "_" + a;
+      const key = a < b ? `${a}_${b}` : `${b}_${a}`;
       edges[key] = true;
     };
 
@@ -9803,7 +9729,27 @@ class Trimesh extends Shape {
    */
 
 
-  static createTorus(radius = 1, tube = 0.5, radialSegments = 8, tubularSegments = 6, arc = Math.PI * 2) {
+  static createTorus(radius, tube, radialSegments, tubularSegments, arc) {
+    if (radius === void 0) {
+      radius = 1;
+    }
+
+    if (tube === void 0) {
+      tube = 0.5;
+    }
+
+    if (radialSegments === void 0) {
+      radialSegments = 8;
+    }
+
+    if (tubularSegments === void 0) {
+      tubularSegments = 6;
+    }
+
+    if (arc === void 0) {
+      arc = Math.PI * 2;
+    }
+
     const vertices = [];
     const indices = [];
 
@@ -9859,7 +9805,6 @@ class Solver {
    * @todo remove useless constructor
    */
   constructor() {
-    this.equations = void 0;
     this.equations = [];
   }
   /**
@@ -9928,8 +9873,6 @@ class GSSolver extends Solver {
    */
   constructor() {
     super();
-    this.iterations = void 0;
-    this.tolerance = void 0;
     this.iterations = 10;
     this.tolerance = 1e-7;
   }
@@ -10062,11 +10005,6 @@ class SplitSolver extends Solver {
   /** subsolver */
   constructor(subsolver) {
     super();
-    this.iterations = void 0;
-    this.tolerance = void 0;
-    this.subsolver = void 0;
-    this.nodes = void 0;
-    this.nodePool = void 0;
     this.iterations = 10;
     this.tolerance = 1e-7;
     this.subsolver = subsolver;
@@ -10237,11 +10175,11 @@ class Pool {
   /**
    * Release an object after use
    */
-  release(...args) {
-    const Nargs = args.length;
+  release() {
+    const Nargs = arguments.length;
 
     for (let i = 0; i !== Nargs; i++) {
-      this.objects.push(args[i]);
+      this.objects.push(i < 0 || arguments.length <= i ? undefined : arguments[i]);
     }
 
     return this;
@@ -10292,8 +10230,8 @@ class Pool {
  */
 
 class Vec3Pool extends Pool {
-  constructor(...args) {
-    super(...args);
+  constructor() {
+    super(...arguments);
     this.type = Vec3;
   }
 
@@ -10306,7 +10244,6 @@ class Vec3Pool extends Pool {
 
 }
 
-let _COLLISION_TYPES$sphe, _COLLISION_TYPES$sphe2, _COLLISION_TYPES$boxB, _COLLISION_TYPES$sphe3, _COLLISION_TYPES$plan, _COLLISION_TYPES$conv, _COLLISION_TYPES$sphe4, _COLLISION_TYPES$plan2, _COLLISION_TYPES$boxC, _COLLISION_TYPES$sphe5, _COLLISION_TYPES$boxH, _COLLISION_TYPES$conv2, _COLLISION_TYPES$sphe6, _COLLISION_TYPES$plan3, _COLLISION_TYPES$boxP, _COLLISION_TYPES$conv3, _COLLISION_TYPES$cyli, _COLLISION_TYPES$sphe7, _COLLISION_TYPES$plan4, _COLLISION_TYPES$boxC2, _COLLISION_TYPES$conv4, _COLLISION_TYPES$heig, _COLLISION_TYPES$part, _COLLISION_TYPES$sphe8, _COLLISION_TYPES$plan5;
 // Naming rule: based of the order in SHAPE_TYPES,
 // the first part of the method is formed by the
 // shape type that comes before, in the second part
@@ -10338,31 +10275,6 @@ const COLLISION_TYPES = {
   sphereTrimesh: Shape.types.SPHERE | Shape.types.TRIMESH,
   planeTrimesh: Shape.types.PLANE | Shape.types.TRIMESH
 };
-_COLLISION_TYPES$sphe = COLLISION_TYPES.sphereSphere;
-_COLLISION_TYPES$sphe2 = COLLISION_TYPES.spherePlane;
-_COLLISION_TYPES$boxB = COLLISION_TYPES.boxBox;
-_COLLISION_TYPES$sphe3 = COLLISION_TYPES.sphereBox;
-_COLLISION_TYPES$plan = COLLISION_TYPES.planeBox;
-_COLLISION_TYPES$conv = COLLISION_TYPES.convexConvex;
-_COLLISION_TYPES$sphe4 = COLLISION_TYPES.sphereConvex;
-_COLLISION_TYPES$plan2 = COLLISION_TYPES.planeConvex;
-_COLLISION_TYPES$boxC = COLLISION_TYPES.boxConvex;
-_COLLISION_TYPES$sphe5 = COLLISION_TYPES.sphereHeightfield;
-_COLLISION_TYPES$boxH = COLLISION_TYPES.boxHeightfield;
-_COLLISION_TYPES$conv2 = COLLISION_TYPES.convexHeightfield;
-_COLLISION_TYPES$sphe6 = COLLISION_TYPES.sphereParticle;
-_COLLISION_TYPES$plan3 = COLLISION_TYPES.planeParticle;
-_COLLISION_TYPES$boxP = COLLISION_TYPES.boxParticle;
-_COLLISION_TYPES$conv3 = COLLISION_TYPES.convexParticle;
-_COLLISION_TYPES$cyli = COLLISION_TYPES.cylinderCylinder;
-_COLLISION_TYPES$sphe7 = COLLISION_TYPES.sphereCylinder;
-_COLLISION_TYPES$plan4 = COLLISION_TYPES.planeCylinder;
-_COLLISION_TYPES$boxC2 = COLLISION_TYPES.boxCylinder;
-_COLLISION_TYPES$conv4 = COLLISION_TYPES.convexCylinder;
-_COLLISION_TYPES$heig = COLLISION_TYPES.heightfieldCylinder;
-_COLLISION_TYPES$part = COLLISION_TYPES.particleCylinder;
-_COLLISION_TYPES$sphe8 = COLLISION_TYPES.sphereTrimesh;
-_COLLISION_TYPES$plan5 = COLLISION_TYPES.planeTrimesh;
 
 /**
  * Helper class for the World. Generates ContactEquations.
@@ -10378,103 +10290,103 @@ class Narrowphase {
   /**
    * Pooled vectors.
    */
-  get [_COLLISION_TYPES$sphe]() {
+  get [COLLISION_TYPES.sphereSphere]() {
     return this.sphereSphere;
   }
 
-  get [_COLLISION_TYPES$sphe2]() {
+  get [COLLISION_TYPES.spherePlane]() {
     return this.spherePlane;
   }
 
-  get [_COLLISION_TYPES$boxB]() {
+  get [COLLISION_TYPES.boxBox]() {
     return this.boxBox;
   }
 
-  get [_COLLISION_TYPES$sphe3]() {
+  get [COLLISION_TYPES.sphereBox]() {
     return this.sphereBox;
   }
 
-  get [_COLLISION_TYPES$plan]() {
+  get [COLLISION_TYPES.planeBox]() {
     return this.planeBox;
   }
 
-  get [_COLLISION_TYPES$conv]() {
+  get [COLLISION_TYPES.convexConvex]() {
     return this.convexConvex;
   }
 
-  get [_COLLISION_TYPES$sphe4]() {
+  get [COLLISION_TYPES.sphereConvex]() {
     return this.sphereConvex;
   }
 
-  get [_COLLISION_TYPES$plan2]() {
+  get [COLLISION_TYPES.planeConvex]() {
     return this.planeConvex;
   }
 
-  get [_COLLISION_TYPES$boxC]() {
+  get [COLLISION_TYPES.boxConvex]() {
     return this.boxConvex;
   }
 
-  get [_COLLISION_TYPES$sphe5]() {
+  get [COLLISION_TYPES.sphereHeightfield]() {
     return this.sphereHeightfield;
   }
 
-  get [_COLLISION_TYPES$boxH]() {
+  get [COLLISION_TYPES.boxHeightfield]() {
     return this.boxHeightfield;
   }
 
-  get [_COLLISION_TYPES$conv2]() {
+  get [COLLISION_TYPES.convexHeightfield]() {
     return this.convexHeightfield;
   }
 
-  get [_COLLISION_TYPES$sphe6]() {
+  get [COLLISION_TYPES.sphereParticle]() {
     return this.sphereParticle;
   }
 
-  get [_COLLISION_TYPES$plan3]() {
+  get [COLLISION_TYPES.planeParticle]() {
     return this.planeParticle;
   }
 
-  get [_COLLISION_TYPES$boxP]() {
+  get [COLLISION_TYPES.boxParticle]() {
     return this.boxParticle;
   }
 
-  get [_COLLISION_TYPES$conv3]() {
+  get [COLLISION_TYPES.convexParticle]() {
     return this.convexParticle;
   }
 
-  get [_COLLISION_TYPES$cyli]() {
+  get [COLLISION_TYPES.cylinderCylinder]() {
     return this.convexConvex;
   }
 
-  get [_COLLISION_TYPES$sphe7]() {
+  get [COLLISION_TYPES.sphereCylinder]() {
     return this.sphereConvex;
   }
 
-  get [_COLLISION_TYPES$plan4]() {
+  get [COLLISION_TYPES.planeCylinder]() {
     return this.planeConvex;
   }
 
-  get [_COLLISION_TYPES$boxC2]() {
+  get [COLLISION_TYPES.boxCylinder]() {
     return this.boxConvex;
   }
 
-  get [_COLLISION_TYPES$conv4]() {
+  get [COLLISION_TYPES.convexCylinder]() {
     return this.convexConvex;
   }
 
-  get [_COLLISION_TYPES$heig]() {
+  get [COLLISION_TYPES.heightfieldCylinder]() {
     return this.heightfieldCylinder;
   }
 
-  get [_COLLISION_TYPES$part]() {
+  get [COLLISION_TYPES.particleCylinder]() {
     return this.particleCylinder;
   }
 
-  get [_COLLISION_TYPES$sphe8]() {
+  get [COLLISION_TYPES.sphereTrimesh]() {
     return this.sphereTrimesh;
   }
 
-  get [_COLLISION_TYPES$plan5]() {
+  get [COLLISION_TYPES.planeTrimesh]() {
     return this.planeTrimesh;
   } // get [COLLISION_TYPES.convexTrimesh]() {
   //   return this.convexTrimesh
@@ -10482,14 +10394,6 @@ class Narrowphase {
 
 
   constructor(world) {
-    this.contactPointPool = void 0;
-    this.frictionEquationPool = void 0;
-    this.result = void 0;
-    this.frictionResult = void 0;
-    this.v3pool = void 0;
-    this.world = void 0;
-    this.currentContactMaterial = void 0;
-    this.enableFrictionReduction = void 0;
     this.contactPointPool = [];
     this.frictionEquationPool = [];
     this.result = [];
@@ -11897,6 +11801,7 @@ const planeTrimesh_relpos = new Vec3();
 const planeTrimesh_projected = new Vec3();
 const sphereTrimesh_normal = new Vec3();
 const sphereTrimesh_relpos = new Vec3();
+new Vec3();
 const sphereTrimesh_v = new Vec3();
 const sphereTrimesh_v2 = new Vec3();
 const sphereTrimesh_edgeVertexA = new Vec3();
@@ -11970,6 +11875,8 @@ const sphereConvex_worldPoint = new Vec3();
 const sphereConvex_worldSpherePointClosestToPlane = new Vec3();
 const sphereConvex_penetrationVec = new Vec3();
 const sphereConvex_sphereToWorldPoint = new Vec3();
+new Vec3();
+new Vec3();
 const planeConvex_v = new Vec3();
 const planeConvex_normal = new Vec3();
 const planeConvex_relpos = new Vec3();
@@ -11983,6 +11890,7 @@ const particleSphere_normal = new Vec3(); // WIP
 
 const cqj = new Quaternion();
 const convexParticle_local = new Vec3();
+new Vec3();
 const convexParticle_penetratedFaceNormal = new Vec3();
 const convexParticle_vertexToParticle = new Vec3();
 const convexParticle_worldPenetrationVec = new Vec3();
@@ -11997,8 +11905,6 @@ class OverlapKeeper {
    * @todo Remove useless constructor
    */
   constructor() {
-    this.current = void 0;
-    this.previous = void 0;
     this.current = [];
     this.previous = [];
   }
@@ -12103,9 +12009,12 @@ function unpackAndPush(array, key) {
   array.push((key & 0xffff0000) >> 16, key & 0x0000ffff);
 }
 
+const getKey = (i, j) => i < j ? `${i}-${j}` : `${j}-${i}`;
 /**
  * TupleDictionary
  */
+
+
 class TupleDictionary {
   constructor() {
     this.data = {
@@ -12115,32 +12024,33 @@ class TupleDictionary {
 
   /** get */
   get(i, j) {
-    if (i > j) {
-      // swap
-      const temp = j;
-      j = i;
-      i = temp;
-    }
-
-    return this.data[i + "-" + j];
+    const key = getKey(i, j);
+    return this.data[key];
   }
   /** set */
 
 
   set(i, j, value) {
-    if (i > j) {
-      const temp = j;
-      j = i;
-      i = temp;
-    }
-
-    const key = i + "-" + j; // Check if key already exists
+    const key = getKey(i, j); // Check if key already exists
 
     if (!this.get(i, j)) {
       this.data.keys.push(key);
     }
 
     this.data[key] = value;
+  }
+  /** delete */
+
+
+  delete(i, j) {
+    const key = getKey(i, j);
+    const index = this.data.keys.indexOf(key);
+
+    if (index !== -1) {
+      this.data.keys.splice(index, 1);
+    }
+
+    delete this.data[key];
   }
   /** reset */
 
@@ -12228,12 +12138,6 @@ class World extends EventTarget {
    */
 
   /**
-   * All added materials.
-   * @deprecated
-   * @todo Remove
-   */
-
-  /**
    * All added contactmaterials.
    */
 
@@ -12261,41 +12165,12 @@ class World extends EventTarget {
   /**
    * Dispatched after a body has been removed from the world.
    */
-  constructor(options = {}) {
+  constructor(options) {
+    if (options === void 0) {
+      options = {};
+    }
+
     super();
-    this.dt = void 0;
-    this.allowSleep = void 0;
-    this.contacts = void 0;
-    this.frictionEquations = void 0;
-    this.quatNormalizeSkip = void 0;
-    this.quatNormalizeFast = void 0;
-    this.time = void 0;
-    this.stepnumber = void 0;
-    this.default_dt = void 0;
-    this.nextId = void 0;
-    this.gravity = void 0;
-    this.broadphase = void 0;
-    this.bodies = void 0;
-    this.hasActiveBodies = void 0;
-    this.solver = void 0;
-    this.constraints = void 0;
-    this.narrowphase = void 0;
-    this.collisionMatrix = void 0;
-    this.collisionMatrixPrevious = void 0;
-    this.bodyOverlapKeeper = void 0;
-    this.shapeOverlapKeeper = void 0;
-    this.materials = void 0;
-    this.contactmaterials = void 0;
-    this.contactMaterialTable = void 0;
-    this.defaultMaterial = void 0;
-    this.defaultContactMaterial = void 0;
-    this.doProfiling = void 0;
-    this.profile = void 0;
-    this.accumulator = void 0;
-    this.subsystems = void 0;
-    this.addBodyEvent = void 0;
-    this.removeBodyEvent = void 0;
-    this.idToBodyMap = void 0;
     this.dt = -1;
     this.allowSleep = !!options.allowSleep;
     this.contacts = [];
@@ -12322,7 +12197,6 @@ class World extends EventTarget {
     this.collisionMatrixPrevious = new ArrayCollisionMatrix();
     this.bodyOverlapKeeper = new OverlapKeeper();
     this.shapeOverlapKeeper = new OverlapKeeper();
-    this.materials = [];
     this.contactmaterials = [];
     this.contactMaterialTable = new TupleDictionary();
     this.defaultMaterial = new Material('default');
@@ -12359,15 +12233,6 @@ class World extends EventTarget {
 
   getContactMaterial(m1, m2) {
     return this.contactMaterialTable.get(m1.id, m2.id);
-  }
-  /**
-   * Get number of objects in the world.
-   * @deprecated
-   */
-
-
-  numObjects() {
-    return this.bodies.length;
   }
   /**
    * Store old collision state info
@@ -12427,7 +12292,11 @@ class World extends EventTarget {
    */
 
 
-  raycastAll(from, to, options = {}, callback) {
+  raycastAll(from, to, options, callback) {
+    if (options === void 0) {
+      options = {};
+    }
+
     options.mode = Ray.ALL;
     options.from = from;
     options.to = to;
@@ -12440,7 +12309,11 @@ class World extends EventTarget {
    */
 
 
-  raycastAny(from, to, options = {}, result) {
+  raycastAny(from, to, options, result) {
+    if (options === void 0) {
+      options = {};
+    }
+
     options.mode = Ray.ANY;
     options.from = from;
     options.to = to;
@@ -12453,7 +12326,11 @@ class World extends EventTarget {
    */
 
 
-  raycastClosest(from, to, options = {}, result) {
+  raycastClosest(from, to, options, result) {
+    if (options === void 0) {
+      options = {};
+    }
+
     options.mode = Ray.CLOSEST;
     options.from = from;
     options.to = to;
@@ -12541,16 +12418,6 @@ class World extends EventTarget {
     return null;
   }
   /**
-   * Adds a material to the World.
-   * @deprecated
-   * @todo Remove
-   */
-
-
-  addMaterial(m) {
-    this.materials.push(m);
-  }
-  /**
    * Adds a contact material to the World
    */
 
@@ -12562,13 +12429,61 @@ class World extends EventTarget {
     this.contactMaterialTable.set(cmat.materials[0].id, cmat.materials[1].id, cmat);
   }
   /**
+   * Removes a contact material from the World.
+   */
+
+
+  removeContactMaterial(cmat) {
+    const idx = this.contactmaterials.indexOf(cmat);
+
+    if (idx === -1) {
+      return;
+    }
+
+    this.contactmaterials.splice(idx, 1);
+    this.contactMaterialTable.delete(cmat.materials[0].id, cmat.materials[1].id);
+  }
+  /**
+   * Step the simulation forward keeping track of last called time
+   * to be able to step the world at a fixed rate, independently of framerate.
+   *
+   * @param dt The fixed time step size to use (default: 1 / 60).
+   * @param maxSubSteps Maximum number of fixed steps to take per function call (default: 10).
+   * @see https://gafferongames.com/post/fix_your_timestep/
+   * @example
+   *     // Run the simulation independently of framerate every 1 / 60 ms
+   *     world.fixedStep()
+   */
+
+
+  fixedStep(dt, maxSubSteps) {
+    if (dt === void 0) {
+      dt = 1 / 60;
+    }
+
+    if (maxSubSteps === void 0) {
+      maxSubSteps = 10;
+    }
+
+    const time = performance.now() / 1000; // seconds
+
+    if (!this.lastCallTime) {
+      this.step(dt, undefined, maxSubSteps);
+    } else {
+      const timeSinceLastCalled = time - this.lastCallTime;
+      this.step(dt, timeSinceLastCalled, maxSubSteps);
+    }
+
+    this.lastCallTime = time;
+  }
+  /**
    * Step the physics world forward in time.
    *
    * There are two modes. The simple mode is fixed timestepping without interpolation. In this case you only use the first argument. The second case uses interpolation. In that you also provide the time since the function was last used, as well as the maximum fixed timesteps to take.
    *
    * @param dt The fixed time step size to use.
    * @param timeSinceLastCalled The time elapsed since the function was last called.
-   * @param maxSubSteps Maximum number of fixed steps to take per function call.
+   * @param maxSubSteps Maximum number of fixed steps to take per function call (default: 10).
    * @see https://web.archive.org/web/20180426154531/http://bulletphysics.org/mediawiki-1.5.8/index.php/Stepping_The_World#What_do_the_parameters_to_btDynamicsWorld::stepSimulation_mean.3F
    * @example
    *     // fixed timestepping without interpolation
@@ -12576,7 +12491,11 @@ class World extends EventTarget {
    */
 
 
-  step(dt, timeSinceLastCalled, maxSubSteps = 10) {
+  step(dt, timeSinceLastCalled, maxSubSteps) {
+    if (maxSubSteps === void 0) {
+      maxSubSteps = 10;
+    }
+
     if (timeSinceLastCalled === undefined) {
       // Fixed, simple stepping
       this.internalStep(dt); // Increment time
@@ -12622,7 +12541,7 @@ class World extends EventTarget {
     const contacts = this.contacts;
     const p1 = World_step_p1;
     const p2 = World_step_p2;
-    const N = this.numObjects();
+    const N = this.bodies.length;
     const bodies = this.bodies;
     const solver = this.solver;
     const gravity = this.gravity;
@@ -12770,34 +12689,34 @@ class World extends EventTarget {
 
       solver.addEquation(c); // // Add friction constraint equation
       // if(mu > 0){
-      //  // Create 2 tangent equations
-      //  const mug = mu * gnorm;
-      //  const reducedMass = (bi.invMass + bj.invMass);
-      //  if(reducedMass > 0){
-      //    reducedMass = 1/reducedMass;
-      //  }
-      //  const pool = frictionEquationPool;
-      //  const c1 = pool.length ? pool.pop() : new FrictionEquation(bi,bj,mug*reducedMass);
-      //  const c2 = pool.length ? pool.pop() : new FrictionEquation(bi,bj,mug*reducedMass);
-      //  this.frictionEquations.push(c1, c2);
-      //  c1.bi = c2.bi = bi;
-      //  c1.bj = c2.bj = bj;
-      //  c1.minForce = c2.minForce = -mug*reducedMass;
-      //  c1.maxForce = c2.maxForce = mug*reducedMass;
-      //  // Copy over the relative vectors
-      //  c1.ri.copy(c.ri);
-      //  c1.rj.copy(c.rj);
-      //  c2.ri.copy(c.ri);
-      //  c2.rj.copy(c.rj);
-      //  // Construct tangents
-      //  c.ni.tangents(c1.t, c2.t);
+      // 	// Create 2 tangent equations
+      // 	const mug = mu * gnorm;
+      // 	const reducedMass = (bi.invMass + bj.invMass);
+      // 	if(reducedMass > 0){
+      // 		reducedMass = 1/reducedMass;
+      // 	}
+      // 	const pool = frictionEquationPool;
+      // 	const c1 = pool.length ? pool.pop() : new FrictionEquation(bi,bj,mug*reducedMass);
+      // 	const c2 = pool.length ? pool.pop() : new FrictionEquation(bi,bj,mug*reducedMass);
+      // 	this.frictionEquations.push(c1, c2);
+      // 	c1.bi = c2.bi = bi;
+      // 	c1.bj = c2.bj = bj;
+      // 	c1.minForce = c2.minForce = -mug*reducedMass;
+      // 	c1.maxForce = c2.maxForce = mug*reducedMass;
+      // 	// Copy over the relative vectors
+      // 	c1.ri.copy(c.ri);
+      // 	c1.rj.copy(c.rj);
+      // 	c2.ri.copy(c.ri);
+      // 	c2.rj.copy(c.rj);
+      // 	// Construct tangents
+      // 	c.ni.tangents(c1.t, c2.t);
       //           // Set spook params
       //           c1.setSpookParams(cm.frictionEquationStiffness, cm.frictionEquationRelaxation, dt);
       //           c2.setSpookParams(cm.frictionEquationStiffness, cm.frictionEquationRelaxation, dt);
       //           c1.enabled = c2.enabled = c.enabled;
-      //  // Add equations to solver
-      //  solver.addEquation(c1);
-      //  solver.addEquation(c2);
+      // 	// Add equations to solver
+      // 	solver.addEquation(c1);
+      // 	solver.addEquation(c2);
       // }
 
       if (bi.allowSleep && bi.type === Body.DYNAMIC && bi.sleepState === Body.SLEEPING && bj.sleepState === Body.AWAKE && bj.type !== Body.STATIC) {
@@ -12894,18 +12813,9 @@ class World extends EventTarget {
       }
     }
 
-    this.dispatchEvent(World_step_preStepEvent); // Invoke pre-step callbacks
-
-    for (i = 0; i !== N; i++) {
-      const bi = bodies[i];
-
-      if (bi.preStep) {
-        bi.preStep.call(bi);
-      }
-    } // Leap frog
+    this.dispatchEvent(World_step_preStepEvent); // Leap frog
     // vnew = v + h*f/m
     // xnew = x + h*vnew
-
 
     if (doProfiling) {
       profilingStart = performance.now();
@@ -12928,17 +12838,7 @@ class World extends EventTarget {
 
 
     this.stepnumber += 1;
-    this.dispatchEvent(World_step_postStepEvent); // Invoke post-step callbacks
-
-    for (i = 0; i !== N; i++) {
-      const bi = bodies[i];
-      const postStep = bi.postStep;
-
-      if (postStep) {
-        postStep.call(bi);
-      }
-    } // Sleeping update
-
+    this.dispatchEvent(World_step_postStepEvent); // Sleeping update
 
     let hasActiveBodies = true;
 
@@ -13056,6 +12956,8 @@ if (!performance.now) {
 
   performance.now = () => Date.now() - nowOffset;
 }
+
+new Vec3(); // Dispatched after the world has stepped forward in time.
 // Reusable event objects to save memory.
 
 const World_step_postStepEvent = {
