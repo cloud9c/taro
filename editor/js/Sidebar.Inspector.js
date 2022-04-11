@@ -267,7 +267,7 @@ export function SidebarInspector( editor ) {
 
 				for ( const name in schema ) {
 
-					let attribute = schema[ name ];
+					const attribute = schema[ name ];
 					if ( Array.isArray( attribute ) ) {
 
 						let currentAttribute;
@@ -953,7 +953,7 @@ export function SidebarInspector( editor ) {
 
 	this.addSceneSection = function () {
 
-		let colorBackground = new Color();
+		const colorBackground = new Color();
 		let textureBackground, textureEquirect, environmentTexture;
 		const fog = new Fog();
 		const fogExp2 = new FogExp2();

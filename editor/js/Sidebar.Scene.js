@@ -189,8 +189,8 @@ export function SidebarScene( editor ) {
 		element.contentEditable = true;
 		element.spellcheck = false;
 
-		let selection = document.getSelection();
-		let range = document.createRange();
+		const selection = document.getSelection();
+		const range = document.createRange();
 
 		range.setStart( element.childNodes[ 0 ], element.innerText.length );
 		range.collapse( true );

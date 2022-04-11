@@ -72,7 +72,7 @@ export function Viewport( editor ) {
 			const currentObject = scene.getEntityById( parseInt( currentDrag.dataset.id ) );
 			const thisObject = scene.getEntityById( parseInt( this.dataset.id ) );
 
-			if ( currentDrag.dataset.parent !== undefined && (currentObject.parent !== thisObject || this.classList.contains( 'drag-above' ))) {
+			if ( currentDrag.dataset.parent !== undefined && ( currentObject.parent !== thisObject || this.classList.contains( 'drag-above' ) ) ) {
 
 				const id = currentDrag.dataset.parent;
 				delete currentDrag.dataset.parent;
@@ -94,22 +94,26 @@ export function Viewport( editor ) {
 				else
 					this.after( currentDrag );
 
-				if (currentObject.parent !== thisObject || this.classList.contains( 'drag-above' )) {
+				if ( currentObject.parent !== thisObject || this.classList.contains( 'drag-above' ) ) {
 
-					if ( currentDrag.style.paddingLeft !== '') {
+					if ( currentDrag.style.paddingLeft !== '' ) {
+
 						const value = parseFloat( currentDrag.style.paddingLeft ) - 16;
-						if (value > 24)
+						if ( value > 24 )
 							currentDrag.style.paddingLeft = value + 'px';
 						else
-							currentDrag.style.removeProperty('padding-left');
+							currentDrag.style.removeProperty( 'padding-left' );
+
 					}
 
-					if ( this.classList.contains( 'parent' ) && this.classList.contains( 'drag-below' )) {
+					if ( this.classList.contains( 'parent' ) && this.classList.contains( 'drag-below' ) ) {
+
 						currentDrag.style.paddingLeft = parseFloat( window.getComputedStyle( this ).getPropertyValue( 'padding-left' ) ) + 16 + 'px';
 						currentDrag.dataset.parent = this.dataset.id;
 						thisObject.add( currentObject );
 
 					} else if ( this.dataset.parent !== undefined ) {
+
 						const parent = document.querySelector( '#scene [data-id="' + this.dataset.parent + '"]' );
 						currentDrag.dataset.parent = parent.dataset.id;
 						currentDrag.style.paddingLeft = parseFloat( window.getComputedStyle( parent ).getPropertyValue( 'padding-left' ) ) + 16 + 'px';
@@ -117,6 +121,7 @@ export function Viewport( editor ) {
 					}
 
 					thisObject.parent.add( currentObject );
+
 				}
 
 			} else {
@@ -276,7 +281,7 @@ export function Viewport( editor ) {
 	DEFAULT_CAMERA.aspect = width /	height;
 	DEFAULT_CAMERA.updateProjectionMatrix();
 
-	let camera = DEFAULT_CAMERA;
+	const camera = DEFAULT_CAMERA;
 
 	const observer = new ResizeObserver( function () {
 

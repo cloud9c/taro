@@ -249,7 +249,7 @@ export function Navbar( editor ) {
 
 		const preset = event.target.textContent;
 
-		let entity = editor.addEntity( preset );
+		const entity = editor.addEntity( preset );
 
 		switch ( preset ) {
 
