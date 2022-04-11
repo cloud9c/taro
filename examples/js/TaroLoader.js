@@ -20,6 +20,7 @@ export class TaroLoader extends Loader {
 
 		super();
 		this.queue = [];
+		this.disableQueue = [];
 		this.parsingScene = false;
 
 	}
@@ -73,6 +74,11 @@ export class TaroLoader extends Loader {
 				app.setScene( scene );
 
 		}
+
+		for ( const component of this.disableQueue )
+			component.enabled = false;
+
+		this.disableQueue = [];
 
 		onLoad( app );
 
@@ -195,8 +201,9 @@ export class TaroLoader extends Loader {
 
 				const component = object.addComponent( type, data );
 				component.uuid = components[ i ].uuid;
-				console.log(component)
-				component.enabled = components[ i ].enabled;
+
+				if ( !components[ i ].enabled )
+					this.disableQueue.push( component )
 
 			}
 
