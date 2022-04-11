@@ -48,7 +48,7 @@ export class Physics extends World {
 
 		if ( constraints !== undefined ) {
 
-			for ( let i = 0, len = bodies.length; i < len; i ++ )
+			for ( let i = 0, len = constraints.length; i < len; i ++ )
 				this.addConstraint( constraints[ i ].ref );
 
 		}

@@ -8743,7 +8743,7 @@ class Triangle {
 
 let materialId = 0;
 
-class Material$3 extends EventDispatcher {
+class Material$2 extends EventDispatcher {
 
 	constructor() {
 
@@ -9222,9 +9222,9 @@ class Material$3 extends EventDispatcher {
 
 }
 
-Material$3.prototype.isMaterial = true;
+Material$2.prototype.isMaterial = true;
 
-Material$3.fromType = function ( /*type*/ ) {
+Material$2.fromType = function ( /*type*/ ) {
 
 	// TODO: Behavior added in Materials.js
 
@@ -9232,7 +9232,7 @@ Material$3.fromType = function ( /*type*/ ) {
 
 };
 
-class MeshBasicMaterial extends Material$3 {
+class MeshBasicMaterial extends Material$2 {
 
 	constructor( parameters ) {
 
@@ -11563,7 +11563,7 @@ var default_vertex = "void main() {\n\tgl_Position = projectionMatrix * modelVie
 
 var default_fragment = "void main() {\n\tgl_FragColor = vec4( 1.0, 0.0, 0.0, 1.0 );\n}";
 
-class ShaderMaterial extends Material$3 {
+class ShaderMaterial extends Material$2 {
 
 	constructor( parameters ) {
 
@@ -20631,7 +20631,7 @@ function WebGLRenderStates( extensions, capabilities ) {
 
 }
 
-class MeshDepthMaterial extends Material$3 {
+class MeshDepthMaterial extends Material$2 {
 
 	constructor( parameters ) {
 
@@ -20683,7 +20683,7 @@ class MeshDepthMaterial extends Material$3 {
 
 MeshDepthMaterial.prototype.isMeshDepthMaterial = true;
 
-class MeshDistanceMaterial extends Material$3 {
+class MeshDistanceMaterial extends Material$2 {
 
 	constructor( parameters ) {
 
@@ -28720,7 +28720,7 @@ class InterleavedBufferAttribute {
 
 InterleavedBufferAttribute.prototype.isInterleavedBufferAttribute = true;
 
-class SpriteMaterial extends Material$3 {
+class SpriteMaterial extends Material$2 {
 
 	constructor( parameters ) {
 
@@ -29741,7 +29741,7 @@ class InstancedMesh extends Mesh {
 
 InstancedMesh.prototype.isInstancedMesh = true;
 
-class LineBasicMaterial extends Material$3 {
+class LineBasicMaterial extends Material$2 {
 
 	constructor( parameters ) {
 
@@ -30092,7 +30092,7 @@ class LineLoop extends Line {
 
 LineLoop.prototype.isLineLoop = true;
 
-class PointsMaterial extends Material$3 {
+class PointsMaterial extends Material$2 {
 
 	constructor( parameters ) {
 
@@ -36285,7 +36285,7 @@ var Geometries = /*#__PURE__*/Object.freeze({
 	WireframeGeometry: WireframeGeometry
 });
 
-class ShadowMaterial extends Material$3 {
+class ShadowMaterial extends Material$2 {
 
 	constructor( parameters ) {
 
@@ -36328,7 +36328,7 @@ class RawShaderMaterial extends ShaderMaterial {
 
 RawShaderMaterial.prototype.isRawShaderMaterial = true;
 
-class MeshStandardMaterial extends Material$3 {
+class MeshStandardMaterial extends Material$2 {
 
 	constructor( parameters ) {
 
@@ -36604,7 +36604,7 @@ class MeshPhysicalMaterial extends MeshStandardMaterial {
 
 MeshPhysicalMaterial.prototype.isMeshPhysicalMaterial = true;
 
-class MeshPhongMaterial extends Material$3 {
+class MeshPhongMaterial extends Material$2 {
 
 	constructor( parameters ) {
 
@@ -36714,7 +36714,7 @@ class MeshPhongMaterial extends Material$3 {
 
 MeshPhongMaterial.prototype.isMeshPhongMaterial = true;
 
-class MeshToonMaterial extends Material$3 {
+class MeshToonMaterial extends Material$2 {
 
 	constructor( parameters ) {
 
@@ -36806,7 +36806,7 @@ class MeshToonMaterial extends Material$3 {
 
 MeshToonMaterial.prototype.isMeshToonMaterial = true;
 
-class MeshNormalMaterial extends Material$3 {
+class MeshNormalMaterial extends Material$2 {
 
 	constructor( parameters ) {
 
@@ -36864,7 +36864,7 @@ class MeshNormalMaterial extends Material$3 {
 
 MeshNormalMaterial.prototype.isMeshNormalMaterial = true;
 
-class MeshLambertMaterial extends Material$3 {
+class MeshLambertMaterial extends Material$2 {
 
 	constructor( parameters ) {
 
@@ -36944,7 +36944,7 @@ class MeshLambertMaterial extends Material$3 {
 
 MeshLambertMaterial.prototype.isMeshLambertMaterial = true;
 
-class MeshMatcapMaterial extends Material$3 {
+class MeshMatcapMaterial extends Material$2 {
 
 	constructor( parameters ) {
 
@@ -37065,10 +37065,10 @@ const materialLib = {
 	MeshMatcapMaterial,
 	LineDashedMaterial,
 	LineBasicMaterial,
-	Material: Material$3
+	Material: Material$2
 };
 
-Material$3.fromType = function ( type ) {
+Material$2.fromType = function ( type ) {
 
 	return new materialLib[ type ]();
 
@@ -40790,7 +40790,7 @@ class MaterialLoader extends Loader {
 
 		}
 
-		const material = Material$3.fromType( json.type );
+		const material = Material$2.fromType( json.type );
 
 		if ( json.uuid !== undefined ) material.uuid = json.uuid;
 		if ( json.name !== undefined ) material.name = json.name;
@@ -49806,7 +49806,7 @@ Uniform.prototype.onUpdate = function () {
 
 //
 
-Object.defineProperties( Material$3.prototype, {
+Object.defineProperties( Material$2.prototype, {
 
 	wrapAround: {
 		get: function () {
@@ -53487,7 +53487,7 @@ class GLTFParser {
 			if ( ! pointsMaterial ) {
 
 				pointsMaterial = new PointsMaterial();
-				Material$3.prototype.copy.call( pointsMaterial, material );
+				Material$2.prototype.copy.call( pointsMaterial, material );
 				pointsMaterial.color.copy( material.color );
 				pointsMaterial.map = material.map;
 				pointsMaterial.sizeAttenuation = false; // glTF spec says points should be 1px
@@ -53507,7 +53507,7 @@ class GLTFParser {
 			if ( ! lineMaterial ) {
 
 				lineMaterial = new LineBasicMaterial();
-				Material$3.prototype.copy.call( lineMaterial, material );
+				Material$2.prototype.copy.call( lineMaterial, material );
 				lineMaterial.color.copy( material.color );
 
 				this.cache.add( cacheKey, lineMaterial );
@@ -54438,7 +54438,7 @@ class GLTFParser {
 
 				for ( const [ key, value ] of parser.associations ) {
 
-					if ( key instanceof Material$3 || key instanceof Texture ) {
+					if ( key instanceof Material$2 || key instanceof Texture ) {
 
 						reducedAssociations.set( key, value );
 
@@ -55694,43 +55694,6 @@ const ComponentManager = {
 // schema is an object of objects
 // ex: schema: {{type: "number", default: 1}}
 
-class AudioListener {
-
-	init( data ) {
-
-		this.ref = this.scene.audioListener;
-
-		this.ref.setMasterVolume( data.masterVolume );
-		this.ref.timeDelta = data.timeDelta;
-
-		this.addEventListener( 'enable', this.onEnable );
-		this.addEventListener( 'disable', this.onDisable );
-
-	}
-
-	onEnable() {
-
-		this.entity.add( this.ref );
-
-	}
-
-	onDisable() {
-
-		this.entity.remove( this.ref );
-
-	}
-
-}
-
-AudioListener.config = {
-	schema: {
-		masterVolume: { type: 'number', default: 1 },
-		timeDelta: { type: 'number' }
-	}
-};
-
-ComponentManager.registerComponent( 'audioListener', AudioListener );
-
 const audioLoader = new AudioLoader();
 
 class Audio {
@@ -55847,14 +55810,48 @@ Audio.config = {
 
 ComponentManager.registerComponent( 'audio', Audio );
 
+class AudioListener {
+
+	init( data ) {
+
+		this.ref = this.scene.audioListener;
+
+		this.ref.setMasterVolume( data.masterVolume );
+		this.ref.timeDelta = data.timeDelta;
+
+		this.addEventListener( 'enable', this.onEnable );
+		this.addEventListener( 'disable', this.onDisable );
+
+	}
+
+	onEnable() {
+
+		this.entity.add( this.ref );
+
+	}
+
+	onDisable() {
+
+		this.entity.remove( this.ref );
+
+	}
+
+}
+
+AudioListener.config = {
+	schema: {
+		masterVolume: { type: 'number', default: 1 },
+		timeDelta: { type: 'number' }
+	}
+};
+
+ComponentManager.registerComponent( 'audioListener', AudioListener );
+
 class Camera {
 
 	init( data ) {
 
 		this.type = data.type;
-		data.near;
-		data.far;
-
 		this.viewport = data.viewport;
 		this._region = new Vector4();
 
@@ -56196,7 +56193,7 @@ const blendingModes = [ 'NoBlending', 'NormalBlending', 'AdditiveBlending', 'Sub
 const sides = [ 'FrontSide', 'BackSide', 'DoubleSide' ];
 const depthPacking = [ 'BasicDepthPacking', 'RGBADepthPacking' ];
 
-class Material$2 {
+class Material$1 {
 
 	init( data ) {
 
@@ -56207,7 +56204,7 @@ class Material$2 {
 
 		for ( const name in data ) {
 
-			if ( Material$2.config.schema[ name ].type === 'asset' && data[ name ].length > 0 ) {
+			if ( Material$1.config.schema[ name ].type === 'asset' && data[ name ].length > 0 ) {
 
 				parameters[ name ] = assetManager.get( data[ name ] );
 
@@ -56340,7 +56337,7 @@ class Material$2 {
 
 }
 
-Material$2.config = {
+Material$1.config = {
 	schema: {
 		type: { type: 'select', default: 'basic', select: [ 'asset', 'basic', 'depth', 'lambert', 'matcap', 'normal', 'phong', 'physical', 'shader', 'standard', 'toon' ] },
 
@@ -56403,9 +56400,9 @@ Material$2.config = {
 const DefaultMaterial = new MeshBasicMaterial();
 DefaultMaterial.transparent = true;
 DefaultMaterial.opacity = 0;
-Material$2.prototype.DefaultMaterial = DefaultMaterial;
+Material$1.prototype.DefaultMaterial = DefaultMaterial;
 
-ComponentManager.registerComponent( 'material', Material$2 );
+ComponentManager.registerComponent( 'material', Material$1 );
 
 // gstatic dependency
 const dracoLoader = new DRACOLoader();
@@ -62573,7 +62570,7 @@ ContactMaterial.idCounter = 0;
 /**
  * Defines a physics material.
  */
-class Material$1 {
+class Material {
   /**
    * Material name.
    * If options is a string, name will be set to that string.
@@ -62605,13 +62602,13 @@ class Material$1 {
     }
 
     this.name = name;
-    this.id = Material$1.idCounter++;
+    this.id = Material.idCounter++;
     this.friction = typeof options.friction !== 'undefined' ? options.friction : -1;
     this.restitution = typeof options.restitution !== 'undefined' ? options.restitution : -1;
   }
 
 }
-Material$1.idCounter = 0;
+Material.idCounter = 0;
 
 /**
  * A spring, connecting two bodies.
@@ -65953,7 +65950,7 @@ class World extends EventTarget {
     this.shapeOverlapKeeper = new OverlapKeeper();
     this.contactmaterials = [];
     this.contactMaterialTable = new TupleDictionary();
-    this.defaultMaterial = new Material$1('default');
+    this.defaultMaterial = new Material('default');
     this.defaultContactMaterial = new ContactMaterial(this.defaultMaterial, this.defaultMaterial, {
       friction: 0.3,
       restitution: 0.0
@@ -66762,6 +66759,7 @@ const endShapeContactEvent = {
 
 const _e1 = new Euler();
 const _q1$1 = new Quaternion$1();
+const fileLoader$1 = new FileLoader();
 
 class Shape {
 
@@ -66817,7 +66815,7 @@ class Shape {
 
 			this.ref.material = this.app.assets.get( data.material );
 			if ( this.ref.material === undefined )
-				fileLoader.load( data.material, ( json ) => this.onMaterialLoad( data.material, json ), ( p ) => this.onProgress( p ), ( e ) => this.onError( e ) );
+				fileLoader$1.load( data.material, ( json ) => this.onMaterialLoad( data.material, json ), ( p ) => this.onProgress( p ), ( e ) => this.onError( e ) );
 
 		}
 
@@ -67111,7 +67109,8 @@ ComponentManager.registerComponent( 'constraint', Constraint );
 
 const types = [ 'dynamic', 'static', 'kinematic' ];
 const indexedTypes = [ undefined, 'dynamic', 'static', undefined, 'kinematic' ];
-const fileLoader$1 = new FileLoader();
+const fileLoader = new FileLoader();
+
 class Rigidbody {
 
 	init( data ) {
@@ -67127,7 +67126,7 @@ class Rigidbody {
 
 			this.ref.material = this.app.assets.get( data.material );
 			if ( this.ref.material === undefined )
-				fileLoader$1.load( data.material, json => this.onMaterialLoad( data.material, json ), p => this.onProgress( p ), e => this.onError( e ) );
+				fileLoader.load( data.material, json => this.onMaterialLoad( data.material, json ), p => this.onProgress( p ), e => this.onError( e ) );
 
 		}
 
@@ -67138,7 +67137,7 @@ class Rigidbody {
 
 	onMaterialLoad( key, json ) {
 
-		const material = new Material$1( json );
+		const material = new Material( json );
 		this.ref.material = material;
 		this.app.assets.add( key, material );
 
@@ -67246,7 +67245,7 @@ class Physics extends World {
 
 		if ( constraints !== undefined ) {
 
-			for ( let i = 0, len = bodies.length; i < len; i ++ )
+			for ( let i = 0, len = constraints.length; i < len; i ++ )
 				this.addConstraint( constraints[ i ].ref );
 
 		}
@@ -67871,237 +67870,6 @@ class App {
 
 App.prototype.isApp = true;
 
-class Scene extends Scene$1 {
-
-	constructor( name, app ) {
-
-		super();
-
-		this.app = null;
-		this.components = { rigidbody: [], camera: [] };
-
-		this.audioListener = new AudioListener$1();
-
-		if ( name !== undefined )
-			this.name = name;
-
-		if ( app !== false ) {
-
-			if ( app !== undefined )
-				app.addScene( this );
-			else if ( App.currentApp !== undefined )
-				App.currentApp.addScene( this );
-
-		}
-
-
-	}
-
-	_addComponents( components, queue ) {
-
-		for ( let i = 0, len = components.length; i < len; i ++ ) {
-
-			const component = components[ i ];
-
-			let inQueue = false;
-
-			for ( let j = 0, lenj = queue.length; j < lenj; j ++ ) {
-
-				if ( queue[ j ].component === component ) {
-
-					inQueue = true;
-					break;
-
-				}
-
-			}
-
-			if ( inQueue ) continue;
-
-			if ( component.enabled ) {
-
-				const type = component.componentType;
-
-				if ( this.components[ type ] === undefined )
-					this.components[ type ] = [];
-
-				this.components[ type ].push( component );
-
-			}
-
-		}
-
-	}
-
-	_removeComponents( components, queue ) {
-
-		for ( let i = 0, len = components.length; i < len; i ++ ) {
-
-			const component = components[ i ];
-
-			let inQueue = false;
-
-			for ( let j = 0, lenj = queue.length; j < lenj; j ++ ) {
-
-				if ( queue[ j ].component === component ) {
-
-					inQueue = true;
-					break;
-
-				}
-
-			}
-
-			if ( inQueue ) continue;
-
-			if ( component.enabled ) {
-
-				const type = component.componentType;
-				const container = this.components[ type ];
-
-				container.splice( container.indexOf( component ), 1 );
-
-			}
-
-		}
-
-	}
-
-	_addToScene( object ) {
-
-		if ( object.isEntity !== undefined ) {
-
-			if ( object.scene !== null ) {
-
-				object.scene._removeFromScene( object );
-
-			}
-
-			this._addComponents( object.components, object.queue );
-
-			object.scene = this;
-			object.dispatchEvent( { type: 'sceneadd' } );
-
-			const children = object.children;
-			for ( let i = 0, len = children.length; i < len; i ++ ) {
-
-				this._addToScene( children[ i ] );
-
-			}
-
-		}
-
-	}
-
-	_removeFromScene( object ) {
-
-		if ( object.isEntity !== undefined ) {
-
-			this._removeComponents( object.components, object.queue );
-
-			object.scene = null;
-			object.dispatchEvent( { type: 'sceneremove' } );
-
-			const children = object.children;
-			for ( let i = 0, len = children.length; i < len; i ++ ) {
-
-				this._removeFromScene( children[ i ] );
-
-			}
-
-		}
-
-	}
-
-	add( object ) {
-
-		super.add( ...arguments );
-		this._addToScene( object );
-		return this;
-
-	}
-
-	remove( object ) {
-
-		super.remove( ...arguments );
-		this._removeFromScene( object );
-		return this;
-
-	}
-
-	getComponent( type ) {
-
-		return this.components[ type ] !== undefined ? this.components[ type ][ 0 ] : undefined;
-
-	}
-
-	getComponents( type ) {
-
-		return this.components[ type ] !== undefined ? this.components[ type ] : [];
-
-	}
-
-	traverseEntities( callback ) {
-
-		this.traverse( child => {
-
-			if ( child.isEntity !== undefined )
-				callback( child );
-
-		} );
-
-	}
-
-	getEntities() {
-
-		const filteredChildren = [];
-		const children = this.children;
-		for ( let i = 0, len = children.length; i < len; i ++ ) {
-
-			if ( children[ i ].isEntity !== undefined )
-				filteredChildren.push( children[ i ] );
-
-		}
-
-		return filteredChildren;
-
-	}
-
-	getEntityById( id ) {
-
-		return this.getEntityByProperty( 'id', id );
-
-	}
-
-	getEntityByName( name ) {
-
-		return this.getEntityByProperty( 'name', name );
-
-	}
-
-	getEntityByProperty( name, value ) {
-
-		const entities = this.getEntities();
-
-		for ( let i = 0, l = entities.length; i < l; i ++ ) {
-
-			const child = entities[ i ];
-			const object = child.getEntityByProperty( name, value );
-
-			if ( object !== undefined ) {
-
-				return object;
-
-			}
-
-		}
-
-		return undefined;
-
-	}
-
-}
-
 class Entity extends Group {
 
 	constructor( name, parent ) {
@@ -68410,5 +68178,235 @@ class Entity extends Group {
 
 Entity.prototype.isEntity = true;
 
-export { ACESFilmicToneMapping, AddEquation, AddOperation, AdditiveAnimationBlendMode, AdditiveBlending, AlphaFormat, AlwaysDepth, AlwaysStencilFunc, AmbientLight, AmbientLightProbe, AnimationClip, AnimationLoader, AnimationMixer, AnimationObjectGroup, AnimationUtils, App, ArcCurve, ArrayCamera, ArrowHelper, Audio$1 as Audio, AudioAnalyser, AudioContext, AudioListener$1 as AudioListener, AudioLoader, AxesHelper, AxisHelper, BackSide, BasicDepthPacking, BasicShadowMap, BinaryTextureLoader, Bone, BooleanKeyframeTrack, BoundingBoxHelper, Box2, Box3, Box3Helper, BoxGeometry as BoxBufferGeometry, BoxGeometry, BoxHelper, BufferAttribute, BufferGeometry, BufferGeometryLoader, ByteType, Cache, Camera$1 as Camera, CameraHelper, CanvasRenderer, CanvasTexture, CapsuleGeometry as CapsuleBufferGeometry, CapsuleGeometry, CatmullRomCurve3, CineonToneMapping, CircleGeometry as CircleBufferGeometry, CircleGeometry, ClampToEdgeWrapping, Clock, Color, ColorKeyframeTrack, ColorManagement, ComponentManager, CompressedTexture, CompressedTextureLoader, ConeGeometry as ConeBufferGeometry, ConeGeometry, CubeCamera, CubeReflectionMapping, CubeRefractionMapping, CubeTexture, CubeTextureLoader, CubeUVReflectionMapping, CubicBezierCurve, CubicBezierCurve3, CubicInterpolant, CullFaceBack, CullFaceFront, CullFaceFrontBack, CullFaceNone, Curve, CurvePath, CustomBlending, CustomToneMapping, CylinderGeometry as CylinderBufferGeometry, CylinderGeometry, Cylindrical, DRACOLoader, Data3DTexture, DataArrayTexture, DataTexture, DataTexture2DArray, DataTexture3D, DataTextureLoader, DataUtils, DecrementStencilOp, DecrementWrapStencilOp, DefaultLoadingManager, DepthFormat, DepthStencilFormat, DepthTexture, DirectionalLight, DirectionalLightHelper, DiscreteInterpolant, DodecahedronGeometry as DodecahedronBufferGeometry, DodecahedronGeometry, DoubleSide, DstAlphaFactor, DstColorFactor, DynamicBufferAttribute, DynamicCopyUsage, DynamicDrawUsage, DynamicReadUsage, EdgesGeometry, EdgesHelper, EllipseCurve, Entity, EqualDepth, EqualStencilFunc, EquirectangularReflectionMapping, EquirectangularRefractionMapping, Euler, EventDispatcher, ExtrudeGeometry as ExtrudeBufferGeometry, ExtrudeGeometry, FaceColors, FileLoader, FlatShading, Float16BufferAttribute, Float32Attribute, Float32BufferAttribute, Float64Attribute, Float64BufferAttribute, FloatType, Fog, FogExp2, Font, FontLoader, FramebufferTexture, FrontSide, Frustum, GLBufferAttribute, GLSL1, GLSL3, GLTFLoader, GreaterDepth, GreaterEqualDepth, GreaterEqualStencilFunc, GreaterStencilFunc, GridHelper, Group, HalfFloatType, HemisphereLight, HemisphereLightHelper, HemisphereLightProbe, IcosahedronGeometry as IcosahedronBufferGeometry, IcosahedronGeometry, ImageBitmapLoader, ImageLoader, ImageUtils, ImmediateRenderObject, IncrementStencilOp, IncrementWrapStencilOp, InstancedBufferAttribute, InstancedBufferGeometry, InstancedInterleavedBuffer, InstancedMesh, Int16Attribute, Int16BufferAttribute, Int32Attribute, Int32BufferAttribute, Int8Attribute, Int8BufferAttribute, IntType, InterleavedBuffer, InterleavedBufferAttribute, Interpolant, InterpolateDiscrete, InterpolateLinear, InterpolateSmooth, InvertStencilOp, JSONLoader, KeepStencilOp, KeyframeTrack, LOD, LatheGeometry as LatheBufferGeometry, LatheGeometry, Layers, LensFlare, LessDepth, LessEqualDepth, LessEqualStencilFunc, LessStencilFunc, Light$1 as Light, LightProbe, Line, Line3, LineBasicMaterial, LineCurve, LineCurve3, LineDashedMaterial, LineLoop, LinePieces, LineSegments, LineStrip, LinearEncoding, LinearFilter, LinearInterpolant, LinearMipMapLinearFilter, LinearMipMapNearestFilter, LinearMipmapLinearFilter, LinearMipmapNearestFilter, LinearSRGBColorSpace, LinearToneMapping, Loader, LoaderUtils, LoadingManager, LoopOnce, LoopPingPong, LoopRepeat, LuminanceAlphaFormat, LuminanceFormat, MOUSE, Material$3 as Material, MaterialLoader, MathUtils as Math, MathUtils, Matrix3, Matrix4, MaxEquation, Mesh, MeshBasicMaterial, MeshDepthMaterial, MeshDistanceMaterial, MeshFaceMaterial, MeshLambertMaterial, MeshMatcapMaterial, MeshNormalMaterial, MeshPhongMaterial, MeshPhysicalMaterial, MeshStandardMaterial, MeshToonMaterial, MinEquation, MirroredRepeatWrapping, MixOperation, MultiMaterial, MultiplyBlending, MultiplyOperation, NearestFilter, NearestMipMapLinearFilter, NearestMipMapNearestFilter, NearestMipmapLinearFilter, NearestMipmapNearestFilter, NeverDepth, NeverStencilFunc, NoBlending, NoColorSpace, NoColors, NoToneMapping, NormalAnimationBlendMode, NormalBlending, NotEqualDepth, NotEqualStencilFunc, NumberKeyframeTrack, Object3D, ObjectLoader, ObjectSpaceNormalMap, OctahedronGeometry as OctahedronBufferGeometry, OctahedronGeometry, OneFactor, OneMinusDstAlphaFactor, OneMinusDstColorFactor, OneMinusSrcAlphaFactor, OneMinusSrcColorFactor, OrthographicCamera, PCFShadowMap, PCFSoftShadowMap, PMREMGenerator, ParametricGeometry, Particle$1 as Particle, ParticleBasicMaterial, ParticleSystem, ParticleSystemMaterial, Path, PerspectiveCamera, Plane$1 as Plane, PlaneGeometry as PlaneBufferGeometry, PlaneGeometry, PlaneHelper, PointCloud, PointCloudMaterial, PointLight, PointLightHelper, Points, PointsMaterial, PolarGridHelper, PolyhedronGeometry as PolyhedronBufferGeometry, PolyhedronGeometry, PositionalAudio, PropertyBinding, PropertyMixer, QuadraticBezierCurve, QuadraticBezierCurve3, Quaternion$1 as Quaternion, QuaternionKeyframeTrack, QuaternionLinearInterpolant, REVISION, RGBADepthPacking, RGBAFormat, RGBAIntegerFormat, RGBA_ASTC_10x10_Format, RGBA_ASTC_10x5_Format, RGBA_ASTC_10x6_Format, RGBA_ASTC_10x8_Format, RGBA_ASTC_12x10_Format, RGBA_ASTC_12x12_Format, RGBA_ASTC_4x4_Format, RGBA_ASTC_5x4_Format, RGBA_ASTC_5x5_Format, RGBA_ASTC_6x5_Format, RGBA_ASTC_6x6_Format, RGBA_ASTC_8x5_Format, RGBA_ASTC_8x6_Format, RGBA_ASTC_8x8_Format, RGBA_BPTC_Format, RGBA_ETC2_EAC_Format, RGBA_PVRTC_2BPPV1_Format, RGBA_PVRTC_4BPPV1_Format, RGBA_S3TC_DXT1_Format, RGBA_S3TC_DXT3_Format, RGBA_S3TC_DXT5_Format, RGBFormat, RGB_ETC1_Format, RGB_ETC2_Format, RGB_PVRTC_2BPPV1_Format, RGB_PVRTC_4BPPV1_Format, RGB_S3TC_DXT1_Format, RGFormat, RGIntegerFormat, RawShaderMaterial, Ray$1 as Ray, Raycaster, RectAreaLight, RedFormat, RedIntegerFormat, ReinhardToneMapping, Renderer, RepeatWrapping, ReplaceStencilOp, ReverseSubtractEquation, RingGeometry as RingBufferGeometry, RingGeometry, SRGBColorSpace, Scene, SceneUtils, ShaderChunk, ShaderLib, ShaderMaterial, ShadowMaterial, Shape$2 as Shape, ShapeGeometry as ShapeBufferGeometry, ShapeGeometry, ShapePath, ShapeUtils, ShortType, Skeleton, SkeletonHelper, SkinnedMesh, SmoothShading, Source, Sphere$1 as Sphere, SphereGeometry as SphereBufferGeometry, SphereGeometry, Spherical, SphericalHarmonics3, SplineCurve, SpotLight, SpotLightHelper, Sprite, SpriteMaterial, SrcAlphaFactor, SrcAlphaSaturateFactor, SrcColorFactor, StaticCopyUsage, StaticDrawUsage, StaticReadUsage, StereoCamera, StreamCopyUsage, StreamDrawUsage, StreamReadUsage, StringKeyframeTrack, SubtractEquation, SubtractiveBlending, TOUCH, TangentSpaceNormalMap, TetrahedronGeometry as TetrahedronBufferGeometry, TetrahedronGeometry, TextGeometry, Texture, TextureLoader, TorusGeometry as TorusBufferGeometry, TorusGeometry, TorusKnotGeometry as TorusKnotBufferGeometry, TorusKnotGeometry, Triangle, TriangleFanDrawMode, TriangleStripDrawMode, TrianglesDrawMode, TubeGeometry as TubeBufferGeometry, TubeGeometry, UVMapping, Uint16Attribute, Uint16BufferAttribute, Uint32Attribute, Uint32BufferAttribute, Uint8Attribute, Uint8BufferAttribute, Uint8ClampedAttribute, Uint8ClampedBufferAttribute, Uniform, UniformsLib, UniformsUtils, UnsignedByteType, UnsignedInt248Type, UnsignedIntType, UnsignedShort4444Type, UnsignedShort5551Type, UnsignedShortType, VSMShadowMap, Vec3, Vector2, Vector3, Vector4, VectorKeyframeTrack, Vertex, VertexColors, VideoTexture, WebGL1Renderer, WebGL3DRenderTarget, WebGLArrayRenderTarget, WebGLCubeRenderTarget, WebGLMultipleRenderTargets, WebGLMultisampleRenderTarget, WebGLRenderTarget, WebGLRenderTargetCube, WebGLRenderer, WebGLUtils, WireframeGeometry, WireframeHelper, WrapAroundEnding, XHRLoader, ZeroCurvatureEnding, ZeroFactor, ZeroSlopeEnding, ZeroStencilOp, _SRGBAFormat, registerComponent, sRGBEncoding };
-//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoidGFyby5tb2R1bGUuanMiLCJzb3VyY2VzIjpbXSwic291cmNlc0NvbnRlbnQiOltdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiIn0=
+class Scene extends Scene$1 {
+
+	constructor( name, app ) {
+
+		super();
+
+		this.app = null;
+		this.components = { rigidbody: [], camera: [] };
+
+		this.audioListener = new AudioListener$1();
+
+		if ( name !== undefined )
+			this.name = name;
+
+		if ( app !== false ) {
+
+			if ( app !== undefined )
+				app.addScene( this );
+			else if ( App.currentApp !== undefined )
+				App.currentApp.addScene( this );
+
+		}
+
+
+	}
+
+	_addComponents( components, queue ) {
+
+		for ( let i = 0, len = components.length; i < len; i ++ ) {
+
+			const component = components[ i ];
+
+			let inQueue = false;
+
+			for ( let j = 0, lenj = queue.length; j < lenj; j ++ ) {
+
+				if ( queue[ j ].component === component ) {
+
+					inQueue = true;
+					break;
+
+				}
+
+			}
+
+			if ( inQueue ) continue;
+
+			if ( component.enabled ) {
+
+				const type = component.componentType;
+
+				if ( this.components[ type ] === undefined )
+					this.components[ type ] = [];
+
+				this.components[ type ].push( component );
+
+			}
+
+		}
+
+	}
+
+	_removeComponents( components, queue ) {
+
+		for ( let i = 0, len = components.length; i < len; i ++ ) {
+
+			const component = components[ i ];
+
+			let inQueue = false;
+
+			for ( let j = 0, lenj = queue.length; j < lenj; j ++ ) {
+
+				if ( queue[ j ].component === component ) {
+
+					inQueue = true;
+					break;
+
+				}
+
+			}
+
+			if ( inQueue ) continue;
+
+			if ( component.enabled ) {
+
+				const type = component.componentType;
+				const container = this.components[ type ];
+
+				container.splice( container.indexOf( component ), 1 );
+
+			}
+
+		}
+
+	}
+
+	_addToScene( object ) {
+
+		if ( object.isEntity !== undefined ) {
+
+			if ( object.scene !== null ) {
+
+				object.scene._removeFromScene( object );
+
+			}
+
+			this._addComponents( object.components, object.queue );
+
+			object.scene = this;
+			object.dispatchEvent( { type: 'sceneadd' } );
+
+			const children = object.children;
+			for ( let i = 0, len = children.length; i < len; i ++ ) {
+
+				this._addToScene( children[ i ] );
+
+			}
+
+		}
+
+	}
+
+	_removeFromScene( object ) {
+
+		if ( object.isEntity !== undefined ) {
+
+			this._removeComponents( object.components, object.queue );
+
+			object.scene = null;
+			object.dispatchEvent( { type: 'sceneremove' } );
+
+			const children = object.children;
+			for ( let i = 0, len = children.length; i < len; i ++ ) {
+
+				this._removeFromScene( children[ i ] );
+
+			}
+
+		}
+
+	}
+
+	add( object ) {
+
+		super.add( ...arguments );
+		this._addToScene( object );
+		return this;
+
+	}
+
+	remove( object ) {
+
+		super.remove( ...arguments );
+		this._removeFromScene( object );
+		return this;
+
+	}
+
+	getComponent( type ) {
+
+		return this.components[ type ] !== undefined ? this.components[ type ][ 0 ] : undefined;
+
+	}
+
+	getComponents( type ) {
+
+		return this.components[ type ] !== undefined ? this.components[ type ] : [];
+
+	}
+
+	traverseEntities( callback ) {
+
+		this.traverse( child => {
+
+			if ( child.isEntity !== undefined )
+				callback( child );
+
+		} );
+
+	}
+
+	getEntities() {
+
+		const filteredChildren = [];
+		const children = this.children;
+		for ( let i = 0, len = children.length; i < len; i ++ ) {
+
+			if ( children[ i ].isEntity !== undefined )
+				filteredChildren.push( children[ i ] );
+
+		}
+
+		return filteredChildren;
+
+	}
+
+	getEntityById( id ) {
+
+		return this.getEntityByProperty( 'id', id );
+
+	}
+
+	getEntityByName( name ) {
+
+		return this.getEntityByProperty( 'name', name );
+
+	}
+
+	getEntityByProperty( name, value ) {
+
+		const entities = this.getEntities();
+
+		for ( let i = 0, l = entities.length; i < l; i ++ ) {
+
+			const child = entities[ i ];
+			const object = child.getEntityByProperty( name, value );
+
+			if ( object !== undefined ) {
+
+				return object;
+
+			}
+
+		}
+
+		return undefined;
+
+	}
+
+}
+
+export { ACESFilmicToneMapping, AddEquation, AddOperation, AdditiveAnimationBlendMode, AdditiveBlending, AlphaFormat, AlwaysDepth, AlwaysStencilFunc, AmbientLight, AmbientLightProbe, AnimationClip, AnimationLoader, AnimationMixer, AnimationObjectGroup, AnimationUtils, App, ArcCurve, ArrayCamera, ArrowHelper, Audio$1 as Audio, AudioAnalyser, AudioContext, AudioListener$1 as AudioListener, AudioLoader, AxesHelper, AxisHelper, BackSide, BasicDepthPacking, BasicShadowMap, BinaryTextureLoader, Bone, BooleanKeyframeTrack, BoundingBoxHelper, Box2, Box3, Box3Helper, BoxGeometry as BoxBufferGeometry, BoxGeometry, BoxHelper, BufferAttribute, BufferGeometry, BufferGeometryLoader, ByteType, Cache, Camera$1 as Camera, CameraHelper, CanvasRenderer, CanvasTexture, CapsuleGeometry as CapsuleBufferGeometry, CapsuleGeometry, CatmullRomCurve3, CineonToneMapping, CircleGeometry as CircleBufferGeometry, CircleGeometry, ClampToEdgeWrapping, Clock, Color, ColorKeyframeTrack, ColorManagement, ComponentManager, CompressedTexture, CompressedTextureLoader, ConeGeometry as ConeBufferGeometry, ConeGeometry, CubeCamera, CubeReflectionMapping, CubeRefractionMapping, CubeTexture, CubeTextureLoader, CubeUVReflectionMapping, CubicBezierCurve, CubicBezierCurve3, CubicInterpolant, CullFaceBack, CullFaceFront, CullFaceFrontBack, CullFaceNone, Curve, CurvePath, CustomBlending, CustomToneMapping, CylinderGeometry as CylinderBufferGeometry, CylinderGeometry, Cylindrical, DRACOLoader, Data3DTexture, DataArrayTexture, DataTexture, DataTexture2DArray, DataTexture3D, DataTextureLoader, DataUtils, DecrementStencilOp, DecrementWrapStencilOp, DefaultLoadingManager, DepthFormat, DepthStencilFormat, DepthTexture, DirectionalLight, DirectionalLightHelper, DiscreteInterpolant, DodecahedronGeometry as DodecahedronBufferGeometry, DodecahedronGeometry, DoubleSide, DstAlphaFactor, DstColorFactor, DynamicBufferAttribute, DynamicCopyUsage, DynamicDrawUsage, DynamicReadUsage, EdgesGeometry, EdgesHelper, EllipseCurve, Entity, EqualDepth, EqualStencilFunc, EquirectangularReflectionMapping, EquirectangularRefractionMapping, Euler, EventDispatcher, ExtrudeGeometry as ExtrudeBufferGeometry, ExtrudeGeometry, FaceColors, FileLoader, FlatShading, Float16BufferAttribute, Float32Attribute, Float32BufferAttribute, Float64Attribute, Float64BufferAttribute, FloatType, Fog, FogExp2, Font, FontLoader, FramebufferTexture, FrontSide, Frustum, GLBufferAttribute, GLSL1, GLSL3, GLTFLoader, GreaterDepth, GreaterEqualDepth, GreaterEqualStencilFunc, GreaterStencilFunc, GridHelper, Group, HalfFloatType, HemisphereLight, HemisphereLightHelper, HemisphereLightProbe, IcosahedronGeometry as IcosahedronBufferGeometry, IcosahedronGeometry, ImageBitmapLoader, ImageLoader, ImageUtils, ImmediateRenderObject, IncrementStencilOp, IncrementWrapStencilOp, InstancedBufferAttribute, InstancedBufferGeometry, InstancedInterleavedBuffer, InstancedMesh, Int16Attribute, Int16BufferAttribute, Int32Attribute, Int32BufferAttribute, Int8Attribute, Int8BufferAttribute, IntType, InterleavedBuffer, InterleavedBufferAttribute, Interpolant, InterpolateDiscrete, InterpolateLinear, InterpolateSmooth, InvertStencilOp, JSONLoader, KeepStencilOp, KeyframeTrack, LOD, LatheGeometry as LatheBufferGeometry, LatheGeometry, Layers, LensFlare, LessDepth, LessEqualDepth, LessEqualStencilFunc, LessStencilFunc, Light$1 as Light, LightProbe, Line, Line3, LineBasicMaterial, LineCurve, LineCurve3, LineDashedMaterial, LineLoop, LinePieces, LineSegments, LineStrip, LinearEncoding, LinearFilter, LinearInterpolant, LinearMipMapLinearFilter, LinearMipMapNearestFilter, LinearMipmapLinearFilter, LinearMipmapNearestFilter, LinearSRGBColorSpace, LinearToneMapping, Loader, LoaderUtils, LoadingManager, LoopOnce, LoopPingPong, LoopRepeat, LuminanceAlphaFormat, LuminanceFormat, MOUSE, Material$2 as Material, MaterialLoader, MathUtils as Math, MathUtils, Matrix3, Matrix4, MaxEquation, Mesh, MeshBasicMaterial, MeshDepthMaterial, MeshDistanceMaterial, MeshFaceMaterial, MeshLambertMaterial, MeshMatcapMaterial, MeshNormalMaterial, MeshPhongMaterial, MeshPhysicalMaterial, MeshStandardMaterial, MeshToonMaterial, MinEquation, MirroredRepeatWrapping, MixOperation, MultiMaterial, MultiplyBlending, MultiplyOperation, NearestFilter, NearestMipMapLinearFilter, NearestMipMapNearestFilter, NearestMipmapLinearFilter, NearestMipmapNearestFilter, NeverDepth, NeverStencilFunc, NoBlending, NoColorSpace, NoColors, NoToneMapping, NormalAnimationBlendMode, NormalBlending, NotEqualDepth, NotEqualStencilFunc, NumberKeyframeTrack, Object3D, ObjectLoader, ObjectSpaceNormalMap, OctahedronGeometry as OctahedronBufferGeometry, OctahedronGeometry, OneFactor, OneMinusDstAlphaFactor, OneMinusDstColorFactor, OneMinusSrcAlphaFactor, OneMinusSrcColorFactor, OrthographicCamera, PCFShadowMap, PCFSoftShadowMap, PMREMGenerator, ParametricGeometry, Particle$1 as Particle, ParticleBasicMaterial, ParticleSystem, ParticleSystemMaterial, Path, PerspectiveCamera, Plane$1 as Plane, PlaneGeometry as PlaneBufferGeometry, PlaneGeometry, PlaneHelper, PointCloud, PointCloudMaterial, PointLight, PointLightHelper, Points, PointsMaterial, PolarGridHelper, PolyhedronGeometry as PolyhedronBufferGeometry, PolyhedronGeometry, PositionalAudio, PropertyBinding, PropertyMixer, QuadraticBezierCurve, QuadraticBezierCurve3, Quaternion$1 as Quaternion, QuaternionKeyframeTrack, QuaternionLinearInterpolant, REVISION, RGBADepthPacking, RGBAFormat, RGBAIntegerFormat, RGBA_ASTC_10x10_Format, RGBA_ASTC_10x5_Format, RGBA_ASTC_10x6_Format, RGBA_ASTC_10x8_Format, RGBA_ASTC_12x10_Format, RGBA_ASTC_12x12_Format, RGBA_ASTC_4x4_Format, RGBA_ASTC_5x4_Format, RGBA_ASTC_5x5_Format, RGBA_ASTC_6x5_Format, RGBA_ASTC_6x6_Format, RGBA_ASTC_8x5_Format, RGBA_ASTC_8x6_Format, RGBA_ASTC_8x8_Format, RGBA_BPTC_Format, RGBA_ETC2_EAC_Format, RGBA_PVRTC_2BPPV1_Format, RGBA_PVRTC_4BPPV1_Format, RGBA_S3TC_DXT1_Format, RGBA_S3TC_DXT3_Format, RGBA_S3TC_DXT5_Format, RGBFormat, RGB_ETC1_Format, RGB_ETC2_Format, RGB_PVRTC_2BPPV1_Format, RGB_PVRTC_4BPPV1_Format, RGB_S3TC_DXT1_Format, RGFormat, RGIntegerFormat, RawShaderMaterial, Ray$1 as Ray, Raycaster, RectAreaLight, RedFormat, RedIntegerFormat, ReinhardToneMapping, Renderer, RepeatWrapping, ReplaceStencilOp, ReverseSubtractEquation, RingGeometry as RingBufferGeometry, RingGeometry, SRGBColorSpace, Scene, SceneUtils, ShaderChunk, ShaderLib, ShaderMaterial, ShadowMaterial, Shape$2 as Shape, ShapeGeometry as ShapeBufferGeometry, ShapeGeometry, ShapePath, ShapeUtils, ShortType, Skeleton, SkeletonHelper, SkinnedMesh, SmoothShading, Source, Sphere$1 as Sphere, SphereGeometry as SphereBufferGeometry, SphereGeometry, Spherical, SphericalHarmonics3, SplineCurve, SpotLight, SpotLightHelper, Sprite, SpriteMaterial, SrcAlphaFactor, SrcAlphaSaturateFactor, SrcColorFactor, StaticCopyUsage, StaticDrawUsage, StaticReadUsage, StereoCamera, StreamCopyUsage, StreamDrawUsage, StreamReadUsage, StringKeyframeTrack, SubtractEquation, SubtractiveBlending, TOUCH, TangentSpaceNormalMap, TetrahedronGeometry as TetrahedronBufferGeometry, TetrahedronGeometry, TextGeometry, Texture, TextureLoader, TorusGeometry as TorusBufferGeometry, TorusGeometry, TorusKnotGeometry as TorusKnotBufferGeometry, TorusKnotGeometry, Triangle, TriangleFanDrawMode, TriangleStripDrawMode, TrianglesDrawMode, TubeGeometry as TubeBufferGeometry, TubeGeometry, UVMapping, Uint16Attribute, Uint16BufferAttribute, Uint32Attribute, Uint32BufferAttribute, Uint8Attribute, Uint8BufferAttribute, Uint8ClampedAttribute, Uint8ClampedBufferAttribute, Uniform, UniformsLib, UniformsUtils, UnsignedByteType, UnsignedInt248Type, UnsignedIntType, UnsignedShort4444Type, UnsignedShort5551Type, UnsignedShortType, VSMShadowMap, Vec3, Vector2, Vector3, Vector4, VectorKeyframeTrack, Vertex, VertexColors, VideoTexture, WebGL1Renderer, WebGL3DRenderTarget, WebGLArrayRenderTarget, WebGLCubeRenderTarget, WebGLMultipleRenderTargets, WebGLMultisampleRenderTarget, WebGLRenderTarget, WebGLRenderTargetCube, WebGLRenderer, WebGLUtils, WireframeGeometry, WireframeHelper, WrapAroundEnding, XHRLoader, ZeroCurvatureEnding, ZeroFactor, ZeroSlopeEnding, ZeroStencilOp, _SRGBAFormat, registerComponent, sRGBEncoding };

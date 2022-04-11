@@ -1,5 +1,4 @@
 import { Group, MathUtils } from '../lib/three.module.js';
-import { Scene } from './Scene.js';
 import { App } from './App.js';
 import { ComponentManager } from './ComponentManager.js';
 

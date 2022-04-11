@@ -6,9 +6,6 @@ class Camera {
 	init( data ) {
 
 		this.type = data.type;
-		const near = data.near;
-		const far = data.far;
-
 		this.viewport = data.viewport;
 		this._region = new Vector4();
 

@@ -33770,15 +33770,15 @@
 			// TODO: delete this comment?
 			const distanceGeometry = new THREE.IcosahedronGeometry( 1, 2 );
 			const distanceMaterial = new THREE.MeshBasicMaterial( { color: hexColor, fog: false, wireframe: true, opacity: 0.1, transparent: true } );
-			this.lightSphere = new THREE.Mesh( bulbGeometry, bulbMaterial );
+				this.lightSphere = new THREE.Mesh( bulbGeometry, bulbMaterial );
 			this.lightDistance = new THREE.Mesh( distanceGeometry, distanceMaterial );
-			const d = light.distance;
-			if ( d === 0.0 ) {
-				this.lightDistance.visible = false;
-			} else {
-				this.lightDistance.scale.set( d, d, d );
-			}
-			this.add( this.lightDistance );
+				const d = light.distance;
+				if ( d === 0.0 ) {
+					this.lightDistance.visible = false;
+				} else {
+					this.lightDistance.scale.set( d, d, d );
+				}
+				this.add( this.lightDistance );
 			*/
 		}
 
@@ -33795,12 +33795,12 @@
 			}
 			/*
 			const d = this.light.distance;
-				if ( d === 0.0 ) {
-					this.lightDistance.visible = false;
-				} else {
-					this.lightDistance.visible = true;
+					if ( d === 0.0 ) {
+						this.lightDistance.visible = false;
+					} else {
+						this.lightDistance.visible = true;
 				this.lightDistance.scale.set( d, d, d );
-				}
+					}
 			*/
 
 		}
@@ -34199,7 +34199,7 @@
 			1/___0/|
 			| 6__|_7
 			2/___3/
-				0: max.x, max.y, max.z
+					0: max.x, max.y, max.z
 			1: min.x, max.y, max.z
 			2: min.x, min.y, max.z
 			3: max.x, min.y, max.z
@@ -48523,7 +48523,7 @@
 			const constraints = scene.components.constraints;
 
 			if (constraints !== undefined) {
-				for (let i = 0, len = bodies.length; i < len; i++) this.addConstraint(constraints[i].ref);
+				for (let i = 0, len = constraints.length; i < len; i++) this.addConstraint(constraints[i].ref);
 			}
 		}
 
@@ -48961,168 +48961,6 @@
 	}
 	App.prototype.isApp = true;
 
-	class Scene extends Scene$1 {
-		constructor(name, app) {
-			super();
-			this.app = null;
-			this.components = {
-				rigidbody: [],
-				camera: []
-			};
-			this.audioListener = new AudioListener();
-			if (name !== undefined) this.name = name;
-
-			if (app !== false) {
-				if (app !== undefined) app.addScene(this);else if (App.currentApp !== undefined) App.currentApp.addScene(this);
-			}
-		}
-
-		_addComponents(components, queue) {
-			for (let i = 0, len = components.length; i < len; i++) {
-				const component = components[i];
-				let inQueue = false;
-
-				for (let j = 0, lenj = queue.length; j < lenj; j++) {
-					if (queue[j].component === component) {
-						inQueue = true;
-						break;
-					}
-				}
-
-				if (inQueue) continue;
-
-				if (component.enabled) {
-					const type = component.componentType;
-					if (this.components[type] === undefined) this.components[type] = [];
-					this.components[type].push(component);
-				}
-			}
-		}
-
-		_removeComponents(components, queue) {
-			for (let i = 0, len = components.length; i < len; i++) {
-				const component = components[i];
-				let inQueue = false;
-
-				for (let j = 0, lenj = queue.length; j < lenj; j++) {
-					if (queue[j].component === component) {
-						inQueue = true;
-						break;
-					}
-				}
-
-				if (inQueue) continue;
-
-				if (component.enabled) {
-					const type = component.componentType;
-					const container = this.components[type];
-					container.splice(container.indexOf(component), 1);
-				}
-			}
-		}
-
-		_addToScene(object) {
-			if (object.isEntity !== undefined) {
-				if (object.scene !== null) {
-					object.scene._removeFromScene(object);
-				}
-
-				this._addComponents(object.components, object.queue);
-
-				object.scene = this;
-				object.dispatchEvent({
-					type: 'sceneadd'
-				});
-				const children = object.children;
-
-				for (let i = 0, len = children.length; i < len; i++) {
-					this._addToScene(children[i]);
-				}
-			}
-		}
-
-		_removeFromScene(object) {
-			if (object.isEntity !== undefined) {
-				this._removeComponents(object.components, object.queue);
-
-				object.scene = null;
-				object.dispatchEvent({
-					type: 'sceneremove'
-				});
-				const children = object.children;
-
-				for (let i = 0, len = children.length; i < len; i++) {
-					this._removeFromScene(children[i]);
-				}
-			}
-		}
-
-		add(object) {
-			super.add(...arguments);
-
-			this._addToScene(object);
-
-			return this;
-		}
-
-		remove(object) {
-			super.remove(...arguments);
-
-			this._removeFromScene(object);
-
-			return this;
-		}
-
-		getComponent(type) {
-			return this.components[type] !== undefined ? this.components[type][0] : undefined;
-		}
-
-		getComponents(type) {
-			return this.components[type] !== undefined ? this.components[type] : [];
-		}
-
-		traverseEntities(callback) {
-			this.traverse(child => {
-				if (child.isEntity !== undefined) callback(child);
-			});
-		}
-
-		getEntities() {
-			const filteredChildren = [];
-			const children = this.children;
-
-			for (let i = 0, len = children.length; i < len; i++) {
-				if (children[i].isEntity !== undefined) filteredChildren.push(children[i]);
-			}
-
-			return filteredChildren;
-		}
-
-		getEntityById(id) {
-			return this.getEntityByProperty('id', id);
-		}
-
-		getEntityByName(name) {
-			return this.getEntityByProperty('name', name);
-		}
-
-		getEntityByProperty(name, value) {
-			const entities = this.getEntities();
-
-			for (let i = 0, l = entities.length; i < l; i++) {
-				const child = entities[i];
-				const object = child.getEntityByProperty(name, value);
-
-				if (object !== undefined) {
-					return object;
-				}
-			}
-
-			return undefined;
-		}
-
-	}
-
 	class Entity extends Group {
 		constructor(name, parent) {
 			super();
@@ -49335,6 +49173,168 @@
 
 	}
 	Entity.prototype.isEntity = true;
+
+	class Scene extends Scene$1 {
+		constructor(name, app) {
+			super();
+			this.app = null;
+			this.components = {
+				rigidbody: [],
+				camera: []
+			};
+			this.audioListener = new AudioListener();
+			if (name !== undefined) this.name = name;
+
+			if (app !== false) {
+				if (app !== undefined) app.addScene(this);else if (App.currentApp !== undefined) App.currentApp.addScene(this);
+			}
+		}
+
+		_addComponents(components, queue) {
+			for (let i = 0, len = components.length; i < len; i++) {
+				const component = components[i];
+				let inQueue = false;
+
+				for (let j = 0, lenj = queue.length; j < lenj; j++) {
+					if (queue[j].component === component) {
+						inQueue = true;
+						break;
+					}
+				}
+
+				if (inQueue) continue;
+
+				if (component.enabled) {
+					const type = component.componentType;
+					if (this.components[type] === undefined) this.components[type] = [];
+					this.components[type].push(component);
+				}
+			}
+		}
+
+		_removeComponents(components, queue) {
+			for (let i = 0, len = components.length; i < len; i++) {
+				const component = components[i];
+				let inQueue = false;
+
+				for (let j = 0, lenj = queue.length; j < lenj; j++) {
+					if (queue[j].component === component) {
+						inQueue = true;
+						break;
+					}
+				}
+
+				if (inQueue) continue;
+
+				if (component.enabled) {
+					const type = component.componentType;
+					const container = this.components[type];
+					container.splice(container.indexOf(component), 1);
+				}
+			}
+		}
+
+		_addToScene(object) {
+			if (object.isEntity !== undefined) {
+				if (object.scene !== null) {
+					object.scene._removeFromScene(object);
+				}
+
+				this._addComponents(object.components, object.queue);
+
+				object.scene = this;
+				object.dispatchEvent({
+					type: 'sceneadd'
+				});
+				const children = object.children;
+
+				for (let i = 0, len = children.length; i < len; i++) {
+					this._addToScene(children[i]);
+				}
+			}
+		}
+
+		_removeFromScene(object) {
+			if (object.isEntity !== undefined) {
+				this._removeComponents(object.components, object.queue);
+
+				object.scene = null;
+				object.dispatchEvent({
+					type: 'sceneremove'
+				});
+				const children = object.children;
+
+				for (let i = 0, len = children.length; i < len; i++) {
+					this._removeFromScene(children[i]);
+				}
+			}
+		}
+
+		add(object) {
+			super.add(...arguments);
+
+			this._addToScene(object);
+
+			return this;
+		}
+
+		remove(object) {
+			super.remove(...arguments);
+
+			this._removeFromScene(object);
+
+			return this;
+		}
+
+		getComponent(type) {
+			return this.components[type] !== undefined ? this.components[type][0] : undefined;
+		}
+
+		getComponents(type) {
+			return this.components[type] !== undefined ? this.components[type] : [];
+		}
+
+		traverseEntities(callback) {
+			this.traverse(child => {
+				if (child.isEntity !== undefined) callback(child);
+			});
+		}
+
+		getEntities() {
+			const filteredChildren = [];
+			const children = this.children;
+
+			for (let i = 0, len = children.length; i < len; i++) {
+				if (children[i].isEntity !== undefined) filteredChildren.push(children[i]);
+			}
+
+			return filteredChildren;
+		}
+
+		getEntityById(id) {
+			return this.getEntityByProperty('id', id);
+		}
+
+		getEntityByName(name) {
+			return this.getEntityByProperty('name', name);
+		}
+
+		getEntityByProperty(name, value) {
+			const entities = this.getEntities();
+
+			for (let i = 0, l = entities.length; i < l; i++) {
+				const child = entities[i];
+				const object = child.getEntityByProperty(name, value);
+
+				if (object !== undefined) {
+					return object;
+				}
+			}
+
+			return undefined;
+		}
+
+	}
 
 	exports.ACESFilmicToneMapping = ACESFilmicToneMapping;
 	exports.AddEquation = AddEquation;
@@ -49795,4 +49795,3 @@
 	Object.defineProperty(exports, '__esModule', { value: true });
 
 }));
-//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoidGFyby5qcyIsInNvdXJjZXMiOltdLCJzb3VyY2VzQ29udGVudCI6W10sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiIifQ==

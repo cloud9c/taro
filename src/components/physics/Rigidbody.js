@@ -5,6 +5,7 @@ import { Vector3, FileLoader } from '../../lib/three.module.js';
 const types = [ 'dynamic', 'static', 'kinematic' ];
 const indexedTypes = [ undefined, 'dynamic', 'static', undefined, 'kinematic' ];
 const fileLoader = new FileLoader();
+
 class Rigidbody {
 
 	init( data ) {

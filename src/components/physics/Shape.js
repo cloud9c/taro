@@ -1,9 +1,10 @@
 import { ComponentManager } from '../../core/ComponentManager.js';
-import { Box, Sphere, Plane, Cylinder, ConvexPolyhedron, Particle, Heightfield, Vec3 } from '../../lib/cannon-es.js';
-import { Euler, Quaternion } from '../../lib/three.module.js';
+import { Box, Sphere, Plane, Cylinder, ConvexPolyhedron, Particle, Heightfield, Vec3, Material } from '../../lib/cannon-es.js';
+import { Euler, Quaternion, FileLoader } from '../../lib/three.module.js';
 
 const _e1 = new Euler();
 const _q1 = new Quaternion();
+const fileLoader = new FileLoader();
 
 class Shape {
 
