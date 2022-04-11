@@ -195,6 +195,7 @@ export class TaroLoader extends Loader {
 
 				const component = object.addComponent( type, data );
 				component.uuid = components[ i ].uuid;
+				console.log(component)
 				component.enabled = components[ i ].enabled;
 
 			}
