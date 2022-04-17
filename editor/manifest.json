@@ -1,12 +1,12 @@
 {
-  "name": "Taro Editor",
-  "short_name": "Taro",
+  "name": "Taro.js Editor",
+  "short_name": "Taro.js",
   "start_url": ".",
   "scope": ".",
   "display": "standalone",
   "icons": [
     {
-      "src": "./img/icon.png",
+      "src": "./images/icon.png",
       "type": "image/png",
       "sizes": "144x144"
     }

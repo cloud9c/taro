@@ -1,478 +1,767 @@
-import { TransformControls } from '../../examples/js/TransformControls.js';
-import { OrbitControls } from '../../examples/js/OrbitControls.js';
-import { TaroLoader } from '../../examples/js/TaroLoader.js';
-import {
-	Entity,
-	Scene,
-	Vector2,
-	Raycaster,
-	GridHelper,
-	Color,
-	PerspectiveCamera,
-	MathUtils
-} from '../../build/taro.module.js';
+import * as TARO from 'taro';
 
-const taroLoader = new TaroLoader();
+import { TransformControls } from '../../examples/jsm/controls/TransformControls.js';
 
-export function Viewport( editor ) {
+import { UIPanel } from './libs/ui.js';
 
-	let currentDrag;
-	this.currentEntity = undefined;
+import { EditorControls } from './EditorControls.js';
 
-	const onDragStart = this.onDragStart = function ( event ) {
+import { ViewportCamera } from './Viewport.Camera.js';
+import { ViewportInfo } from './Viewport.Info.js';
+import { ViewHelper } from './Viewport.ViewHelper.js';
+import { VR } from './Viewport.VR.js';
 
-		currentDrag = this;
-		if ( event !== undefined ) event.dataTransfer.effectAllowed = 'move';
+import { SetPositionCommand } from './commands/SetPositionCommand.js';
+import { SetRotationCommand } from './commands/SetRotationCommand.js';
+import { SetScaleCommand } from './commands/SetScaleCommand.js';
 
-	};
+import { RoomEnvironment } from '../../examples/jsm/environments/RoomEnvironment.js';
 
-	function onDragOver( event ) {
+function Viewport( editor ) {
 
-		event.preventDefault();
-		event.dataTransfer.dropEffect = 'move';
+	const signals = editor.signals;
 
-		if ( currentDrag === undefined || currentDrag === this ) return;
+	const container = new UIPanel();
+	container.setId( 'viewport' );
+	container.setPosition( 'absolute' );
 
-		const area = event.offsetY / this.clientHeight;
+	container.add( new ViewportCamera( editor ) );
+	container.add( new ViewportInfo( editor ) );
 
-		if ( area < 0.25 ) {
+	//
 
-			this.classList.add( 'drag-above' );
-			this.classList.remove( 'drag-into', 'drag-below' );
+	let renderer = null;
+	let pmremGenerator = null;
 
-		} else if ( area > 0.75 ) {
+	const camera = editor.camera;
+	const scene = editor.scene;
+	const sceneHelpers = editor.sceneHelpers;
+	let showSceneHelpers = true;
 
-			this.classList.add( 'drag-below' );
-			this.classList.remove( 'drag-into', 'drag-above' );
+	// helpers
 
-		} else {
+	const grid = new TARO.Group();
 
-			this.classList.add( 'drag-into' );
-			this.classList.remove( 'drag-above', 'drag-below' );
+	const grid1 = new TARO.GridHelper( 30, 30, 0x888888 );
+	grid1.material.color.setHex( 0x888888 );
+	grid1.material.vertexColors = false;
+	grid.add( grid1 );
+
+	const grid2 = new TARO.GridHelper( 30, 6, 0x222222 );
+	grid2.material.color.setHex( 0x222222 );
+	grid2.material.depthFunc = TARO.AlwaysDepth;
+	grid2.material.vertexColors = false;
+	grid.add( grid2 );
+
+	const viewHelper = new ViewHelper( camera, container );
+	const vr = new VR( editor );
+
+	//
+
+	const box = new TARO.Box3();
+
+	const selectionBox = new TARO.Box3Helper( box );
+	selectionBox.material.depthTest = false;
+	selectionBox.material.transparent = true;
+	selectionBox.visible = false;
+	sceneHelpers.add( selectionBox );
+
+	let objectPositionOnDown = null;
+	let objectRotationOnDown = null;
+	let objectScaleOnDown = null;
+
+	const transformControls = new TransformControls( camera, container.dom );
+	transformControls.addEventListener( 'change', function () {
+
+		const object = transformControls.object;
+
+		if ( object !== undefined ) {
+
+			box.setFromObject( object, true );
+
+			const helper = editor.helpers[ object.id ];
+
+			if ( helper !== undefined && helper.isSkeletonHelper !== true ) {
+
+				helper.update();
+
+			}
+
+			signals.refreshSidebarObject3D.dispatch( object );
 
 		}
 
+		render();
+
+	} );
+	transformControls.addEventListener( 'mouseDown', function () {
+
+		const object = transformControls.object;
+
+		objectPositionOnDown = object.position.clone();
+		objectRotationOnDown = object.rotation.clone();
+		objectScaleOnDown = object.scale.clone();
+
+		controls.enabled = false;
+
+	} );
+	transformControls.addEventListener( 'mouseUp', function () {
+
+		const object = transformControls.object;
+
+		if ( object !== undefined ) {
+
+			switch ( transformControls.getMode() ) {
+
+				case 'translate':
+
+					if ( ! objectPositionOnDown.equals( object.position ) ) {
+
+						editor.execute( new SetPositionCommand( editor, object, object.position, objectPositionOnDown ) );
+
+					}
+
+					break;
+
+				case 'rotate':
+
+					if ( ! objectRotationOnDown.equals( object.rotation ) ) {
+
+						editor.execute( new SetRotationCommand( editor, object, object.rotation, objectRotationOnDown ) );
+
+					}
+
+					break;
+
+				case 'scale':
+
+					if ( ! objectScaleOnDown.equals( object.scale ) ) {
+
+						editor.execute( new SetScaleCommand( editor, object, object.scale, objectScaleOnDown ) );
+
+					}
+
+					break;
+
+			}
+
+		}
+
+		controls.enabled = true;
+
+	} );
+
+	sceneHelpers.add( transformControls );
+
+	// object picking
+
+	const raycaster = new TARO.Raycaster();
+	const mouse = new TARO.Vector2();
+
+	// events
+
+	function updateAspectRatio() {
+
+		camera.aspect = container.dom.offsetWidth / container.dom.offsetHeight;
+		camera.updateProjectionMatrix();
+
 	}
 
-	const onDrop = this.onDrop = function ( event ) {
+	function getIntersects( point ) {
 
-		if ( currentDrag !== undefined && currentDrag !== this ) {
+		mouse.set( ( point.x * 2 ) - 1, - ( point.y * 2 ) + 1 );
 
-			let element = this;
-			while ( element.dataset.parent !== undefined ) {
+		raycaster.setFromCamera( mouse, camera );
 
-				 if ( element.dataset.parent === currentDrag.dataset.id ) return this.classList.remove( 'drag-into', 'drag-above', 'drag-below' );
+		const objects = [];
 
-				element = document.querySelector( '#scene [data-id="' + element.dataset.parent + '"]' );
+		scene.traverseVisible( function ( child ) {
 
-			}
+			objects.push( child );
 
-			if ( currentDrag.dataset.id === this.dataset.parent ) return;
+		} );
 
-			const currentObject = scene.getEntityById( parseInt( currentDrag.dataset.id ) );
-			const thisObject = scene.getEntityById( parseInt( this.dataset.id ) );
+		sceneHelpers.traverseVisible( function ( child ) {
 
-			if ( currentDrag.dataset.parent !== undefined && ( currentObject.parent !== thisObject || this.classList.contains( 'drag-above' ) ) ) {
+			if ( child.name === 'picker' ) objects.push( child );
 
-				const id = currentDrag.dataset.parent;
-				delete currentDrag.dataset.parent;
+		} );
 
-				if ( document.querySelectorAll( '#scene [data-parent="' + id + '"]' ).length === 0 ) {
+		return raycaster.intersectObjects( objects, false );
 
-					const parent = document.querySelector( '#scene [data-id="' + id + '"]' );
-					parent.classList.remove( 'parent' );
-					delete parent.dataset.opened;
+	}
 
-				}
+	const onDownPosition = new TARO.Vector2();
+	const onUpPosition = new TARO.Vector2();
+	const onDoubleClickPosition = new TARO.Vector2();
 
-			}
+	function getMousePosition( dom, x, y ) {
 
-			if ( this.classList.contains( 'drag-above' ) || this.classList.contains( 'drag-below' ) ) {
+		const rect = dom.getBoundingClientRect();
+		return [ ( x - rect.left ) / rect.width, ( y - rect.top ) / rect.height ];
 
-				if ( this.classList.contains( 'drag-above' ) )
-					this.before( currentDrag );
-				else
-					this.after( currentDrag );
+	}
 
-				if ( currentObject.parent !== thisObject || this.classList.contains( 'drag-above' ) ) {
+	function handleClick() {
 
-					if ( currentDrag.style.paddingLeft !== '' ) {
+		if ( onDownPosition.distanceTo( onUpPosition ) === 0 ) {
 
-						const value = parseFloat( currentDrag.style.paddingLeft ) - 16;
-						if ( value > 24 )
-							currentDrag.style.paddingLeft = value + 'px';
-						else
-							currentDrag.style.removeProperty( 'padding-left' );
+			const intersects = getIntersects( onUpPosition );
 
-					}
+			if ( intersects.length > 0 ) {
 
-					if ( this.classList.contains( 'parent' ) && this.classList.contains( 'drag-below' ) ) {
+				const object = intersects[ 0 ].object;
 
-						currentDrag.style.paddingLeft = parseFloat( window.getComputedStyle( this ).getPropertyValue( 'padding-left' ) ) + 16 + 'px';
-						currentDrag.dataset.parent = this.dataset.id;
-						thisObject.add( currentObject );
+				if ( object.userData.object !== undefined ) {
 
-					} else if ( this.dataset.parent !== undefined ) {
+					// helper
 
-						const parent = document.querySelector( '#scene [data-id="' + this.dataset.parent + '"]' );
-						currentDrag.dataset.parent = parent.dataset.id;
-						currentDrag.style.paddingLeft = parseFloat( window.getComputedStyle( parent ).getPropertyValue( 'padding-left' ) ) + 16 + 'px';
+					editor.select( object.userData.object );
 
-					}
+				} else {
 
-					thisObject.parent.add( currentObject );
+					editor.select( object );
 
 				}
 
 			} else {
 
-				const children = document.querySelectorAll( '#scene [data-parent="' + this.dataset.id + '"]' );
-
-				if ( children.length > 0 ) {
-
-					editor.sidebarScene.openParent( this );
-					children[ children.length - 1 ].after( currentDrag );
-
-				} else {
-
-					this.after( currentDrag );
-
-				}
-
-				this.classList.add( 'parent' );
-				this.dataset.opened = '';
-				currentDrag.style.paddingLeft = parseFloat( window.getComputedStyle( this ).getPropertyValue( 'padding-left' ) ) + 16 + 'px';
-				currentDrag.dataset.parent = this.dataset.id;
-				thisObject.add( currentObject );
+				editor.select( null );
 
 			}
-
-			const recursion = ( element ) => {
-
-				const children = document.querySelectorAll( '#scene [data-parent="' + element.dataset.id + '"]' );
-
-				if ( children.length > 0 ) {
-
-					let prevChild = element;
-					const paddingLeft = parseFloat( window.getComputedStyle( element ).getPropertyValue( 'padding-left' ) );
-					for ( let i = 0, len = children.length; i < len; i ++ ) {
-
-						children[ i ].style.paddingLeft = paddingLeft + 16 + 'px';
-
-						prevChild.after( children[ i ] );
-						prevChild = children[ i ];
-
-						recursion( children[ i ] );
-
-					}
-
-				}
-
-			};
-
-			recursion( currentDrag );
 
 			render();
 
 		}
 
-		this.classList.remove( 'drag-into', 'drag-above', 'drag-below' );
+	}
 
-		if ( event !== undefined ) event.preventDefault();
+	function onMouseDown( event ) {
 
-	};
+		// event.preventDefault();
 
-	function onDragLeave( event ) {
+		const array = getMousePosition( container.dom, event.clientX, event.clientY );
+		onDownPosition.fromArray( array );
 
-		this.classList.remove( 'drag-into', 'drag-above', 'drag-below' );
+		document.addEventListener( 'mouseup', onMouseUp );
 
 	}
 
-	const app = editor.app;
+	function onMouseUp( event ) {
 
-	const scene = this.scene = new Scene();
-	app.setScene( scene );
+		const array = getMousePosition( container.dom, event.clientX, event.clientY );
+		onUpPosition.fromArray( array );
 
-	this.addEntity = ( name, json ) => {
+		handleClick();
 
-		if ( json !== undefined && json.name !== undefined ) name = json.name;
-		else if ( name === undefined ) name = entity;
+		document.removeEventListener( 'mouseup', onMouseUp );
 
-		// remove (X) from end of name
-		name = name.replace( / \([0-9]+\)+$/, '' );
+	}
 
-		// append (1) if the name is a duplicate
-		let counter = 1;
-		while ( scene.getEntityByName( name ) !== undefined ) {
+	function onTouchStart( event ) {
 
-			if ( counter > 1 )
-				name = name.slice( 0, - ( 3 + Math.ceil( Math.log10( counter ) ) ) );
+		const touch = event.changedTouches[ 0 ];
 
-			name += ' (' + counter + ')';
-			counter ++;
+		const array = getMousePosition( container.dom, touch.clientX, touch.clientY );
+		onDownPosition.fromArray( array );
 
-		}
+		document.addEventListener( 'touchend', onTouchEnd );
 
-		let entity;
+	}
 
-		if ( json !== undefined ) {
+	function onTouchEnd( event ) {
 
-			json.name = name;
-			entity = taroLoader.parseEntity( json, scene );
-			entity.componentData = json.components !== undefined ? json.components : [];
+		const touch = event.changedTouches[ 0 ];
 
-		} else {
+		const array = getMousePosition( container.dom, touch.clientX, touch.clientY );
+		onUpPosition.fromArray( array );
 
-			entity = new Entity( name, scene );
-			entity.componentData = [];
+		handleClick();
 
-		}
+		document.removeEventListener( 'touchend', onTouchEnd );
 
-		const div = document.createElement( 'div' );
+	}
 
-		div.innerText = name;
-		div.dataset.id = entity.id;
+	function onDoubleClick( event ) {
 
-		div.setAttribute( 'draggable', true );
-		div.addEventListener( 'dragstart', onDragStart );
-		div.addEventListener( 'dragover', onDragOver );
-		div.addEventListener( 'drop', onDrop );
-		div.addEventListener( 'dragleave', onDragLeave );
+		const array = getMousePosition( container.dom, event.clientX, event.clientY );
+		onDoubleClickPosition.fromArray( array );
 
-		document.getElementById( 'scene' ).appendChild( div );
+		const intersects = getIntersects( onDoubleClickPosition );
 
-		render();
+		if ( intersects.length > 0 ) {
 
-		return entity;
+			const intersect = intersects[ 0 ];
 
-	};
-
-	const grid = new GridHelper( 30, 30 );
-	const color1 = new Color( 0x7d7d7d );
-	const color2 = new Color( 0xDCDCDC );
-	const attribute = grid.geometry.attributes.color;
-	const array = attribute.array;
-	for ( let i = 0; i < array.length; i += 12 ) {
-
-		const color = ( i % ( 12 * 5 ) === 0 ) ? color1 : color2;
-
-		for ( let j = 0; j < 12; j += 3 ) {
-
-			color.toArray( array, i + j );
+			signals.objectFocused.dispatch( intersect.object );
 
 		}
 
 	}
 
-	attribute.needsUpdate = true;
+	container.dom.addEventListener( 'mousedown', onMouseDown );
+	container.dom.addEventListener( 'touchstart', onTouchStart );
+	container.dom.addEventListener( 'dblclick', onDoubleClick );
 
-	scene.add( grid );
+	// controls need to be added *after* main logic,
+	// otherwise controls.enabled doesn't work.
 
-	const helpers = this.helpers = [ ];
-	const icons = this.icons = [];
+	const controls = new EditorControls( camera, container.dom );
+	controls.addEventListener( 'change', function () {
 
-	const renderer = app.renderer;
-	const dom = renderer.domElement;
-	// renderer.observer.disconnect();
-	renderer.setClearColor( 0xc4c4c4 );
+		signals.cameraChanged.dispatch( camera );
+		signals.refreshSidebarObject3D.dispatch( camera );
 
-	const DEFAULT_CAMERA = new PerspectiveCamera( 50, 1, 0.01, 100000 );
-	const { width, height } = renderer.domElement.getBoundingClientRect();
-	DEFAULT_CAMERA.aspect = width /	height;
-	DEFAULT_CAMERA.updateProjectionMatrix();
+	} );
+	viewHelper.controls = controls;
 
-	const camera = DEFAULT_CAMERA;
+	// signals
 
-	const observer = new ResizeObserver( function () {
+	signals.editorCleared.add( function () {
 
-		const { width, height } = renderer.domElement.getBoundingClientRect();
-		renderer.setSize( width, height, false );
-		camera.aspect = width /	height;
-		camera.updateProjectionMatrix();
+		controls.center.set( 0, 0, 0 );
 		render();
 
 	} );
 
-	observer.observe( document.getElementById( 'canvas' ) );
+	signals.transformModeChanged.add( function ( mode ) {
 
-	const render = this.render = () => {
-
-		const deltaTime = app.time.update( performance.now() / 1000 );
-
-		for ( const type in app.components ) {
-
-			const component = app.components[ type ];
-			if ( component[ 0 ] !== undefined && component[ 0 ].update !== undefined )
-				for ( let j = 0, lenj = component.length; j < lenj; j ++ )
-					component[ j ].update( deltaTime );
-
-		}
-
-		if ( this.currentEntity !== undefined ) {
-
-			for ( let i = 0, len = helpers.length; i < len; i ++ )
-				if ( helpers[ i ].update !== undefined )
-					helpers[ i ].update();
-
-
-		}
-
-		renderer.render( scene, camera );
-
-		app.input.reset();
-
-	};
-
-	const raycaster = new Raycaster();
-	const mouse = new Vector2();
-
-	function getIntersects( x, y ) {
-
-		var rect = dom.getBoundingClientRect();
-		mouse.x = ( ( x - rect.left ) / rect.width ) * 2 - 1;
-		mouse.y = - ( ( y - rect.top ) / rect.height ) * 2 + 1;
-		raycaster.setFromCamera( mouse, camera );
-
-		return raycaster.intersectObjects( scene.children, true );
-
-	}
-
-	// transform controls stuff
-
-	camera.position.set( 10, 10, 10 );
-	camera.lookAt( 0, 200, 0 );
-
-	const orbit = this.orbit = new OrbitControls( camera, dom );
-	orbit.addEventListener( 'change', ( event ) => {
-
-		dragging = true;
-		render();
-
-	} );
-	orbit.update();
-
-	const control = this.control = new TransformControls( camera, dom );
-	let onControl = false;
-
-	control.addEventListener( 'change', ( event ) => {
-
-		const section = document.getElementById( 'entity-section' );
-		const entity = event.target.object;
-		if ( section === null || entity === undefined ) return;
-		const inputs = section.querySelectorAll( 'input[data-translation]' );
-
-		for ( let i = 0, len = inputs.length; i < len; i ++ ) {
-
-			const value = entity[ inputs[ i ].dataset.translation ][ inputs[ i ].dataset.xyz ];
-
-			inputs[ i ].value = value.toFixed( 3 );
-
-			if ( inputs[ i ].dataset.translation === 'rotation' ) inputs[ i ].value = MathUtils.radToDeg( value ).toFixed( 3 );
-
-		}
-
-		render();
-
-	} );
-	control.addEventListener( 'dragging-changed', ( event ) => {
-
-		onControl = event.value;
-		orbit.enabled = ! event.value;
+		transformControls.setMode( mode );
 
 	} );
 
-	scene.add( control );
+	signals.snapChanged.add( function ( dist ) {
 
-	const attach = this.attach = ( entity ) => {
+		transformControls.setTranslationSnap( dist );
 
-		if ( this.currentEntity !== undefined ) detach();
+	} );
 
-		const element = document.querySelector( '#scene [data-id="' + entity.id + '"]' );
+	signals.spaceChanged.add( function ( space ) {
 
-		if ( element === null ) return;
+		transformControls.setSpace( space );
 
-		element.dataset.selected = '';
-		editor.sidebarScene.oldTarget = element;
+	} );
 
-		this.currentEntity = entity;
-		control.enabled = true;
-		editor.inspector.attach( entity );
-		control.attach( entity );
+	signals.rendererUpdated.add( function () {
 
-	};
+		scene.traverse( function ( child ) {
 
-	const detach = this.detach = () => {
+			if ( child.material !== undefined ) {
 
-		const target = document.querySelector( '#scene [data-selected]' );
-
-		if ( target !== null ) {
-
-			delete target.dataset.selected;
-			editor.sidebarScene.oldTarget = undefined;
-
-		}
-
-		this.currentEntity = undefined;
-		editor.inspector.detach();
-		control.enabled = false;
-		control.detach();
-
-	};
-
-	let dragging = false;
-
-	function onPointerUp( event ) {
-
-		const intersects = getIntersects( event.clientX, event.clientY );
-		let rayObject;
-
-		for ( let i = 0, len = intersects.length; i < len; i ++ ) {
-
-			rayObject = intersects[ i ].object;
-			while ( rayObject.isEntity === undefined ) {
-
-				if ( rayObject.parent === null ) {
-
-					rayObject = undefined;
-					break;
-
-				}
-
-				rayObject = rayObject.parent;
+				child.material.needsUpdate = true;
 
 			}
 
-			if ( rayObject !== undefined )
+		} );
+
+		render();
+
+	} );
+
+	signals.rendererCreated.add( function ( newRenderer ) {
+
+		if ( renderer !== null ) {
+
+			renderer.setAnimationLoop( null );
+			renderer.dispose();
+			pmremGenerator.dispose();
+
+			container.dom.removeChild( renderer.domElement );
+
+		}
+
+		renderer = newRenderer;
+
+		renderer.setAnimationLoop( animate );
+		renderer.setClearColor( 0xaaaaaa );
+
+		if ( window.matchMedia ) {
+
+			const mediaQuery = window.matchMedia( '(prefers-color-scheme: dark)' );
+			mediaQuery.addEventListener( 'change', function ( event ) {
+
+				renderer.setClearColor( event.matches ? 0x333333 : 0xaaaaaa );
+				updateGridColors( grid1, grid2, event.matches ? [ 0x222222, 0x888888 ] : [ 0x888888, 0x282828 ] );
+
+				render();
+
+			} );
+
+			renderer.setClearColor( mediaQuery.matches ? 0x333333 : 0xaaaaaa );
+			updateGridColors( grid1, grid2, mediaQuery.matches ? [ 0x222222, 0x888888 ] : [ 0x888888, 0x282828 ] );
+
+		}
+
+		renderer.setPixelRatio( window.devicePixelRatio );
+		renderer.setSize( container.dom.offsetWidth, container.dom.offsetHeight );
+
+		pmremGenerator = new TARO.PMREMGenerator( renderer );
+		pmremGenerator.compileEquirectangularShader();
+
+		container.dom.appendChild( renderer.domElement );
+
+		render();
+
+	} );
+
+	signals.sceneGraphChanged.add( function () {
+
+		render();
+
+	} );
+
+	signals.cameraChanged.add( function () {
+
+		render();
+
+	} );
+
+	signals.objectSelected.add( function ( object ) {
+
+		selectionBox.visible = false;
+		transformControls.detach();
+
+		if ( object !== null && object !== scene && object !== camera ) {
+
+			box.setFromObject( object, true );
+
+			if ( box.isEmpty() === false ) {
+
+				selectionBox.visible = true;
+
+			}
+
+			transformControls.attach( object );
+
+		}
+
+		render();
+
+	} );
+
+	signals.objectFocused.add( function ( object ) {
+
+		controls.focus( object );
+
+	} );
+
+	signals.geometryChanged.add( function ( object ) {
+
+		if ( object !== undefined ) {
+
+			box.setFromObject( object, true );
+
+		}
+
+		render();
+
+	} );
+
+	signals.objectChanged.add( function ( object ) {
+
+		if ( editor.selected === object ) {
+
+			box.setFromObject( object, true );
+
+		}
+
+		if ( object.isPerspectiveCamera ) {
+
+			object.updateProjectionMatrix();
+
+		}
+
+		if ( editor.helpers[ object.id ] !== undefined ) {
+
+			editor.helpers[ object.id ].update();
+
+		}
+
+		render();
+
+	} );
+
+	signals.objectRemoved.add( function ( object ) {
+
+		controls.enabled = true; // see #14180
+		if ( object === transformControls.object ) {
+
+			transformControls.detach();
+
+		}
+
+	} );
+
+	signals.materialChanged.add( function () {
+
+		render();
+
+	} );
+
+	// background
+
+	signals.sceneBackgroundChanged.add( function ( backgroundType, backgroundColor, backgroundTexture, backgroundEquirectangularTexture ) {
+
+		switch ( backgroundType ) {
+
+			case 'None':
+
+				scene.background = null;
+
+				break;
+
+			case 'Color':
+
+				scene.background = new TARO.Color( backgroundColor );
+
+				break;
+
+			case 'Texture':
+
+				if ( backgroundTexture ) {
+
+					scene.background = backgroundTexture;
+
+				}
+
+				break;
+
+			case 'Equirectangular':
+
+				if ( backgroundEquirectangularTexture ) {
+
+					backgroundEquirectangularTexture.mapping = TARO.EquirectangularReflectionMapping;
+					scene.background = backgroundEquirectangularTexture;
+
+				}
+
 				break;
 
 		}
 
-		if ( ! ( onControl || dragging ) ) {
-
-			if ( rayObject === undefined ) {
-
-				detach();
-
-			} else if ( control.object !== rayObject && control !== rayObject ) {
-
-				attach( rayObject );
-
-			}
-
-			render();
-
-		}
-
-		dragging = false;
-
-		dom.removeEventListener( 'pointerup', onPointerUp );
-
-	}
-
-	dom.addEventListener( 'pointerdown', function () {
-
-		dom.addEventListener( 'pointerup', onPointerUp );
+		render();
 
 	} );
 
+	// environment
+
+	signals.sceneEnvironmentChanged.add( function ( environmentType, environmentEquirectangularTexture ) {
+
+		switch ( environmentType ) {
+
+			case 'None':
+
+				scene.environment = null;
+
+				break;
+
+			case 'Equirectangular':
+
+				scene.environment = null;
+
+				if ( environmentEquirectangularTexture ) {
+
+					environmentEquirectangularTexture.mapping = TARO.EquirectangularReflectionMapping;
+					scene.environment = environmentEquirectangularTexture;
+
+				}
+
+				break;
+
+			case 'ModelViewer':
+
+				scene.environment = pmremGenerator.fromScene( new RoomEnvironment(), 0.04 ).texture;
+
+				break;
+
+		}
+
+		render();
+
+	} );
+
+	// fog
+
+	signals.sceneFogChanged.add( function ( fogType, fogColor, fogNear, fogFar, fogDensity ) {
+
+		switch ( fogType ) {
+
+			case 'None':
+				scene.fog = null;
+				break;
+			case 'Fog':
+				scene.fog = new TARO.Fog( fogColor, fogNear, fogFar );
+				break;
+			case 'FogExp2':
+				scene.fog = new TARO.FogExp2( fogColor, fogDensity );
+				break;
+
+		}
+
+		render();
+
+	} );
+
+	signals.sceneFogSettingsChanged.add( function ( fogType, fogColor, fogNear, fogFar, fogDensity ) {
+
+		switch ( fogType ) {
+
+			case 'Fog':
+				scene.fog.color.setHex( fogColor );
+				scene.fog.near = fogNear;
+				scene.fog.far = fogFar;
+				break;
+			case 'FogExp2':
+				scene.fog.color.setHex( fogColor );
+				scene.fog.density = fogDensity;
+				break;
+
+		}
+
+		render();
+
+	} );
+
+	signals.viewportCameraChanged.add( function () {
+
+		const viewportCamera = editor.viewportCamera;
+
+		if ( viewportCamera.isPerspectiveCamera ) {
+
+			viewportCamera.aspect = editor.camera.aspect;
+			viewportCamera.projectionMatrix.copy( editor.camera.projectionMatrix );
+
+		} else if ( viewportCamera.isOrthographicCamera ) {
+
+			// TODO
+
+		}
+
+		// disable EditorControls when setting a user camera
+
+		controls.enabled = ( viewportCamera === editor.camera );
+
+		render();
+
+	} );
+
+	signals.exitedVR.add( render );
+
+	//
+
+	signals.windowResize.add( function () {
+
+		updateAspectRatio();
+
+		renderer.setSize( container.dom.offsetWidth, container.dom.offsetHeight );
+
+		render();
+
+	} );
+
+	signals.showGridChanged.add( function ( showGrid ) {
+
+		grid.visible = showGrid;
+		render();
+
+	} );
+
+	signals.showHelpersChanged.add( function ( showHelpers ) {
+
+		showSceneHelpers = showHelpers;
+		transformControls.enabled = showHelpers;
+
+		render();
+
+	} );
+
+	signals.cameraResetted.add( updateAspectRatio );
+
+	// animations
+
+	let prevActionsInUse = 0;
+
+	const clock = new TARO.Clock(); // only used for animations
+
+	function animate() {
+
+		const mixer = editor.mixer;
+		const delta = clock.getDelta();
+
+		let needsUpdate = false;
+
+		// Animations
+
+		const actions = mixer.stats.actions;
+
+		if ( actions.inUse > 0 || prevActionsInUse > 0 ) {
+
+			prevActionsInUse = actions.inUse;
+
+			mixer.update( delta );
+			needsUpdate = true;
+
+		}
+
+		// View Helper
+
+		if ( viewHelper.animating === true ) {
+
+			viewHelper.update( delta );
+			needsUpdate = true;
+
+		}
+
+		if ( vr.currentSession !== null ) {
+
+			needsUpdate = true;
+
+		}
+
+		if ( needsUpdate === true ) render();
+
+	}
+
+	//
+
+	let startTime = 0;
+	let endTime = 0;
+
+	function render() {
+
+		startTime = performance.now();
+
+		// Adding/removing grid to scene so materials with depthWrite false
+		// don't render under the grid.
+
+		scene.add( grid );
+		renderer.setViewport( 0, 0, container.dom.offsetWidth, container.dom.offsetHeight );
+		renderer.render( scene, editor.viewportCamera );
+		scene.remove( grid );
+
+		if ( camera === editor.viewportCamera ) {
+
+			renderer.autoClear = false;
+			if ( showSceneHelpers === true ) renderer.render( sceneHelpers, camera );
+			if ( vr.currentSession === null ) viewHelper.render( renderer );
+			renderer.autoClear = true;
+
+		}
+
+		endTime = performance.now();
+		editor.signals.sceneRendered.dispatch( endTime - startTime );
+
+	}
+
+	return container;
+
 }
+
+function updateGridColors( grid1, grid2, colors ) {
+
+	grid1.material.color.setHex( colors[ 0 ] );
+	grid2.material.color.setHex( colors[ 1 ] );
+
+}
+
+export { Viewport };

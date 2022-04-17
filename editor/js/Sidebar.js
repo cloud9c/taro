@@ -1,24 +1,35 @@
-export function Sidebar() {
+import { UITabbedPanel, UISpan } from './libs/ui.js';
 
-	function onPointerDown( event ) {
+import { SidebarScene } from './Sidebar.Scene.js';
+import { SidebarProperties } from './Sidebar.Properties.js';
+import { SidebarScript } from './Sidebar.Script.js';
+import { SidebarAnimation } from './Sidebar.Animation.js';
+import { SidebarProject } from './Sidebar.Project.js';
+import { SidebarSettings } from './Sidebar.Settings.js';
 
-		const target = event.target;
+function Sidebar( editor ) {
 
-		if ( target.classList.contains( 'tabs' ) || target.dataset.selected !== undefined ) return;
+	const strings = editor.strings;
 
-		const tabs = target.parentElement;
+	const container = new UITabbedPanel();
+	container.setId( 'sidebar' );
 
-		const oldTarget = tabs.querySelector( '[data-selected]' );
-		delete oldTarget.dataset.selected;
-		document.getElementById( oldTarget.dataset.tab ).style.removeProperty( 'display' );
+	const scene = new UISpan().add(
+		new SidebarScene( editor ),
+		new SidebarProperties( editor ),
+		new SidebarAnimation( editor ),
+		new SidebarScript( editor )
+	);
+	const project = new SidebarProject( editor );
+	const settings = new SidebarSettings( editor );
 
-		target.dataset.selected = '';
-		document.getElementById( target.dataset.tab ).style.setProperty( 'display', 'block' );
+	container.addTab( 'scene', strings.getKey( 'sidebar/scene' ), scene );
+	container.addTab( 'project', strings.getKey( 'sidebar/project' ), project );
+	container.addTab( 'settings', strings.getKey( 'sidebar/settings' ), settings );
+	container.select( 'scene' );
 
-	}
-
-	const tabs = document.getElementsByClassName( 'tabs' );
-	for ( let i = 0, len = tabs.length; i < len; i ++ )
-		tabs[ i ].addEventListener( 'pointerdown', onPointerDown );
+	return container;
 
 }
+
+export { Sidebar };

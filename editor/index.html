@@ -1,216 +1,262 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width,initial-scale=1" />
-		<title>Taro Editor</title>
+		<title>Taro.js Editor</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<link rel="apple-touch-icon" href="images/icon.png">
 		<link rel="manifest" href="manifest.json">
-		<link rel="shortcut icon" href="../files/favicon.ico" />
-		<link rel="stylesheet" href="../files/main.css" />
-		<link rel="stylesheet" href="editor.css" />
+		<link rel="shortcut icon" href="../files/favicon.ico"/>
 	</head>
 	<body>
-		<nav id="menubar">
-			<div class="menu" tabindex="0">
-				<div class="title">File</div>
-				<div class="options">
-					<div class="option" data-line>Manage Scenes</div>
-					<div class="option" data-line>New App</div>
-					<div class="option">Import</div>
-					<div class="option">Export GLB</div>
-					<div class="option" data-line>Export GLTF</div>
-					<div class="option">Publish</div>
-				</div>
-			</div>
-			<div class="menu" tabindex="0">
-				<div class="title">Edit</div>
-				<div class="options">
-					<div class="option" data-shortcut='(Ctrl+Z)'>Undo</div>
-					<div class="option" data-shortcut='(Ctrl+Shift+Z)'>Redo</div>
-					<div class="option" data-line>Clear History</div>
-					<div class="option" data-shortcut='(Ctrl+C)'>Copy</div>
-					<div class="option" data-shortcut='(Ctrl+V)'>Paste</div>
-					<div class="option" data-line data-shortcut='(Ctrl+Shift+V)'>Paste as Child</div>
-					<div class="option" data-shortcut='(F2)'>Rename</div>
-					<div class="option" data-shortcut='(Ctrl+D)'>Clone</div>
-					<div class="option" data-shortcut='(Del)'>Delete</div>
-				</div>
-			</div>
-			<div class="menu" tabindex="0">
-				<div class="title">Entity</div>
-				<div class="options">
-					<div class="option" data-line>Empty</div>
-					<div class="option">Box</div>
-					<div class="option">Sphere</div>
-					<div class="option">Plane</div>
-					<div class="option">Cone</div>
-					<div class="option" data-line>Cylinder</div>
-					<div class="option">Model</div>
-					<div class="option">Light</div>
-					<div class="option">Camera</div>
-				</div>
-			</div>
-			<div class="menu" tabindex="0">
-				<div class="title">Play</div>
-			</div>
-			<div class="menu" tabindex="0">
-				<div class="title">Help</div>
-				<div class="options">
-					<div class="option">Documentation</div>
-					<div class="option">Source Code</div>
-				</div>
-			</div>
-		</nav>
-		<main>
-			<aside id="left-sidebar">
-				<div class="resizer" id="left-resizer"></div>
-				<section class="tabs">
-					<div class="tab" data-tab="scene" data-selected>Scene</div>
-					<div class="tab" data-tab="assets">Assets</div>
-					<div class="tab" data-tab="app">App</div>
-				</section>
-				<div class="panel">
-					<div id="scene" style="display: block"></div>
-					<div id="assets">
-						<span>
-							<button id='add-assets' tabindex='0'>
-								<svg xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="24" height="24" viewBox="0 0 32 32" xml:space="preserve"><polygon points="17,15 17,8 15,8 15,15 8,15 8,17 15,17 15,24 17,24 17,17 24,17 24,15 "/><rect style='fill:none' width="32" height="32"/></svg>
-							</button>
-							<ul id='add-assets-list' tabindex='0'>
-								<li>
-									<svg x="0px" y="0px" width="32px" height="32px" viewBox="0 0 32 32" xml:space="preserve"><circle cx="8" cy="16" r="2"/><circle cx="16" cy="16" r="2"/><circle cx="24" cy="16" r="2"/><rect style='fill:none' width="32" height="32"/></svg>
-									<span>Upload</span>
-								</li>
-								<li data-line>
-									<svg viewBox="0 0 32 32"><path d="M11.17,6l3.42,3.41.58.59H28V26H4V6h7.17m0-2H4A2,2,0,0,0,2,6V26a2,2,0,0,0,2,2H28a2,2,0,0,0,2-2V10a2,2,0,0,0-2-2H16L12.59,4.59A2,2,0,0,0,11.17,4Z"/><rect style='fill:none' width="32" height="32"/></svg>
-									<span>Folder</span>
-								</li>
-								<li>
-									<svg width="32" height="32" viewBox="0 0 32 32"><path d="M25.7,9.3l-7-7A.9078.9078,0,0,0,18,2H8A2.0059,2.0059,0,0,0,6,4V28a2.0059,2.0059,0,0,0,2,2H24a2.0059,2.0059,0,0,0,2-2V10A.9078.9078,0,0,0,25.7,9.3ZM18,4.4,23.6,10H18ZM24,28H8V4h8v6a2.0059,2.0059,0,0,0,2,2h6Z"/><rect style='fill:none' width="32" height="32"/></svg>
-									<span>JSON</span>
-								</li>
-								<li data-line>
-									<svg width="32" height="32" viewBox="0 0 32 32"><polygon points="18.83 26 21.41 23.42 20 22 16 26 20 30 21.42 28.59 18.83 26"/><polygon points="27.17 26 24.59 28.58 26 30 30 26 26 22 24.58 23.41 27.17 26"/><path d="M14,28H8V4h8v6a2.0058,2.0058,0,0,0,2,2h6v6h2V10a.9092.9092,0,0,0-.3-.7l-7-7A.9087.9087,0,0,0,18,2H8A2.0058,2.0058,0,0,0,6,4V28a2.0058,2.0058,0,0,0,2,2h6ZM18,4.4,23.6,10H18Z"/><rect style='fill:none' width="32" height="32"/></svg>
-									<span>Script</span>
-								</li>
-								<li>
-									<svg viewBox="0 0 32 32"><rect x="6" y="6" width="4" height="4"/><rect x="10" y="10" width="4" height="4"/><rect x="14" y="6" width="4" height="4"/><rect x="22" y="6" width="4" height="4"/><rect x="6" y="14" width="4" height="4"/><rect x="14" y="14" width="4" height="4"/><rect x="22" y="14" width="4" height="4"/><rect x="6" y="22" width="4" height="4"/><rect x="14" y="22" width="4" height="4"/><rect x="22" y="22" width="4" height="4"/><rect x="18" y="10" width="4" height="4"/><rect x="10" y="18" width="4" height="4"/><rect x="18" y="18" width="4" height="4"/><rect style='fill:none' width="32" height="32"/></svg>
-									<span>Material</span>
-								</li>
-								<li data-line>
-									<svg width="32" height="32" viewBox="0 0 32 32"><path d="M28.5039,8.1362l-12-7a1,1,0,0,0-1.0078,0l-12,7A1,1,0,0,0,3,9V23a1,1,0,0,0,.4961.8638l12,7a1,1,0,0,0,1.0078,0l12-7A1,1,0,0,0,29,23V9A1,1,0,0,0,28.5039,8.1362ZM16,3.1577,26.0156,9,16,14.8423,5.9844,9ZM5,10.7412l10,5.833V28.2588L5,22.4258ZM17,28.2588V16.5742l10-5.833V22.4258Z"/><rect style='fill:none' width="32" height="32"/></svg>
-									<span>Geometry</span>
-								</li>
-								<li>
-									<svg width="32" height="32" viewBox="0 0 32 32"><path d="M19,4a8.9812,8.9812,0,0,0-8.1687,12.7549L2,25.5859,3.4141,27l8.4873-8.4873a9.0408,9.0408,0,0,0,1.5859,1.5859L10,23.5859,11.4141,25l3.8313-3.8311A8.9959,8.9959,0,1,0,19,4Zm6.9058,7.9058a7.005,7.005,0,0,1-5.8116-5.8116A7.005,7.005,0,0,1,25.9058,11.9058ZM12.0942,14.0942a7.005,7.005,0,0,1,5.8116,5.8116A7.005,7.005,0,0,1,12.0942,14.0942ZM19.93,19.9307a9.01,9.01,0,0,0-7.8611-7.8614,7.004,7.004,0,0,1,6-6,9.01,9.01,0,0,0,7.8611,7.8614A7.004,7.004,0,0,1,19.93,19.9307Z"/><rect style='fill:none' width="32" height="32"/></svg>
-									<span>Physics Material</span>
-								</li>
-							</ul>
-						</span>
-					</div>
-					<div id="app">3</div>
-				</div>
-			</aside>
-			<div id="viewport">
-				<div id="toolbar">
-					<button class="tool" data-type="translate" data-selected>
-						<svg
-							viewBox="-0.5 -1 24 24"
-							width="16"
-							height="16"
-							preserveAspectRatio="xMinYMin"
-						>
-							<path
-								d="M18.799 9.957l-1.121-1.121a1 1 0 1 1 1.414-1.415l2.828 2.829a1 1 0 0 1 0 1.414l-2.828 2.828a1 1 0 0 1-1.414-1.414l1.121-1.121h-6.485v6.485l1.121-1.121a1 1 0 0 1 1.414 1.414l-2.828 2.829a1 1 0 0 1-1.414 0l-2.829-2.829a1 1 0 0 1 1.414-1.414l1.122 1.121v-6.485H3.828l1.122 1.121a1 1 0 0 1-1.414 1.414L.707 11.664a1 1 0 0 1 0-1.414L3.536 7.42A1 1 0 0 1 4.95 8.836l-1.122 1.12h6.486V3.473L9.192 4.593a1 1 0 0 1-1.414-1.414L10.607.35a1 1 0 0 1 1.414 0l2.828 2.829a1 1 0 1 1-1.414 1.414l-1.121-1.121v6.485h6.485z"
-							></path>
-						</svg>
-					</button>
-					<button class="tool" data-type="rotate">
-						<svg
-							viewBox="-0.5 -2 24 24"
-							width="16"
-							height="16"
-							preserveAspectRatio="xMinYMin"
-						>
-							<path
-								d="M5.308 7.612l1.352-.923a.981.981 0 0 1 1.372.27 1.008 1.008 0 0 1-.266 1.388l-3.277 2.237a.981.981 0 0 1-1.372-.27L.907 6.998a1.007 1.007 0 0 1 .266-1.389.981.981 0 0 1 1.372.27l.839 1.259C4.6 3.01 8.38 0 12.855 0c5.458 0 9.882 4.477 9.882 10s-4.424 10-9.882 10a.994.994 0 0 1-.988-1c0-.552.443-1 .988-1 4.366 0 7.906-3.582 7.906-8s-3.54-8-7.906-8C9.311 2 6.312 4.36 5.308 7.612z"
-							></path>
-						</svg>
-					</button>
-					<button class="tool" data-type="scale">
-						<svg
-							viewBox="-2 -2 24 24"
-							width="16"
-							height="16"
-							preserveAspectRatio="xMinYMin"
-						>
-							<path
-								d="M1 0h6a1 1 0 1 1 0 2H3.414L18 16.586V13a1 1 0 0 1 2 0v6a1 1 0 0 1-1 1h-6a1 1 0 0 1 0-2h3.586L2 3.414V7a1 1 0 1 1-2 0V1a1 1 0 0 1 1-1z"
-							></path>
-						</svg>
-					</button>
-				</div>
-				<canvas id="canvas" tabindex="0"></canvas>
-				<canvas id="player" tabindex="0"></canvas>
-			</div>
-			<aside id="right-sidebar">
-				<div class="resizer" id="right-resizer"></div>
-				<section class="tabs">
-					<div class="tab" data-selected>Inspector</div>
-				</section>
-				<div class="panel" id="inspector">
-					<section id='scene-default'>
-						<fieldset>
-							<legend>Background</legend>
-							<select name="background" id="background">
-								<option value="none">None</option>
-								<option value="color">Color</option>
-								<option value="texture">Texture</option>
-								<option value="equirect">Equirect</option>
-							</select>
-							<input type="color" id="background-color">
-							<div id="background-texture" class="file-wrapper">
-								<canvas width="22" height="22" class="file-display"></canvas>
-								<input class="hidden-input" type="file">
-							</div>
-							<div id="background-equirect" class="file-wrapper">
-								<canvas width="22" height="22" class="file-display"></canvas>
-								<input class="hidden-input" type="file">
-							</div>
-						</fieldset>
-						<fieldset>
-							<legend>Environment</legend>
-							<select name="environment" id="environment">
-								<option value="none">None</option>
-								<option value="texture">Texture</option>
-							</select>
-							<div id="environment-texture" class="file-wrapper">
-								<canvas width="22" height="22" class="file-display"></canvas>
-								<input class="hidden-input" type="file">
-							</div>
-						</fieldset>
-						<fieldset id="fog-wrapper">
-							<legend>Fog</legend>
-							<select name="fog" id="fog">
-								<option value="none">None</option>
-								<option value="linear">Linear</option>
-								<option value="exponential">Exp2</option>
-							</select>
-							<input type="color" id="color-linear-fog" value="#c4c4c4">
-							<input type="color" id="color-exp-fog" value="#c4c4c4">
-						</fieldset>
-						<fieldset id="linear-fog">
-							<input type="number" value="0.1">
-							<input type="number" value="50">
-						</fieldset>
-						<fieldset id="exponential-fog" value="#c4c4c4">
-							<input type="number" value="0.05">
-						</fieldset>
-					</section>
-				</div>
-			</aside>
-			<div id="contextmenu" tabindex="0"></div>
-		</main>
-		<script type="module" src="js/Editor.js"></script>
+		<link rel="stylesheet" href="css/main.css">
+
+		<script src="https://unpkg.com/@ffmpeg/ffmpeg@0.9.6/dist/ffmpeg.min.js" defer></script>
+
+		<script src="js/libs/draco_encoder.js"></script>
+
+		<link rel="stylesheet" href="js/libs/codemirror/codemirror.css">
+		<link rel="stylesheet" href="js/libs/codemirror/theme/monokai.css">
+		<script src="js/libs/codemirror/codemirror.js"></script>
+		<script src="js/libs/codemirror/mode/javascript.js"></script>
+		<script src="js/libs/codemirror/mode/glsl.js"></script>
+
+		<script src="js/libs/esprima.js"></script>
+		<script src="js/libs/jsonlint.js"></script>
+
+		<link rel="stylesheet" href="js/libs/codemirror/addon/dialog.css">
+		<link rel="stylesheet" href="js/libs/codemirror/addon/show-hint.css">
+		<link rel="stylesheet" href="js/libs/codemirror/addon/tern.css">
+
+		<script src="js/libs/codemirror/addon/dialog.js"></script>
+		<script src="js/libs/codemirror/addon/show-hint.js"></script>
+		<script src="js/libs/codemirror/addon/tern.js"></script>
+		<script src="js/libs/acorn/acorn.js"></script>
+		<script src="js/libs/acorn/acorn_loose.js"></script>
+		<script src="js/libs/acorn/walk.js"></script>
+		<script src="js/libs/ternjs/polyfill.js"></script>
+		<script src="js/libs/ternjs/signal.js"></script>
+		<script src="js/libs/ternjs/tern.js"></script>
+		<script src="js/libs/ternjs/def.js"></script>
+		<script src="js/libs/ternjs/comment.js"></script>
+		<script src="js/libs/ternjs/infer.js"></script>
+		<script src="js/libs/ternjs/doc_comment.js"></script>
+		<script src="js/libs/tern-tarojs/tarojs.js"></script>
+		<script src="js/libs/signals.min.js"></script>
+
+		<!-- Import maps polyfill -->
+		<!-- Remove this when import maps will be widely supported -->
+		<script async src="https://unpkg.com/es-module-shims@1.3.6/dist/es-module-shims.js"></script>
+
+		<script type="importmap">
+			{
+				"imports": {
+					"taro": "../build/taro.module.js"
+				}
+			}
+		</script>
+
+		<script type="module">
+
+			import * as TARO from 'taro';
+
+			import { Editor } from './js/Editor.js';
+			import { Viewport } from './js/Viewport.js';
+			import { Toolbar } from './js/Toolbar.js';
+			import { Script } from './js/Script.js';
+			import { Player } from './js/Player.js';
+			import { Sidebar } from './js/Sidebar.js';
+			import { Menubar } from './js/Menubar.js';
+			import { Resizer } from './js/Resizer.js';
+			import { VRButton } from '../examples/jsm/webxr/VRButton.js';
+
+			window.URL = window.URL || window.webkitURL;
+			window.BlobBuilder = window.BlobBuilder || window.WebKitBlobBuilder || window.MozBlobBuilder;
+
+			Number.prototype.format = function () {
+
+				return this.toString().replace( /(\d)(?=(\d{3})+(?!\d))/g, '$1,' );
+
+			};
+
+			//
+
+			const editor = new Editor();
+
+			window.editor = editor; // Expose editor to Console
+			window.TARO = TARO; // Expose TARO to APP Scripts and Console
+			window.VRButton = VRButton; // Expose VRButton to APP Scripts
+
+			const viewport = new Viewport( editor );
+			document.body.appendChild( viewport.dom );
+
+			const toolbar = new Toolbar( editor );
+			document.body.appendChild( toolbar.dom );
+
+			const script = new Script( editor );
+			document.body.appendChild( script.dom );
+
+			const player = new Player( editor );
+			document.body.appendChild( player.dom );
+
+			const sidebar = new Sidebar( editor );
+			document.body.appendChild( sidebar.dom );
+
+			const menubar = new Menubar( editor );
+			document.body.appendChild( menubar.dom );
+
+			const resizer = new Resizer( editor );
+			document.body.appendChild( resizer.dom );
+
+			//
+
+			editor.storage.init( function () {
+
+				editor.storage.get( function ( state ) {
+
+					if ( isLoadingFromHash ) return;
+
+					if ( state !== undefined ) {
+
+						editor.fromJSON( state );
+
+					}
+
+					const selected = editor.config.getKey( 'selected' );
+
+					if ( selected !== undefined ) {
+
+						editor.selectByUuid( selected );
+
+					}
+
+				} );
+
+				//
+
+				let timeout;
+
+				function saveState() {
+
+					if ( editor.config.getKey( 'autosave' ) === false ) {
+
+						return;
+
+					}
+
+					clearTimeout( timeout );
+
+					timeout = setTimeout( function () {
+
+						editor.signals.savingStarted.dispatch();
+
+						timeout = setTimeout( function () {
+
+							editor.storage.set( editor.toJSON() );
+
+							editor.signals.savingFinished.dispatch();
+
+						}, 100 );
+
+					}, 1000 );
+
+				}
+
+				const signals = editor.signals;
+
+				signals.geometryChanged.add( saveState );
+				signals.objectAdded.add( saveState );
+				signals.objectChanged.add( saveState );
+				signals.objectRemoved.add( saveState );
+				signals.materialChanged.add( saveState );
+				signals.sceneBackgroundChanged.add( saveState );
+				signals.sceneEnvironmentChanged.add( saveState );
+				signals.sceneFogChanged.add( saveState );
+				signals.sceneGraphChanged.add( saveState );
+				signals.scriptChanged.add( saveState );
+				signals.historyChanged.add( saveState );
+
+			} );
+
+			//
+
+			document.addEventListener( 'dragover', function ( event ) {
+
+				event.preventDefault();
+				event.dataTransfer.dropEffect = 'copy';
+
+			} );
+
+			document.addEventListener( 'drop', function ( event ) {
+
+				event.preventDefault();
+
+				if ( event.dataTransfer.types[ 0 ] === 'text/plain' ) return; // Outliner drop
+
+				if ( event.dataTransfer.items ) {
+
+					// DataTransferItemList supports folders
+
+					editor.loader.loadItemList( event.dataTransfer.items );
+
+				} else {
+
+					editor.loader.loadFiles( event.dataTransfer.files );
+
+				}
+
+			} );
+
+			function onWindowResize() {
+
+				editor.signals.windowResize.dispatch();
+
+			}
+
+			window.addEventListener( 'resize', onWindowResize );
+
+			onWindowResize();
+
+			//
+
+			let isLoadingFromHash = false;
+			const hash = window.location.hash;
+
+			if ( hash.slice( 1, 6 ) === 'file=' ) {
+
+				const file = hash.slice( 6 );
+
+				if ( confirm( 'Any unsaved data will be lost. Are you sure?' ) ) {
+
+					const loader = new TARO.FileLoader();
+					loader.crossOrigin = '';
+					loader.load( file, function ( text ) {
+
+						editor.clear();
+						editor.fromJSON( JSON.parse( text ) );
+
+					} );
+
+					isLoadingFromHash = true;
+
+				}
+
+			}
+
+			// ServiceWorker
+
+			if ( 'serviceWorker' in navigator ) {
+
+				try {
+
+					navigator.serviceWorker.register( 'sw.js' );
+
+				} catch ( error ) {
+
+				}
+
+			}
+
+		</script>
 	</body>
 </html>

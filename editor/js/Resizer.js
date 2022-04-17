@@ -1,20 +1,18 @@
-export function Resizer() {
+import { UIElement } from './libs/ui.js';
 
-	let id;
+function Resizer( editor ) {
+
+	const signals = editor.signals;
+
+	const dom = document.createElement( 'div' );
+	dom.id = 'resizer';
 
 	function onPointerDown( event ) {
 
 		if ( event.isPrimary === false ) return;
-		id = this.id;
 
-		this.ownerDocument.addEventListener(
-			'pointermove',
-			onPointerMove,
-			false
-		);
-		this.ownerDocument.addEventListener( 'pointerup', onPointerUp, false );
-
-		this.ownerDocument.body.style.cursor = 'e-resize';
+		dom.ownerDocument.addEventListener( 'pointermove', onPointerMove );
+		dom.ownerDocument.addEventListener( 'pointerup', onPointerUp );
 
 	}
 
@@ -22,35 +20,39 @@ export function Resizer() {
 
 		if ( event.isPrimary === false ) return;
 
-		const resizer = document.getElementById( id );
-
-		resizer.ownerDocument.removeEventListener( 'pointermove', onPointerMove );
-		resizer.ownerDocument.removeEventListener( 'pointerup', onPointerUp );
-
-		resizer.ownerDocument.body.style.cursor = '';
+		dom.ownerDocument.removeEventListener( 'pointermove', onPointerMove );
+		dom.ownerDocument.removeEventListener( 'pointerup', onPointerUp );
 
 	}
 
 	function onPointerMove( event ) {
 
-		event.preventDefault();
+		// PointerEvent's movementX/movementY are 0 in WebKit
+
 		if ( event.isPrimary === false ) return;
 
-		const parent = document.getElementById( id ).parentElement;
-		const rect = parent.getBoundingClientRect();
-		let x = event.movementX;
+		const offsetWidth = document.body.offsetWidth;
+		const clientX = event.clientX;
 
-		if ( id === 'right-resizer' ) x *= - 1;
+		const cX = clientX < 0 ? 0 : clientX > offsetWidth ? offsetWidth : clientX;
 
-		parent.style.width = x + rect.width + 'px';
+		const x = offsetWidth - cX;
+
+		dom.style.right = x + 'px';
+
+		document.getElementById( 'sidebar' ).style.width = x + 'px';
+		document.getElementById( 'player' ).style.right = x + 'px';
+		document.getElementById( 'script' ).style.right = x + 'px';
+		document.getElementById( 'viewport' ).style.right = x + 'px';
+
+		signals.windowResize.dispatch();
 
 	}
 
-	const resizers = document.getElementsByClassName( 'resizer' );
-	for ( let i = 0, len = resizers.length; i < len; i ++ ) {
+	dom.addEventListener( 'pointerdown', onPointerDown );
 
-		resizers[ i ].addEventListener( 'pointerdown', onPointerDown );
-
-	}
+	return new UIElement( dom );
 
 }
+
+export { Resizer };
