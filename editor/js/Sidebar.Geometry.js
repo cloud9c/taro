@@ -22,69 +22,6 @@ function SidebarGeometry( editor ) {
 
 	let currentGeometryType = null;
 
-	// Actions
-
-	/*
-	let objectActions = new UISelect().setPosition( 'absolute' ).setRight( '8px' ).setFontSize( '11px' );
-	objectActions.setOptions( {
-
-		'Actions': 'Actions',
-		'Center': 'Center',
-		'Convert': 'Convert',
-		'Flatten': 'Flatten'
-
-	} );
-	objectActions.onClick( function ( event ) {
-
-		event.stopPropagation(); // Avoid panel collapsing
-
-	} );
-	objectActions.onChange( function ( event ) {
-
-		let action = this.getValue();
-
-		let object = editor.selected;
-		let geometry = object.geometry;
-
-		if ( confirm( action + ' ' + object.name + '?' ) === false ) return;
-
-		switch ( action ) {
-
-			case 'Center':
-
-				let offset = geometry.center();
-
-				let newPosition = object.position.clone();
-				newPosition.sub( offset );
-				editor.execute( new SetPositionCommand( editor, object, newPosition ) );
-
-				editor.signals.geometryChanged.dispatch( object );
-
-				break;
-
-			case 'Flatten':
-
-				let newGeometry = geometry.clone();
-				newGeometry.uuid = geometry.uuid;
-				newGeometry.applyMatrix( object.matrix );
-
-				let cmds = [ new SetGeometryCommand( editor, object, newGeometry ),
-					new SetPositionCommand( editor, object, new TARO.Vector3( 0, 0, 0 ) ),
-					new SetRotationCommand( editor, object, new TARO.Euler( 0, 0, 0 ) ),
-					new SetScaleCommand( editor, object, new TARO.Vector3( 1, 1, 1 ) ) ];
-
-				editor.execute( new MultiCmdsCommand( editor, cmds ), 'Flatten Geometry' );
-
-				break;
-
-		}
-
-		this.setValue( 'Actions' );
-
-	} );
-	container.addStatic( objectActions );
-	*/
-
 	// type
 
 	const geometryTypeRow = new UIRow();

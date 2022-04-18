@@ -74,8 +74,6 @@ const assets = [
 
 	'../examples/jsm/helpers/VertexNormalsHelper.js',
 
-	'../examples/jsm/geometries/TeapotGeometry.js',
-
 	'../examples/jsm/webxr/VRButton.js',
 	'../examples/jsm/webxr/XRControllerModelFactory.js',
 
