@@ -1,8 +1,8 @@
-import * as TARO from 'taro';
+import * as THREE from 'three';
 
-const vpTemp = new TARO.Vector4();
+const vpTemp = new THREE.Vector4();
 
-class ViewHelper extends TARO.Object3D {
+class ViewHelper extends THREE.Object3D {
 
 	constructor( editorCamera, dom ) {
 
@@ -11,23 +11,23 @@ class ViewHelper extends TARO.Object3D {
 		this.animating = false;
 		this.controls = null;
 
-		const color1 = new TARO.Color( '#ff3653' );
-		const color2 = new TARO.Color( '#8adb00' );
-		const color3 = new TARO.Color( '#2c8fff' );
+		const color1 = new THREE.Color( '#ff3653' );
+		const color2 = new THREE.Color( '#8adb00' );
+		const color3 = new THREE.Color( '#2c8fff' );
 
 		const interactiveObjects = [];
-		const raycaster = new TARO.Raycaster();
-		const mouse = new TARO.Vector2();
-		const dummy = new TARO.Object3D();
+		const raycaster = new THREE.Raycaster();
+		const mouse = new THREE.Vector2();
+		const dummy = new THREE.Object3D();
 
-		const camera = new TARO.OrthographicCamera( - 2, 2, 2, - 2, 0, 4 );
+		const camera = new THREE.OrthographicCamera( - 2, 2, 2, - 2, 0, 4 );
 		camera.position.set( 0, 0, 2 );
 
-		const geometry = new TARO.BoxGeometry( 0.8, 0.05, 0.05 ).translate( 0.4, 0, 0 );
+		const geometry = new THREE.BoxGeometry( 0.8, 0.05, 0.05 ).translate( 0.4, 0, 0 );
 
-		const xAxis = new TARO.Mesh( geometry, getAxisMaterial( color1 ) );
-		const yAxis = new TARO.Mesh( geometry, getAxisMaterial( color2 ) );
-		const zAxis = new TARO.Mesh( geometry, getAxisMaterial( color3 ) );
+		const xAxis = new THREE.Mesh( geometry, getAxisMaterial( color1 ) );
+		const yAxis = new THREE.Mesh( geometry, getAxisMaterial( color2 ) );
+		const zAxis = new THREE.Mesh( geometry, getAxisMaterial( color3 ) );
 
 		yAxis.rotation.z = Math.PI / 2;
 		zAxis.rotation.y = - Math.PI / 2;
@@ -36,17 +36,17 @@ class ViewHelper extends TARO.Object3D {
 		this.add( zAxis );
 		this.add( yAxis );
 
-		const posXAxisHelper = new TARO.Sprite( getSpriteMaterial( color1, 'X' ) );
+		const posXAxisHelper = new THREE.Sprite( getSpriteMaterial( color1, 'X' ) );
 		posXAxisHelper.userData.type = 'posX';
-		const posYAxisHelper = new TARO.Sprite( getSpriteMaterial( color2, 'Y' ) );
+		const posYAxisHelper = new THREE.Sprite( getSpriteMaterial( color2, 'Y' ) );
 		posYAxisHelper.userData.type = 'posY';
-		const posZAxisHelper = new TARO.Sprite( getSpriteMaterial( color3, 'Z' ) );
+		const posZAxisHelper = new THREE.Sprite( getSpriteMaterial( color3, 'Z' ) );
 		posZAxisHelper.userData.type = 'posZ';
-		const negXAxisHelper = new TARO.Sprite( getSpriteMaterial( color1 ) );
+		const negXAxisHelper = new THREE.Sprite( getSpriteMaterial( color1 ) );
 		negXAxisHelper.userData.type = 'negX';
-		const negYAxisHelper = new TARO.Sprite( getSpriteMaterial( color2 ) );
+		const negYAxisHelper = new THREE.Sprite( getSpriteMaterial( color2 ) );
 		negYAxisHelper.userData.type = 'negY';
-		const negZAxisHelper = new TARO.Sprite( getSpriteMaterial( color3 ) );
+		const negZAxisHelper = new THREE.Sprite( getSpriteMaterial( color3 ) );
 		negZAxisHelper.userData.type = 'negZ';
 
 		posXAxisHelper.position.x = 1;
@@ -73,7 +73,7 @@ class ViewHelper extends TARO.Object3D {
 		interactiveObjects.push( negYAxisHelper );
 		interactiveObjects.push( negZAxisHelper );
 
-		const point = new TARO.Vector3();
+		const point = new THREE.Vector3();
 		const dim = 128;
 		const turnRate = 2 * Math.PI; // turn rate in angles per second
 
@@ -136,11 +136,11 @@ class ViewHelper extends TARO.Object3D {
 
 		};
 
-		const targetPosition = new TARO.Vector3();
-		const targetQuaternion = new TARO.Quaternion();
+		const targetPosition = new THREE.Vector3();
+		const targetQuaternion = new THREE.Quaternion();
 
-		const q1 = new TARO.Quaternion();
-		const q2 = new TARO.Quaternion();
+		const q1 = new THREE.Quaternion();
+		const q2 = new THREE.Quaternion();
 		let radius = 0;
 
 		this.handleClick = function ( event ) {
@@ -204,32 +204,32 @@ class ViewHelper extends TARO.Object3D {
 
 				case 'posX':
 					targetPosition.set( 1, 0, 0 );
-					targetQuaternion.setFromEuler( new TARO.Euler( 0, Math.PI * 0.5, 0 ) );
+					targetQuaternion.setFromEuler( new THREE.Euler( 0, Math.PI * 0.5, 0 ) );
 					break;
 
 				case 'posY':
 					targetPosition.set( 0, 1, 0 );
-					targetQuaternion.setFromEuler( new TARO.Euler( - Math.PI * 0.5, 0, 0 ) );
+					targetQuaternion.setFromEuler( new THREE.Euler( - Math.PI * 0.5, 0, 0 ) );
 					break;
 
 				case 'posZ':
 					targetPosition.set( 0, 0, 1 );
-					targetQuaternion.setFromEuler( new TARO.Euler() );
+					targetQuaternion.setFromEuler( new THREE.Euler() );
 					break;
 
 				case 'negX':
 					targetPosition.set( - 1, 0, 0 );
-					targetQuaternion.setFromEuler( new TARO.Euler( 0, - Math.PI * 0.5, 0 ) );
+					targetQuaternion.setFromEuler( new THREE.Euler( 0, - Math.PI * 0.5, 0 ) );
 					break;
 
 				case 'negY':
 					targetPosition.set( 0, - 1, 0 );
-					targetQuaternion.setFromEuler( new TARO.Euler( Math.PI * 0.5, 0, 0 ) );
+					targetQuaternion.setFromEuler( new THREE.Euler( Math.PI * 0.5, 0, 0 ) );
 					break;
 
 				case 'negZ':
 					targetPosition.set( 0, 0, - 1 );
-					targetQuaternion.setFromEuler( new TARO.Euler( 0, Math.PI, 0 ) );
+					targetQuaternion.setFromEuler( new THREE.Euler( 0, Math.PI, 0 ) );
 					break;
 
 				default:
@@ -254,7 +254,7 @@ class ViewHelper extends TARO.Object3D {
 
 		function getAxisMaterial( color ) {
 
-			return new TARO.MeshBasicMaterial( { color: color, toneMapped: false } );
+			return new THREE.MeshBasicMaterial( { color: color, toneMapped: false } );
 
 		}
 
@@ -280,9 +280,9 @@ class ViewHelper extends TARO.Object3D {
 
 			}
 
-			const texture = new TARO.CanvasTexture( canvas );
+			const texture = new THREE.CanvasTexture( canvas );
 
-			return new TARO.SpriteMaterial( { map: texture, toneMapped: false } );
+			return new THREE.SpriteMaterial( { map: texture, toneMapped: false } );
 
 		}
 

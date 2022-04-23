@@ -5,7 +5,7 @@ import {
 	MeshBasicMaterial,
 	PlaneGeometry,
 	sRGBEncoding
-} from 'taro';
+} from 'three';
 
 class HTMLMesh extends Mesh {
 

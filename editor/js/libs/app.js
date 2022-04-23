@@ -23,14 +23,14 @@ var APP = {
 
 		this.load = function ( json ) {
 
-			var project = json.project;
+			var setting = json.setting;
 
-			if ( project.vr !== undefined ) renderer.xr.enabled = project.vr;
-			if ( project.shadows !== undefined ) renderer.shadowMap.enabled = project.shadows;
-			if ( project.shadowType !== undefined ) renderer.shadowMap.type = project.shadowType;
-			if ( project.toneMapping !== undefined ) renderer.toneMapping = project.toneMapping;
-			if ( project.toneMappingExposure !== undefined ) renderer.toneMappingExposure = project.toneMappingExposure;
-			if ( project.physicallyCorrectLights !== undefined ) renderer.physicallyCorrectLights = project.physicallyCorrectLights;
+			if ( setting.vr !== undefined ) renderer.xr.enabled = setting.vr;
+			if ( setting.shadows !== undefined ) renderer.shadowMap.enabled = setting.shadows;
+			if ( setting.shadowType !== undefined ) renderer.shadowMap.type = setting.shadowType;
+			if ( setting.toneMapping !== undefined ) renderer.toneMapping = setting.toneMapping;
+			if ( setting.toneMappingExposure !== undefined ) renderer.toneMappingExposure = setting.toneMappingExposure;
+			if ( setting.physicallyCorrectLights !== undefined ) renderer.physicallyCorrectLights = setting.physicallyCorrectLights;
 
 			this.setScene( loader.parse( json.scene ) );
 			this.setCamera( loader.parse( json.camera ) );

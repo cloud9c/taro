@@ -35,14 +35,15 @@
 		<script type="importmap">
 			{
 				"imports": {
-					"taro": "../build/taro.module.js"
+					"taro": "../build/taro.module.js",
+					"three": "../build/taro.module.js"
 				}
 			}
 		</script>
 
 		<script type='module'>
 			import * as TARO from 'taro';
-			import { OrbitControls } from './jsm/loaders/OrbitControls.js'
+			import { OrbitControls } from './jsm/controls/OrbitControls.js'
 
 			let entity, mesh;
 

@@ -7,16 +7,16 @@ function Config() {
 
 		'autosave': true,
 
-		'project/title': '',
-		'project/editable': false,
-		'project/vr': false,
+		'setting/title': '',
+		'setting/editable': false,
+		'setting/vr': false,
 
-		'project/renderer/antialias': true,
-		'project/renderer/shadows': true,
-		'project/renderer/shadowType': 1, // PCF
-		'project/renderer/physicallyCorrectLights': false,
-		'project/renderer/toneMapping': 0, // NoToneMapping
-		'project/renderer/toneMappingExposure': 1,
+		'setting/renderer/antialias': true,
+		'setting/renderer/shadows': true,
+		'setting/renderer/shadowType': 1, // PCF
+		'setting/renderer/physicallyCorrectLights': false,
+		'setting/renderer/toneMapping': 0, // NoToneMapping
+		'setting/renderer/toneMappingExposure': 1,
 
 		'settings/history': false,
 

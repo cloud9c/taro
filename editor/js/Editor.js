@@ -1,4 +1,6 @@
 import * as TARO from 'taro';
+import { TaroLoader } from '../../examples/taro/TaroLoader.js';
+import { TaroExporter } from '../../examples/taro/TaroExporter.js';
 
 import { Config } from './Config.js';
 import { Loader } from './Loader.js';
@@ -97,8 +99,11 @@ function Editor() {
 
 	this.camera = _DEFAULT_CAMERA.clone();
 
+	this.app = {};
+
 	this.scene = new TARO.Scene();
 	this.scene.name = 'Scene';
+	this.scenes = [];
 
 	this.sceneHelpers = new TARO.Scene();
 
@@ -106,7 +111,6 @@ function Editor() {
 	this.geometries = {};
 	this.materials = {};
 	this.textures = {};
-	this.scripts = {};
 
 	this.materialsRefCounter = new Map(); // tracks how often is a material used by a 3D object
 
@@ -466,36 +470,6 @@ Editor.prototype = {
 
 	//
 
-	addScript: function ( object, script ) {
-
-		if ( this.scripts[ object.uuid ] === undefined ) {
-
-			this.scripts[ object.uuid ] = [];
-
-		}
-
-		this.scripts[ object.uuid ].push( script );
-
-		this.signals.scriptAdded.dispatch( script );
-
-	},
-
-	removeScript: function ( object, script ) {
-
-		if ( this.scripts[ object.uuid ] === undefined ) return;
-
-		var index = this.scripts[ object.uuid ].indexOf( script );
-
-		if ( index !== - 1 ) {
-
-			this.scripts[ object.uuid ].splice( index, 1 );
-
-		}
-
-		this.signals.scriptRemoved.dispatch( script );
-
-	},
-
 	getObjectMaterial: function ( object, slot ) {
 
 		var material = object.material;
@@ -628,7 +602,6 @@ Editor.prototype = {
 		this.geometries = {};
 		this.materials = {};
 		this.textures = {};
-		this.scripts = {};
 
 		this.materialsRefCounter.clear();
 
@@ -645,50 +618,33 @@ Editor.prototype = {
 
 	fromJSON: async function ( json ) {
 
-		var loader = new TARO.ObjectLoader();
+		var loader = new TaroLoader();
 		var camera = await loader.parseAsync( json.camera );
 
 		this.camera.copy( camera );
 		this.signals.cameraResetted.dispatch();
 
 		this.history.fromJSON( json.history );
-		this.scripts = json.scripts;
 
-		this.setScene( await loader.parseAsync( json.scene ) );
+		this.setScene( await loader.parseAsync( json.currentScene ) );
 
 	},
 
 	toJSON: function () {
 
-		// scripts clean up
-
-		var scene = this.scene;
-		var scripts = this.scripts;
-
-		for ( var key in scripts ) {
-
-			var script = scripts[ key ];
-
-			if ( script.length === 0 || scene.getObjectByProperty( 'uuid', key ) === undefined ) {
-
-				delete scripts[ key ];
-
-			}
-
-		}
-
-		//
+		var exporter = new TaroExporter();
+		var data = exporter.parseApp( this.app ); // TODO
 
 		return {
 
 			metadata: {},
-			project: {
-				shadows: this.config.getKey( 'project/renderer/shadows' ),
-				shadowType: this.config.getKey( 'project/renderer/shadowType' ),
-				vr: this.config.getKey( 'project/vr' ),
-				physicallyCorrectLights: this.config.getKey( 'project/renderer/physicallyCorrectLights' ),
-				toneMapping: this.config.getKey( 'project/renderer/toneMapping' ),
-				toneMappingExposure: this.config.getKey( 'project/renderer/toneMappingExposure' )
+			setting: {
+				shadows: this.config.getKey( 'setting/renderer/shadows' ),
+				shadowType: this.config.getKey( 'setting/renderer/shadowType' ),
+				vr: this.config.getKey( 'setting/vr' ),
+				physicallyCorrectLights: this.config.getKey( 'setting/renderer/physicallyCorrectLights' ),
+				toneMapping: this.config.getKey( 'setting/renderer/toneMapping' ),
+				toneMappingExposure: this.config.getKey( 'setting/renderer/toneMappingExposure' )
 			},
 			camera: this.camera.toJSON(),
 			scene: this.scene.toJSON(),

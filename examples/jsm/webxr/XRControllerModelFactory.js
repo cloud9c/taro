@@ -3,7 +3,7 @@ import {
 	MeshBasicMaterial,
 	Object3D,
 	SphereGeometry,
-} from 'taro';
+} from 'three';
 
 import { GLTFLoader } from '../loaders/GLTFLoader.js';
 

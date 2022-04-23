@@ -10,7 +10,7 @@ import {
  	MeshStandardMaterial,
  	PointLight,
  	Scene,
-} from 'taro';
+} from 'three';
 
 class RoomEnvironment extends Scene {
 

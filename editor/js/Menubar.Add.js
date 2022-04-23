@@ -87,54 +87,6 @@ function MenubarAdd( editor ) {
 	} );
 	options.add( option );
 
-	// Dodecahedron
-
-	option = new UIRow();
-	option.setClass( 'option' );
-	option.setTextContent( strings.getKey( 'menubar/add/dodecahedron' ) );
-	option.onClick( function () {
-
-		const geometry = new TARO.DodecahedronGeometry( 1, 0 );
-		const mesh = new TARO.Mesh( geometry, new TARO.MeshStandardMaterial() );
-		mesh.name = 'Dodecahedron';
-
-		editor.execute( new AddObjectCommand( editor, mesh ) );
-
-	} );
-	options.add( option );
-
-	// Icosahedron
-
-	option = new UIRow();
-	option.setClass( 'option' );
-	option.setTextContent( strings.getKey( 'menubar/add/icosahedron' ) );
-	option.onClick( function () {
-
-		const geometry = new TARO.IcosahedronGeometry( 1, 0 );
-		const mesh = new TARO.Mesh( geometry, new TARO.MeshStandardMaterial() );
-		mesh.name = 'Icosahedron';
-
-		editor.execute( new AddObjectCommand( editor, mesh ) );
-
-	} );
-	options.add( option );
-
-	// Lathe
-
-	option = new UIRow();
-	option.setClass( 'option' );
-	option.setTextContent( strings.getKey( 'menubar/add/lathe' ) );
-	option.onClick( function () {
-
-		const geometry = new TARO.LatheGeometry();
-		const mesh = new TARO.Mesh( geometry, new TARO.MeshStandardMaterial( { side: TARO.DoubleSide } ) );
-		mesh.name = 'Lathe';
-
-		editor.execute( new AddObjectCommand( editor, mesh ) );
-
-	} );
-	options.add( option );
-
 	// Octahedron
 
 	option = new UIRow();
@@ -162,22 +114,6 @@ function MenubarAdd( editor ) {
 		const material = new TARO.MeshStandardMaterial();
 		const mesh = new TARO.Mesh( geometry, material );
 		mesh.name = 'Plane';
-
-		editor.execute( new AddObjectCommand( editor, mesh ) );
-
-	} );
-	options.add( option );
-
-	// Ring
-
-	option = new UIRow();
-	option.setClass( 'option' );
-	option.setTextContent( strings.getKey( 'menubar/add/ring' ) );
-	option.onClick( function () {
-
-		const geometry = new TARO.RingGeometry( 0.5, 1, 8, 1, 0, Math.PI * 2 );
-		const mesh = new TARO.Mesh( geometry, new TARO.MeshStandardMaterial() );
-		mesh.name = 'Ring';
 
 		editor.execute( new AddObjectCommand( editor, mesh ) );
 
@@ -215,38 +151,6 @@ function MenubarAdd( editor ) {
 	} );
 	options.add( option );
 
-	// Tetrahedron
-
-	option = new UIRow();
-	option.setClass( 'option' );
-	option.setTextContent( strings.getKey( 'menubar/add/tetrahedron' ) );
-	option.onClick( function () {
-
-		const geometry = new TARO.TetrahedronGeometry( 1, 0 );
-		const mesh = new TARO.Mesh( geometry, new TARO.MeshStandardMaterial() );
-		mesh.name = 'Tetrahedron';
-
-		editor.execute( new AddObjectCommand( editor, mesh ) );
-
-	} );
-	options.add( option );
-
-	// Torus
-
-	option = new UIRow();
-	option.setClass( 'option' );
-	option.setTextContent( strings.getKey( 'menubar/add/torus' ) );
-	option.onClick( function () {
-
-		const geometry = new TARO.TorusGeometry( 1, 0.4, 8, 6, Math.PI * 2 );
-		const mesh = new TARO.Mesh( geometry, new TARO.MeshStandardMaterial() );
-		mesh.name = 'Torus';
-
-		editor.execute( new AddObjectCommand( editor, mesh ) );
-
-	} );
-	options.add( option );
-
 	// TorusKnot
 
 	option = new UIRow();
@@ -262,60 +166,6 @@ function MenubarAdd( editor ) {
 
 	} );
 	options.add( option );
-
-	// Tube
-
-	option = new UIRow();
-	option.setClass( 'option' );
-	option.setTextContent( strings.getKey( 'menubar/add/tube' ) );
-	option.onClick( function () {
-
-		const path = new TARO.CatmullRomCurve3( [
-			new TARO.Vector3( 2, 2, - 2 ),
-			new TARO.Vector3( 2, - 2, - 0.6666666666666667 ),
-			new TARO.Vector3( - 2, - 2, 0.6666666666666667 ),
-			new TARO.Vector3( - 2, 2, 2 )
-		] );
-
-		const geometry = new TARO.TubeGeometry( path, 64, 1, 8, false );
-		const mesh = new TARO.Mesh( geometry, new TARO.MeshStandardMaterial() );
-		mesh.name = 'Tube';
-
-		editor.execute( new AddObjectCommand( editor, mesh ) );
-
-	} );
-	options.add( option );
-
-	/*
-	// Teapot
-
-	option = new UIRow();
-	option.setClass( 'option' );
-	option.setTextContent( 'Teapot' );
-	option.onClick( function () {
-
-		let size = 50;
-		let segments = 10;
-		let bottom = true;
-		let lid = true;
-		let body = true;
-		let fitLid = false;
-		let blinnScale = true;
-
-		let material = new TARO.MeshStandardMaterial();
-
-		let geometry = new TeapotGeometry( size, segments, bottom, lid, body, fitLid, blinnScale );
-		let mesh = new TARO.Mesh( geometry, material );
-		mesh.name = 'Teapot';
-
-		editor.addObject( mesh );
-		editor.select( mesh );
-
-	} );
-	options.add( option );
-	*/
-
-	//
 
 	options.add( new UIHorizontalRule() );
 

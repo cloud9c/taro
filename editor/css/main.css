@@ -85,7 +85,7 @@ textarea, input { outline: none; } /* osx */
 		position: relative;
 		display: block;
 		width: 100%;
-		height: 100%;
+		height: auto;
 		min-width: 300px;
 	}
 
