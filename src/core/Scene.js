@@ -230,4 +230,26 @@ export class Scene extends ThreeScene {
 
 	}
 
+	toJSON() {
+
+		const output = {};
+
+		output.uuid = this.uuid;
+		if ( this.background !== null ) output.background = this.background.toJSON();
+		if ( this.environment !== null ) output.environment = this.environment.toJSON();
+		if ( this.fog !== null ) output.fog = this.fog.toJSON();
+
+		const children = this.getEntities();
+		if ( children.length > 0 ) {
+
+			output.children = [];
+			for ( let i = 0, len = children.length; i < len; i ++ )
+				output.children.push( children[ i ].toJSON() );
+
+		}
+
+		return output;
+
+	}
+
 }

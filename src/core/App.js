@@ -190,6 +190,43 @@ export class App {
 
 	}
 
+	toJSON() {
+
+		const output = {
+			metadata: {
+				'version': 1,
+				'type': 'App',
+				'generator': 'TaroExporter'
+			},
+			scenes: [],
+			parameters: Object.assign( {}, this.parameters )
+		};
+
+		const op = output.parameters;
+
+		// can't jsonify an HTMLelement, so remove it
+		delete op.canvas;
+
+		// update physics
+		if ( this.physics.allowSleep === false ) op.allowSleep = false;
+		if ( this.physics.epsilon !== 0.001 ) op.epsilon = this.parameters.epsilon;
+		if ( this.physics.gravity.equals( { x: 0, y: - 9.80665, z: 0 } ) === false ) op.gravity = this.parameters.gravity;
+		if ( this.physics.maxSubSteps !== 10 ) op.maxSubSteps = this.parameters.maxSubSteps;
+
+		// update time
+		if ( this.time.fixedTimestep !== 0.02 ) op.fixedTimestep = this.parameters.fixedTimestep;
+		if ( this.time.maxDeltaTime !== 0.1 ) op.maxDeltaTime = this.parameters.maxDeltaTime;
+		if ( this.time.timeScale !== 1 ) op.timeScale = this.parameters.timeScale;
+
+		for ( let i = 0, len = this.scenes.length; i < len; i ++ )
+			output.scenes[ i ] = this.scenes[ i ].toJSON();
+
+		output.currentScene = ( this.currentScene !== undefined ) ? this.currentScene.uuid : this.scenes[0].uuid;
+
+		return output;
+
+	}
+
 }
 
 App.prototype.isApp = true;

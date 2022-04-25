@@ -300,6 +300,99 @@ export class Entity extends Group {
 
 	}
 
+	toJSON() {
+
+		const output = {};
+
+		output.uuid = this.uuid;
+		output.matrix = this.matrix.toArray();
+
+		if ( this.name !== '' ) output.name = this.name;
+		if ( this.castShadow === true ) output.castShadow = true;
+		if ( this.receiveShadow === true ) output.receiveShadow = true;
+		if ( this.visible === false ) this.visible = false;
+		if ( this._enabled === false ) output.enabled = false;
+
+		if ( this.componentData !== undefined ) {
+
+			const array = JSON.parse( JSON.stringify( this.componentData ) );
+
+			output.components = [];
+
+			// sorting array to place non-dependency components last
+			array.sort( ( a, b ) => {
+
+				const dependenciesA = ComponentManager.components[ a.type ].config.dependencies;
+				const dependenciesB = ComponentManager.components[ b.type ].config.dependencies;
+
+				if ( dependenciesA === undefined && dependenciesB !== undefined )
+					return 1;
+				return - 1;
+
+			} );
+
+			while ( array.length > 0 ) {
+
+				let i = array.length;
+
+				while ( i -- ) {
+
+					const dependencies = ComponentManager.components[ array[ i ].type ].config.dependencies;
+
+					if ( dependencies !== undefined ) {
+
+						let wait = false;
+						for ( let j = 0, len = dependencies.length; j < len; j ++ ) {
+
+							if ( array.includes( dependencies[ j ] ) ) {
+
+								wait = true;
+								break;
+
+							}
+
+						}
+
+						if ( wait === true ) {
+
+							continue;
+
+						}
+
+					}
+
+					output.components.push( array[ i ] );
+					array.splice( i, 1 );
+
+				}
+
+			}
+
+		} else if ( this.components.length > 0 ) {
+
+			output.components = [];
+
+			for ( let i = 0; i < this.components.length; i++ ) {
+				if ( typeof this.components[i].toJSON === 'function' )
+					output.components.push( this.components.toJSON() )
+
+			}
+
+		}
+
+		const children = this.getEntities();
+		if ( children.length > 0 ) {
+
+			output.children = [];
+			for ( let i = 0, len = children.length; i < len; i ++ )
+				output.children.push( this.parseEntity( children[ i ] ) );
+
+		}
+
+		return output;
+
+	}
+
 	get app() {
 
 		return this.scene.app;
