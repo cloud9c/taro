@@ -95,13 +95,16 @@ function Editor() {
 	this.storage = new _Storage();
 	this.strings = new Strings( this.config );
 
+	this.files = {};
+	this.scripts = {};
+
 	this.loader = new Loader( this );
 
 	this.camera = _DEFAULT_CAMERA.clone();
 
-	this.app = {};
+	this.app = new TARO.App();
 
-	this.scene = new TARO.Scene();
+	this.scene = new TARO.Scene( this.app );
 	this.scene.name = 'Scene';
 	this.scenes = [];
 
@@ -128,7 +131,7 @@ function Editor() {
 
 Editor.prototype = {
 
-	setScene: function ( scene ) {
+	setApp: function ( scene ) {
 
 		this.scene.uuid = scene.uuid;
 		this.scene.name = scene.name;
@@ -618,22 +621,21 @@ Editor.prototype = {
 
 	fromJSON: async function ( json ) {
 
-		var loader = new TaroLoader();
-		var camera = await loader.parseAsync( json.camera );
+		var taroLoader = new TaroLoader();
+		var objLoader = new Taro.ObjectLoader();
+
+		var camera = await objLoader.parseAsync( camera );
 
 		this.camera.copy( camera );
 		this.signals.cameraResetted.dispatch();
 
 		this.history.fromJSON( json.history );
 
-		this.setScene( await loader.parseAsync( json.currentScene ) );
+		this.setApp( await loader.parseAsync( json ) );
 
 	},
 
 	toJSON: function () {
-
-		var exporter = new TaroExporter();
-		var data = exporter.parseApp( this.app ); // TODO
 
 		return {
 
@@ -647,7 +649,7 @@ Editor.prototype = {
 				toneMappingExposure: this.config.getKey( 'setting/renderer/toneMappingExposure' )
 			},
 			camera: this.camera.toJSON(),
-			scene: this.scene.toJSON(),
+			app: this.app.toJSON(),
 			scripts: this.scripts,
 			history: this.history.toJSON()
 

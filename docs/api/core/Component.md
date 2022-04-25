@@ -44,6 +44,3 @@ Called every fixed framerate frame if the component is enabled. fixedUpdate shou
 
 ### .<a>update</a> ( deltaTime : <span class="param">Float</span> ) : <span class="param">null</span>
 Called every frame if the component is enabled.
-
-## Source
-[src/core/Component.js](https://github.com/Cloud9c/taro/blob/master/src/core/Component.js)

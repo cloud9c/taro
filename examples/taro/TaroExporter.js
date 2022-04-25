@@ -5,7 +5,7 @@ export class TaroExporter {
 	parse( object ) {
 
 		if ( object.isApp )
-			return this.parseApplication( object );
+			return this.parseApp( object );
 		else if ( object.isScene )
 			return this.parseScene( object );
 		else
